@@ -10,7 +10,7 @@ const developmentLogger: LoggerConfig = {
     target: "pino-pretty",
     options: {
       colorize: true,
-      translateTime: "SYS:HH:MM:ss",
+      translateTime: "SYS:HH:mm:ss",
       ignore: "pid,hostname",
       messageFormat: "{msg} {reqId}",
       singleLine: true,

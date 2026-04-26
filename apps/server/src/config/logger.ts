@@ -1,4 +1,5 @@
 import { FastifyServerOptions } from "fastify";
+
 import { ENV } from "./env";
 
 type LoggerConfig = FastifyServerOptions["logger"];

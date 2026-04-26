@@ -1,10 +1,12 @@
-import dotenv from "dotenv";
 import path from "path";
-import { ENVIRONMENT } from "../enums/env";
 
-const environment = process.env.NODE_ENV ?? "development";
+import dotenv from "dotenv";
 
-const isDevelopment = environment === "development";
+import { ENVIRONMENT } from "@/enums/env";
+
+const environment = process.env.NODE_ENV ?? ENVIRONMENT.DEVELOPMENT;
+
+const isDevelopment = environment === ENVIRONMENT.DEVELOPMENT;
 
 const fileName = isDevelopment ? ".env" : `.env.${environment}`;
 const envFilePath = path.resolve(process.cwd(), fileName);

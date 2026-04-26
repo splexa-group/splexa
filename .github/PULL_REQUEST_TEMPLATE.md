@@ -35,8 +35,6 @@ Select the relevant type.
 
 <!--Add screenshots or screen recordings if UI changes are involved. -->
 
----
-
 ## Deployment Notes (Optional)
 
 <!--Mention anything required during deployment. -->

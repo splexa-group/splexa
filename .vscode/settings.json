@@ -4,5 +4,5 @@
     "**/.turbo": true,
     "**/dist": true
   },
-  "cSpell.words": ["splexa"]
+  "cSpell.words": ["splexa", "Turborepo"]
 }

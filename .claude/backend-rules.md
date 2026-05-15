@@ -128,6 +128,7 @@ import { FastifyRequest } from 'fastify';
 import { casesRepository } from './cases-repository';
 import { logActivity } from '@/lib/activity-logger';
 import { NotFoundError } from '@/lib/errors';
+import { ActivityAction } from '@/lib/constants';
 import type { AuthUser, CreateCaseInput, CaseFilters } from '@splexa/shared';
 
 export const caseService = {
@@ -141,7 +142,7 @@ export const caseService = {
     await logActivity({
       orgId: user.orgId,
       userId: user.userId,
-      action: 'case.created',
+      action: ActivityAction.CASE_CREATED,
       resourceType: 'case',
       resourceId: case_.id,
       metadata: { caseNumber: case_.caseNumber },
@@ -661,8 +662,8 @@ Before declaring backend work done:
 - [ ] New shared types added to `packages/shared` if used by frontend too
 
 **Schema**
-- [ ] Request schema has `additionalProperties: false`
-- [ ] Required fields are listed in `required: [...]`
+- [ ] Request body Zod schema is not `.passthrough()` — unknown fields are stripped (default) or rejected (`.strict()`)
+- [ ] Required fields are non-optional in the Zod schema (no `.optional()` on them)
 
 **Tests**
 - [ ] Cross-firm isolation test exists if a new resource type was added

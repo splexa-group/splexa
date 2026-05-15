@@ -358,3 +358,46 @@ async function createCase(user: AuthUser, input: CreateCaseInput) {
   return case_;
 }
 ```
+
+---
+
+## Forbidden — TypeScript & Linting
+
+| Forbidden | Why |
+|---|---|
+| `any` type | Defeats TypeScript — use `unknown` and narrow |
+| Non-null assertion `!` | Lie to the compiler — handle null explicitly |
+| `@ts-ignore` or `@ts-expect-error` without explanation | Suppresses real bugs |
+| Unexplained `as X` type assertion | Shifts bugs from compile time to runtime |
+| `import { X } from 'y'` when only the type is needed | Use `import type { X }` — prevents value import in bundles |
+| `var` declarations | Use `const` or `let` — `var` has scoping bugs |
+| `==` instead of `===` | Coercion bugs |
+| `console.log` in committed code | Use Fastify logger (`req.log`, `fastify.log`) |
+| Unused imports left in | Build error in CI — remove them |
+| Relative paths crossing module or folder boundaries | Use `@/*` alias — relative paths break on refactor |
+| camelCase file names | kebab-case everywhere — no exceptions except framework files |
+
+---
+
+## AI Agent Self-Check — TypeScript & Linting
+
+Before declaring work done:
+
+**Type safety**
+- [ ] No `any` type added (including in function parameters or return types)
+- [ ] No `!` non-null assertions — null is handled with a guard or early return
+- [ ] No `@ts-ignore` or unexplained `as X` assertions
+- [ ] Exported functions have explicit return types
+
+**Imports**
+- [ ] Type-only imports use `import type { X }` not `import { X }`
+- [ ] Import groups separated by blank lines in correct order (builtin → external → internal → alias → relative)
+- [ ] No unused imports remain
+- [ ] Path aliases used (`@/*`, `@splexa/shared`) — no relative paths crossing folders
+
+**Style**
+- [ ] All new files are kebab-case
+- [ ] No `console.log` in committed code
+- [ ] `const` used for all variables that are not reassigned
+- [ ] Booleans named as questions (`isActive`, `hasAccess`, `canArchive`)
+- [ ] Functions named as actions (`createCase`, `archiveCase`)

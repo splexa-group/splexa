@@ -52,7 +52,7 @@ modules/[name]/
 ├── [name]-controller.ts    # Request/response handling
 ├── [name]-service.ts       # Business logic + activity logging
 ├── [name]-repository.ts    # All Prisma queries
-├── [name]-schema.ts        # Zod / JSON Schema validation
+├── [name]-schema.ts        # Zod schemas for validation (no raw JSON Schema)
 └── __tests__/
     └── [name].test.ts
 ```

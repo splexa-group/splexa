@@ -286,19 +286,54 @@ Never render `undefined` silently — always show the user something meaningful.
 
 ---
 
-## Mobile-First Rules
+## Responsive Design — Every Component, Every Screen
 
-All layouts start from mobile and scale up. Base styles are mobile, `md:` and `lg:` add desktop enhancements.
+Advocates use Splexa on their phones standing outside courtrooms. The mobile experience is not a nice-to-have — it is the primary use case. Every component must work correctly on both mobile and desktop before it is considered done.
+
+### Mobile-First CSS — Non-Negotiable
+
+Base styles are mobile. Desktop styles layer on top with `md:` and `lg:` prefixes. Never invert this.
 
 ```tsx
-// ✅ Mobile-first
+// ✅ Mobile-first: stacked on small, row on large
 <div className="flex flex-col lg:flex-row gap-4">
 
-// ❌ Desktop-first
+// ❌ Desktop-first: will not adapt correctly
 <div className="flex flex-row sm:flex-col">
 ```
 
-Minimum tap target: `min-h-[44px] min-w-[44px]` on all interactive elements. Touch feedback: `active:scale-95` on buttons. No horizontal scroll on mobile.
+### Layout Patterns by Breakpoint
+
+| Element | Mobile (`< md`) | Desktop (`md+`) |
+|---|---|---|
+| Page layout | Full-width single column | Sidebar + content area |
+| Navigation | Bottom tab bar (fixed) | Left sidebar |
+| Modals / drawers | Slide-up bottom drawer | Centered modal |
+| Data tables | Stacked cards | Row-based table |
+| Action buttons | Fixed bottom bar | Inline or top-right |
+| Filters | Collapsed behind a button | Visible sidebar or top bar |
+| Case card | Full-width card | Card in grid |
+
+### Touch and Tap Rules
+
+- **Minimum tap target**: `min-h-[44px] min-w-[44px]` on every interactive element — buttons, links, list items
+- **Touch feedback**: `active:scale-95` or `active:bg-*` on every tappable element — users must feel the tap
+- **Readable text**: `text-base` (16px) minimum for all body text on mobile — no `text-xs` for important information
+- **No horizontal scroll**: no fixed-width element wider than the viewport — use `max-w-full`, `overflow-x-hidden`, or `w-full`
+- **Smooth scroll**: `-webkit-overflow-scrolling: touch` on scrollable lists for iOS momentum
+
+### Before Claiming a Component Done
+
+Test the component at both viewports before declaring it complete. A component that only works on desktop is not done.
+
+| Check | Mobile | Desktop |
+|---|---|---|
+| Layout renders without horizontal overflow | ✅ | ✅ |
+| All text is readable (≥ 16px body) | ✅ | ✅ |
+| All tap targets are ≥ 44px | ✅ | ✅ |
+| Navigation is visible and reachable | Bottom tab bar | Sidebar |
+| Modals/drawers open correctly | Slide-up drawer | Centered modal |
+| Lists and cards display correctly | Full-width stacked | Grid or table |
 
 ---
 
@@ -550,6 +585,10 @@ Override examples:
 | Raw `fetch` in components or hooks | Bypasses typed API client and error handling |
 | `useEffect` for data fetching | React Query handles this — no exceptions |
 | Hardcoded hex colors or `style={{ color/background }}` | Breaks theming; use design tokens |
+| Fixed-width elements without `max-w-full` or `w-full` | Causes horizontal scroll on mobile |
+| Desktop-first CSS (`flex-row sm:flex-col`) | Layout breaks on phones — always start mobile |
+| Touch targets smaller than `min-h-[44px]` | Unusable on mobile — fingers miss small targets |
+| `text-xs` for important information on mobile | Below readable threshold — use `text-sm` minimum |
 | `<div onClick>` for interactive elements | Not keyboard accessible; use `<button>` |
 | `any` in props or hook return types | Defeats TypeScript |
 | `process.env.SECRET` in client code | Silently `undefined` in browser — secrets stay server-side |
@@ -579,8 +618,14 @@ Before declaring frontend work done:
 **Styling**
 - [ ] Elements with > 4 Tailwind classes extracted to a `globals.css` component class
 - [ ] No hardcoded hex values or dynamic `style={{ color/bg }}` props
-- [ ] Mobile-first: base styles are mobile, `md:`/`lg:` scale up
+
+**Responsive (both viewports required — not optional)**
+- [ ] Base CSS styles are mobile — desktop enhancements use `md:`/`lg:` prefixes, never inverted
+- [ ] No horizontal scroll on mobile — no fixed-width elements wider than viewport
 - [ ] All interactive elements have `min-h-[44px]` tap target
+- [ ] Body text is `text-base` (16px) minimum — no `text-xs` for important content on mobile
+- [ ] Layout follows the responsive pattern: bottom nav on mobile, sidebar on desktop
+- [ ] Modals become slide-up drawers on mobile where the pattern applies
 
 **Security**
 - [ ] No token stored in `localStorage` or `sessionStorage`

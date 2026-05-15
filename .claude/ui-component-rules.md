@@ -307,16 +307,82 @@ async function handleSubmit() {
 
 ---
 
-## Mobile UX Rules
+## Responsive Design — The Contract for Every Component
 
-These come directly from the product spec and must be applied in every component:
+Every component must work correctly on both mobile and desktop. This is not a post-build polish step — it is part of building the component. Advocates use this product on phones in court corridors. A component that only works on desktop is an incomplete component.
 
-1. **Minimum tap target**: `min-h-[44px] min-w-[44px]` on all interactive elements
-2. **Touch feedback**: use `active:scale-95` or `active:bg-*` on interactive elements
-3. **Readable text**: minimum 16px (`text-base`) for body text on mobile — never `text-xs` for important information
-4. **Scrollable lists**: use `-webkit-overflow-scrolling: touch` for smooth iOS scroll
-5. **No horizontal scroll**: no fixed-width elements wider than the viewport
-6. **Bottom nav on mobile**: primary navigation is a bottom tab bar on mobile, sidebar on desktop
+### The Responsive Contract
+
+Apply these rules to every component before declaring it done:
+
+| Rule | Mobile (`< md`) | Desktop (`md+`) |
+|---|---|---|
+| Layout direction | Column (`flex-col`) | Row (`lg:flex-row`) |
+| Navigation | Bottom tab bar — `bottom-nav` | Left sidebar — `sidebar` |
+| Action surfaces | Slide-up bottom drawer | Centered modal |
+| Lists | Full-width stacked cards | Grid or table rows |
+| Contextual menus | Full-screen or bottom sheet | Dropdown or popover |
+| Tap targets | `min-h-[44px] min-w-[44px]` on every interactive element | Same |
+| Body text | `text-base` (16px) minimum | Same |
+
+### Mobile Rules — Applied to Every Component
+
+1. **Minimum tap target**: `min-h-[44px] min-w-[44px]` on all interactive elements — buttons, links, list rows, icon buttons
+2. **Touch feedback**: `active:scale-95` or `active:bg-*` on every touchable element — no invisible taps
+3. **Readable text**: `text-base` (16px) minimum for body text on mobile — never `text-xs` for information the user must read
+4. **Smooth scroll**: `-webkit-overflow-scrolling: touch` on all scrollable list containers for iOS momentum scroll
+5. **No horizontal overflow**: every element uses `w-full`, `max-w-full`, or is constrained — zero horizontal scroll
+6. **Safe area insets**: fixed bottom elements (nav bar, action buttons) use `pb-safe` / `env(safe-area-inset-bottom)` for notch/home-bar clearance on iOS
+
+### CSS Pattern — Mobile-First Always
+
+```css
+/* ✅ Mobile-first — start small, expand up */
+.case-list {
+  @apply flex flex-col gap-3;        /* mobile: stacked */
+}
+@screen md {
+  .case-list {
+    @apply grid grid-cols-2 gap-4;   /* tablet: 2-column grid */
+  }
+}
+@screen lg {
+  .case-list {
+    @apply grid-cols-3;               /* desktop: 3-column grid */
+  }
+}
+
+/* ❌ Desktop-first — inverts the cascade, breaks mobile */
+.case-list {
+  @apply grid grid-cols-3;
+}
+@screen sm {
+  .case-list { @apply grid-cols-1; }
+}
+```
+
+### Drawer vs Modal — When to Use Which
+
+| Context | Mobile | Desktop |
+|---|---|---|
+| Add hearing form | Slide-up drawer (full-screen) | Modal |
+| Quick status update | Slide-up drawer (half-screen) | Inline popover |
+| Confirmation (archive, delete) | Bottom sheet | Centered modal |
+| Full record creation | Full-page route | Modal or side panel |
+
+### Navigation Structure
+
+```tsx
+/* The layout renders the correct nav for each breakpoint — components do not decide this */
+<div className="hidden lg:block">
+  <Sidebar />              {/* Desktop only */}
+</div>
+<div className="lg:hidden fixed bottom-0 w-full">
+  <BottomNav />            {/* Mobile only */}
+</div>
+```
+
+Individual feature components never render navigation. They render content only, and the layout shell handles nav placement.
 
 ---
 
@@ -375,3 +441,54 @@ export function CaseCard({ case_, onArchive }: CaseCardProps) {
 // Sub-components (only if small and tightly coupled, otherwise separate file)
 function CaseCardMenu({ ... }) { ... }
 ```
+
+---
+
+## Forbidden — UI Components
+
+| Forbidden | Why |
+|---|---|
+| `useEffect` + `fetch` for server data | Use React Query `useQuery` — hooks handle loading/error/cache |
+| Raw `fetch(...)` in any component or hook | Use the typed client from `lib/api/` |
+| `localStorage.setItem('token', ...)` | Tokens in Zustand (memory) only |
+| `'use client'` on a page file | Default to Server Component; push the boundary down to the leaf |
+| `<div onClick={...}>` for interactive elements | Use `<button>` or `<a>` — required for accessibility |
+| Inline `style={{}}` for static values | Use Tailwind classes or CSS component classes |
+| More than 4 Tailwind classes on one element | Extract to a CSS component class in `globals.css` |
+| Raw hex colors (`#1A1A2E`) in className | Use design token classes (`text-primary`, `bg-cta`) |
+| Interactive element without `min-h-[44px]` | Touch target too small — fails mobile UX standard |
+| Rendering `null` or `undefined` silently on error | Always show loading skeleton, error state, or empty state |
+| `any` type in component props | Fix the prop type — use the domain type from `@splexa/shared` |
+| Importing from another feature's components | Features are independent — share only through `ui/` or `shared/` |
+
+---
+
+## AI Agent Self-Check — UI Components
+
+Before declaring a component complete:
+
+**Data fetching**
+- [ ] Server data uses React Query (`useQuery`, `useMutation`) — no `useEffect` + `fetch`
+- [ ] API calls go through `lib/api/` typed client — no raw `fetch`
+- [ ] Loading state renders `<Skeleton />` or `<Spinner />`
+- [ ] Error state renders `<EmptyState />` with a retry or fallback
+- [ ] Empty list renders `<EmptyState />` with a CTA
+
+**Forms**
+- [ ] Submit button is disabled and shows spinner while `mutation.isPending`
+- [ ] Validation errors show inline below each field, not as a toast
+- [ ] Form data is preserved on error (not reset)
+
+**Mobile**
+- [ ] All interactive elements have `min-h-[44px]`
+- [ ] No fixed-width element wider than the viewport
+
+**Accessibility**
+- [ ] All interactive elements are `<button>` or `<a>` — not `<div onClick>`
+- [ ] Form inputs have associated `<label>` elements
+- [ ] Error messages linked to inputs via `aria-describedby`
+
+**Styling**
+- [ ] Color values use design tokens, not raw hex
+- [ ] Elements with 5+ Tailwind classes use a CSS component class in `globals.css`
+- [ ] `'use client'` only on components that actually use hooks or event handlers

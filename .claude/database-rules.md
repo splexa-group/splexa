@@ -115,7 +115,7 @@ Define a `casePublicSelect` constant in the repository for the standard "public"
 All list queries are paginated:
 
 ```ts
-async findAllByFirm(orgId: string, filters: CaseFilters) {
+async findAllByOrg(orgId: string, filters: CaseFilters) {
   const page = filters.page ?? 1;
   const limit = Math.min(filters.limit ?? 20, 100); // cap at 100
   const skip = (page - 1) * limit;
@@ -262,9 +262,9 @@ const result = await prisma.$transaction(async (tx) => {
 
 Redis is used for:
 
-1. **OTP storage**: `otp:{mobile}` → `{ hash, attempts }` with 10-minute TTL
-2. **OTP rate limit**: `otp_rate:{mobile}` → count with 1-hour TTL
-3. **Refresh token blacklist**: `blacklist:{userId}` → Set of revoked token hashes
+1. **OTP storage**: key `redisKeys.otp(email)` → `{ hash, attempts }` with 10-minute TTL
+2. **OTP rate limit**: key `redisKeys.otpRate(email)` → count with 1-hour TTL
+3. **Refresh token blacklist**: key `redisKeys.blacklist(userId)` → Set of revoked token hashes
 4. **Access token (DO NOT use Redis for this)**: Access tokens are stateless JWTs — validate signature, no Redis lookup
 
 Redis is NOT used for caching API responses in Phase 1 — add this only when a specific query is proven slow.
@@ -278,34 +278,17 @@ export const redis = createClient({ url: env.REDIS_URL });
 await redis.connect();
 ```
 
-Use typed wrapper functions for Redis operations — do not call `redis.set`/`redis.get` with raw string keys throughout the codebase:
+Always use `redisKeys.*` builders from `lib/constants.ts` — never inline raw key strings:
 
 ```ts
-// lib/otp-store.ts
-const OTP_TTL = 600; // 10 minutes
+import { redisKeys, OTP_TTL_SECONDS, MAX_OTP_ATTEMPTS } from '@/lib/constants';
 
-export const otpStore = {
-  async set(mobile: string, hash: string) {
-    await redis.setEx(
-      `otp:${mobile}`,
-      OTP_TTL,
-      JSON.stringify({ hash, attempts: 0 }),
-    );
-  },
+// ✅ Correct — key structure is in one place
+await redis.setEx(redisKeys.otp(email), OTP_TTL_SECONDS, JSON.stringify({ hash, attempts: 0 }));
+const raw = await redis.get(redisKeys.otp(email));
 
-  async get(mobile: string) {
-    const raw = await redis.get(`otp:${mobile}`);
-    return raw ? (JSON.parse(raw) as { hash: string; attempts: number }) : null;
-  },
-
-  async incrementAttempts(mobile: string) {
-    // ... implementation
-  },
-
-  async delete(mobile: string) {
-    await redis.del(`otp:${mobile}`);
-  },
-};
+// ❌ Wrong — key pattern duplicated, typo-prone
+await redis.setEx(`otp:${email}`, 600, JSON.stringify({ hash, attempts: 0 }));
 ```
 
 ---

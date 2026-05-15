@@ -20,6 +20,7 @@ Stack: pnpm monorepo + Turborepo. Backend: Fastify + Prisma + PostgreSQL + Redis
 
 | You are working on… | Read these files |
 |---|---|
+| Any feature or UX decision | `product-context.md` first — understand the why before the how |
 | Any backend module | `backend-rules.md` + `database-rules.md` + `security-rules.md` |
 | Any frontend component | `frontend-rules.md` + `ui-component-rules.md` |
 | Auth / OTP / JWT | `security-rules.md` + `backend-rules.md` |
@@ -158,6 +159,7 @@ export function useCases(filters: CaseFilters) {
 
 | File | Covers | Priority |
 |---|---|---|
+| `product-context.md` | Product brain — who we build for, why features work this way, the UX standard | Read for any feature or UX decision |
 | `architecture.md` | Monorepo layout, module boundaries, file naming | High — read for any new file |
 | `backend-rules.md` | Five-layer pattern with full examples, auth, activity logging, Zod setup | High — read for all backend work |
 | `database-rules.md` | Prisma queries, orgId scoping, soft deletes, transactions, Redis, repository naming | High — read for all DB work |

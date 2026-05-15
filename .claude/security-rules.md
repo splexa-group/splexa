@@ -42,7 +42,7 @@ Phase 1 uses **email OTP only**. No passwords. No magic links.
 ### OTP Rate Limiting
 The OTP send endpoint has a specific, product-required rate limit: **max 5 OTP requests per hour per email**. This is not general rate limiting — it is a targeted business rule on this one endpoint.
 
-Implementation: Redis key `otp_rate:{email}` → count, 1-hour TTL. Increment on send, reject at ≥ 5.
+Implementation: `redisKeys.otpRate(email)` → count, 1-hour TTL. Increment on send, reject at ≥ `MAX_OTP_REQUESTS_PER_HOUR`. Use the constants — never hardcode 5 or the key pattern inline.
 
 ---
 
@@ -107,8 +107,8 @@ Refer to `backend-rules.md` for the full `logActivity` implementation.
 
 ## Input Validation
 
-- All inputs validated against Fastify JSON schema before route handlers execute
-- `additionalProperties: false` on all schemas — unknown fields are rejected
+- All inputs validated via Zod schemas using `@fastify/type-provider-zod` — no raw JSON Schema objects anywhere
+- Zod object schemas use `.strict()` on request bodies to reject unknown fields, or at minimum never use `.passthrough()`
 - File uploads: validate MIME type by reading file magic bytes (not just Content-Type header). Reject executable file types.
 - Maximum file size: 10MB per upload
 
@@ -190,12 +190,48 @@ Never access `process.env` directly in business logic — always import from `@/
 
 ---
 
-## Security Checklist — Every PR Touching Data or Auth
+---
 
-- [ ] Does every DB query on tenant-scoped data filter by `orgId` from JWT?
-- [ ] Does the route have the correct `preHandler` (`authenticate` and/or `requireRole`)?
-- [ ] Does the service perform data-level access checks?
-- [ ] Is the action logged to `activity_logs`?
-- [ ] Does the error response expose only what the client needs (no internals)?
-- [ ] Is there a cross-org isolation test for any new resource type?
-- [ ] Are all inputs validated by schema with `additionalProperties: false`?
+## Forbidden — Security
+
+| Forbidden | Why |
+|---|---|
+| `orgId` from `req.body`, `req.params`, or `req.query` | Must come from verified JWT (`req.user.orgId`) only |
+| `findUnique({ where: { id } })` on tenant tables | Cross-tenant data leak — include `orgId` always |
+| `update` or `softDelete` without `orgId` in `where` | Cross-tenant mutation |
+| Logging raw OTP, JWT token, or refresh token | Credential exposure |
+| Logging full request body | May contain sensitive case or client data |
+| Exposing Prisma errors or stack traces to the client | Leaks implementation internals |
+| Client portal returning `orgId`, fees, or internal notes | Portal is read-only view of approved fields only |
+| Generating signed storage URLs without checking `doc.orgId === req.user.orgId` | Cross-tenant file access |
+| `additionalProperties` in raw JSON Schema on a route | Use Zod with `.strict()` — no raw JSON Schema |
+| Hardcoding OTP attempt limit as `3` | Use `MAX_OTP_ATTEMPTS` from `lib/constants.ts` |
+| Inline Redis key strings like `` `otp:${email}` `` | Use `redisKeys.otp(email)` — one place for all key patterns |
+
+---
+
+## AI Agent Self-Check — Security
+
+Before declaring any feature complete that touches data access or auth:
+
+**Auth & tokens**
+- [ ] Every new protected route has `preHandler: [fastify.authenticate]`
+- [ ] Admin-only routes have `preHandler: [fastify.authenticate, fastify.requireRole('ADMIN')]`
+- [ ] JWT payload used is `req.user` — verified by the auth plugin, not passed from client
+- [ ] Access token stored in Zustand (memory) only — never `localStorage` or `sessionStorage`
+
+**Multi-tenancy**
+- [ ] Every DB query on a tenant-scoped table filters by `orgId` from `req.user.orgId`
+- [ ] `findFirst` used (not `findUnique`) on tenant tables, always with `{ id, orgId }`
+- [ ] Wrong-org request returns 404, not 403
+
+**Activity logging**
+- [ ] Every mutation calls `logActivity` with an `ActivityAction.*` constant (not a raw string)
+- [ ] Auth events logged: OTP sent, OTP verified, login failed, account locked, logout
+
+**Input validation**
+- [ ] Zod schema used for all request body, query, and params — no raw JSON Schema
+- [ ] Sensitive fields (`internalNotes`, `feeAmount`) excluded from API responses via explicit `select`
+
+**Cross-org isolation test**
+- [ ] If a new resource type was added: a test exists proving org A's JWT cannot access org B's resource

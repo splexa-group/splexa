@@ -45,10 +45,19 @@ enum UserRole {
 
 enum Designation {
   ADVOCATE
-  SENIOR_ADVOCATE
-  PARTNER
+  SENIOR_ADVOCATE        // Officially designated by High Court or Supreme Court
+  JUNIOR_ADVOCATE        // Fresh enrollment, typically assisting a senior
   ASSOCIATE
-  CLERK
+  SENIOR_ASSOCIATE
+  PRINCIPAL_ASSOCIATE    // Pre-partner track, common in larger firms
+  PARTNER
+  SENIOR_PARTNER
+  MANAGING_PARTNER
+  OF_COUNSEL             // Retired or consulting advocate affiliated with a firm
+  RETAINER               // Advocate on fixed retainer for a client or org
+  PARALEGAL
+  LEGAL_INTERN           // Law student
+  CLERK                  // Junior support in chambers
 }
 
 enum PracticeType {
@@ -56,7 +65,20 @@ enum PracticeType {
   CIVIL
   CORPORATE
   FAMILY
+  MATRIMONIAL            // Divorce, maintenance, custody — high volume in India
   LABOUR
+  CONSTITUTIONAL
+  TAX                    // Direct + indirect, GST matters
+  INTELLECTUAL_PROPERTY
+  REAL_ESTATE
+  BANKING_AND_FINANCE
+  ARBITRATION
+  CONSUMER               // Consumer disputes — NCDRC, state commissions
+  ENVIRONMENTAL
+  MOTOR_ACCIDENT         // MACT claims — very high volume in Indian courts
+  REVENUE                // Land acquisition, revenue courts — very common
+  SERVICE_MATTERS        // Government employee disputes — CAT, High Courts
+  CYBER
   GENERAL
 }
 ```
@@ -76,8 +98,6 @@ model Organization {
 
   creator      User         @relation("OrgCreator", fields: [createdBy], references: [id])
   members      User[]       @relation("OrgMembers")
-  sessions     Session[]
-  auditLogs    AuditLog[]
 
   @@map("organizations")
 }
@@ -112,7 +132,6 @@ model OtpRequest {
   expiresAt  DateTime
   verifiedAt DateTime?
   createdAt  DateTime  @default(now())
-  deletedAt  DateTime?
 
   @@index([email])
   @@map("otp_requests")
@@ -129,10 +148,8 @@ model Session {
   revokedAt   DateTime?
   lastUsedAt  DateTime  @default(now())
   createdAt   DateTime  @default(now())
-  deletedAt   DateTime?
 
-  user        User         @relation(fields: [userId], references: [id])
-  org         Organization @relation(fields: [orgId], references: [id])
+  user        User      @relation(fields: [userId], references: [id])
 
   @@map("sessions")
 }
@@ -147,7 +164,6 @@ model AuditLog {
   ipAddress    String
   metadata     Json
   createdAt    DateTime  @default(now())
-  deletedAt    DateTime?
 
   org          Organization? @relation(fields: [orgId], references: [id])
   user         User?         @relation(fields: [userId], references: [id])

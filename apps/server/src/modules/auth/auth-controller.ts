@@ -36,99 +36,70 @@ function clearAuthCookies(reply: FastifyReply): void {
   reply.clearCookie(REFRESH_TOKEN_COOKIE, { path: "/auth" });
 }
 
-export async function signupController(
-  req: FastifyRequest,
-  reply: FastifyReply,
-): Promise<void> {
-  const body = signupSchema.parse(req.body);
-  await authService.signup(body, { ipAddress: req.ip });
-  reply.code(201).send({ message: "OTP sent to your email" });
-}
+export const authController = {
+  async signup(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const body = signupSchema.parse(req.body);
+    await authService.signup(body, { ipAddress: req.ip });
+    reply.code(201).send({ message: "OTP sent to your email" });
+  },
 
-export async function requestOtpController(
-  req: FastifyRequest,
-  reply: FastifyReply,
-): Promise<void> {
-  const body = otpRequestSchema.parse(req.body);
-  await authService.requestOtp(body, { ipAddress: req.ip });
-  reply.send({ message: "OTP sent" });
-}
+  async requestOtp(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const body = otpRequestSchema.parse(req.body);
+    await authService.requestOtp(body, { ipAddress: req.ip });
+    reply.send({ message: "OTP sent" });
+  },
 
-export async function verifyOtpController(
-  req: FastifyRequest,
-  reply: FastifyReply,
-): Promise<void> {
-  const body = otpVerifySchema.parse(req.body);
-  const userAgent = req.headers["user-agent"] ?? "unknown";
-  const { accessToken, refreshToken, user } = await authService.verifyOtp(body, {
-    ipAddress: req.ip,
-    userAgent,
-  });
+  async verifyOtp(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const body = otpVerifySchema.parse(req.body);
+    const userAgent = req.headers["user-agent"] ?? "unknown";
+    const { accessToken, refreshToken, user } = await authService.verifyOtp(body, {
+      ipAddress: req.ip,
+      userAgent,
+    });
+    setAccessTokenCookie(reply, accessToken);
+    setRefreshTokenCookie(reply, refreshToken);
+    reply.send({ user });
+  },
 
-  setAccessTokenCookie(reply, accessToken);
-  setRefreshTokenCookie(reply, refreshToken);
-  reply.send({ user });
-}
+  async refresh(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE];
+    const { accessToken } = await authService.refreshSession(refreshToken, { ipAddress: req.ip });
+    setAccessTokenCookie(reply, accessToken);
+    reply.send({ message: "Token refreshed" });
+  },
 
-export async function refreshController(
-  req: FastifyRequest,
-  reply: FastifyReply,
-): Promise<void> {
-  const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE];
-  const { accessToken } = await authService.refreshSession(refreshToken, { ipAddress: req.ip });
-  setAccessTokenCookie(reply, accessToken);
-  reply.send({ message: "Token refreshed" });
-}
+  async logout(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE];
+    await authService.logout(refreshToken, { ipAddress: req.ip });
+    clearAuthCookies(reply);
+    reply.send({ message: "Logged out" });
+  },
 
-export async function logoutController(
-  req: FastifyRequest,
-  reply: FastifyReply,
-): Promise<void> {
-  const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE];
-  await authService.logout(refreshToken, { ipAddress: req.ip });
-  clearAuthCookies(reply);
-  reply.send({ message: "Logged out" });
-}
+  async getMe(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const user = await authService.getMe(req.user.userId);
+    reply.send(user);
+  },
 
-export async function getMeController(
-  req: FastifyRequest,
-  reply: FastifyReply,
-): Promise<void> {
-  const user = await authService.getMe(req.user.userId);
-  reply.send(user);
-}
+  async listSessions(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const sessions = await authService.listSessions(req.user.userId);
+    reply.send({ sessions });
+  },
 
-export async function listSessionsController(
-  req: FastifyRequest,
-  reply: FastifyReply,
-): Promise<void> {
-  const sessions = await authService.listSessions(req.user.userId);
-  reply.send({ sessions });
-}
+  async getSession(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const { id } = sessionParamsSchema.parse(req.params);
+    const session = await authService.getSession(id, req.user.userId);
+    reply.send(session);
+  },
 
-export async function getSessionController(
-  req: FastifyRequest,
-  reply: FastifyReply,
-): Promise<void> {
-  const { id } = sessionParamsSchema.parse(req.params);
-  const session = await authService.getSession(id, req.user.userId);
-  reply.send(session);
-}
+  async revokeSession(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+    const { id } = sessionParamsSchema.parse(req.params);
+    await authService.revokeSession(id, req.user.userId, req.user.orgId, { ipAddress: req.ip });
+    reply.send({ message: "Session revoked" });
+  },
 
-export async function revokeSessionController(
-  req: FastifyRequest,
-  reply: FastifyReply,
-): Promise<void> {
-  const { id } = sessionParamsSchema.parse(req.params);
-  await authService.revokeSession(id, req.user.userId, req.user.orgId, { ipAddress: req.ip });
-  reply.send({ message: "Session revoked" });
-}
-
-export async function revokeAllSessionsController(
-  req: FastifyRequest,
-  reply: FastifyReply,
-): Promise<void> {
-  await authService.revokeAllSessions(req.user.userId, req.user.orgId, { ipAddress: req.ip });
-  clearAuthCookies(reply);
-  reply.send({ message: "All sessions revoked" });
-}
+  async revokeAllSessions(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+    await authService.revokeAllSessions(req.user.userId, req.user.orgId, { ipAddress: req.ip });
+    clearAuthCookies(reply);
+    reply.send({ message: "All sessions revoked" });
+  },
+};

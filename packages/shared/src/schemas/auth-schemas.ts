@@ -6,11 +6,11 @@ export const signupSchema = z
   .object({
     firstName: z.string().min(1).max(100),
     lastName: z.string().min(1).max(100),
-    email: z.string().email(),
+    email: z.email(),
     phoneNumber: z.string().min(7).max(20),
-    designation: z.nativeEnum(Designation),
+    designation: z.enum(Designation),
     orgName: z.string().min(1).max(200),
-    practiceType: z.nativeEnum(PracticeType),
+    practiceType: z.enum(PracticeType),
     city: z.string().min(1).max(100),
   })
   .strict();

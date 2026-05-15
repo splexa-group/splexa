@@ -1,11 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
 
-import { registerAuthRoutes } from "./auth-routes";
+import { authRoutes } from "./auth-routes";
 
 export const authModule = fp(
   async (fastify: FastifyInstance) => {
-    registerAuthRoutes(fastify);
+    fastify.register(authRoutes, { prefix: "/auth" });
   },
   { name: "auth-module" },
 );

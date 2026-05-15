@@ -8,36 +8,54 @@ import {
   signupSchema,
 } from "./auth-schema";
 
-export function registerAuthRoutes(fastify: FastifyInstance): void {
-  fastify.post("/auth/signup", { schema: { body: signupSchema } }, authController.signup);
+export function authRoutes(router: FastifyInstance): void {
+  router.post("/signup", {
+    schema: { body: signupSchema },
+    handler: authController.signup,
+  });
 
-  fastify.post("/auth/otp/request", { schema: { body: otpRequestSchema } }, authController.requestOtp);
+  router.post("/otp/request", {
+    schema: { body: otpRequestSchema },
+    handler: authController.requestOtp,
+  });
 
-  fastify.post("/auth/otp/verify", { schema: { body: otpVerifySchema } }, authController.verifyOtp);
+  router.post("/otp/verify", {
+    schema: { body: otpVerifySchema },
+    handler: authController.verifyOtp,
+  });
 
-  fastify.post("/auth/refresh", {}, authController.refresh);
+  router.post("/refresh", {
+    handler: authController.refresh,
+  });
 
-  fastify.post("/auth/logout", {}, authController.logout);
+  router.post("/logout", {
+    handler: authController.logout,
+  });
 
-  fastify.get("/auth/me", { preHandler: [fastify.authenticate] }, authController.getMe);
+  router.get("/me", {
+    preHandler: [router.authenticate],
+    handler: authController.getMe,
+  });
 
-  fastify.get("/auth/sessions", { preHandler: [fastify.authenticate] }, authController.listSessions);
+  router.get("/sessions", {
+    preHandler: [router.authenticate],
+    handler: authController.listSessions,
+  });
 
-  fastify.get(
-    "/auth/sessions/:id",
-    { schema: { params: sessionParamsSchema }, preHandler: [fastify.authenticate] },
-    authController.getSession,
-  );
+  router.get("/sessions/:id", {
+    schema: { params: sessionParamsSchema },
+    preHandler: [router.authenticate],
+    handler: authController.getSession,
+  });
 
-  fastify.delete(
-    "/auth/sessions/:id",
-    { schema: { params: sessionParamsSchema }, preHandler: [fastify.authenticate] },
-    authController.revokeSession,
-  );
+  router.delete("/sessions/:id", {
+    schema: { params: sessionParamsSchema },
+    preHandler: [router.authenticate],
+    handler: authController.revokeSession,
+  });
 
-  fastify.delete(
-    "/auth/sessions",
-    { preHandler: [fastify.authenticate] },
-    authController.revokeAllSessions,
-  );
+  router.delete("/sessions", {
+    preHandler: [router.authenticate],
+    handler: authController.revokeAllSessions,
+  });
 }

@@ -1,0 +1,16 @@
+model Organization {
+  id           String       @id @default(uuid())
+  name         String
+  practiceType PracticeType @map("practice_type")
+  city         String
+  createdBy    String       @map("created_by")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  updatedAt    DateTime     @updatedAt @map("updated_at")
+  deletedAt    DateTime?    @map("deleted_at")
+
+  creator   User       @relation("OrgCreator", fields: [createdBy], references: [id])
+  members   User[]     @relation("OrgMembers")
+  auditLogs AuditLog[]
+
+  @@map("organizations")
+}

@@ -1,0 +1,22 @@
+model User {
+  id            String      @id @default(uuid())
+  orgId         String      @map("org_id")
+  firstName     String      @map("first_name")
+  lastName      String      @map("last_name")
+  email         String      @unique
+  phoneNumber   String      @map("phone_number")
+  designation   Designation
+  role          UserRole
+  emailVerified Boolean     @default(false) @map("email_verified")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  deletedAt     DateTime?   @map("deleted_at")
+
+  org         Organization   @relation("OrgMembers", fields: [orgId], references: [id])
+  createdOrgs Organization[] @relation("OrgCreator")
+  sessions    Session[]
+  auditLogs   AuditLog[]
+
+  @@index([orgId])
+  @@map("users")
+}

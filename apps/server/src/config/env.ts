@@ -2,35 +2,36 @@ import path from "path";
 
 import dotenv from "dotenv";
 
-import { ENVIRONMENT } from "@/enums/env";
+import { ENVIRONMENT } from "@/enums/env.enums";
 
-const environment = process.env.NODE_ENV ?? ENVIRONMENT.DEVELOPMENT;
-
-const isDevelopment = environment === ENVIRONMENT.DEVELOPMENT;
-
-const fileName = isDevelopment ? ".env" : `.env.${environment}`;
-const envFilePath = path.resolve(process.cwd(), fileName);
+const NODE_ENV =
+  (process.env["NODE_ENV"] as ENVIRONMENT) ?? ENVIRONMENT.DEVELOPMENT;
 
 dotenv.config({
-  path: envFilePath,
+  path: path.resolve(
+    process.cwd(),
+    NODE_ENV === ENVIRONMENT.DEVELOPMENT ? ".env" : `.env.${NODE_ENV}`,
+  ),
 });
 
-function getEnvVariable(name: string): string {
+function requireEnv(name: string): string {
   const value = process.env[name];
-  if (value === undefined) {
-    throw new Error(
-      `Environment variable ${name} is required but was not provided.`,
-    );
-  }
+  if (!value) throw new Error(`Missing required environment variable: ${name}`);
   return value.trim();
 }
 
-export const ENV = {
-  NODE_ENV: environment,
-  port: Number(process.env.PORT),
-  isDevelopment: environment === ENVIRONMENT.DEVELOPMENT,
-  isProduction: environment === ENVIRONMENT.PRODUCTION,
-  isStaging: environment === ENVIRONMENT.STAGING,
-  logLevel: process.env.LOG_LEVEL,
-  databaseUrl: getEnvVariable("DATABASE_URL"),
-};
+export const env = {
+  NODE_ENV,
+  PORT: Number(process.env["PORT"] ?? 5001),
+  IS_DEVELOPMENT: NODE_ENV === ENVIRONMENT.DEVELOPMENT,
+  IS_PRODUCTION: NODE_ENV === ENVIRONMENT.PRODUCTION,
+  IS_STAGING: NODE_ENV === ENVIRONMENT.STAGING,
+  LOG_LEVEL: process.env["LOG_LEVEL"] ?? "info",
+  DATABASE_URL: requireEnv("DATABASE_URL"),
+  JWT_ACCESS_SECRET: requireEnv("JWT_ACCESS_SECRET"),
+  JWT_ACCESS_EXPIRY: process.env["JWT_ACCESS_EXPIRY"] ?? "15m",
+  COOKIE_SECRET: requireEnv("COOKIE_SECRET"),
+  RESEND_API_KEY: requireEnv("RESEND_API_KEY"),
+  EMAIL_FROM: requireEnv("EMAIL_FROM"),
+  EMAIL_PROVIDER: process.env["EMAIL_PROVIDER"] ?? "resend",
+} as const;

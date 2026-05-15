@@ -1,0 +1,16 @@
+{
+  "name": "@splexa-group/shared",
+  "version": "0.0.1",
+  "private": true,
+  "exports": {
+    "./enums": "./src/enums/index.ts",
+    "./types": "./src/types/index.ts",
+    "./schemas": "./src/schemas/index.ts"
+  },
+  "dependencies": {
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

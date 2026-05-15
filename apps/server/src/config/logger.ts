@@ -1,11 +1,12 @@
-import { FastifyServerOptions } from "fastify";
+import type { FastifyServerOptions } from "fastify";
+import pino from "pino";
 
-import { ENV } from "./env";
+import { env } from "./env";
 
 type LoggerConfig = FastifyServerOptions["logger"];
 
 const developmentLogger: LoggerConfig = {
-  level: ENV.logLevel,
+  level: env.LOG_LEVEL,
   transport: {
     target: "pino-pretty",
     options: {
@@ -19,7 +20,7 @@ const developmentLogger: LoggerConfig = {
 };
 
 const productionLogger: LoggerConfig = {
-  level: ENV.logLevel,
+  level: env.LOG_LEVEL,
   serializers: {
     req(request) {
       return {
@@ -39,16 +40,18 @@ const productionLogger: LoggerConfig = {
       return {
         type: error.name,
         message: error.message,
-        stack: error.stack || "",
+        stack: error.stack ?? "",
       };
     },
   },
 };
 
-const loggerConfig: Record<string, LoggerConfig> = {
+const loggerByEnv: Record<string, LoggerConfig> = {
   development: developmentLogger,
   staging: developmentLogger,
   production: productionLogger,
 };
 
-export const logger = loggerConfig[ENV.NODE_ENV] ?? developmentLogger;
+export const fastifyLogger = loggerByEnv[env.NODE_ENV] ?? developmentLogger;
+
+export const logger = pino({ level: env.LOG_LEVEL });

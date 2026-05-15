@@ -3,13 +3,16 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-
     "types": ["node"],
     "resolveJsonModule": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@splexa-group/shared/enums": ["../../packages/shared/src/enums/index.ts"],
+      "@splexa-group/shared/types": ["../../packages/shared/src/types/index.ts"],
+      "@splexa-group/shared/schemas": ["../../packages/shared/src/schemas/index.ts"]
     }
   },
-  "include": ["src"],
+  "include": ["src", "src/types"],
+  "references": [{ "path": "../../packages/shared" }],
   "exclude": ["node_modules", "dist"]
 }

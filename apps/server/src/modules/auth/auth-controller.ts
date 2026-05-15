@@ -45,7 +45,7 @@ export const authController = {
     req: FastifyRequest<{ Body: SignupInput }>,
     reply: FastifyReply,
   ): Promise<void> {
-    await authService.signup(req.body, { ipAddress: req.ip });
+    await authService.signup(req.body);
     reply.code(201).send({ message: "OTP sent to your email" });
   },
 
@@ -53,7 +53,7 @@ export const authController = {
     req: FastifyRequest<{ Body: OtpRequestInput }>,
     reply: FastifyReply,
   ): Promise<void> {
-    await authService.requestOtp(req.body, { ipAddress: req.ip });
+    await authService.requestOtp(req.body);
     reply.send({ message: "OTP sent" });
   },
 
@@ -76,16 +76,14 @@ export const authController = {
 
   async refresh(req: FastifyRequest, reply: FastifyReply): Promise<void> {
     const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE];
-    const { accessToken } = await authService.refreshSession(refreshToken, {
-      ipAddress: req.ip,
-    });
+    const { accessToken } = await authService.refreshSession(refreshToken);
     setAccessTokenCookie(reply, accessToken);
     reply.send({ message: "Token refreshed" });
   },
 
   async logout(req: FastifyRequest, reply: FastifyReply): Promise<void> {
     const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE];
-    await authService.logout(refreshToken, { ipAddress: req.ip });
+    await authService.logout(refreshToken);
     clearAuthCookies(reply);
     reply.send({ message: "Logged out" });
   },
@@ -115,14 +113,7 @@ export const authController = {
     req: FastifyRequest<{ Params: SessionParams }>,
     reply: FastifyReply,
   ): Promise<void> {
-    await authService.revokeSession(
-      req.params.id,
-      req.user.userId,
-      req.user.orgId,
-      {
-        ipAddress: req.ip,
-      },
-    );
+    await authService.revokeSession(req.params.id, req.user.userId);
     reply.send({ message: "Session revoked" });
   },
 
@@ -130,9 +121,7 @@ export const authController = {
     req: FastifyRequest,
     reply: FastifyReply,
   ): Promise<void> {
-    await authService.revokeAllSessions(req.user.userId, req.user.orgId, {
-      ipAddress: req.ip,
-    });
+    await authService.revokeAllSessions(req.user.userId);
     clearAuthCookies(reply);
     reply.send({ message: "All sessions revoked" });
   },

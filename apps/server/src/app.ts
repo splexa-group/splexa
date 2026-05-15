@@ -8,7 +8,6 @@ import Fastify, { type FastifyInstance } from "fastify";
 import { env } from "@/config/env";
 import { fastifyLogger } from "@/config/logger";
 import { authModule } from "@/modules/auth/auth-plugin";
-import { auditPlugin } from "@/plugins/audit.plugin";
 import { authGuardPlugin } from "@/plugins/auth-guard.plugin";
 import { errorHandlerPlugin } from "@/plugins/error-handler.plugin";
 
@@ -21,7 +20,6 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(errorHandlerPlugin);
   await app.register(cookie, { secret: env.COOKIE_SECRET });
   await app.register(authGuardPlugin);
-  await app.register(auditPlugin);
   await app.register(authModule);
 
   return app;

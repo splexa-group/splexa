@@ -11,32 +11,22 @@ import {
   MAX_OTP_ATTEMPTS,
   MAX_OTP_REQUESTS_PER_HOUR,
 } from "@/config/constants";
-import { AuditAction } from "@/enums/audit.enums";
-import { logActivity } from "@/lib/activity-logger";
 import { emailProvider } from "@/lib/integrations/email";
 import { Errors } from "@/lib/utils/errors";
 import { signAccessToken } from "@/lib/utils/jwt";
-import type {
-  RequestCtx,
-  VerifyOtpCtx,
-  VerifyOtpResult,
-} from "@/types/auth.types";
+import type { VerifyOtpCtx, VerifyOtpResult } from "@/types/auth.types";
 
 import { authRepository } from "./auth-repository";
 import {
   generateOtp,
   hashToken,
-  maskEmail,
   otpExpiry,
   refreshTokenExpiry,
 } from "./auth-utils";
 
 export type { VerifyOtpResult };
 
-export async function signup(
-  input: SignupInput,
-  ctx: RequestCtx,
-): Promise<void> {
+export async function signup(input: SignupInput): Promise<void> {
   const existing = await authRepository.findUserByEmail(input.email);
   if (existing) throw Errors.emailTaken();
 
@@ -56,20 +46,9 @@ export async function signup(
   await authRepository.createOrgAndUser(orgId, userId, input);
   const otpHash = await bcrypt.hash(otp, 10);
   await authRepository.createOtpRequest(input.email, otpHash, otpExpiry());
-
-  await logActivity({
-    orgId,
-    userId,
-    action: AuditAction.AUTH_OTP_SENT,
-    ipAddress: ctx.ipAddress,
-    metadata: { email: maskEmail(input.email) },
-  });
 }
 
-export async function requestOtp(
-  input: OtpRequestInput,
-  ctx: RequestCtx,
-): Promise<void> {
+export async function requestOtp(input: OtpRequestInput): Promise<void> {
   const user = await authRepository.findUserByEmail(input.email);
   if (!user) throw Errors.userNotFound();
 
@@ -92,12 +71,6 @@ export async function requestOtp(
 
   const otpHash = await bcrypt.hash(otp, 10);
   await authRepository.createOtpRequest(input.email, otpHash, otpExpiry());
-
-  await logActivity({
-    action: AuditAction.AUTH_OTP_SENT,
-    ipAddress: ctx.ipAddress,
-    metadata: { email: maskEmail(input.email) },
-  });
 }
 
 export async function verifyOtp(
@@ -118,18 +91,8 @@ export async function verifyOtp(
     await authRepository.incrementOtpAttempts(otpRow.id);
     const newAttempts = otpRow.attempts + 1;
 
-    await logActivity({
-      action: AuditAction.AUTH_LOGIN_FAILED,
-      ipAddress: ctx.ipAddress,
-      metadata: { email: maskEmail(input.email) },
-    });
-
     if (newAttempts >= MAX_OTP_ATTEMPTS) {
-      await logActivity({
-        action: AuditAction.AUTH_ACCOUNT_LOCKED,
-        ipAddress: ctx.ipAddress,
-        metadata: { email: maskEmail(input.email) },
-      });
+      // TODO: LOCK ACCOUNT
     }
 
     throw Errors.invalidOtp();
@@ -156,14 +119,6 @@ export async function verifyOtp(
     expiresAt: refreshTokenExpiry(),
   });
 
-  await logActivity({
-    orgId: user.orgId,
-    userId: user.id,
-    action: AuditAction.AUTH_OTP_VERIFIED,
-    ipAddress: ctx.ipAddress,
-    metadata: { email: maskEmail(input.email) },
-  });
-
   return {
     accessToken,
     refreshToken,
@@ -180,7 +135,6 @@ export async function verifyOtp(
 
 export async function refreshSession(
   refreshToken: string | undefined,
-  ctx: RequestCtx,
 ): Promise<{ accessToken: string }> {
   if (!refreshToken) throw Errors.missingToken();
 
@@ -199,21 +153,10 @@ export async function refreshSession(
 
   await authRepository.updateSessionLastUsed(session.id);
 
-  await logActivity({
-    orgId: user.orgId,
-    userId: user.id,
-    action: AuditAction.AUTH_REFRESH,
-    ipAddress: ctx.ipAddress,
-    metadata: {},
-  });
-
   return { accessToken };
 }
 
-export async function logout(
-  refreshToken: string | undefined,
-  ctx: RequestCtx,
-): Promise<void> {
+export async function logout(refreshToken: string | undefined): Promise<void> {
   if (!refreshToken) throw Errors.missingToken();
 
   const tokenHash = hashToken(refreshToken);
@@ -221,13 +164,6 @@ export async function logout(
 
   if (session) {
     await authRepository.revokeSession(session.id);
-    await logActivity({
-      orgId: session.orgId,
-      userId: session.userId,
-      action: AuditAction.AUTH_LOGOUT,
-      ipAddress: ctx.ipAddress,
-      metadata: {},
-    });
   }
 }
 
@@ -250,37 +186,13 @@ export async function getSession(sessionId: string, userId: string) {
 export async function revokeSession(
   sessionId: string,
   userId: string,
-  orgId: string,
-  ctx: RequestCtx,
 ): Promise<void> {
   const session = await authRepository.findSessionById(sessionId, userId);
   if (!session) throw Errors.sessionNotFound();
 
   await authRepository.revokeSession(sessionId);
-
-  await logActivity({
-    orgId,
-    userId,
-    action: AuditAction.AUTH_SESSION_REVOKED,
-    resourceType: "session",
-    resourceId: sessionId,
-    ipAddress: ctx.ipAddress,
-    metadata: {},
-  });
 }
 
-export async function revokeAllSessions(
-  userId: string,
-  orgId: string,
-  ctx: RequestCtx,
-): Promise<void> {
+export async function revokeAllSessions(userId: string): Promise<void> {
   await authRepository.revokeAllUserSessions(userId);
-
-  await logActivity({
-    orgId,
-    userId,
-    action: AuditAction.AUTH_ALL_SESSIONS_REVOKED,
-    ipAddress: ctx.ipAddress,
-    metadata: {},
-  });
 }

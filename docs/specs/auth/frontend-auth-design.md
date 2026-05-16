@@ -162,9 +162,9 @@ Your practice is waiting."
 
 ──────────────────────
 
-✓  3 hearings this week
-✓  2 matters need attention
-✓  Last login: 2 days ago   ← (static/illustrative for Phase 1)
+✓  Never miss a hearing date again
+✓  All courts and tribunals supported
+✓  1,200+ advocates trust Splexa daily
 
 ──────────────────────
 

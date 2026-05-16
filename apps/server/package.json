@@ -9,7 +9,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "db:migrate": "prisma migrate dev",
-    "db:migrate:staging": "ENV_FILE=.env.staging prisma migrate deploy",
+    "db:migrate:staging": "ENV_FILE=.env prisma migrate deploy",
     "db:migrate:prod": "ENV_FILE=.env.production prisma migrate deploy",
     "db:migrate:status": "prisma migrate status",
     "db:migrate:status:staging": "ENV_FILE=.env.staging prisma migrate status",

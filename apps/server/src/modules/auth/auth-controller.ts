@@ -10,10 +10,10 @@ import {
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_MAX_AGE,
-} from "@/config/constants";
+} from "@/constants/auth";
 
 import type { SessionParams } from "./auth-schema";
-import * as authService from "./auth-service";
+import { authService } from "./auth-service";
 
 function setAccessTokenCookie(reply: FastifyReply, token: string): void {
   reply.setCookie(ACCESS_TOKEN_COOKIE, token, {

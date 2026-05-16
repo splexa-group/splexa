@@ -5,7 +5,7 @@ import type { AuthUser } from "@splexa-group/shared/types";
 import { jwtVerify, SignJWT } from "jose";
 
 import { env } from "@/config/env";
-import { RawJwtPayload } from "@/types/auth.types";
+import { RawJwtPayload } from "@/types/auth";
 
 export async function signAccessToken(payload: {
   userId: string;

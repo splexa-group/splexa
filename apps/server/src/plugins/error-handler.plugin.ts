@@ -1,7 +1,8 @@
 import type { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
 
-import { AppError } from "@/lib/utils/errors";
+import { ErrorCode } from "@/enums/error-code";
+import { AppError } from "@/utils/errors";
 
 export const errorHandlerPlugin = fp(
   async (fastify: FastifyInstance) => {
@@ -18,7 +19,7 @@ export const errorHandlerPlugin = fp(
       if (maybeValidation.validation) {
         reply.code(400).send({
           error: "Validation error",
-          code: "VALIDATION_ERROR",
+          code: ErrorCode.VALIDATION_ERROR,
           details: maybeValidation.validation,
         });
         return;
@@ -27,7 +28,7 @@ export const errorHandlerPlugin = fp(
       fastify.log.error(error);
       reply.code(500).send({
         error: "Internal server error",
-        code: "INTERNAL_ERROR",
+        code: ErrorCode.INTERNAL_ERROR,
       });
     });
   },

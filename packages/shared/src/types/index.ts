@@ -1,3 +1,3 @@
-export * from "./api.types";
-export * from "./organization.types";
-export * from "./user.types";
+export * from "./api";
+export * from "./organization";
+export * from "./user";

@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
+import { OTP_TTL_MINUTES } from "@/constants/auth";
 import { env } from "@/config/env";
-import { OTP_TTL_MINUTES } from "@/config/constants";
 
 import type { EmailProvider } from "./email-interface";
 

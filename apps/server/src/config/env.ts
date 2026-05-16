@@ -2,7 +2,7 @@ import path from "path";
 
 import dotenv from "dotenv";
 
-import { ENVIRONMENT } from "@/enums/env.enums";
+import { ENVIRONMENT } from "@/enums/env";
 
 const NODE_ENV =
   (process.env["NODE_ENV"] as ENVIRONMENT) ?? ENVIRONMENT.DEVELOPMENT;

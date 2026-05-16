@@ -3,8 +3,8 @@ import type { AuthUser } from "@splexa-group/shared/types";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 
-import { Errors } from "@/lib/utils/errors";
-import { verifyAccessToken } from "@/lib/utils/jwt";
+import { Errors } from "@/utils/errors";
+import { verifyAccessToken } from "@/utils/jwt";
 
 export const authGuardPlugin = fp(
   async (fastify: FastifyInstance) => {

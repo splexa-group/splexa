@@ -1,3 +1,3 @@
-export * from "./designation.enums";
-export * from "./practice-type.enums";
-export * from "./user-role.enums";
+export * from "./designation";
+export * from "./practice-type";
+export * from "./user-role";

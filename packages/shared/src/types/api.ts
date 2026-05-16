@@ -1,6 +1,6 @@
 import type { Designation, PracticeType, UserRole } from "../enums";
-import type { Organization } from "./organization.types";
-import type { UserProfile } from "./user.types";
+import type { Organization } from "./organization";
+import type { UserProfile } from "./user";
 
 export interface PaginatedResult<T> {
   data: T[];

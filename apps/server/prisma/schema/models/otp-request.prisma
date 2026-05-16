@@ -1,0 +1,12 @@
+model OtpRequest {
+  id         String    @id @default(uuid())
+  email      String
+  otpHash    String    @map("otp_hash")
+  attempts   Int       @default(0)
+  expiresAt  DateTime  @map("expires_at")
+  verifiedAt DateTime? @map("verified_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("otp_requests")
+}

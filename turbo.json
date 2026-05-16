@@ -10,7 +10,9 @@
       "cache": false
     },
     "dev": {
-      "cache": false
+      "dependsOn": ["^dev"],
+      "cache": false,
+      "persistent": true
     },
     "lint": {},
     "typecheck": {},

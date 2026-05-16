@@ -4,33 +4,34 @@ import dotenv from "dotenv";
 
 import { ENVIRONMENT } from "@/enums/env";
 
-const environment = process.env.NODE_ENV ?? ENVIRONMENT.DEVELOPMENT;
-
-const isDevelopment = environment === ENVIRONMENT.DEVELOPMENT;
-
-const fileName = isDevelopment ? ".env" : `.env.${environment}`;
-const envFilePath = path.resolve(process.cwd(), fileName);
+const NODE_ENV =
+  (process.env["NODE_ENV"] as ENVIRONMENT) ?? ENVIRONMENT.DEVELOPMENT;
 
 dotenv.config({
-  path: envFilePath,
+  path: path.resolve(
+    process.cwd(),
+    NODE_ENV === ENVIRONMENT.DEVELOPMENT ? ".env" : `.env.${NODE_ENV}`,
+  ),
 });
 
 function getEnvVariable(name: string): string {
   const value = process.env[name];
-  if (value === undefined) {
-    throw new Error(
-      `Environment variable ${name} is required but was not provided.`,
-    );
-  }
+  if (!value) throw new Error(`Missing required environment variable: ${name}`);
   return value.trim();
 }
 
-export const ENV = {
-  NODE_ENV: environment,
-  port: Number(process.env.PORT),
-  isDevelopment: environment === ENVIRONMENT.DEVELOPMENT,
-  isProduction: environment === ENVIRONMENT.PRODUCTION,
-  isStaging: environment === ENVIRONMENT.STAGING,
-  logLevel: process.env.LOG_LEVEL,
-  databaseUrl: getEnvVariable("DATABASE_URL"),
-};
+export const env = {
+  NODE_ENV,
+  PORT: Number(getEnvVariable("PORT")),
+  IS_DEVELOPMENT: NODE_ENV === ENVIRONMENT.DEVELOPMENT,
+  IS_PRODUCTION: NODE_ENV === ENVIRONMENT.PRODUCTION,
+  IS_STAGING: NODE_ENV === ENVIRONMENT.STAGING,
+  LOG_LEVEL: getEnvVariable("LOG_LEVEL"),
+  DATABASE_URL: getEnvVariable("DATABASE_URL"),
+  JWT_ACCESS_SECRET: getEnvVariable("JWT_ACCESS_SECRET"),
+  JWT_ACCESS_EXPIRY: getEnvVariable("JWT_ACCESS_EXPIRY"),
+  COOKIE_SECRET: getEnvVariable("COOKIE_SECRET"),
+  RESEND_API_KEY: getEnvVariable("RESEND_API_KEY"),
+  EMAIL_FROM: getEnvVariable("EMAIL_FROM"),
+  EMAIL_PROVIDER: getEnvVariable("EMAIL_PROVIDER"),
+} as const;

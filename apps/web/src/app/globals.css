@@ -4,85 +4,90 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-  /* Core surface variables */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
+  /*  Brand  */
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-light: var(--brand-light);
+  --color-brand-soft: var(--brand-soft);
+
+  /*  Dark surface (sidebar, auth panel)  */
+  --color-surface-dark: var(--surface-dark);
+
+  /*  Page surfaces  */
+  --color-page: var(--page);
   --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
+  --color-subtle: var(--subtle);
+
+  /*  Text — slate 900 → 700 → 600 → 400 → 300  */
+  --color-text-dark: var(--text-dark);
+  --color-text-label: var(--text-label);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-placeholder: var(--text-placeholder);
+  --color-text-disabled: var(--text-disabled);
+
+  /*  Borders & focus  */
+  --color-line: var(--line);
+  --color-ring: var(--ring);
+
+  /*  Negative (error, destructive)  */
+  --color-negative: var(--negative);
+  --color-negative-dark: var(--negative-dark);
+  --color-negative-muted: var(--negative-muted);
+
+  /*  Amber (warning, caution)  */
+  --color-amber: var(--amber);
+  --color-amber-dark: var(--amber-dark);
+  --color-amber-muted: var(--amber-muted);
+
+  /*  Positive (success, confirmed)  */
+  --color-positive: var(--positive);
+  --color-positive-dark: var(--positive-dark);
+  --color-positive-muted: var(--positive-muted);
+
+  /*  Border radius  */
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
-
-  /* Splexa brand tokens */
-  --color-panel: var(--panel);
-  --color-panel-mid: var(--panel-mid);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-mid: var(--primary-mid);
-  --color-primary-light: var(--primary-light);
-  --color-primary-tint: var(--primary-tint);
-  --color-text-muted: var(--text-muted);
-  --color-surface: var(--surface);
-  --color-surface-raised: var(--surface-raised);
-
-  /* Spec-named text token aliases */
-  --color-bg: var(--background);
-  --color-text: var(--foreground);
-  --color-text-secondary: var(--muted-foreground);
-
-  /* Status tokens */
-  --color-success-bg: #dcfce7;
-  --color-success-text: #15803d;
-  --color-error-bg: #fee2e2;
-  --color-error-text: #dc2626;
-  --color-warning-bg: #fef3c7;
-  --color-warning-text: #b45309;
-  --color-info-bg: #dbeafe;
-  --color-info-text: #1d4ed8;
-  --color-neutral-bg: #f1f5f9;
-  --color-neutral-text: #475569;
-  --color-urgent-bg: #fef2f2;
-  --color-urgent-border: #fecaca;
-  --color-urgent-text: #991b1b;
-  --color-action-bg: #eff6ff;
-  --color-action-border: #bfdbfe;
-  --color-action-text: #1e40af;
 }
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  --primary: #1e40af;
-  --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f1f5f9;
-  --muted-foreground: #475569;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #1e40af;
-  --card: #ffffff;
-  --card-foreground: #0f172a;
   --radius: 0.375rem;
 
-  /* Splexa design tokens */
-  --panel: #0c1445;
-  --panel-mid: #1e3a8a;
-  --primary-hover: #1e3a8a;
-  --primary-mid: #3b82f6;
-  --primary-light: #60a5fa;
-  --primary-tint: #dbeafe;
-  --text-muted: #94a3b8;
-  --surface: #ffffff;
-  --surface-raised: #f1f5f9;
+  /* THEME — change only this block to switch the full theme */
+  --brand: #1e40af;
+  --brand-dark: #1e3a8a;
+  --brand-accent: #3b82f6;
+  --brand-light: #60a5fa;
+  --brand-soft: #dbeafe;
+  --surface-dark: #0c1445;
+  --ring: var(--brand);
+
+  /* NEUTRAL — stable across themes  */
+  --page: #f8fafc;
+  --card: #ffffff;
+  --subtle: #f1f5f9;
+
+  --text-dark: #0f172a;        /* slate-900 — headings, strong text */
+  --text-label: #334155;       /* slate-700 — form labels, body copy */
+  --text-secondary: #475569;   /* slate-600 — captions, descriptions */
+  --text-placeholder: #94a3b8; /* slate-400 — input placeholders */
+  --text-disabled: #cbd5e1;    /* slate-300 — disabled elements */
+
+  --line: #e2e8f0;
+
+  /*  STATUS — consistent across themes  */
+  --negative: #dc2626;
+  --negative-dark: #b91c1c;
+  --negative-muted: #fee2e2;
+
+  --amber: #d97706;
+  --amber-dark: #b45309;
+  --amber-muted: #fef3c7;
+
+  --positive: #16a34a;
+  --positive-dark: #15803d;
+  --positive-muted: #dcfce7;
 }
 
 *,
@@ -92,11 +97,11 @@
 }
 
 * {
-  border-color: var(--border);
+  border-color: var(--line);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--page);
+  color: var(--text-dark);
   -webkit-font-smoothing: antialiased;
 }

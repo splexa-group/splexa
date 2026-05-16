@@ -45,7 +45,9 @@ export function LoginForm() {
       setResendSeconds(RESEND_COOLDOWN);
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
       );
     }
   }
@@ -63,7 +65,9 @@ export function LoginForm() {
       setOtpError(true);
       setOtp("");
       toast.error(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
       );
     }
   }
@@ -77,7 +81,9 @@ export function LoginForm() {
       setOtpError(false);
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
+        err instanceof Error
+          ? err.message
+          : "Something went wrong. Please try again.",
       );
     }
   }
@@ -167,6 +173,7 @@ export function LoginForm() {
       <Button
         type="submit"
         className="w-full"
+        value={"primaryGradient"}
         disabled={!email.trim() || requestOtp.isPending}
       >
         {requestOtp.isPending ? "Sending…" : "Continue with email"}

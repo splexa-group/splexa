@@ -1,6 +1,4 @@
 import type { Designation, PracticeType, UserRole } from "../enums";
-import type { Organization } from "./organization";
-import type { UserProfile } from "./user";
 
 export interface PaginatedResult<T> {
   data: T[];
@@ -44,5 +42,3 @@ export interface SessionResponse {
   createdAt: string;
   lastUsedAt: string;
 }
-
-export type { UserRole, Designation, UserProfile, Organization, PracticeType };

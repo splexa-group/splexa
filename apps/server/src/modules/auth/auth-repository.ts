@@ -3,20 +3,20 @@ import type { SignupInput } from "@splexa-group/shared/schemas";
 
 import { OTP_LOCKOUT_MINUTES, OTP_RATE_WINDOW_MS } from "@/config/constants";
 import { prisma } from "@/db/client";
-import { orgPublicSelect, userPublicSelect } from "@/db/selects";
+import { orgSelect, userSelect } from "@/db/selects";
 
 export const authRepository = {
   async findUserByEmail(email: string) {
     return prisma.user.findFirst({
       where: { email, deletedAt: null },
-      select: userPublicSelect,
+      select: userSelect,
     });
   },
 
   async findUserById(userId: string) {
     return prisma.user.findFirst({
       where: { id: userId, deletedAt: null },
-      select: { ...userPublicSelect, org: { select: orgPublicSelect } },
+      select: { ...userSelect, org: { select: orgSelect } },
     });
   },
 
@@ -45,7 +45,7 @@ export const authRepository = {
           designation: input.designation,
           role: UserRole.OWNER,
         },
-        select: userPublicSelect,
+        select: userSelect,
       });
 
       return { org, user };

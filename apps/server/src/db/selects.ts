@@ -1,6 +1,6 @@
 import type { Prisma } from "@prisma/client";
 
-export const userPublicSelect = {
+export const userSelect = {
   id: true,
   orgId: true,
   firstName: true,
@@ -14,7 +14,7 @@ export const userPublicSelect = {
   updatedAt: true,
 } satisfies Prisma.UserSelect;
 
-export const orgPublicSelect = {
+export const orgSelect = {
   id: true,
   name: true,
   practiceType: true,

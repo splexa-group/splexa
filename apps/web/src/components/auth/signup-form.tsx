@@ -5,15 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { InputGroup } from "@/components/ui/input";
+import { SelectGroup } from "@/components/ui/select";
 import { OtpInput } from "@/components/auth/otp-input";
 import { useSignup, useVerifyOtp, useRequestOtp } from "@/hooks/use-auth";
 import { useAuthStore } from "@/store/auth-store";
@@ -137,9 +130,7 @@ export function SignupForm() {
     } catch (err) {
       setOtpError(true);
       setOtp("");
-      toast.error(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
-      );
+      toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     }
   }
 
@@ -151,9 +142,7 @@ export function SignupForm() {
       setOtp("");
       setOtpError(false);
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : "Something went wrong. Please try again."
-      );
+      toast.error(err instanceof Error ? err.message : "Something went wrong. Please try again.");
     }
   }
 
@@ -161,47 +150,32 @@ export function SignupForm() {
     return (
       <form onSubmit={handleOtpSubmit} className="space-y-6">
         <div>
-          <h1 className="text-[28px] font-bold text-[#0f172a]">
-            Verify your email
-          </h1>
-          <p className="text-[14px] text-[#475569] mt-1">
+          <h1 className="text-[28px] font-bold text-dark">Verify your email</h1>
+          <p className="text-sm text-secondary mt-1">
             We sent a 6-digit code to{" "}
-            <span className="font-medium text-[#0f172a]">
-              {maskEmail(email)}
-            </span>
+            <span className="font-medium text-dark">{maskEmail(email)}</span>
           </p>
         </div>
 
-        <OtpInput
-          value={otp}
-          onChange={setOtp}
-          hasError={otpError}
-          disabled={verifyOtp.isPending}
-        />
+        <OtpInput value={otp} onChange={setOtp} hasError={otpError} disabled={verifyOtp.isPending} />
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={otp.length < 6 || verifyOtp.isPending}
-        >
+        <Button type="submit" className="w-full" disabled={otp.length < 6 || verifyOtp.isPending}>
           {verifyOtp.isPending ? "Verifying…" : "Verify & continue"}
         </Button>
 
-        <div className="flex items-center justify-between text-[13px]">
+        <div className="flex items-center justify-between text-sm">
           <button
             type="button"
             onClick={handleResend}
             disabled={resendSeconds > 0 || resendOtp.isPending}
-            className="text-[#1e40af] hover:underline disabled:text-[#94a3b8] disabled:no-underline"
+            className="text-brand hover:underline disabled:text-placeholder disabled:no-underline"
           >
-            {resendSeconds > 0
-              ? `Resend (in ${resendSeconds}s)`
-              : "Resend code"}
+            {resendSeconds > 0 ? `Resend (in ${resendSeconds}s)` : "Resend code"}
           </button>
           <button
             type="button"
             onClick={() => setStep("practice")}
-            className="text-[#475569] hover:text-[#0f172a]"
+            className="text-secondary hover:text-dark"
           >
             ← Back
           </button>
@@ -213,68 +187,53 @@ export function SignupForm() {
   if (step === "practice") {
     return (
       <form onSubmit={handlePracticeSubmit} className="space-y-6">
-        <div>
-          <h1 className="text-[28px] font-bold text-[#0f172a]">
-            About your practice
-          </h1>
-        </div>
+        <h1 className="text-[28px] font-bold text-dark">About your practice</h1>
 
         <div className="space-y-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="orgName">Firm / chamber name</Label>
-            <Input
-              id="orgName"
-              placeholder="e.g. Iyer & Associates"
-              value={orgName}
-              onChange={(e) => setOrgName(e.target.value)}
-              required
-              disabled={signup.isPending}
-            />
-          </div>
+          <InputGroup
+            label="Firm / chamber name"
+            id="orgName"
+            placeholder="e.g. Iyer & Associates"
+            value={orgName}
+            onChange={(e) => setOrgName(e.target.value)}
+            required
+            disabled={signup.isPending}
+          />
 
-          <div className="space-y-1.5">
-            <Label>Practice type</Label>
-            <Select value={practiceType} onValueChange={setPracticeType}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select practice type" />
-              </SelectTrigger>
-              <SelectContent>
-                {PRACTICE_TYPES.map((pt) => (
-                  <SelectItem key={pt.value} value={pt.value}>
-                    {pt.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          <SelectGroup
+            label="Practice type"
+            options={PRACTICE_TYPES}
+            value={practiceType}
+            onChange={setPracticeType}
+            placeholder="Select practice type"
+            required
+            disabled={signup.isPending}
+          />
 
-          <div className="space-y-1.5">
-            <Label htmlFor="city">City</Label>
-            <Input
-              id="city"
-              placeholder="e.g. Chennai"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              required
-              disabled={signup.isPending}
-            />
-          </div>
+          <InputGroup
+            label="City"
+            id="city"
+            placeholder="e.g. Chennai"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            required
+            disabled={signup.isPending}
+          />
         </div>
 
         <Button
           type="submit"
           className="w-full"
-          disabled={
-            !orgName.trim() || !practiceType || !city.trim() || signup.isPending
-          }
+          disabled={!orgName.trim() || !practiceType || !city.trim() || signup.isPending}
+          loading={signup.isPending}
         >
-          {signup.isPending ? "Creating account…" : "Create account"}
+          Create account
         </Button>
 
         <button
           type="button"
           onClick={() => setStep("personal")}
-          className="text-[13px] text-[#475569] hover:text-[#0f172a]"
+          className="text-sm text-secondary hover:text-dark"
         >
           ← Back
         </button>
@@ -285,74 +244,52 @@ export function SignupForm() {
   if (step === "personal") {
     return (
       <form onSubmit={handlePersonalNext} className="space-y-6">
-        <div>
-          <h1 className="text-[28px] font-bold text-[#0f172a]">
-            Tell us about yourself
-          </h1>
-        </div>
+        <h1 className="text-[28px] font-bold text-dark">Tell us about yourself</h1>
 
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="firstName">First name</Label>
-              <Input
-                id="firstName"
-                placeholder="Ramesh"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="lastName">Last name</Label>
-              <Input
-                id="lastName"
-                placeholder="Iyer"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label>Designation</Label>
-            <Select value={designation} onValueChange={setDesignation}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select your designation" />
-              </SelectTrigger>
-              <SelectContent>
-                {DESIGNATIONS.map((d) => (
-                  <SelectItem key={d.value} value={d.value}>
-                    {d.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="phone">Phone number (for reminders)</Label>
-            <Input
-              id="phone"
-              type="tel"
-              placeholder="+91 98765 43210"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+            <InputGroup
+              label="First name"
+              id="firstName"
+              placeholder="Ramesh"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+            <InputGroup
+              label="Last name"
+              id="lastName"
+              placeholder="Iyer"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               required
             />
           </div>
+
+          <SelectGroup
+            label="Designation"
+            options={DESIGNATIONS}
+            value={designation}
+            onChange={setDesignation}
+            placeholder="Select your designation"
+            required
+          />
+
+          <InputGroup
+            label="Phone number (for reminders)"
+            id="phone"
+            type="tel"
+            placeholder="+91 98765 43210"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            required
+          />
         </div>
 
         <Button
           type="submit"
           className="w-full"
-          disabled={
-            !firstName.trim() ||
-            !lastName.trim() ||
-            !designation ||
-            !phoneNumber.trim()
-          }
+          disabled={!firstName.trim() || !lastName.trim() || !designation || !phoneNumber.trim()}
         >
           Continue
         </Button>
@@ -360,7 +297,7 @@ export function SignupForm() {
         <button
           type="button"
           onClick={() => setStep("email")}
-          className="text-[13px] text-[#475569] hover:text-[#0f172a]"
+          className="text-sm text-secondary hover:text-dark"
         >
           ← Back
         </button>
@@ -371,38 +308,29 @@ export function SignupForm() {
   return (
     <form onSubmit={handleEmailNext} className="space-y-6">
       <div>
-        <h1 className="text-[28px] font-bold text-[#0f172a]">
-          Create your account
-        </h1>
-        <p className="text-[14px] text-[#475569] mt-1">
-          Start with your email address.
-        </p>
+        <h1 className="text-[28px] font-bold text-dark">Create your account</h1>
+        <p className="text-sm text-secondary mt-1">Start with your email address.</p>
       </div>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="signup-email">Email address</Label>
-        <Input
-          id="signup-email"
-          type="email"
-          autoComplete="email"
-          placeholder="you@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </div>
+      <InputGroup
+        label="Email address"
+        id="signup-email"
+        type="email"
+        autoComplete="email"
+        placeholder="you@example.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
 
       <Button type="submit" className="w-full" disabled={!email.trim()}>
         Continue
       </Button>
 
-      <div className="border-t border-[#e2e8f0] pt-4 text-center">
-        <p className="text-[13px] text-[#475569]">
+      <div className="border-t border-line pt-4 text-center">
+        <p className="text-sm text-secondary">
           Already have an account?{" "}
-          <Link
-            href="/login"
-            className="text-[#1e40af] hover:underline font-medium"
-          >
+          <Link href="/login" className="text-brand hover:underline font-medium">
             Sign in →
           </Link>
         </p>

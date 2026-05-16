@@ -68,11 +68,11 @@
   --card: #ffffff;
   --subtle: #f1f5f9;
 
-  --text-dark: #0f172a;        /* slate-900 — headings, strong text */
-  --text-label: #334155;       /* slate-700 — form labels, body copy */
-  --text-secondary: #475569;   /* slate-600 — captions, descriptions */
+  --text-dark: #0f172a; /* slate-900 — headings, strong text */
+  --text-label: #334155; /* slate-700 — form labels, body copy */
+  --text-secondary: #475569; /* slate-600 — captions, descriptions */
   --text-placeholder: #94a3b8; /* slate-400 — input placeholders */
-  --text-disabled: #cbd5e1;    /* slate-300 — disabled elements */
+  --text-disabled: #94a3b8; /* slate-300 — disabled elements */
 
   --line: #e2e8f0;
 

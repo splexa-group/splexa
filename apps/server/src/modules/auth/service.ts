@@ -17,8 +17,8 @@ import {
 import { Errors } from "@/utils/errors";
 import { signAccessToken } from "@/utils/jwt";
 
-import { authRepository } from "./auth-repository";
-import { otpExpiry, refreshTokenExpiry } from "./auth-utils";
+import { authRepository } from "./repository";
+import { otpExpiry, refreshTokenExpiry } from "./helper";
 
 export type { VerifyOtpResult };
 

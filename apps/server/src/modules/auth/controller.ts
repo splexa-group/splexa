@@ -5,40 +5,11 @@ import type {
 } from "@splexa-group/shared/schemas";
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import {
-  ACCESS_TOKEN_COOKIE,
-  ACCESS_TOKEN_MAX_AGE,
-  REFRESH_TOKEN_COOKIE,
-  REFRESH_TOKEN_MAX_AGE,
-} from "@/constants/auth";
+import { REFRESH_TOKEN_COOKIE } from "@/constants/auth";
 
-import type { SessionParams } from "./auth-schema";
-import { authService } from "./auth-service";
-
-function setAccessTokenCookie(reply: FastifyReply, token: string): void {
-  reply.setCookie(ACCESS_TOKEN_COOKIE, token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-    path: "/",
-    maxAge: ACCESS_TOKEN_MAX_AGE,
-  });
-}
-
-function setRefreshTokenCookie(reply: FastifyReply, token: string): void {
-  reply.setCookie(REFRESH_TOKEN_COOKIE, token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "strict",
-    path: "/auth",
-    maxAge: REFRESH_TOKEN_MAX_AGE,
-  });
-}
-
-function clearAuthCookies(reply: FastifyReply): void {
-  reply.clearCookie(ACCESS_TOKEN_COOKIE, { path: "/" });
-  reply.clearCookie(REFRESH_TOKEN_COOKIE, { path: "/auth" });
-}
+import { clearAuthCookies, setAccessTokenCookie, setRefreshTokenCookie } from "./helper";
+import type { SessionParams } from "./schema";
+import { authService } from "./service";
 
 export const authController = {
   async signup(

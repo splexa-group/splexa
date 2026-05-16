@@ -1,12 +1,12 @@
 import type { FastifyInstance } from "fastify";
 
-import { authController } from "./auth-controller";
+import { authController } from "./controller";
 import {
   otpRequestSchema,
   otpVerifySchema,
   sessionParamsSchema,
   signupSchema,
-} from "./auth-schema";
+} from "./schema";
 
 export function authRoutes(router: FastifyInstance): void {
   router.post("/signup", {

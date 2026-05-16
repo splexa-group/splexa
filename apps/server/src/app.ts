@@ -7,7 +7,7 @@ import Fastify, { type FastifyInstance } from "fastify";
 
 import { env } from "@/config/env";
 import { fastifyLogger } from "@/config/logger";
-import { authModule } from "@/modules/auth/auth-plugin";
+import { authModule } from "@/modules/auth/plugin";
 import { authGuardPlugin } from "@/plugins/auth-guard.plugin";
 import { errorHandlerPlugin } from "@/plugins/error-handler.plugin";
 

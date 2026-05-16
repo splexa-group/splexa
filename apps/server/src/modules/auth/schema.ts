@@ -35,6 +35,6 @@ export const sessionParamsSchema = z.object({
 });
 
 export type SessionParams = z.infer<typeof sessionParamsSchema>;
-export type SignupBody = z.infer<typeof signupSchema>;
-export type OtpRequestBody = z.infer<typeof otpRequestSchema>;
-export type OtpVerifyBody = z.infer<typeof otpVerifySchema>;
+export type SignupInput = z.infer<typeof signupSchema>;
+export type OtpRequestInput = z.infer<typeof otpRequestSchema>;
+export type OtpVerifyInput = z.infer<typeof otpVerifySchema>;

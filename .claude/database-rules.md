@@ -138,30 +138,129 @@ async findAllByOrg(orgId: string, filters: CaseFilters) {
 
 ## Migration Rules
 
-### Development
+### Environment Setup
 
-```bash
-# Create and apply a migration
-pnpm --filter server exec prisma migrate dev --name add-portal-token-to-cases
+Three env files, all gitignored:
 
-# Apply pending migrations (CI/production deploy)
-pnpm --filter server exec prisma migrate deploy
+```
+apps/server/
+├── .env               ← local dev
+├── .env.staging       ← staging DB credentials
+└── .env.production    ← production DB credentials
 ```
 
-### Never in Production
+Each file must contain `DATABASE_URL` (and optionally `DIRECT_URL` for connection poolers like Supabase/PgBouncer).
+
+`prisma.config.ts` reads whichever file `ENV_FILE` points to, defaulting to `.env`.
+
+---
+
+### Scripts Reference
+
+Run all commands from `apps/server/` or prefix with `pnpm -F @splexa/server`.
+
+| Script | What it does |
+|---|---|
+| `db:migrate --name <name>` | **Dev only** — diffs schema, generates SQL migration file, applies it, regenerates client |
+| `db:migrate:staging` | Runs pending migrations on staging DB |
+| `db:migrate:prod` | Runs pending migrations on production DB |
+| `db:migrate:status` | Shows which migrations have/haven't run (local) |
+| `db:migrate:status:staging` | Shows migration status on staging |
+| `db:migrate:status:prod` | Shows migration status on production |
+| `db:migrate:reset` | **Dev only** — wipes DB and replays all migrations from scratch |
+| `db:generate` | Regenerates Prisma client without touching DB (after `git pull`) |
+| `db:studio` | Opens Prisma visual DB browser (local) |
+| `db:studio:staging` | Opens Prisma visual DB browser (staging) |
+| `db:push` | **Prototyping only** — pushes schema without creating a migration file |
+
+---
+
+### Step-by-Step: Making a Schema Change
+
+**Step 1 — Edit the schema**
+
+Change or add fields in `prisma/models/*.prisma`. Do not touch migration files directly.
+
+**Step 2 — Generate and apply locally**
 
 ```bash
-# ❌ These bypass the migration system — never use on production
-prisma db push
-prisma migrate reset
+pnpm db:migrate --name describe_what_changed
+
+# Good names:
+# add_case_model
+# add_hearing_date_to_cases
+# add_index_on_org_id_sessions
+# make_phone_number_nullable
 ```
 
-### Migration File Rules
+This creates a new folder in `prisma/migrations/` with a `migration.sql` file and applies it to your local DB.
 
-- Migration files are committed to git — they are the authoritative history of schema changes
-- Migration names describe what they do: `add-portal-token-to-cases`, `add-index-on-org-id-cases`
-- Never edit an existing migration file that has been applied — create a new one
-- Every migration runs in CI before deploying the corresponding code change
+**Step 3 — Verify locally**
+
+Run the server, test the affected feature. Make sure nothing broke.
+
+**Step 4 — Commit schema + migration together**
+
+```bash
+git add prisma/
+git commit -m "feat: add case model"
+```
+
+The migration file and the schema change must always be in the same commit. Never commit one without the other.
+
+**Step 5 — Check staging status**
+
+```bash
+pnpm db:migrate:status:staging
+```
+
+Confirms which migrations are pending on staging before you push.
+
+**Step 6 — Deploy to staging**
+
+```bash
+pnpm db:migrate:staging
+```
+
+Then test the feature on staging. Fix any issues before touching production.
+
+**Step 7 — Deploy to production**
+
+```bash
+pnpm db:migrate:status:prod   # confirm what will run
+pnpm db:migrate:prod
+```
+
+---
+
+### Migration Naming Convention
+
+Format: `verb_noun` in snake_case describing exactly what changed.
+
+```
+✅ add_case_model
+✅ add_hearing_date_to_cases
+✅ make_phone_number_nullable
+✅ add_index_on_org_id_hearings
+✅ rename_firm_to_organization
+
+❌ update
+❌ fix
+❌ changes
+❌ migration2
+```
+
+---
+
+### Rules
+
+- **Never edit an applied migration file** — if you made a mistake, fix the schema and generate a new migration
+- **Never run `db:migrate` (dev) against staging or production** — it can reset the DB
+- **Never run `db:push` outside of local dev** — it skips migration history entirely
+- **Never run `db:migrate:reset` outside of local dev** — it destroys all data
+- **Always migrate staging before production** — staging is the safety net
+- **Migration files are committed to git** — they are the authoritative history of your schema
+- **`db:generate` after pulling** — if a teammate changed the schema, run `db:generate` to update your local Prisma client without migrating
 
 ---
 
@@ -427,5 +526,8 @@ Before declaring DB-related work done, verify:
 - [ ] `update` repository functions include `orgId` in `where`
 
 **Migration**
-- [ ] New migration file created after schema change (`prisma migrate dev --name ...`)
-- [ ] Migration name describes what it does (not `init` or `update`)
+- [ ] New migration file created after schema change (`pnpm db:migrate --name ...`)
+- [ ] Migration name is snake_case and describes exactly what changed
+- [ ] Schema file and migration file committed together in the same commit
+- [ ] Never edited an existing applied migration file
+- [ ] Staging migrated and verified before production

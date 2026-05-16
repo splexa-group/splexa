@@ -3,7 +3,8 @@ import path from "path";
 import dotenv from "dotenv";
 import { defineConfig } from "prisma/config";
 
-dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+const envFile = process.env["ENV_FILE"] ?? ".env";
+dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 
 export default defineConfig({
   schema: "prisma/schema",

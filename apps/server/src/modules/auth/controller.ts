@@ -8,26 +8,26 @@ import {
   setRefreshTokenCookie,
 } from "./helper";
 import type {
-  OtpRequestBody,
-  OtpVerifyBody,
+  OtpRequestInput,
+  OtpVerifyInput,
   SessionParams,
-  SignupBody,
+  SignupInput,
 } from "./schema";
 import { authService } from "./service";
 
 export const authController = {
-  async signup(req: FastifyRequest<{ Body: SignupBody }>) {
+  async signup(req: FastifyRequest<{ Body: SignupInput }>) {
     await authService.signup(req.body);
     return { message: "OTP sent to your email" };
   },
 
-  async requestOtp(req: FastifyRequest<{ Body: OtpRequestBody }>) {
+  async requestOtp(req: FastifyRequest<{ Body: OtpRequestInput }>) {
     await authService.requestOtp(req.body);
     return { message: "OTP sent" };
   },
 
   async verifyOtp(
-    req: FastifyRequest<{ Body: OtpVerifyBody }>,
+    req: FastifyRequest<{ Body: OtpVerifyInput }>,
     reply: FastifyReply,
   ) {
     const userAgent = req.headers["user-agent"] ?? "unknown";

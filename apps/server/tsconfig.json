@@ -1,18 +1,14 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "rootDir": "src",
     "types": ["node"],
     "resolveJsonModule": true,
     "paths": {
       "@/*": ["./src/*"],
       "@splexa-group/shared/enums": ["../../packages/shared/src/enums/index.ts"],
-      "@splexa-group/shared/types": ["../../packages/shared/src/types/index.ts"],
-      "@splexa-group/shared/schemas": ["../../packages/shared/src/schemas/index.ts"]
+      "@splexa-group/shared/types": ["../../packages/shared/src/types/index.ts"]
     }
   },
   "include": ["src", "src/types"],
-  "references": [{ "path": "../../packages/shared" }],
   "exclude": ["node_modules", "dist"]
 }

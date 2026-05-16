@@ -1,8 +1,3 @@
-import type {
-  OtpRequestInput,
-  OtpVerifyInput,
-  SignupInput,
-} from "@splexa-group/shared/schemas";
 import bcrypt from "bcryptjs";
 
 import { MAX_OTP_ATTEMPTS, MAX_OTP_REQUESTS_PER_HOUR } from "@/constants/auth";
@@ -17,8 +12,9 @@ import {
 import { Errors } from "@/utils/errors";
 import { signAccessToken } from "@/utils/jwt";
 
-import { authRepository } from "./repository";
 import { otpExpiry, refreshTokenExpiry } from "./helper";
+import { authRepository } from "./repository";
+import type { SignupInput, OtpRequestInput, OtpVerifyInput } from "./schema";
 
 export type { VerifyOtpResult };
 

@@ -1,9 +1,10 @@
 import { UserRole } from "@splexa-group/shared/enums";
-import type { SignupInput } from "@splexa-group/shared/schemas";
 
 import { OTP_LOCKOUT_MINUTES, OTP_RATE_WINDOW_MS } from "@/constants/auth";
 import { prisma } from "@/db/client";
 import { orgSelect, userSelect } from "@/db/selects";
+
+import type { SignupInput } from "./schema";
 
 export const authRepository = {
   async findUserByEmail(email: string) {

@@ -1,3 +1,4 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient, Prisma } from "@prisma/client";
 
 import { env } from "@/config/env";
@@ -8,9 +9,11 @@ const logLevels: Prisma.LogLevel[] = env.IS_DEVELOPMENT
   ? ["query", "warn", "error"]
   : ["warn", "error"];
 
-export const prisma =
-  globalForPrisma.prisma ?? new PrismaClient({ log: logLevels });
+const adapter = new PrismaPg({ connectionString: env.DATABASE_URL });
 
-if (env.IS_PRODUCTION) {
+export const prisma =
+  globalForPrisma.prisma ?? new PrismaClient({ adapter, log: logLevels });
+
+if (!env.IS_PRODUCTION) {
   globalForPrisma.prisma = prisma;
 }

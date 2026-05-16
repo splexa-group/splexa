@@ -15,6 +15,8 @@ export class AppError extends Error {
 export const Errors = {
   missingToken: () =>
     new AppError(401, ErrorCode.MISSING_TOKEN, "Missing access token"),
+  missingRefreshToken: () =>
+    new AppError(401, ErrorCode.MISSING_REFRESH_TOKEN, "Missing refresh token"),
   invalidToken: () =>
     new AppError(
       401,

@@ -33,13 +33,17 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build shared package
-        run: pnpm --filter @splexa-group/shared build
+        working-directory: packages/shared
+        run: pnpm build
 
       - name: Generate Prisma client
-        run: pnpm --filter @splexa/server db:generate
+        working-directory: apps/server
+        run: pnpm db:generate
 
       - name: Type check (server)
-        run: pnpm --filter @splexa/server typecheck
+        working-directory: apps/server
+        run: pnpm typecheck
 
       - name: Build (server)
-        run: pnpm --filter @splexa/server build
+        working-directory: apps/server
+        run: pnpm build

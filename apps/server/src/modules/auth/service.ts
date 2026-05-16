@@ -129,7 +129,7 @@ export const authService = {
   async refreshSession(
     refreshToken: string | undefined,
   ): Promise<{ accessToken: string }> {
-    if (!refreshToken) throw Errors.missingToken();
+    if (!refreshToken) throw Errors.missingRefreshToken();
 
     const tokenHash = hashToken(refreshToken);
     const session =
@@ -151,7 +151,7 @@ export const authService = {
   },
 
   async logout(refreshToken: string | undefined): Promise<void> {
-    if (!refreshToken) throw Errors.missingToken();
+    if (!refreshToken) throw Errors.missingRefreshToken();
 
     const tokenHash = hashToken(refreshToken);
     const session =

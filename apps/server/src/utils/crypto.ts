@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
 export function generateOtp(): string {
-  return crypto.randomInt(100000, 999999).toString();
+  return crypto.randomInt(100000, 1_000_000).toString();
 }
 
 export function hashToken(token: string): string {

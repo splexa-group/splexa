@@ -8,6 +8,7 @@ import {
   REFRESH_TOKEN_EXPIRY_DAYS,
   REFRESH_TOKEN_MAX_AGE,
 } from "@/constants/auth";
+import { env } from "@/config/env";
 
 export function maskEmail(email: string): string {
   const [local, domain] = email.split("@");
@@ -30,7 +31,7 @@ export function refreshTokenExpiry(): Date {
 export function setAccessTokenCookie(reply: FastifyReply, token: string): void {
   reply.setCookie(ACCESS_TOKEN_COOKIE, token, {
     httpOnly: true,
-    secure: true,
+    secure: env.IS_PRODUCTION,
     sameSite: "strict",
     path: "/",
     maxAge: ACCESS_TOKEN_MAX_AGE,
@@ -43,14 +44,14 @@ export function setRefreshTokenCookie(
 ): void {
   reply.setCookie(REFRESH_TOKEN_COOKIE, token, {
     httpOnly: true,
-    secure: true,
+    secure: env.IS_PRODUCTION,
     sameSite: "strict",
-    path: "/auth",
+    path: "/api/v1/auth",
     maxAge: REFRESH_TOKEN_MAX_AGE,
   });
 }
 
 export function clearAuthCookies(reply: FastifyReply): void {
   reply.clearCookie(ACCESS_TOKEN_COOKIE, { path: "/" });
-  reply.clearCookie(REFRESH_TOKEN_COOKIE, { path: "/auth" });
+  reply.clearCookie(REFRESH_TOKEN_COOKIE, { path: "/api/v1/auth" });
 }

@@ -1,26 +1,20 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  requestOtp,
-  signup,
-  verifyOtp,
-  type SignupPayload,
-  type VerifyOtpResponse,
-} from "@/lib/api/auth";
+import { authApi, type SignupPayload, type VerifyOtpResponse } from "@/services/auth.service";
 
 export function useRequestOtp() {
   return useMutation<void, Error, { email: string }>({
-    mutationFn: ({ email }) => requestOtp(email),
+    mutationFn: ({ email }) => authApi.requestOtp(email),
   });
 }
 
 export function useVerifyOtp() {
   return useMutation<VerifyOtpResponse, Error, { email: string; otp: string }>({
-    mutationFn: ({ email, otp }) => verifyOtp(email, otp),
+    mutationFn: ({ email, otp }) => authApi.verifyOtp(email, otp),
   });
 }
 
 export function useSignup() {
   return useMutation<void, Error, SignupPayload>({
-    mutationFn: (data) => signup(data),
+    mutationFn: (data) => authApi.signup(data),
   });
 }

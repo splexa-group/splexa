@@ -19,3 +19,6 @@ Thumbs.db
 *.tsbuildinfo
 .tmp
 .cache
+
+# Visual brainstorm session files
+.superpowers/

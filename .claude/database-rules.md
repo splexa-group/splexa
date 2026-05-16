@@ -264,31 +264,68 @@ Format: `verb_noun` in snake_case describing exactly what changed.
 
 ---
 
-## Connection Pooling
+## Prisma Setup (v7+)
 
-Use a single Prisma client instance across the application. Export it from `lib/db.ts`:
+Prisma v7 requires an explicit **driver adapter** — the Rust engine binary is gone. Use `PrismaPg` from `@prisma/adapter-pg`.
+
+### Client — `src/db/client.ts`
 
 ```ts
-// lib/db.ts
 import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { env } from "@/config/env";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+
+const adapter = new PrismaPg({ connectionString: env.DATABASE_URL });
 
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    log:
-      process.env.NODE_ENV === "development"
-        ? ["query", "warn", "error"]
-        : ["warn", "error"],
+    adapter,
+    log: env.IS_PRODUCTION ? ["warn", "error"] : ["query", "warn", "error"],
   });
 
-if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+if (!env.IS_PRODUCTION) globalForPrisma.prisma = prisma;
 ```
 
-The global singleton prevents multiple instances during hot reloads in development.
+Import as `import { prisma } from '@/db/client'` — never `@/lib/db`.
 
-For production: configure `DATABASE_URL` with `?connection_limit=10&pool_timeout=20` based on your server's capacity. Do not configure this without measuring actual connection needs.
+### Multi-File Schema
+
+The Prisma schema is split into a directory — **not a single `schema.prisma` file**:
+
+```
+apps/server/prisma/
+├── schema/
+│   ├── _config.prisma       # generator + datasource (one file only)
+│   ├── enums/               # enum files
+│   └── models/              # one model per file
+├── migrations/              # generated migration files — commit these
+└── schema.prisma            # DO NOT use — schema dir is used instead
+```
+
+Config is in `prisma.config.ts` (project root of `apps/server`):
+
+```ts
+// apps/server/prisma.config.ts
+export default defineConfig({
+  schema: "prisma/schema",         // points to the directory
+  migrations: { path: "prisma/migrations" },
+  datasource: {
+    url: process.env["DIRECT_URL"] ?? process.env["DATABASE_URL"],
+  },
+});
+```
+
+### Two DB URLs
+
+| Variable | Used for | Notes |
+|---|---|---|
+| `DATABASE_URL` | Runtime queries (via Prisma client) | Can be pooler URL (Supabase session mode) |
+| `DIRECT_URL` | Migrations only (in `prisma.config.ts`) | Must bypass pooler — use Supabase direct URL |
+
+The global singleton prevents multiple instances during hot reloads in development.
 
 ---
 
@@ -439,7 +476,7 @@ async getCase(user: AuthUser, caseId: string) {
 Define reusable select shapes as typed constants in the repository file. Never repeat the same field list across multiple query calls.
 
 ```ts
-// cases-repository.ts
+// modules/cases/repository.ts
 import { Prisma } from '@prisma/client';
 
 const casePublicSelect = {

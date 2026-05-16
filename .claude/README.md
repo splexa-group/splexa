@@ -49,19 +49,25 @@ HTTP request
 ### Schema split — where Zod schemas live
 | Schema type | Location |
 |---|---|
-| Input/create schemas used by frontend forms | `packages/shared/src/schemas/` |
-| Query param, route param, server-only schemas | `modules/[name]/[name]-schema.ts` |
+| Query param, route param, body schemas | `modules/[name]/schema.ts` |
 
 No raw JSON Schema objects anywhere. Use `@fastify/type-provider-zod`. Types always from `z.infer<>` — never written separately alongside a schema.
 
 ### Constants split — where named values live
 | Constant type | Location |
 |---|---|
-| Status values, roles, plan limits (both apps use) | `packages/shared/src/constants.ts` |
-| TTLs, Redis keys, activity action names, pagination limits | `apps/server/src/lib/constants.ts` |
+| Enums used by both apps (UserRole, etc.) | `packages/shared/src/enums/` |
+| Types used by both apps | `packages/shared/src/types/` |
+| OTP thresholds, token TTLs, cookie names | `apps/server/src/constants/auth.ts` |
+| Pagination limits | `apps/server/src/constants/misc.ts` |
+
+### Response envelope
+All API responses share one shape — controllers just `return` data:
+- **Success**: `{ success: true, data: ... }` — wrapped by `responsePlugin` (preSerialization hook)
+- **Error**: `{ success: false, error: { code, message } }` — formatted by `errorHandlerPlugin`
 
 ### Integration pattern
-Every third-party service (email, SMS, WhatsApp) is an adapter behind an interface. A factory resolves the provider from env/DB config. Application code only imports from `lib/integrations/[type]/index.ts` — never from an adapter or SDK directly.
+Every third-party service (email, SMS, WhatsApp) is an adapter behind an interface. A factory resolves the provider from env config. Application code only imports from `@/integrations/[type]/index.ts` — never from an adapter or SDK directly.
 
 ---
 
@@ -111,7 +117,10 @@ Read this before writing anything. These are the most frequent mistakes.
 | `'use client'` on a page file | Default to Server Component; push boundary down |
 | Missing `additionalProperties: false` on schema | Unknown fields pass Fastify validation silently |
 | `any` to silence a TypeScript error | Fix the type — narrow with `unknown`, use a guard |
-| Magic number `3` for OTP attempts | `MAX_OTP_ATTEMPTS` from `lib/constants.ts` |
+| Magic number `3` for OTP attempts | `MAX_OTP_ATTEMPTS` from `@/constants` |
+| `new NotFoundError('...')` in a service | `throw Errors.userNotFound()` from `@/utils/errors` |
+| `reply.code(201).send(data)` in a controller | `reply.code(201); return data;` — never call `send()` |
+| `import from '@splexa/shared'` | `import from '@splexa-group/shared/enums'` or `/types` |
 
 ---
 
@@ -126,9 +135,16 @@ update(id: string, orgId: string, data: UpdateInput): Promise<T>
 softDelete(id: string, orgId: string): Promise<void>
 ```
 
+### Error factories (use Errors.xxx() — never construct AppError directly)
+```ts
+import { Errors } from '@/utils/errors';
+if (!user) throw Errors.userNotFound();
+if (!session) throw Errors.sessionExpired();
+```
+
 ### Activity logging (every mutation in service layer)
 ```ts
-import { ActivityAction } from '@/lib/constants';
+import { ActivityAction } from '@/constants';
 await logActivity({ orgId: user.orgId, userId: user.userId, action: ActivityAction.CASE_CREATED, resourceType: 'case', resourceId: case_.id, ipAddress: req.ip });
 ```
 

@@ -16,12 +16,13 @@ Every module follows this exact five-layer order — no skipping, no merging lay
 
 ```
 modules/[name]/
-├── [name]-plugin.ts        # Fastify plugin — registers routes
-├── [name]-routes.ts        # Route declarations — path, method, schema, preHandlers only
-├── [name]-controller.ts    # Request/response handling — calls service, sends reply
-├── [name]-service.ts       # Business logic — enforces rules, calls repository
-├── [name]-repository.ts    # All Prisma queries — only DB access here
-├── [name]-schema.ts        # Zod or JSON Schema for validation
+├── plugin.ts       # Fastify plugin — registers routes
+├── routes.ts       # Route declarations — path, method, schema, preHandlers only
+├── controller.ts   # Request/response handling — calls service, returns data
+├── service.ts      # Business logic — enforces rules, calls repository
+├── repository.ts   # All Prisma queries — only DB access here
+├── schema.ts       # Zod schemas for validation
+├── helper.ts       # Pure helpers (expiry builders, etc.) — optional
 └── __tests__/
     └── [name].test.ts
 ```
@@ -88,48 +89,47 @@ export function registerCasesRoutes(fastify: FastifyInstance) {
 Fastify validates the request against the Zod schema before the handler runs — via `@fastify/type-provider-zod` configured in `app.ts`.
 
 ### Controller
+
+Controllers are exported as **objects**, not individual functions. They `return` data directly — a `preSerialization` hook wraps all successful responses in `{ success: true, data: ... }`. Only use `reply` when you need to set a status code or cookie.
+
 ```ts
-// modules/cases/cases-controller.ts
-import { FastifyRequest, FastifyReply } from 'fastify';
-import { caseService } from './cases-service';
-import type { CreateCaseBody, ListCasesQuery, CaseParams } from './cases-schema'; // z.infer types
+// modules/cases/controller.ts
+import type { FastifyRequest, FastifyReply } from 'fastify';
+import { caseService } from './service';
+import type { CreateCaseInput, ListCasesQuery, CaseParams } from './schema';
 
-export async function listCasesController(
-  req: FastifyRequest<{ Querystring: ListCasesQuery }>,
-  reply: FastifyReply,
-) {
-  const cases = await caseService.list(req.user.orgId, req.query);
-  return cases;
-}
+export const caseController = {
+  async list(req: FastifyRequest<{ Querystring: ListCasesQuery }>) {
+    return caseService.list(req.user.orgId, req.query);
+  },
 
-export async function createCaseController(
-  req: FastifyRequest<{ Body: CreateCaseBody }>,
-  reply: FastifyReply,
-) {
-  const case_ = await caseService.create(req.user, req.body, req);
-  reply.code(201).send(case_);
-}
+  async create(req: FastifyRequest<{ Body: CreateCaseInput }>, reply: FastifyReply) {
+    const case_ = await caseService.create(req.user, req.body, req);
+    reply.code(201);
+    return case_;
+  },
 
-export async function archiveCaseController(
-  req: FastifyRequest<{ Params: CaseParams }>,
-  reply: FastifyReply,
-) {
-  await caseService.archive(req.user, req.params.id, req);
-  reply.code(204).send();
-}
+  async archive(req: FastifyRequest<{ Params: CaseParams }>, reply: FastifyReply) {
+    await caseService.archive(req.user, req.params.id, req);
+    reply.code(204);
+    return null;
+  },
+};
 ```
 
-Types (`CreateCaseBody`, `ListCasesQuery`, `CaseParams`) are all `z.infer<>` — derived from the Zod schema, never written separately.
+Types (`CreateCaseInput`, `ListCasesQuery`, `CaseParams`) are all `z.infer<>` — derived from the Zod schema, never written separately.
+
+**Rule:** Never call `reply.send()` in a controller. Just `return` the data. The `responsePlugin` (`preSerialization` hook registered in `app.ts`) wraps it automatically.
 
 ### Service
 ```ts
-// modules/cases/cases-service.ts
+// modules/cases/service.ts
 import { FastifyRequest } from 'fastify';
-import { casesRepository } from './cases-repository';
-import { logActivity } from '@/lib/activity-logger';
-import { NotFoundError } from '@/lib/errors';
-import { ActivityAction } from '@/lib/constants';
-import type { AuthUser, CreateCaseInput, CaseFilters } from '@splexa/shared';
+import { casesRepository } from './repository';
+import { logActivity } from '@/utils/activity-logger';
+import { Errors } from '@/utils/errors';
+import { ActivityAction } from '@/constants';
+import type { AuthUser, CreateCaseInput, CaseFilters } from '@splexa-group/shared';
 
 export const caseService = {
   async list(orgId: string, filters: CaseFilters) {
@@ -154,7 +154,7 @@ export const caseService = {
 
   async archive(user: AuthUser, caseId: string, req: FastifyRequest) {
     const existing = await casesRepository.findById(caseId, user.orgId);
-    if (!existing) throw new NotFoundError('Case not found');
+    if (!existing) throw Errors.caseNotFound();
 
     await casesRepository.softDelete(caseId, user.orgId);
 
@@ -173,9 +173,9 @@ export const caseService = {
 
 ### Repository
 ```ts
-// modules/cases/cases-repository.ts
-import { prisma } from '@/lib/db';
-import type { CreateCaseInput } from '@splexa/shared';
+// modules/cases/repository.ts
+import { prisma } from '@/db/client';
+import type { CreateCaseInput } from '@splexa-group/shared';
 
 export const casesRepository = {
   async findAllByOrg(orgId: string, filters: CaseFilters) {
@@ -211,13 +211,13 @@ export const casesRepository = {
 The schema file owns all Zod schemas for the module. **No raw JSON Schema objects anywhere.** Fastify validates using Zod directly via `@fastify/type-provider-zod`. TypeScript types are always derived from schemas using `z.infer` — never written manually alongside them.
 
 ```ts
-// modules/cases/cases-schema.ts
+// modules/cases/schema.ts
 import { z } from 'zod';
-import { createCaseSchema } from '@splexa/shared'; // Reuse shared input schema — single source of truth
+import { createCaseSchema } from '@splexa-group/shared'; // Reuse shared input schema — single source of truth
 
 // Re-export the shared schema so routes only import from this file
 export { createCaseSchema };
-export type CreateCaseBody = z.infer<typeof createCaseSchema>;
+export type CreateCaseInput = z.infer<typeof createCaseSchema>;
 
 // Server-only: query params are not used by the frontend for form validation
 export const listCasesQuerySchema = z.object({
@@ -247,13 +247,13 @@ export type CaseParams = z.infer<typeof caseParamsSchema>;
 `req.user` is available on all authenticated routes. TypeScript needs a declaration merge to know its shape:
 
 ```ts
-// types/fastify.d.ts (or src/types/fastify.d.ts)
+// src/types/fastify.d.ts
 import 'fastify';
-import type { AuthUser } from '@splexa/shared';
+import type { AuthUser } from '@splexa-group/shared';
 
 declare module 'fastify' {
   interface FastifyRequest {
-    user: AuthUser;  // { userId, orgId, role, name }
+    user: AuthUser;  // { userId, orgId, role }
   }
 }
 ```
@@ -270,18 +270,24 @@ Phase 2 adds mobile OTP (WhatsApp/SMS). The auth module is designed so adding a 
 
 ### Flow
 ```
-POST /api/auth/send-otp  { email }
-  → generate 6-digit OTP
-  → store in Redis (TTL 10 min, max 3 attempts, rate-limited 5/hour per email)
+POST /api/v1/auth/signup  { email, firstName, lastName }       ← new users
+POST /api/v1/auth/otp/request  { email }                      ← returning users (login)
+  → check rate limit (max 5 OTPs/hour per email) via DB count
+  → generate 6-digit OTP, bcrypt-hash it
   → send via email provider
-  → return { success: true }
+  → store OtpRequest row in PostgreSQL (expiresAt = now + 10 min)
 
-POST /api/auth/verify-otp  { email, otp }
-  → verify OTP, delete from Redis on success
-  → if new user: create user + organization record
-  → issue access token (15 min) + refresh token httpOnly cookie (30 days)
-  → return { user, isNewUser }
+POST /api/v1/auth/otp/verify  { email, otp }
+  → find latest active OtpRequest for email
+  → bcrypt.compare(otp, otpRequest.otpHash)
+  → on failure: increment attempts (lock after MAX_OTP_ATTEMPTS)
+  → on success: mark OTP verified, mark user emailVerified
+  → issue access token (15 min JWT, in httpOnly cookie)
+  → create Session row (hashed refresh token, 30 days)
+  → return { user, accessToken }
 ```
+
+**OTP is stored in PostgreSQL** (`OtpRequest` model), not Redis. Redis is not used for OTP in Phase 1.
 
 ---
 
@@ -400,39 +406,38 @@ await logActivity({ action: ActivityAction.CASE_CREATED, ... });
 
 ---
 
-## Server Constants — `lib/constants.ts`
+## Server Constants — `src/constants/`
 
-All server-side magic values live here. No raw numbers, strings, or Redis key patterns anywhere else in the codebase.
+All server-side compile-time values live here. Split by domain:
+
+```
+src/constants/
+├── auth.ts    # OTP thresholds, token TTLs, cookie names
+├── misc.ts    # Pagination defaults
+└── index.ts   # Re-exports all
+```
 
 ```ts
-// lib/constants.ts
-
-// Auth thresholds
+// src/constants/auth.ts
 export const MAX_OTP_ATTEMPTS = 3;
 export const OTP_LOCKOUT_MINUTES = 15;
 export const MAX_OTP_REQUESTS_PER_HOUR = 5;
-export const OTP_TTL_SECONDS = 600;           // 10 minutes
-export const ACCESS_TOKEN_EXPIRY_SECONDS = 900; // 15 minutes
+export const OTP_TTL_MINUTES = 10;
 export const REFRESH_TOKEN_EXPIRY_DAYS = 30;
+export const ACCESS_TOKEN_COOKIE = 'access_token';
+export const REFRESH_TOKEN_COOKIE = 'refresh_token';
 
-// Pagination
+// src/constants/misc.ts
 export const DEFAULT_PAGE_SIZE = 20;
 export const MAX_PAGE_SIZE = 100;
-
-// Redis key builders — one place for all key structure
-export const redisKeys = {
-  otp:       (email: string)  => `otp:${email}`,
-  otpRate:   (email: string)  => `otp_rate:${email}`,
-  blacklist: (userId: string) => `blacklist:${userId}`,
-} as const;
-
-// ActivityAction and ActivityActionValue defined above in Activity Logging section
 ```
 
 Import in services and repositories:
 ```ts
-import { MAX_OTP_ATTEMPTS, OTP_TTL_SECONDS, redisKeys, ActivityAction } from '@/lib/constants';
+import { MAX_OTP_ATTEMPTS, OTP_TTL_MINUTES } from '@/constants';
 ```
+
+**Note:** `ActivityAction` constants and `redisKeys` builders are not yet implemented — add them to `src/constants/` when activity logging is built.
 
 ---
 
@@ -505,14 +510,14 @@ export function createEmailProvider(): EmailProvider {
 ### 4. Index — the only import point for application code
 
 ```ts
-// lib/integrations/email/index.ts
+// integrations/email/index.ts
 import { createEmailProvider } from './email-factory';
 export const emailProvider = createEmailProvider();
 ```
 
 ### Rules
 
-- All application code imports from `@/lib/integrations/email` — never from an adapter or SDK directly.
+- All application code imports from `@/integrations/email` — never from an adapter or SDK directly.
 - To add a provider: create a new adapter file, add a case to the factory switch. Nothing else changes.
 - To switch globally: set `EMAIL_PROVIDER=sendgrid` in the environment.
 - To support per-tenant switching: replace `env.EMAIL_PROVIDER` in the factory with a DB config lookup.
@@ -553,56 +558,82 @@ After this, passing a Zod schema to `schema: { body: myZodSchema }` in any route
 ```
 1. setValidatorCompiler / setSerializerCompiler  (Zod type provider)
 2. Env validation (crash fast on missing vars)
-3. Security (helmet, cors)
-4. Db decorate (Prisma client)
-5. Redis decorate
-6. Auth decorators (authenticate, requireRole)
+3. errorHandlerPlugin       (must be first — catches errors from all subsequent plugins)
+4. responsePlugin           (preSerialization hook — wraps success responses)
+5. @fastify/cookie          (cookie parsing — needed before auth reads cookies)
+6. authGuardPlugin          (decorates fastify.authenticate, fastify.requireRole)
 7. Modules (auth, cases, hearings, clients, documents, dashboard, notifications, team)
 ```
 
 ---
 
-## Error Handling
+## Response Envelope
 
-```ts
-// lib/errors.ts
-export class AppError extends Error {
-  constructor(public message: string, public statusCode: number, public code: string) {
-    super(message);
-    this.name = this.constructor.name;
-  }
-}
-export class AuthError extends AppError {
-  constructor(msg = 'Unauthorized') { super(msg, 401, 'AUTH_ERROR'); }
-}
-export class ForbiddenError extends AppError {
-  constructor(msg = 'Forbidden') { super(msg, 403, 'FORBIDDEN'); }
-}
-export class NotFoundError extends AppError {
-  constructor(msg = 'Not found') { super(msg, 404, 'NOT_FOUND'); }
-}
-export class ValidationError extends AppError {
-  constructor(msg: string) { super(msg, 400, 'VALIDATION_ERROR'); }
-}
+All API responses use a uniform envelope. Controllers **never call `reply.send()`** — they just `return` data.
+
+**Success** (status < 400) — wrapped automatically by `responsePlugin` (`preSerialization` hook):
+```json
+{ "success": true, "data": { ... } }
 ```
 
-Client response is always: `{ "error": "Case not found", "code": "NOT_FOUND" }` — no stack traces, no Prisma errors, no internals.
+**Error** (status >= 400) — formatted by `errorHandlerPlugin`:
+```json
+{ "success": false, "error": { "code": "USER_NOT_FOUND", "message": "No account found with that email" } }
+```
+
+## Error Handling
+
+Errors are created via the `Errors` factory in `src/utils/errors.ts`. Never construct `AppError` directly in services — use the factory:
+
+```ts
+// src/utils/errors.ts
+export class AppError extends Error {
+  constructor(
+    public readonly statusCode: number,
+    public readonly code: string,
+    message: string,
+  ) { super(message); }
+}
+
+export const Errors = {
+  userNotFound:    () => new AppError(404, 'USER_NOT_FOUND', 'No account found with that email'),
+  emailTaken:      () => new AppError(409, 'EMAIL_TAKEN', 'Email is already registered'),
+  sessionExpired:  () => new AppError(401, 'SESSION_EXPIRED', 'Invalid or expired session'),
+  forbidden:       (msg = 'Access denied') => new AppError(403, 'FORBIDDEN', msg),
+  // ... add new entries here as new error cases arise
+} as const;
+```
+
+Usage in services:
+```ts
+import { Errors } from '@/utils/errors';
+
+const user = await authRepository.findUserByEmail(email);
+if (!user) throw Errors.userNotFound();
+```
+
+Error codes live in `src/enums/error-code.ts`. No freeform strings — always use the enum.
+
+Client never sees stack traces, Prisma errors, or internal details. The `errorHandlerPlugin` catches all `AppError` instances and formats them into the standard envelope.
 
 ---
 
 ## Alias Imports
 
 ```ts
-// tsconfig paths
-{ "@/*": ["./src/*"], "@splexa/shared": ["../../packages/shared/src"] }
+// tsconfig paths: "@/*" maps to "./src/*"
 
 // ✅
-import { prisma } from '@/lib/db';
-import { logActivity } from '@/lib/activity-logger';
-import type { CaseStatus } from '@splexa/shared';
+import { prisma } from '@/db/client';
+import { Errors } from '@/utils/errors';
+import { signAccessToken } from '@/utils/jwt';
+import { MAX_OTP_ATTEMPTS } from '@/constants';
+import { emailProvider } from '@/integrations/email';
+import type { UserRole } from '@splexa-group/shared/enums';
 
 // ❌
-import { prisma } from '../../../lib/db';
+import { prisma } from '../../../db/client';
+import { prisma } from '@/lib/db';           // lib/ no longer exists
 ```
 
 ---

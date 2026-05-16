@@ -47,12 +47,13 @@ plugin → routes → controller → service → repository (Prisma)
 
 ```
 modules/[name]/
-├── [name]-plugin.ts        # Fastify plugin registration
-├── [name]-routes.ts        # Route declarations + preHandlers
-├── [name]-controller.ts    # Request/response handling
-├── [name]-service.ts       # Business logic + activity logging
-├── [name]-repository.ts    # All Prisma queries
-├── [name]-schema.ts        # Zod schemas for validation (no raw JSON Schema)
+├── plugin.ts          # Fastify plugin registration
+├── routes.ts          # Route declarations + preHandlers
+├── controller.ts      # Request/response handling
+├── service.ts         # Business logic + activity logging
+├── repository.ts      # All Prisma queries
+├── schema.ts          # Zod schemas for validation (no raw JSON Schema)
+├── helper.ts          # Pure helpers (date builders, token expiry, etc.) — optional
 └── __tests__/
     └── [name].test.ts
 ```
@@ -87,20 +88,17 @@ apps/server/src/
 │   ├── notifications/
 │   ├── organizations/
 │   └── team/
-├── config/           # Env config loading and validation only
-├── lib/              # Shared non-module utilities
-│   ├── db.ts         # Prisma client singleton
-│   ├── redis.ts      # Redis client
-│   ├── errors.ts     # Typed error classes
-│   ├── activity-logger.ts  # Activity logging helper
-│   └── integrations/ # Third-party provider adapters
-│       ├── email/    # EmailProvider interface + implementations (adapter + factory + implementation; easily to plug in and plug out services via env variables)
-│       └── ...       # Future: sms/, whatsapp/
-├── middleware/       # Global Fastify hooks
-├── plugins/          # Fastify plugin registrations (helmet, cors, auth, multipart)
-└── server.ts         # App entry point
-└── app.ts            # build fastify app includes are registrations/plugins, configs, logging, etc and export to server.ts
-
+├── config/           # Runtime config only — env.ts (Zod-validated), logger.ts
+├── constants/        # Compile-time values — auth.ts, misc.ts, index.ts
+├── db/               # db/client.ts — Prisma singleton with PrismaPg adapter
+├── enums/            # Server-only enums — error-code.ts, env.ts
+├── integrations/     # Third-party provider adapters
+│   └── email/        # email-interface.ts, resend-adapter.ts, index.ts
+├── plugins/          # Fastify plugin registrations — error-handler, response, auth-guard
+├── types/            # types/fastify.d.ts (req.user augmentation), types/auth.ts
+├── utils/            # Pure utilities — crypto.ts, errors.ts, jwt.ts
+├── app.ts            # Builds and exports the Fastify app (all registrations)
+└── index.ts          # Entry point — calls app.ts, starts listening
 ```
 
 Modules are **self-contained**. A module exports a Fastify plugin and does not reach into another module's internal files. If module A needs something from module B, it is either in `packages/shared` or exposed via a service function.

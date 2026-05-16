@@ -389,6 +389,94 @@ export const metadata: Metadata = {
 
 ---
 
+## Technical Stack
+
+### Dependencies to Install
+
+| Package | Purpose |
+|---|---|
+| `tailwindcss`, `@tailwindcss/postcss`, `postcss` | Utility-first styling |
+| `shadcn/ui` (CLI init) | Accessible component primitives styled with Tailwind |
+| `@tanstack/react-query` | API calls, loading/error states, mutation handling |
+| `zustand` | Access token storage in memory (never localStorage) |
+| `react-hook-form` | Form state, validation, multi-step signup |
+| `lucide-react` | Icons (installed by shadcn/ui) |
+
+Zod for client-side validation is out of scope for Phase 1 — React Hook Form's built-in validation is sufficient.
+
+### shadcn/ui Components Needed
+
+`Button`, `Input`, `Label`, `Select`, `Form` (RHF wrapper) — generated via CLI, then customized to match design tokens.
+
+---
+
+## File Structure
+
+```
+apps/web/src/
+├── app/
+│   ├── layout.tsx                  ← root layout — Inter font, QueryProvider, metadata base
+│   ├── globals.css                 ← Tailwind base + CSS variable tokens
+│   ├── page.tsx                    ← root redirect → /login
+│   ├── (auth)/
+│   │   ├── login/
+│   │   │   └── page.tsx            ← login page + metadata export
+│   │   └── signup/
+│   │       └── page.tsx            ← signup page + metadata export
+│   └── dashboard/
+│       └── page.tsx                ← stub page (redirect target only)
+├── components/
+│   ├── ui/                         ← shadcn/ui generated components (button, input, etc.)
+│   └── auth/
+│       ├── auth-layout.tsx         ← 40/60 split wrapper used by both pages
+│       ├── login-panel.tsx         ← login-specific left panel content
+│       ├── signup-panel.tsx        ← signup-specific left panel content
+│       ├── login-form.tsx          ← email step + OTP step (state machine inside)
+│       ├── signup-form.tsx         ← 4-step multi-step form
+│       └── otp-input.tsx           ← 6 individual OTP digit boxes (shared)
+├── lib/
+│   ├── api/
+│   │   └── auth.ts                 ← typed fetch wrappers for all auth endpoints
+│   └── utils.ts                    ← cn() helper (shadcn/ui standard)
+├── hooks/
+│   └── use-auth.ts                 ← React Query useMutation hooks (login, signup, verify OTP)
+└── store/
+    └── auth-store.ts               ← Zustand store — { accessToken, user, setAuth, clearAuth }
+```
+
+### Component Responsibilities
+
+| Component | What it does |
+|---|---|
+| `auth-layout.tsx` | Renders the 40% / 60% split. Left slot + right slot as props. Mobile: left collapses to header bar. |
+| `login-panel.tsx` | Left panel content for login — heading, bullets, testimonial, trust badges. No logic. |
+| `signup-panel.tsx` | Left panel content for signup — heading, feature list, stat, trust badges. No logic. |
+| `login-form.tsx` | Manages `email` → `otp` step state. Calls `useAuth` hooks. Handles resend timer. |
+| `signup-form.tsx` | Manages 4-step state: `email` → `otp` → `personal` → `practice`. Each step is a separate JSX block. |
+| `otp-input.tsx` | Controlled 6-box input. Auto-focuses next box, handles backspace, paste support. |
+| `auth.ts` (lib) | `requestOtp(email)`, `verifyOtp(email, otp)`, `signup(data)` — raw fetch calls, typed responses. |
+| `use-auth.ts` | `useRequestOtp()`, `useVerifyOtp()`, `useSignup()` — React Query `useMutation` wrappers. |
+| `auth-store.ts` | `accessToken`, `user` (id, name, role, orgId), `setAuth()`, `clearAuth()`. |
+
+---
+
+## Implementation Order
+
+1. **Setup** — Install Tailwind, init shadcn/ui, configure CSS variables to match design tokens, install React Query / Zustand / React Hook Form
+2. **Root layout** — Inter font, `QueryClientProvider`, metadata base
+3. **Zustand store** — `auth-store.ts`
+4. **API client** — `lib/api/auth.ts` with typed fetch wrappers
+5. **React Query hooks** — `hooks/use-auth.ts`
+6. **OTP input component** — `otp-input.tsx` (shared, tested in isolation)
+7. **Auth layout** — `auth-layout.tsx` split wrapper + mobile behavior
+8. **Login page** — left panel + login form (email step + OTP step)
+9. **Signup page** — left panel + signup form (4 steps)
+10. **Dashboard stub** — minimal page, no logic
+11. **Root redirect** — `app/page.tsx` → `/login`
+12. **CSS variables audit** — verify all design tokens are applied consistently
+
+---
+
 ## What Is Out of Scope (This PR)
 
 - Dashboard page (redirect target only — stub page is enough)

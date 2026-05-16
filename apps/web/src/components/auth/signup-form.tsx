@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { OtpInput } from "@/components/auth/otp-input";
-import { useSignup, useVerifyOtp } from "@/hooks/use-auth";
+import { useSignup, useVerifyOtp, useRequestOtp } from "@/hooks/use-auth";
 import { useAuthStore } from "@/store/auth-store";
 import { maskEmail } from "@/lib/utils";
 
@@ -78,6 +78,7 @@ export function SignupForm() {
 
   const signup = useSignup();
   const verifyOtp = useVerifyOtp();
+  const resendOtp = useRequestOtp();
 
   useEffect(() => {
     if (resendSeconds <= 0) return;
@@ -144,16 +145,7 @@ export function SignupForm() {
 
   async function handleResend() {
     try {
-      await signup.mutateAsync({
-        email: email.trim(),
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        designation,
-        phoneNumber: phoneNumber.trim(),
-        orgName: orgName.trim(),
-        practiceType,
-        city: city.trim(),
-      });
+      await resendOtp.mutateAsync({ email: email.trim() });
       toast.info(`Code sent to ${maskEmail(email.trim())}`);
       setResendSeconds(RESEND_COOLDOWN);
       setOtp("");
@@ -199,7 +191,7 @@ export function SignupForm() {
           <button
             type="button"
             onClick={handleResend}
-            disabled={resendSeconds > 0 || signup.isPending}
+            disabled={resendSeconds > 0 || resendOtp.isPending}
             className="text-[#1e40af] hover:underline disabled:text-[#94a3b8] disabled:no-underline"
           >
             {resendSeconds > 0

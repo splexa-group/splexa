@@ -24,9 +24,17 @@ export function OtpInput({ value, onChange, hasError, disabled }: OtpInputProps)
   function handleChange(index: number, raw: string) {
     const digit = raw.replace(/\D/g, "").slice(-1);
     if (!digit) return;
-    const next = (value + digit).slice(0, OTP_LENGTH);
-    onChange(next);
-    if (next.length < OTP_LENGTH) getInputAt(next.length)?.focus();
+    if (index < value.length) {
+      // Replace the digit at this specific position
+      const next = value.slice(0, index) + digit + value.slice(index + 1);
+      onChange(next);
+      if (index < OTP_LENGTH - 1) getInputAt(index + 1)?.focus();
+    } else {
+      // Append (sequential forward typing)
+      const next = (value + digit).slice(0, OTP_LENGTH);
+      onChange(next);
+      if (next.length < OTP_LENGTH) getInputAt(next.length)?.focus();
+    }
   }
 
   function handleKeyDown(e: React.KeyboardEvent) {

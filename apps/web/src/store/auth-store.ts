@@ -1,13 +1,5 @@
 import { create } from "zustand";
-
-interface AuthUser {
-  id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  role: string;
-  orgId: string;
-}
+import type { AuthUser } from "@/lib/api/auth";
 
 interface AuthState {
   accessToken: string | null;

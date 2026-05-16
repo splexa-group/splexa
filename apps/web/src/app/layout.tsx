@@ -16,6 +16,14 @@ export const metadata: Metadata = {
   },
   description: "Legal practice management for Indian advocates.",
   metadataBase: new URL("https://splexa.in"),
+  openGraph: {
+    siteName: "Splexa",
+    type: "website",
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({

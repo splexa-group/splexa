@@ -1,9 +1,5 @@
-import styles from "./page.module.css";
+import { redirect } from "next/navigation";
 
-export default function Home() {
-  return (
-    <div className={styles.page}>
-      <h1>SPLEXA</h1>
-    </div>
-  );
+export default function RootPage() {
+  redirect("/login");
 }

@@ -3,8 +3,6 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-// ─── Input ───────────────────────────────────────────────────────────────────
-
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   hint?: string;
@@ -60,10 +58,6 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
   },
 );
 Input.displayName = "Input";
-
-// ─── InputGroup ───────────────────────────────────────────────────────────────
-// One bordered box: dim label on top, input value below.
-// Pass input props directly — no children.
 
 export interface InputGroupProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;

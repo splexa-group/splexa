@@ -1,0 +1,18 @@
+import { GET, POST } from "@/api/http";
+import { SignupPayload, VerifyOtpResponse } from "@/types/auth";
+import { AuthUser } from "@/types/user";
+
+export const authApi = {
+  me: () => GET<AuthUser>("/auth/me"),
+
+  signup: (data: SignupPayload) => POST<void>("/auth/signup", data),
+
+  requestOtp: (email: string) => POST<void>("/auth/otp/request", { email }),
+
+  verifyOtp: (email: string, otp: string) =>
+    POST<VerifyOtpResponse>("/auth/otp/verify", { email, otp }),
+
+  refresh: () => POST<{ accessToken: string }>("/auth/refresh"),
+
+  logout: () => POST<void>("/auth/logout"),
+};

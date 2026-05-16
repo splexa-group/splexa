@@ -32,6 +32,29 @@
   --color-text-muted: var(--text-muted);
   --color-surface: var(--surface);
   --color-surface-raised: var(--surface-raised);
+
+  /* Spec-named text token aliases */
+  --color-bg: var(--background);
+  --color-text: var(--foreground);
+  --color-text-secondary: var(--muted-foreground);
+
+  /* Status tokens */
+  --color-success-bg: #dcfce7;
+  --color-success-text: #15803d;
+  --color-error-bg: #fee2e2;
+  --color-error-text: #dc2626;
+  --color-warning-bg: #fef3c7;
+  --color-warning-text: #b45309;
+  --color-info-bg: #dbeafe;
+  --color-info-text: #1d4ed8;
+  --color-neutral-bg: #f1f5f9;
+  --color-neutral-text: #475569;
+  --color-urgent-bg: #fef2f2;
+  --color-urgent-border: #fecaca;
+  --color-urgent-text: #991b1b;
+  --color-action-bg: #eff6ff;
+  --color-action-border: #bfdbfe;
+  --color-action-text: #1e40af;
 }
 
 :root {

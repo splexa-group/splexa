@@ -1,7 +1,6 @@
 import "./globals.css";
-
-import { Inter } from "next/font/google";
 import type { Metadata } from "next";
+import { Inter } from "next/font/google";
 import { Providers } from "./providers";
 
 const inter = Inter({
@@ -11,19 +10,22 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Splexa", template: "%s — Splexa" },
+  title: {
+    default: "Splexa",
+    template: "%s - Splexa",
+  },
   description: "Legal practice management for Indian advocates.",
   metadataBase: new URL("https://splexa.in"),
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html lang="en" className={inter.className}>
-      <body>
+    <html lang="en">
+      <body className={inter.className}>
         <Providers>{children}</Providers>
       </body>
     </html>

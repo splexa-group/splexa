@@ -1,5 +1,5 @@
+import { AuthUser } from "@/types/user";
 import { create } from "zustand";
-import type { AuthUser } from "@/services/auth";
 
 interface AuthState {
   accessToken: string | null;

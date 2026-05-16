@@ -1,9 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
-import {
-  authApi,
-  type SignupPayload,
-  type VerifyOtpResponse,
-} from "@/services/auth";
+import { authApi } from "@/services/auth";
+import { SignupPayload, VerifyOtpResponse } from "@/types/auth";
 
 export function useRequestOtp() {
   return useMutation<void, Error, { email: string }>({

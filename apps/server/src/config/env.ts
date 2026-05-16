@@ -14,7 +14,7 @@ dotenv.config({
   ),
 });
 
-function requireEnv(name: string): string {
+function getEnvVariable(name: string): string {
   const value = process.env[name];
   if (!value) throw new Error(`Missing required environment variable: ${name}`);
   return value.trim();
@@ -22,16 +22,16 @@ function requireEnv(name: string): string {
 
 export const env = {
   NODE_ENV,
-  PORT: Number(process.env["PORT"] ?? 5001),
+  PORT: Number(getEnvVariable("PORT")),
   IS_DEVELOPMENT: NODE_ENV === ENVIRONMENT.DEVELOPMENT,
   IS_PRODUCTION: NODE_ENV === ENVIRONMENT.PRODUCTION,
   IS_STAGING: NODE_ENV === ENVIRONMENT.STAGING,
-  LOG_LEVEL: process.env["LOG_LEVEL"] ?? "info",
-  DATABASE_URL: requireEnv("DATABASE_URL"),
-  JWT_ACCESS_SECRET: requireEnv("JWT_ACCESS_SECRET"),
-  JWT_ACCESS_EXPIRY: process.env["JWT_ACCESS_EXPIRY"] ?? "15m",
-  COOKIE_SECRET: requireEnv("COOKIE_SECRET"),
-  RESEND_API_KEY: requireEnv("RESEND_API_KEY"),
-  EMAIL_FROM: requireEnv("EMAIL_FROM"),
-  EMAIL_PROVIDER: process.env["EMAIL_PROVIDER"] ?? "resend",
+  LOG_LEVEL: getEnvVariable("LOG_LEVEL"),
+  DATABASE_URL: getEnvVariable("DATABASE_URL"),
+  JWT_ACCESS_SECRET: getEnvVariable("JWT_ACCESS_SECRET"),
+  JWT_ACCESS_EXPIRY: getEnvVariable("JWT_ACCESS_EXPIRY"),
+  COOKIE_SECRET: getEnvVariable("COOKIE_SECRET"),
+  RESEND_API_KEY: getEnvVariable("RESEND_API_KEY"),
+  EMAIL_FROM: getEnvVariable("EMAIL_FROM"),
+  EMAIL_PROVIDER: getEnvVariable("EMAIL_PROVIDER"),
 } as const;

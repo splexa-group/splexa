@@ -404,9 +404,9 @@ export const metadata: Metadata = {
 
 Zod for client-side validation is out of scope for Phase 1 — React Hook Form's built-in validation is sufficient.
 
-### shadcn/ui Components Needed
+### Base UI Primitives
 
-`Button`, `Input`, `Label`, `Select`, `Form` (RHF wrapper) — generated via CLI, then customized to match design tokens.
+`Button`, `Input`, `Label`, `Select`, `Form` (RHF wrapper) — initialized via shadcn/ui CLI into `components/ui/`, then fully owned and customized to the design tokens defined in this spec. These are not third-party components — once added, they live in the codebase and are maintained like any other file.
 
 ---
 
@@ -426,7 +426,7 @@ apps/web/src/
 │   └── dashboard/
 │       └── page.tsx                ← stub page (redirect target only)
 ├── components/
-│   ├── ui/                         ← shadcn/ui generated components (button, input, etc.)
+│   ├── ui/                         ← base UI primitives (Button, Input, Label, Select, Form) — owned, customized to design tokens
 │   └── auth/
 │       ├── auth-layout.tsx         ← 40/60 split wrapper used by both pages
 │       ├── login-panel.tsx         ← login-specific left panel content
@@ -448,6 +448,7 @@ apps/web/src/
 
 | Component | What it does |
 |---|---|
+| `ui/button.tsx`, `ui/input.tsx`, etc. | Owned base primitives — fully customized to design tokens. No shadcn defaults left unchanged. |
 | `auth-layout.tsx` | Renders the 40% / 60% split. Left slot + right slot as props. Mobile: left collapses to header bar. |
 | `login-panel.tsx` | Left panel content for login — heading, bullets, testimonial, trust badges. No logic. |
 | `signup-panel.tsx` | Left panel content for signup — heading, feature list, stat, trust badges. No logic. |

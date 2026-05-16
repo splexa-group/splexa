@@ -9,8 +9,8 @@ export const errorHandlerPlugin = fp(
     fastify.setErrorHandler((error, _req, reply) => {
       if (error instanceof AppError) {
         reply.code(error.statusCode).send({
-          error: error.message,
-          code: error.code,
+          success: false,
+          error: { code: error.code, message: error.message },
         });
         return;
       }
@@ -18,17 +18,20 @@ export const errorHandlerPlugin = fp(
       const maybeValidation = error as { validation?: unknown[] };
       if (maybeValidation.validation) {
         reply.code(400).send({
-          error: "Validation error",
-          code: ErrorCode.VALIDATION_ERROR,
-          details: maybeValidation.validation,
+          success: false,
+          error: {
+            code: ErrorCode.VALIDATION_ERROR,
+            message: "Validation error",
+            details: maybeValidation.validation,
+          },
         });
         return;
       }
 
       fastify.log.error(error);
       reply.code(500).send({
-        error: "Internal server error",
-        code: ErrorCode.INTERNAL_ERROR,
+        success: false,
+        error: { code: ErrorCode.INTERNAL_ERROR, message: "Internal server error" },
       });
     });
   },

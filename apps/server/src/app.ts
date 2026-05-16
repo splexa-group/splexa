@@ -10,6 +10,7 @@ import { fastifyLogger } from "@/config/logger";
 import { authModule } from "@/modules/auth/plugin";
 import { authGuardPlugin } from "@/plugins/auth-guard.plugin";
 import { errorHandlerPlugin } from "@/plugins/error-handler.plugin";
+import { responsePlugin } from "@/plugins/response.plugin";
 
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({ logger: fastifyLogger });
@@ -18,6 +19,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   app.setSerializerCompiler(serializerCompiler);
 
   await app.register(errorHandlerPlugin);
+  await app.register(responsePlugin);
   await app.register(cookie, { secret: env.COOKIE_SECRET });
   await app.register(authGuardPlugin);
   await app.register(authModule);

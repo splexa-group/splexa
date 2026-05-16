@@ -1,99 +1,80 @@
-import type {
-  OtpRequestInput,
-  OtpVerifyInput,
-  SignupInput,
-} from "@splexa-group/shared/schemas";
 import type { FastifyReply, FastifyRequest } from "fastify";
 
 import { REFRESH_TOKEN_COOKIE } from "@/constants/auth";
 
-import { clearAuthCookies, setAccessTokenCookie, setRefreshTokenCookie } from "./helper";
-import type { SessionParams } from "./schema";
+import {
+  clearAuthCookies,
+  setAccessTokenCookie,
+  setRefreshTokenCookie,
+} from "./helper";
+import type {
+  OtpRequestBody,
+  OtpVerifyBody,
+  SessionParams,
+  SignupBody,
+} from "./schema";
 import { authService } from "./service";
 
 export const authController = {
-  async signup(
-    req: FastifyRequest<{ Body: SignupInput }>,
-    reply: FastifyReply,
-  ): Promise<void> {
+  async signup(req: FastifyRequest<{ Body: SignupBody }>) {
     await authService.signup(req.body);
-    reply.code(201).send({ message: "OTP sent to your email" });
+    return { message: "OTP sent to your email" };
   },
 
-  async requestOtp(
-    req: FastifyRequest<{ Body: OtpRequestInput }>,
-    reply: FastifyReply,
-  ): Promise<void> {
+  async requestOtp(req: FastifyRequest<{ Body: OtpRequestBody }>) {
     await authService.requestOtp(req.body);
-    reply.send({ message: "OTP sent" });
+    return { message: "OTP sent" };
   },
 
   async verifyOtp(
-    req: FastifyRequest<{ Body: OtpVerifyInput }>,
+    req: FastifyRequest<{ Body: OtpVerifyBody }>,
     reply: FastifyReply,
-  ): Promise<void> {
+  ) {
     const userAgent = req.headers["user-agent"] ?? "unknown";
     const { accessToken, refreshToken, user } = await authService.verifyOtp(
       req.body,
-      {
-        ipAddress: req.ip,
-        userAgent,
-      },
+      { ipAddress: req.ip, userAgent },
     );
     setAccessTokenCookie(reply, accessToken);
     setRefreshTokenCookie(reply, refreshToken);
-    reply.send({ user });
+    return { user };
   },
 
-  async refresh(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+  async refresh(req: FastifyRequest, reply: FastifyReply) {
     const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE];
     const { accessToken } = await authService.refreshSession(refreshToken);
     setAccessTokenCookie(reply, accessToken);
-    reply.send({ message: "Token refreshed" });
+    return { message: "Token refreshed" };
   },
 
-  async logout(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+  async logout(req: FastifyRequest, reply: FastifyReply) {
     const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE];
     await authService.logout(refreshToken);
     clearAuthCookies(reply);
-    reply.send({ message: "Logged out" });
+    return { message: "Logged out" };
   },
 
-  async getMe(req: FastifyRequest, reply: FastifyReply): Promise<void> {
-    const user = await authService.getMe(req.user.userId);
-    reply.send(user);
+  async getMe(req: FastifyRequest) {
+    return authService.getMe(req.user.userId);
   },
 
-  async listSessions(req: FastifyRequest, reply: FastifyReply): Promise<void> {
+  async listSessions(req: FastifyRequest) {
     const sessions = await authService.listSessions(req.user.userId);
-    reply.send({ sessions });
+    return { sessions };
   },
 
-  async getSession(
-    req: FastifyRequest<{ Params: SessionParams }>,
-    reply: FastifyReply,
-  ): Promise<void> {
-    const session = await authService.getSession(
-      req.params.id,
-      req.user.userId,
-    );
-    reply.send(session);
+  async getSession(req: FastifyRequest<{ Params: SessionParams }>) {
+    return authService.getSession(req.params.id, req.user.userId);
   },
 
-  async revokeSession(
-    req: FastifyRequest<{ Params: SessionParams }>,
-    reply: FastifyReply,
-  ): Promise<void> {
+  async revokeSession(req: FastifyRequest<{ Params: SessionParams }>) {
     await authService.revokeSession(req.params.id, req.user.userId);
-    reply.send({ message: "Session revoked" });
+    return { message: "Session revoked" };
   },
 
-  async revokeAllSessions(
-    req: FastifyRequest,
-    reply: FastifyReply,
-  ): Promise<void> {
+  async revokeAllSessions(req: FastifyRequest, reply: FastifyReply) {
     await authService.revokeAllSessions(req.user.userId);
     clearAuthCookies(reply);
-    reply.send({ message: "All sessions revoked" });
+    return { message: "All sessions revoked" };
   },
 };

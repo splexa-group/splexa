@@ -31,6 +31,6 @@ export const otpVerifySchema = z
   })
   .strict();
 
-export type OtpVerifyInput = z.infer<typeof otpVerifySchema>;
-export type OtpRequestInput = z.infer<typeof otpRequestSchema>;
-export type SignupInput = z.infer<typeof signupSchema>;
+export interface OtpVerifyInput extends z.infer<typeof otpVerifySchema> {}
+export interface OtpRequestInput extends z.infer<typeof otpRequestSchema> {}
+export interface SignupInput extends z.infer<typeof signupSchema> {}

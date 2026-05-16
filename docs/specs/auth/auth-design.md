@@ -1,6 +1,6 @@
 # Authentication — Design Spec
 
-**Date:** 2026-05-15
+**Date:** 2026-05-16
 **Branch:** chore/authentication
 **Scope:** Phase 1 — Passwordless email OTP authentication for Splexa
 
@@ -15,20 +15,34 @@ Splexa uses passwordless email OTP authentication. No passwords. A user enters t
 ## API Surface
 
 ```
-POST   /auth/signup              → create org + user → send OTP
-POST   /auth/otp/request         → send OTP to existing user email
-POST   /auth/otp/verify          → verify OTP → return access token + set refresh cookie
-POST   /auth/refresh             → exchange refresh cookie for new access token
-POST   /auth/logout              → revoke current session
-GET    /auth/me                  → return current user + org info
+POST   /api/v1/auth/signup              → create org + user → send OTP
+POST   /api/v1/auth/otp/request         → send OTP to existing user email
+POST   /api/v1/auth/otp/verify          → verify OTP → return access token + set refresh cookie
+POST   /api/v1/auth/refresh             → exchange refresh cookie for new access token
+POST   /api/v1/auth/logout              → revoke current session
+GET    /api/v1/auth/me                  → return current user + org info
 
-GET    /auth/sessions            → list all active sessions for current user
-GET    /auth/sessions/:id        → get one session
-DELETE /auth/sessions/:id        → revoke one session
-DELETE /auth/sessions            → revoke all sessions (logout everywhere)
+GET    /api/v1/auth/sessions            → list all active sessions for current user
+GET    /api/v1/auth/sessions/:id        → get one session
+DELETE /api/v1/auth/sessions/:id        → revoke one session
+DELETE /api/v1/auth/sessions            → revoke all sessions (logout everywhere)
 ```
 
-All routes live under the `auth` Fastify plugin. Protected routes (`/auth/me`, `/auth/sessions*`) require a valid JWT via `preHandler: [fastify.authenticate]`. `/auth/logout` and `/auth/refresh` authenticate via the httpOnly cookie directly — they must remain accessible even when the access token has expired.
+All routes live under the `auth` Fastify plugin, registered under the `/api/v1` prefix. Protected routes (`/api/v1/auth/me`, `/api/v1/auth/sessions*`) require a valid JWT via `preHandler: [fastify.authenticate]`. `/api/v1/auth/logout` and `/api/v1/auth/refresh` authenticate via the httpOnly cookie directly — they must remain accessible even when the access token has expired.
+
+### Response Envelope
+
+All responses follow a uniform envelope:
+
+```json
+// Success
+{ "success": true, "data": { ... } }
+
+// Error
+{ "success": false, "error": { "code": "AUTH_MISSING_TOKEN", "message": "Missing access token" } }
+```
+
+Success wrapping is done automatically by the `responsePlugin` (`preSerialization` hook) — controllers just `return` data. Errors are formatted by `errorHandlerPlugin`.
 
 ---
 
@@ -218,13 +232,13 @@ model AuditLog {
 7. Generate access token: JWT `{ userId, orgId, role }`, 15 min, HS256
 8. Generate refresh token: `crypto.randomBytes(64).toString('hex')`
 9. SHA-256 hash refresh token → `sessions.create` → `{ userId, orgId, tokenHash, ipAddress, userAgent, expiresAt: now + 30days }`
-10. Set cookie: `refresh_token=<token>; HttpOnly; Secure; SameSite=Strict; Path=/auth`
+10. Set cookies: `access_token` (Path=/, 15 min) and `refresh_token` (Path=/api/v1/auth, 30 days) — both HttpOnly, SameSite=Strict, Secure=true in production only
 11. `audit_logs.create` → `{ action: ActivityAction.AUTH_OTP_VERIFIED, userId, orgId, ... }`
 12. Return `200 { accessToken, user: { id, firstName, lastName, email, role, orgId } }`
 
 ### Refresh
 
-1. `POST /auth/refresh` — read `refresh_token` cookie → 401 if missing
+1. `POST /api/v1/auth/refresh` — read `refresh_token` cookie → 401 `AUTH_MISSING_REFRESH_TOKEN` if missing
 2. SHA-256 hash → find `sessions` where `tokenHash = ? AND revokedAt IS NULL AND expiresAt > now` → 401 if not found
 3. Find user where `id = session.userId AND deletedAt IS NULL` → 401 if not found
 4. Generate new access token: JWT `{ userId, orgId, role }`, 15 min
@@ -234,13 +248,13 @@ model AuditLog {
 
 ### Logout
 
-1. `POST /auth/logout` — read `refresh_token` cookie → 401 if missing
+1. `POST /api/v1/auth/logout` — read `refresh_token` cookie → 401 `AUTH_MISSING_REFRESH_TOKEN` if missing
 2. SHA-256 hash → find session → `sessions.update` set `revokedAt = now`
-3. Clear cookie: `refresh_token=; HttpOnly; Secure; SameSite=Strict; Max-Age=0`
+3. Clear both cookies: `access_token` (Path=/) and `refresh_token` (Path=/api/v1/auth) with Max-Age=0
 4. `audit_logs.create` → `{ action: ActivityAction.AUTH_LOGOUT, userId, orgId, ... }`
 5. Return `200`
 
-### GET /auth/me
+### GET /api/v1/auth/me
 
 1. Protected — requires valid JWT (`preHandler: [fastify.authenticate]`)
 2. `users.findFirst` where `id = req.user.userId AND deletedAt IS NULL`, include `org`
@@ -248,10 +262,10 @@ model AuditLog {
 
 ### Sessions
 
-- `GET /auth/sessions` — list `sessions` where `userId = req.user.userId AND revokedAt IS NULL AND expiresAt > now`; return `{ id, ipAddress, userAgent, createdAt, lastUsedAt }`
-- `GET /auth/sessions/:id` — single session scoped to `req.user.userId` → 404 if not found or belongs to another user
-- `DELETE /auth/sessions/:id` — set `revokedAt = now`; write `audit_logs: AUTH_SESSION_REVOKED`; return `200`
-- `DELETE /auth/sessions` — set `revokedAt = now` on **all** active sessions for `req.user.userId` including the current session; clear the refresh cookie; write `audit_logs: AUTH_ALL_SESSIONS_REVOKED`; return `200`
+- `GET /api/v1/auth/sessions` — list `sessions` where `userId = req.user.userId AND revokedAt IS NULL AND expiresAt > now`; return `{ id, ipAddress, userAgent, createdAt, lastUsedAt }`
+- `GET /api/v1/auth/sessions/:id` — single session scoped to `req.user.userId` → 404 if not found or belongs to another user
+- `DELETE /api/v1/auth/sessions/:id` — set `revokedAt = now`; write `audit_logs: AUTH_SESSION_REVOKED`; return `200`
+- `DELETE /api/v1/auth/sessions` — set `revokedAt = now` on **all** active sessions for `req.user.userId` including the current session; clear both cookies; write `audit_logs: AUTH_ALL_SESSIONS_REVOKED`; return `200`
 
 ---
 
@@ -260,14 +274,14 @@ model AuditLog {
 ### File structure
 
 ```
-apps/server/src/lib/integrations/
+apps/server/src/integrations/
 └── email/
-    ├── index.ts            ← factory — only import point for app code
-    ├── email-interface.ts  ← EmailProvider interface
+    ├── index.ts            ← singleton export — only import point for app code
+    ├── email-interface.ts  ← EmailProvider interface (adapter contract)
     └── resend-adapter.ts   ← Resend SDK implementation
 ```
 
-App code imports only from `email/index.ts`. Swapping providers only touches the adapter.
+App code imports only from `@/integrations/email`. Swapping providers only touches the adapter file and the factory switch in `index.ts`.
 
 ### OTP email
 
@@ -306,7 +320,10 @@ Both validated at startup in `config/env.ts` — server crashes immediately if m
 | Access token | JWT HS256, 15-min expiry, `{ userId, orgId, role }` only |
 | Access token storage | Zustand (memory) on client — never localStorage or sessionStorage |
 | Refresh token | 30-day expiry, SHA-256 hashed in `sessions` table |
-| Refresh token storage | httpOnly + Secure + SameSite=Strict cookie |
+| Refresh token storage | httpOnly + SameSite=Strict cookie; Secure=true in production, false in development |
+| Refresh token cookie path | `Path=/api/v1/auth` — browser only sends it to auth endpoints |
+| Access token cookie path | `Path=/` — sent with all API requests for the auth guard to read |
+| Missing refresh token error | `AUTH_MISSING_REFRESH_TOKEN` (separate from `AUTH_MISSING_TOKEN` for access token) |
 | Post-logout access token | Valid for up to 15 min (no blacklist in Phase 1 — acceptable trade-off) |
 | `orgId` source | Always `req.user.orgId` from verified JWT — never body, params, or query |
 | Logging | Never log raw OTP, JWT, or refresh token. Mask email in logs. |
@@ -332,14 +349,18 @@ Both validated at startup in `config/env.ts` — server crashes immediately if m
 
 ```
 modules/auth/
-├── auth-plugin.ts        ← registers routes with Fastify
-├── auth-route.ts         ← paths + Zod schemas + preHandlers
-├── auth-controller.ts    ← calls service, sends reply
-├── auth-service.ts       ← business logic, OTP, token generation
-└── auth-repository.ts    ← all Prisma queries
+├── plugin.ts       ← registers routes with Fastify under /api/v1/auth
+├── routes.ts       ← paths + Zod schemas + preHandlers
+├── controller.ts   ← calls service, returns data (no reply.send())
+├── service.ts      ← business logic, OTP, token generation
+├── repository.ts   ← all Prisma queries
+├── schema.ts       ← Zod schemas for request bodies (server-only)
+└── helper.ts       ← cookie helpers (set/clear), OTP expiry, token expiry
 ```
 
-Schemas for request bodies (`SignupSchema`, `OtpRequestSchema`, `OtpVerifySchema`) live in `packages/shared/src/schemas/auth.ts` — used by both server and frontend forms.
+Files use no `auth-` prefix — the folder name provides the context.
+
+Request body schemas (`signupSchema`, `otpRequestSchema`, `otpVerifySchema`) live in `modules/auth/schema.ts` — server-only. They are not in `packages/shared` because the frontend validation approach is separate.
 
 ---
 

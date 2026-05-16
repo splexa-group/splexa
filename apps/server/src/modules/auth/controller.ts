@@ -23,7 +23,7 @@ export const authController = {
 
   async requestOtp(req: FastifyRequest<{ Body: OtpRequestInput }>) {
     await authService.requestOtp(req.body);
-    return { message: "OTP sent" };
+    return { message: "OTP sent to your email" };
   },
 
   async verifyOtp(

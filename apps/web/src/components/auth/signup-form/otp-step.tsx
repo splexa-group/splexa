@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/otp-input";
-import { useVerifyOtp, useRequestOtp } from "@/hooks/use-auth";
+import { useVerifyOtp, useRequestOtp, AUTH_MESSAGES } from "@/hooks/use-auth";
 import { maskEmail } from "@/lib/utils";
 
-const RESEND_COOL_DOWN_SECONDS = 30;
+const RESEND_COOL_DOWN_SECONDS = 60;
 
 interface SignupOtpStepProps {
   email: string;
@@ -19,7 +19,7 @@ export function SignupOtpStep({ email, onBack }: SignupOtpStepProps) {
   const [hasError, setHasError] = useState(false);
   const [resendSeconds, setResendSeconds] = useState(RESEND_COOL_DOWN_SECONDS);
 
-  const verifyOtp = useVerifyOtp();
+  const verifyOtp = useVerifyOtp(AUTH_MESSAGES.signupSuccess);
   const requestOtp = useRequestOtp();
 
   useEffect(() => {

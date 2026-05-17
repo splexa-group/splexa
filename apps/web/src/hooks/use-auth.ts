@@ -6,6 +6,11 @@ import { SignupPayload, VerifyOtpResponse } from "@/types/auth";
 import { useAuthStore } from "@/store/auth-store";
 import { maskEmail } from "@/lib/utils";
 
+const MESSAGES = {
+  loginSuccess: "Welcome back!",
+  signupSuccess: "Welcome to Splexa!",
+} as const;
+
 export function useRequestOtp() {
   return useMutation<void, Error, { email: string }>({
     mutationFn: ({ email }) => authApi.requestOtp(email),
@@ -15,15 +20,15 @@ export function useRequestOtp() {
   });
 }
 
-export function useVerifyOtp() {
+export function useVerifyOtp(successMessage: string = MESSAGES.loginSuccess) {
   const router = useRouter();
   const setAuth = useAuthStore((s) => s.setAuth);
 
   return useMutation<VerifyOtpResponse, Error, { email: string; otp: string }>({
     mutationFn: ({ email, otp }) => authApi.verifyOtp(email, otp),
-    onSuccess: ({ accessToken, user }) => {
-      setAuth(accessToken, user);
-      toast.success("Welcome back to Splexa!");
+    onSuccess: ({ user }) => {
+      setAuth(user);
+      toast.success(successMessage);
       router.push("/dashboard");
     },
     onError: (err) => toast.error(err.message || "Invalid code. Try again."),
@@ -36,11 +41,9 @@ export function useSignup() {
     onSuccess: (_, { email }) => toast.info(`Code sent to ${maskEmail(email)}`),
     onError: (err) => {
       const msg = err.message || "Signup failed. Try again.";
-      toast.error(
-        msg.toLowerCase().includes("already")
-          ? "An account with this email already exists. Sign in instead."
-          : msg,
-      );
+      toast.error(msg);
     },
   });
 }
+
+export { MESSAGES as AUTH_MESSAGES };

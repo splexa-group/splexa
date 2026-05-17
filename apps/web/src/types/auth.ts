@@ -1,7 +1,6 @@
 import { AuthUser } from "./user";
 
 export interface VerifyOtpResponse {
-  accessToken: string;
   user: AuthUser;
 }
 

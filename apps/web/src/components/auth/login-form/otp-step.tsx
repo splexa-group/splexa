@@ -7,7 +7,7 @@ import { OtpInput } from "@/components/ui/otp-input";
 import { useVerifyOtp, useRequestOtp } from "@/hooks/use-auth";
 import { maskEmail } from "@/lib/utils";
 
-const RESEND_COOL_DOWN_SECONDS = 30;
+const RESEND_COOL_DOWN_SECONDS = 60;
 
 interface Props {
   email: string;

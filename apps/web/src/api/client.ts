@@ -31,7 +31,7 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        await api.post("/api/v1/auth/refresh");
+        await api.post("/auth/refresh");
 
         // Retry original request
         return api(originalRequest);

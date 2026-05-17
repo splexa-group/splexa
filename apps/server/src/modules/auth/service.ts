@@ -23,38 +23,47 @@ export const authService = {
     const existing = await authRepository.findUserByEmail(input.email);
     if (existing) throw Errors.emailTaken();
 
-    const count = await authRepository.countOtpRequestsInLastHour(input.email);
+    const count = await authRepository.countRecentOtpRequests(input.email);
     if (count >= MAX_OTP_REQUESTS_PER_HOUR) throw Errors.otpRateLimited();
 
     const orgId = generateUUID();
     const userId = generateUUID();
     const otp = generateOtp();
+    const otpHash = await bcrypt.hash(otp, 10);
 
+    // Send email before writing to DB — if delivery fails nothing is persisted.
     try {
       await emailProvider.sendOtp(input.email, otp);
     } catch {
       throw Errors.emailSendFailed();
     }
 
-    await authRepository.createOrgAndUser(orgId, userId, input);
-    const otpHash = await bcrypt.hash(otp, 10);
-    await authRepository.createOtpRequest(input.email, otpHash, otpExpiry());
+    // Org, user, and OTP request are created atomically so there is never a
+    // user with no verifiable OTP or an OTP with no owning user.
+    await authRepository.createOrgAndUser(
+      orgId,
+      userId,
+      input,
+      otpHash,
+      otpExpiry(),
+    );
   },
 
   async requestOtp(input: OtpRequestInput): Promise<void> {
     const user = await authRepository.findUserByEmail(input.email);
     if (!user) throw Errors.userNotFound();
 
-    const count = await authRepository.countOtpRequestsInLastHour(input.email);
+    const count = await authRepository.countRecentOtpRequests(input.email);
     if (count >= MAX_OTP_REQUESTS_PER_HOUR) throw Errors.otpRateLimited();
 
-    const locked = await authRepository.findRecentLockedOtp(
+    const locked = await authRepository.findLockedEmail(
       input.email,
       MAX_OTP_ATTEMPTS,
     );
     if (locked) throw Errors.otpLocked();
 
     const otp = generateOtp();
+    const otpHash = await bcrypt.hash(otp, 10);
 
     try {
       await emailProvider.sendOtp(input.email, otp);
@@ -62,7 +71,9 @@ export const authService = {
       throw Errors.emailSendFailed();
     }
 
-    const otpHash = await bcrypt.hash(otp, 10);
+    // Invalidate all previous pending OTPs before issuing the new one so a
+    // stale intercepted code cannot be replayed after a newer one is verified.
+    await authRepository.invalidateActiveOtps(input.email);
     await authRepository.createOtpRequest(input.email, otpHash, otpExpiry());
   },
 
@@ -82,13 +93,17 @@ export const authService = {
 
     if (!isValid) {
       await authRepository.incrementOtpAttempts(otpRow.id);
-      const newAttempts = otpRow.attempts + 1;
+      const remainingAttempts = MAX_OTP_ATTEMPTS - (otpRow.attempts + 1);
 
-      if (newAttempts >= MAX_OTP_ATTEMPTS) {
-        // TODO: LOCK ACCOUNT
+      //TODO: send email to user warning about too many failed attempts - so if he is not the one trying to login, he can take action to secure his account before lockout occurs. This is especially important if we decide to increase MAX_OTP_ATTEMPTS in the future.
+
+      if (remainingAttempts <= 0) {
+        throw Errors.otpLocked();
       }
 
-      throw Errors.invalidOtp();
+      throw Errors.invalidOtp(
+        `Invalid OTP. You have ${remainingAttempts} attempts remaining.`,
+      );
     }
 
     await authRepository.markOtpVerified(otpRow.id);

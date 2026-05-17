@@ -21,11 +21,19 @@ export const authRepository = {
     });
   },
 
-  async createOrgAndUser(orgId: string, userId: string, input: SignupInput) {
+  // Creates org, user, and initial OTP request atomically so partial failures
+  // cannot leave a user with no verifiable OTP or an OTP with no user.
+  async createOrgAndUser(
+    orgId: string,
+    userId: string,
+    input: SignupInput,
+    otpHash: string,
+    otpExpiresAt: Date,
+  ) {
     return prisma.$transaction(async (tx) => {
       await tx.$executeRaw`SET CONSTRAINTS ALL DEFERRED`;
 
-      const org = await tx.organization.create({
+      await tx.organization.create({
         data: {
           id: orgId,
           name: input.orgName,
@@ -35,7 +43,7 @@ export const authRepository = {
         },
       });
 
-      const user = await tx.user.create({
+      await tx.user.create({
         data: {
           id: userId,
           orgId,
@@ -49,7 +57,18 @@ export const authRepository = {
         select: userSelect,
       });
 
-      return { org, user };
+      await tx.otpRequest.create({
+        data: { email: input.email, otpHash, expiresAt: otpExpiresAt },
+      });
+    });
+  },
+
+  // Invalidates all pending OTPs for an email before issuing a new one,
+  // preventing replay of a stale code after a newer one has been verified.
+  async invalidateActiveOtps(email: string): Promise<void> {
+    await prisma.otpRequest.updateMany({
+      where: { email, verifiedAt: null },
+      data: { verifiedAt: new Date() },
     });
   },
 
@@ -59,7 +78,7 @@ export const authRepository = {
     });
   },
 
-  async countOtpRequestsInLastHour(email: string): Promise<number> {
+  async countRecentOtpRequests(email: string): Promise<number> {
     const since = new Date(Date.now() - OTP_RATE_WINDOW_MS);
     return prisma.otpRequest.count({
       where: { email, createdAt: { gt: since } },
@@ -73,7 +92,7 @@ export const authRepository = {
     });
   },
 
-  async findRecentLockedOtp(email: string, maxAttempts: number) {
+  async findLockedEmail(email: string, maxAttempts: number) {
     const since = new Date(Date.now() - OTP_LOCKOUT_MINUTES * 60 * 1000);
     return prisma.otpRequest.findFirst({
       where: {

@@ -10,7 +10,7 @@ enum LoginStep {
 }
 
 export function LoginForm() {
-  const [step, setStep] = useState<LoginStep>(LoginStep.Otp);
+  const [step, setStep] = useState<LoginStep>(LoginStep.Email);
   const [email, setEmail] = useState("");
 
   function handleEmailSuccess(submittedEmail: string) {

@@ -32,7 +32,7 @@ export const Errors = {
     new AppError(
       404,
       ErrorCode.USER_NOT_FOUND,
-      "No account found with that email",
+      "No account found. Please check your email and try again.",
     ),
 
   otpNotFound: () =>

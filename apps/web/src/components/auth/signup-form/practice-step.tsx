@@ -1,10 +1,12 @@
 "use client";
 
+import { ChevronLeft } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/input";
 import { SelectGroup } from "@/components/ui/select";
 import { useSignup } from "@/hooks/use-auth";
+import { PRACTICE_TYPE_OPTIONS } from "@/lib/options";
 import type { PersonalFormValues } from "./personal-step";
 
 const LABELS = {
@@ -16,30 +18,7 @@ const LABELS = {
   city: "City",
   cityPlaceholder: "e.g. Chennai",
   submit: "Create account",
-  back: "← Back",
 } as const;
-
-const PRACTICE_TYPES = [
-  { value: "CRIMINAL", label: "Criminal" },
-  { value: "CIVIL", label: "Civil" },
-  { value: "CORPORATE", label: "Corporate" },
-  { value: "FAMILY", label: "Family" },
-  { value: "MATRIMONIAL", label: "Matrimonial" },
-  { value: "LABOUR", label: "Labour" },
-  { value: "TAX", label: "Tax" },
-  { value: "INTELLECTUAL_PROPERTY", label: "Intellectual Property" },
-  { value: "REAL_ESTATE", label: "Real Estate" },
-  { value: "ARBITRATION", label: "Arbitration" },
-  { value: "CONSUMER", label: "Consumer" },
-  { value: "MOTOR_ACCIDENT", label: "Motor Accident" },
-  { value: "CONSTITUTIONAL", label: "Constitutional" },
-  { value: "BANKING_AND_FINANCE", label: "Banking & Finance" },
-  { value: "REVENUE", label: "Revenue" },
-  { value: "SERVICE_MATTERS", label: "Service Matters" },
-  { value: "CYBER", label: "Cyber" },
-  { value: "ENVIRONMENTAL", label: "Environmental" },
-  { value: "GENERAL", label: "General" },
-] as const;
 
 interface PracticeFormValues {
   orgName: string;
@@ -82,8 +61,8 @@ export function SignupPracticeStep({
 
       <div className="space-y-4">
         <InputGroup
-          label={LABELS.orgName}
-          placeholder={LABELS.orgNamePlaceholder}
+          label="Firm / Chamber name"
+          placeholder='e.g. "Iyer & Associates"'
           disabled={isPending}
           {...register("orgName", { required: true })}
         />
@@ -94,11 +73,9 @@ export function SignupPracticeStep({
           rules={{ required: true }}
           render={({ field }) => (
             <SelectGroup
-              label={LABELS.practiceType}
-              options={
-                PRACTICE_TYPES as unknown as { value: string; label: string }[]
-              }
-              placeholder={LABELS.practiceTypePlaceholder}
+              label="Practice type"
+              options={PRACTICE_TYPE_OPTIONS}
+              placeholder="e.g. Criminal, Corporate, etc."
               value={field.value ?? ""}
               onChange={field.onChange}
               required
@@ -108,8 +85,8 @@ export function SignupPracticeStep({
         />
 
         <InputGroup
-          label={LABELS.city}
-          placeholder={LABELS.cityPlaceholder}
+          label="City"
+          placeholder="e.g. Hyderabad"
           disabled={isPending}
           {...register("city", { required: true })}
         />
@@ -121,15 +98,16 @@ export function SignupPracticeStep({
         loading={isPending}
         disabled={!isValid || isPending}
       >
-        {LABELS.submit}
+        Create Account
       </Button>
 
       <button
         type="button"
         onClick={onBack}
-        className="text-sm text-secondary hover:text-dark w-full text-left"
+        className="flex items-center gap-1 text-sm text-secondary hover:text-dark"
       >
-        {LABELS.back}
+        <ChevronLeft size={14} />
+        Back
       </button>
     </form>
   );

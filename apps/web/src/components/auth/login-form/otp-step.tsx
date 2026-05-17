@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/otp-input";
 import { useVerifyOtp, useRequestOtp } from "@/hooks/use-auth";
@@ -90,9 +91,10 @@ export function LoginOtpStep({ email, onBack }: Props) {
         <button
           type="button"
           onClick={onBack}
-          className="text-secondary hover:text-dark cursor-pointer"
+          className="flex items-center gap-1 text-secondary hover:text-dark cursor-pointer"
         >
-          ← Back
+          <ChevronLeft size={14} />
+          Back
         </button>
       </div>
     </form>

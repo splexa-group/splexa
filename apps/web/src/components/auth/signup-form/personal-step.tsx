@@ -5,21 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/input";
 import { SelectGroup } from "@/components/ui/select";
-
-
-const DESIGNATIONS = [
-  { value: "ADVOCATE", label: "Advocate" },
-  { value: "SENIOR_ADVOCATE", label: "Senior Advocate" },
-  { value: "JUNIOR_ADVOCATE", label: "Junior Advocate" },
-  { value: "ASSOCIATE", label: "Associate" },
-  { value: "SENIOR_ASSOCIATE", label: "Senior Associate" },
-  { value: "PARTNER", label: "Partner" },
-  { value: "SENIOR_PARTNER", label: "Senior Partner" },
-  { value: "MANAGING_PARTNER", label: "Managing Partner" },
-  { value: "PARALEGAL", label: "Paralegal" },
-  { value: "LEGAL_INTERN", label: "Legal Intern" },
-  { value: "CLERK", label: "Clerk" },
-] as const;
+import { DESIGNATION_OPTIONS } from "@/lib/options";
 
 export interface PersonalFormValues {
   email: string;
@@ -86,9 +72,7 @@ export function SignupPersonalStep({
           render={({ field }) => (
             <SelectGroup
               label="Designation"
-              options={
-                DESIGNATIONS as unknown as { value: string; label: string }[]
-              }
+              options={DESIGNATION_OPTIONS}
               placeholder="Select your designation..."
               value={field.value ?? ""}
               onChange={field.onChange}

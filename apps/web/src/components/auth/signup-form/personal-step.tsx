@@ -1,23 +1,11 @@
 "use client";
 
 import { useForm, Controller } from "react-hook-form";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/input";
 import { SelectGroup } from "@/components/ui/select";
 
-const LABELS = {
-  heading: "Tell us about yourself",
-  firstName: "First name",
-  firstNamePlaceholder: "Ramesh",
-  lastName: "Last name",
-  lastNamePlaceholder: "Iyer",
-  designation: "Designation",
-  designationPlaceholder: "Select your designation",
-  phone: "Phone number",
-  phonePlaceholder: "+91 98765 43210",
-  submit: "Continue",
-  back: "← Back",
-} as const;
 
 const DESIGNATIONS = [
   { value: "ADVOCATE", label: "Advocate" },
@@ -34,6 +22,7 @@ const DESIGNATIONS = [
 ] as const;
 
 export interface PersonalFormValues {
+  email: string;
   firstName: string;
   lastName: string;
   designation: string;
@@ -43,10 +32,13 @@ export interface PersonalFormValues {
 interface SignupPersonalStepProps {
   defaultValues?: Partial<PersonalFormValues>;
   onSuccess: (data: PersonalFormValues) => void;
-  onBack: () => void;
+  onBack?: () => void;
 }
 
-export function SignupPersonalStep({ defaultValues, onSuccess, onBack }: SignupPersonalStepProps) {
+export function SignupPersonalStep({
+  defaultValues,
+  onSuccess,
+}: SignupPersonalStepProps) {
   const {
     register,
     control,
@@ -56,18 +48,33 @@ export function SignupPersonalStep({ defaultValues, onSuccess, onBack }: SignupP
 
   return (
     <form onSubmit={handleSubmit(onSuccess)} className="space-y-6">
-      <h1 className="text-[26px] font-bold text-dark">{LABELS.heading}</h1>
+      <div>
+        <h1 className="text-[26px] font-bold text-dark">Create your account</h1>
+        <p className="text-sm text-secondary mt-1">Start with your details</p>
+      </div>
 
       <div className="space-y-4">
+        <InputGroup
+          label="Email address"
+          type="email"
+          autoComplete="email"
+          placeholder="Enter your email..."
+          autoFocus
+          {...register("email", {
+            required: true,
+            pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+          })}
+        />
+
         <div className="grid grid-cols-2 gap-3">
           <InputGroup
-            label={LABELS.firstName}
-            placeholder={LABELS.firstNamePlaceholder}
+            label="First name"
+            placeholder="Enter your first name..."
             {...register("firstName", { required: true })}
           />
           <InputGroup
-            label={LABELS.lastName}
-            placeholder={LABELS.lastNamePlaceholder}
+            label="Last name"
+            placeholder="Enter your last name..."
             {...register("lastName", { required: true })}
           />
         </div>
@@ -78,9 +85,11 @@ export function SignupPersonalStep({ defaultValues, onSuccess, onBack }: SignupP
           rules={{ required: true }}
           render={({ field }) => (
             <SelectGroup
-              label={LABELS.designation}
-              options={DESIGNATIONS as unknown as { value: string; label: string }[]}
-              placeholder={LABELS.designationPlaceholder}
+              label="Designation"
+              options={
+                DESIGNATIONS as unknown as { value: string; label: string }[]
+              }
+              placeholder="Select your designation..."
               value={field.value ?? ""}
               onChange={field.onChange}
               required
@@ -89,24 +98,28 @@ export function SignupPersonalStep({ defaultValues, onSuccess, onBack }: SignupP
         />
 
         <InputGroup
-          label={LABELS.phone}
+          label="Phone number"
           type="tel"
-          placeholder={LABELS.phonePlaceholder}
+          placeholder="Enter your phone number..."
           {...register("phoneNumber", { required: true })}
         />
       </div>
 
       <Button type="submit" className="w-full" disabled={!isValid}>
-        {LABELS.submit}
+        Continue
       </Button>
 
-      <button
-        type="button"
-        onClick={onBack}
-        className="text-sm text-secondary hover:text-dark w-full text-left"
-      >
-        {LABELS.back}
-      </button>
+      <div className="text-center">
+        <p className="text-sm text-secondary">
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="text-brand hover:underline font-medium"
+          >
+            Sign in
+          </Link>
+        </p>
+      </div>
     </form>
   );
 }

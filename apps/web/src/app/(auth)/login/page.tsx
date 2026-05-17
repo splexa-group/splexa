@@ -4,7 +4,7 @@ import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
-    <AuthLayout leftPanel={<AuthPanel />}>
+    <AuthLayout leftPanel={<AuthPanel />} formMaxWidth={400}>
       <LoginForm />
     </AuthLayout>
   );

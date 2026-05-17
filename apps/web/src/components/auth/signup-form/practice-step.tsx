@@ -48,7 +48,6 @@ interface PracticeFormValues {
 }
 
 interface SignupPracticeStepProps {
-  email: string;
   personalData: PersonalFormValues;
   defaultValues?: Partial<PracticeFormValues>;
   onSuccess: () => void;
@@ -56,7 +55,6 @@ interface SignupPracticeStepProps {
 }
 
 export function SignupPracticeStep({
-  email,
   personalData,
   defaultValues,
   onSuccess,
@@ -72,7 +70,7 @@ export function SignupPracticeStep({
   const signup = useSignup();
 
   async function onSubmit(data: PracticeFormValues) {
-    await signup.mutateAsync({ email, ...personalData, ...data });
+    await signup.mutateAsync({ ...personalData, ...data });
     onSuccess();
   }
 
@@ -97,7 +95,9 @@ export function SignupPracticeStep({
           render={({ field }) => (
             <SelectGroup
               label={LABELS.practiceType}
-              options={PRACTICE_TYPES as unknown as { value: string; label: string }[]}
+              options={
+                PRACTICE_TYPES as unknown as { value: string; label: string }[]
+              }
               placeholder={LABELS.practiceTypePlaceholder}
               value={field.value ?? ""}
               onChange={field.onChange}

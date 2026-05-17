@@ -4,12 +4,14 @@ interface AuthLayoutProps {
   leftPanel: ReactNode;
   children: ReactNode;
   leftWidthClass?: string;
+  formMaxWidth?: number;
 }
 
 export function AuthLayout({
   leftPanel,
   children,
   leftWidthClass = "md:w-[50%]",
+  formMaxWidth = 380,
 }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex">
@@ -25,7 +27,7 @@ export function AuthLayout({
 
       <div className="flex-1 bg-card flex flex-col">
         <div className="flex-1 flex items-center justify-center px-8 py-10">
-          <div className="w-full max-w-[360px]">{children}</div>
+          <div className="w-full" style={{ maxWidth: formMaxWidth }}>{children}</div>
         </div>
       </div>
     </div>

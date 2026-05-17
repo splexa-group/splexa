@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function SignupPage() {
   return (
-    <AuthLayout leftPanel={<AuthPanel />}>
+    <AuthLayout leftPanel={<AuthPanel />} formMaxWidth={450}>
       <SignupForm />
     </AuthLayout>
   );

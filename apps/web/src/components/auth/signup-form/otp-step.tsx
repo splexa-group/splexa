@@ -6,7 +6,7 @@ import { OtpInput } from "@/components/ui/otp-input";
 import { useVerifyOtp, useRequestOtp } from "@/hooks/use-auth";
 import { maskEmail } from "@/lib/utils";
 
-const RESEND_COOLDOWN_SECONDS = 30;
+const RESEND_COOL_DOWN_SECONDS = 30;
 const SUCCESS_MSG = "Welcome to Splexa!";
 
 const LABELS = {
@@ -26,7 +26,7 @@ interface SignupOtpStepProps {
 export function SignupOtpStep({ email, onBack }: SignupOtpStepProps) {
   const [otp, setOtp] = useState("");
   const [hasError, setHasError] = useState(false);
-  const [resendSeconds, setResendSeconds] = useState(RESEND_COOLDOWN_SECONDS);
+  const [resendSeconds, setResendSeconds] = useState(RESEND_COOL_DOWN_SECONDS);
 
   const verifyOtp = useVerifyOtp(SUCCESS_MSG);
   const requestOtp = useRequestOtp();
@@ -53,7 +53,7 @@ export function SignupOtpStep({ email, onBack }: SignupOtpStepProps) {
     setOtp("");
     setHasError(false);
     await requestOtp.mutateAsync({ email });
-    setResendSeconds(RESEND_COOLDOWN_SECONDS);
+    setResendSeconds(RESEND_COOL_DOWN_SECONDS);
   }
 
   const isVerifying = verifyOtp.isPending;

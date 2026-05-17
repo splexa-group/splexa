@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/input";
 import { SelectGroup } from "@/components/ui/select";
-import { OtpInput } from "@/components/auth/otp-input";
+import { OtpInput } from "@/components/ui/otp-input";
 import { useSignup, useVerifyOtp, useRequestOtp } from "@/hooks/use-auth";
 import { useAuthStore } from "@/store/auth-store";
 import { maskEmail } from "@/lib/utils";

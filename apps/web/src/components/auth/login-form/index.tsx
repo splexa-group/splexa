@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { LoginEmailStep } from "@/components/auth/login-email-step";
-import { LoginOtpStep } from "@/components/auth/login-otp-step";
+import { LoginEmailStep } from "@/components/auth/login-form/email-step";
+import { LoginOtpStep } from "@/components/auth/login-form/otp-step";
 
 enum LoginStep {
   Email = "EMAIL",
@@ -10,7 +10,7 @@ enum LoginStep {
 }
 
 export function LoginForm() {
-  const [step, setStep] = useState<LoginStep>(LoginStep.Email);
+  const [step, setStep] = useState<LoginStep>(LoginStep.Otp);
   const [email, setEmail] = useState("");
 
   function handleEmailSuccess(submittedEmail: string) {

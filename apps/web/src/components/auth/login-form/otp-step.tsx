@@ -1,38 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { OtpInput } from "@/components/auth/otp-input";
+import { OtpInput } from "@/components/ui/otp-input";
 import { useVerifyOtp, useRequestOtp } from "@/hooks/use-auth";
-import { useAuthStore } from "@/store/auth-store";
 import { maskEmail } from "@/lib/utils";
 
-const RESEND_COOLDOWN_SECONDS = 30;
+const RESEND_COOL_DOWN_SECONDS = 30;
 
-const LABELS = {
-  heading: "Check your email",
-  codeSentTo: "We sent a 6-digit code to",
-  verify: "Verify code",
-  resend: "Resend code",
-  resendCountdown: (s: number) => `Resend code (${s}s)`,
-  back: "← Back",
-  successMsg: "Welcome back.",
-} as const;
-
-interface LoginOtpStepProps {
+interface Props {
   email: string;
   onBack: () => void;
 }
 
-export function LoginOtpStep({ email, onBack }: LoginOtpStepProps) {
-  const router = useRouter();
-  const setAuth = useAuthStore((s) => s.setAuth);
-
+export function LoginOtpStep({ email, onBack }: Props) {
   const [otp, setOtp] = useState("");
   const [hasError, setHasError] = useState(false);
-  const [resendSeconds, setResendSeconds] = useState(RESEND_COOLDOWN_SECONDS);
+  const [resendSeconds, setResendSeconds] = useState(RESEND_COOL_DOWN_SECONDS);
 
   const verifyOtp = useVerifyOtp();
   const requestOtp = useRequestOtp();
@@ -45,13 +29,10 @@ export function LoginOtpStep({ email, onBack }: LoginOtpStepProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (otp.length < 6) return;
+    if (otp.length !== 6) return;
     setHasError(false);
     try {
-      const result = await verifyOtp.mutateAsync({ email, otp });
-      setAuth(result.accessToken, result.user);
-      toast.success(LABELS.successMsg);
-      router.push("/dashboard");
+      await verifyOtp.mutateAsync({ email, otp });
     } catch {
       setHasError(true);
       setOtp("");
@@ -62,7 +43,7 @@ export function LoginOtpStep({ email, onBack }: LoginOtpStepProps) {
     setOtp("");
     setHasError(false);
     await requestOtp.mutateAsync({ email });
-    setResendSeconds(RESEND_COOLDOWN_SECONDS);
+    setResendSeconds(RESEND_COOL_DOWN_SECONDS);
   }
 
   const isVerifying = verifyOtp.isPending;
@@ -71,10 +52,11 @@ export function LoginOtpStep({ email, onBack }: LoginOtpStepProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h1 className="text-[28px] font-bold text-dark">{LABELS.heading}</h1>
         <p className="text-sm text-secondary mt-1">
-          {LABELS.codeSentTo}{" "}
-          <span className="font-medium text-dark">{maskEmail(email)}</span>
+          We sent a 6-digit code to{" "}
+          <span className="font-medium text-dark">
+            {maskEmail(email)}
+          </span>
         </p>
       </div>
 
@@ -89,9 +71,9 @@ export function LoginOtpStep({ email, onBack }: LoginOtpStepProps) {
         type="submit"
         className="w-full"
         loading={isVerifying}
-        disabled={otp.length < 6 || isVerifying}
+        disabled={otp.length !== 6 || isVerifying}
       >
-        {LABELS.verify}
+        Verify Code
       </Button>
 
       <div className="flex items-center justify-between text-[13px]">
@@ -102,15 +84,15 @@ export function LoginOtpStep({ email, onBack }: LoginOtpStepProps) {
           className="text-brand hover:underline disabled:text-disabled disabled:no-underline"
         >
           {resendSeconds > 0
-            ? LABELS.resendCountdown(resendSeconds)
-            : LABELS.resend}
+            ? `Resend code (${resendSeconds}s)`
+            : "Resend code"}
         </button>
         <button
           type="button"
           onClick={onBack}
-          className="text-secondary hover:text-dark"
+          className="text-secondary hover:text-dark cursor-pointer"
         >
-          {LABELS.back}
+          ← Back
         </button>
       </div>
     </form>

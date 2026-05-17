@@ -25,12 +25,10 @@ export function OtpInput({ value, onChange, hasError, disabled }: OtpInputProps)
     const digit = raw.replace(/\D/g, "").slice(-1);
     if (!digit) return;
     if (index < value.length) {
-      // Replace the digit at this specific position
       const next = value.slice(0, index) + digit + value.slice(index + 1);
       onChange(next);
       if (index < OTP_LENGTH - 1) getInputAt(index + 1)?.focus();
     } else {
-      // Append (sequential forward typing)
       const next = (value + digit).slice(0, OTP_LENGTH);
       onChange(next);
       if (next.length < OTP_LENGTH) getInputAt(next.length)?.focus();
@@ -61,6 +59,7 @@ export function OtpInput({ value, onChange, hasError, disabled }: OtpInputProps)
       {Array.from({ length: OTP_LENGTH }, (_, i) => (
         <input
           key={i}
+          autoFocus={i === 0}
           type="text"
           inputMode="numeric"
           maxLength={1}
@@ -70,12 +69,12 @@ export function OtpInput({ value, onChange, hasError, disabled }: OtpInputProps)
           onPaste={handlePaste}
           disabled={disabled}
           className={cn(
-            "w-11 h-12 text-center text-lg font-semibold rounded-[6px] border bg-white transition-colors",
-            "focus:outline-none focus:border-[#1e40af] focus:ring-[3px] focus:ring-[rgba(30,64,175,0.12)]",
-            "disabled:bg-[#f8fafc] disabled:cursor-not-allowed",
+            "w-11 h-12 text-center text-lg font-semibold rounded-md border bg-card transition-colors",
+            "focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20",
+            "disabled:bg-subtle disabled:cursor-not-allowed",
             hasError
-              ? "border-[#dc2626] ring-[3px] ring-[rgba(220,38,38,0.10)]"
-              : "border-[#e2e8f0]"
+              ? "border-negative ring-2 ring-negative/20"
+              : "border-line",
           )}
         />
       ))}

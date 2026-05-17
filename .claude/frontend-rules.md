@@ -1,10 +1,13 @@
 # Frontend Rules — Next.js, Tailwind, React Query, Zustand
 
 ## Stack
-- **Framework**: Next.js 14 (App Router)
-- **Styling**: Tailwind CSS + CSS custom properties
+- **Framework**: Next.js 16.2.4 (App Router)
+- **Styling**: Tailwind CSS v4 (`@theme inline` — two-layer CSS variable token system; no `tailwind.config.ts`)
+- **HTTP client**: Axios — instance in `api/client.ts`, typed helpers in `api/http.ts`, feature services in `services/[feature].ts`
 - **Server state**: TanStack React Query v5
-- **Client state**: Zustand
+- **Client state**: Zustand (user object only — no tokens in JS)
+- **Forms**: React Hook Form; use `Controller` for Radix UI inputs (Select, MultiSelect, OTP)
+- **Toasts**: Sonner — see Toast Placement Rules below
 - **Language**: TypeScript (strict)
 
 ---
@@ -14,22 +17,43 @@
 ### App Router Structure
 
 ```
-apps/web/src/app/
-├── (auth)/                     # Auth route group (no layout chrome)
-│   ├── login/page.tsx
-│   └── signup/page.tsx
-├── (dashboard)/                # Authenticated layout group
-│   ├── layout.tsx              # Dashboard shell with nav + sidebar
-│   ├── page.tsx                # /dashboard
-│   ├── cases/
-│   │   ├── page.tsx            # /cases list
-│   │   ├── new/page.tsx        # /cases/new
-│   │   └── [caseId]/page.tsx   # /cases/:id
-│   └── settings/page.tsx
-├── portal/
-│   └── [token]/page.tsx        # Public client portal — no auth
-├── layout.tsx                  # Root layout
-└── globals.css
+apps/web/src/
+├── api/
+│   ├── client.ts               # Axios instance + 401 → refresh → retry interceptor
+│   └── http.ts                 # Typed GET/POST/PUT/PATCH/DELETE helpers
+├── services/
+│   └── auth.ts                 # authApi object — one file per feature domain
+├── hooks/
+│   └── use-auth.ts             # useMutation/useQuery hooks — toasts live here
+├── store/
+│   └── auth-store.ts           # Zustand: user object only
+├── types/
+│   ├── auth.ts                 # VerifyOtpResponse, SignupPayload
+│   ├── user.ts                 # AuthUser
+│   └── misc.ts                 # ApiErrorResponse, shared types
+├── lib/
+│   ├── utils.ts                # cn(), maskEmail()
+│   └── options.ts              # DESIGNATION_OPTIONS, PRACTICE_TYPE_OPTIONS (from shared enums)
+├── components/
+│   ├── ui/                     # Primitive, stateless, zero business logic
+│   └── [feature]/              # Feature components, composed from ui/
+└── app/
+    ├── (auth)/                 # Auth route group — no layout chrome
+    │   ├── login/page.tsx
+    │   └── signup/page.tsx
+    ├── (protected)/            # Authenticated route group — guarded by middleware.ts
+    │   ├── layout.tsx          # Dashboard shell with nav + sidebar
+    │   ├── dashboard/page.tsx
+    │   ├── cases/
+    │   │   ├── page.tsx
+    │   │   ├── new/page.tsx
+    │   │   └── [caseId]/page.tsx
+    │   └── settings/page.tsx
+    ├── portal/
+    │   └── [token]/page.tsx    # Public client portal — no auth
+    ├── layout.tsx              # Root layout
+    ├── globals.css
+    └── providers.tsx           # QueryClientProvider + Toaster
 ```
 
 ### Page Components
@@ -92,6 +116,38 @@ apps/web/src/components/
 
 ---
 
+## Axios API Client — Three-Layer Pattern
+
+All backend communication follows the same three-layer structure:
+
+```
+api/client.ts        ← Axios instance: baseURL, withCredentials, 401 interceptor
+api/http.ts          ← Typed helpers: GET<T>, POST<T>, PUT<T>, PATCH<T>, DELETE<T>
+services/[name].ts   ← Feature API object: casesApi, authApi, hearingsApi, etc.
+```
+
+**The 401 interceptor (in `api/client.ts`):** when any request returns 401, it calls `POST /auth/refresh` once (using the refresh cookie), then retries the original request. If refresh also fails, it redirects to `/login`. This happens transparently — hooks and components never see the refresh logic.
+
+**The response interceptor** unwraps the `{ success: true, data: ... }` envelope automatically. Everything downstream receives the inner payload only.
+
+```ts
+// services/cases.ts — follows this pattern exactly
+import { GET, POST, PATCH, DELETE } from "@/api/http";
+import type { Case, CreateCaseInput } from "@/types/cases";
+
+export const casesApi = {
+  list: (filters: CaseFilters) => GET<PaginatedResult<Case>>("/cases", { params: filters }),
+  getById: (id: string) => GET<Case>(`/cases/${id}`),
+  create: (data: CreateCaseInput) => POST<Case>("/cases", data),
+  update: (id: string, data: UpdateCaseInput) => PATCH<Case>(`/cases/${id}`, data),
+  archive: (id: string) => DELETE<void>(`/cases/${id}`),
+};
+```
+
+No raw `fetch` in components or hooks. No raw `axios.get(...)` in services — use the `http.ts` helpers.
+
+---
+
 ## Tailwind — The 4-Class Rule
 
 If any HTML element needs **more than 4 Tailwind utility classes**, extract it to a named class in `globals.css`.
@@ -123,70 +179,40 @@ Classes in `globals.css` use kebab-case. Modifiers use `--`:
 
 ---
 
-## Design Tokens — Colors from `index.css` / `globals.css`
+## Design Tokens — Tailwind v4 Token System
 
-> ⚠️ **The colors below are examples only.** Do not use them as-is.
->
-> When starting a project or adding color tokens: **ask the user what colors to use**, or read them from the project's existing `index.css` / `globals.css`. The `.md` skill files are not the source of truth for colors — the CSS file is.
-
-Example structure (actual values are decided by the product designer / user):
+This project uses Tailwind v4 with `@theme inline`. There is **no `tailwind.config.ts`**. Token mapping is done entirely in `globals.css`.
 
 ```css
-/* app/globals.css */
-/* ⚠️ Example values — replace with actual brand colors */
-:root {
-  --color-primary: #1E3A5F;      /* example — main brand color */
-  --color-accent: #2E86AB;       /* example — secondary/links */
-  --color-cta: #E07B39;          /* example — primary CTA buttons */
-  --color-success: #27AE60;      /* example — success states */
-  --color-warning: #E67E22;      /* example — warnings */
-  --color-danger: #E74C3C;       /* example — errors, urgent */
-  --color-surface: #F5F5F5;      /* example — page background */
-  --color-card: #FFFFFF;         /* example — card backgrounds */
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #6B7280;
-  --color-border: #E5E7EB;
+/* globals.css — two-layer structure */
 
-  --radius-card: 8px;
-  --radius-input: 4px;
-  --radius-badge: 24px;
-  --spacing-unit: 8px;
-  --font-primary: 'Inter', system-ui, sans-serif;
+/* Layer 1: @theme inline — maps Tailwind utility names to CSS variables */
+@theme inline {
+  --color-primary: var(--primary);
+  --color-panel: var(--panel);
+  --color-dark: var(--text);
+  --color-secondary: var(--text-secondary);
+  --color-disabled: var(--text-muted);
+  --color-brand: var(--primary);
+  --color-border: var(--border);
+  /* ... etc */
+}
+
+/* Layer 2: :root — actual color values */
+:root {
+  --primary: #1e40af;
+  --panel: #0c1445;
+  --text: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  /* ... etc */
 }
 ```
 
-Map these CSS variables to Tailwind tokens in `tailwind.config.ts`:
+Usage: `bg-primary`, `text-dark`, `text-secondary`, `border-border`, `text-brand`, `text-disabled`.
 
-```ts
-// tailwind.config.ts
-export default {
-  theme: {
-    extend: {
-      colors: {
-        // Map to CSS variables so dark mode and theming work
-        primary: 'var(--color-primary)',
-        accent: 'var(--color-accent)',
-        cta: 'var(--color-cta)',
-        success: 'var(--color-success)',
-        warning: 'var(--color-warning)',
-        danger: 'var(--color-danger)',
-        surface: 'var(--color-surface)',
-        card: 'var(--color-card)',
-      },
-    },
-  },
-};
-```
-
-Usage:
-```tsx
-// ✅ Use tokens
-<button className="bg-cta text-white">Add Case</button>
-
-// ❌ Never hardcode hex values
-<button style={{ backgroundColor: '#E07B39' }}>Add Case</button>
-<button className="bg-[#E07B39]">Add Case</button>
-```
+Read the actual values from `apps/web/src/app/globals.css` — it is the source of truth. Never hardcode hex values in component files.
 
 ---
 
@@ -211,6 +237,10 @@ Inline `style` props are banned unless the value is genuinely dynamic and cannot
 
 All server data fetching uses React Query. No `useEffect` + `fetch` patterns.
 
+### Query Keys — Always Use a Factory
+
+Every hook file that has `useQuery` calls must export a `*Keys` factory. Never hardcode query key strings in components.
+
 ```ts
 // hooks/use-cases.ts
 export const caseKeys = {
@@ -218,7 +248,11 @@ export const caseKeys = {
   list: (filters: CaseFilters) => ['cases', 'list', filters] as const,
   detail: (id: string) => ['cases', 'detail', id] as const,
 };
+```
 
+### Query Hooks
+
+```ts
 export function useCases(filters: CaseFilters) {
   return useQuery({
     queryKey: caseKeys.list(filters),
@@ -226,18 +260,105 @@ export function useCases(filters: CaseFilters) {
   });
 }
 
+export function useCase(id: string) {
+  return useQuery({
+    queryKey: caseKeys.detail(id),
+    queryFn: () => casesApi.getById(id),
+    enabled: !!id,
+  });
+}
+```
+
+### Mutations — Invalidate in `onSuccess`
+
+```ts
 export function useCreateCase() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: casesApi.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: caseKeys.all });
+      toast.success("Case created.");
     },
+    onError: (err) => toast.error(err.message || "Failed to create case."),
+  });
+}
+
+export function useUpdateCase() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }) => casesApi.update(id, data),
+    onSuccess: (_, { id }) => {
+      queryClient.invalidateQueries({ queryKey: caseKeys.detail(id) });
+      queryClient.invalidateQueries({ queryKey: caseKeys.all });
+      toast.success("Case updated.");
+    },
+    onError: (err) => toast.error(err.message || "Failed to update case."),
   });
 }
 ```
 
-All API calls go through a typed client in `lib/api/` — no raw `fetch` in components.
+Standard invalidation rules:
+| Mutation | Invalidate |
+|---|---|
+| Create resource | `keys.all` |
+| Update resource | `keys.detail(id)` + `keys.all` |
+| Delete / archive resource | `keys.all` |
+| Logout | `queryClient.clear()` — wipe everything |
+
+All API calls go through `services/[feature].ts` → `api/http.ts` → `api/client.ts`. No raw `fetch` or `axios` calls in components.
+
+---
+
+## Toast Placement Rules
+
+**All API result toasts belong in the hook's `onSuccess`/`onError` — not in the component.**
+
+```ts
+// ✅ Correct — hook owns the outcome toast
+export function useCreateCase() {
+  return useMutation({
+    mutationFn: casesApi.create,
+    onSuccess: () => toast.success("Case created."),
+    onError: (err) => toast.error(err.message || "Failed to create case."),
+  });
+}
+
+// ❌ Wrong — component duplicates toast after mutateAsync
+const createCase = useCreateCase();
+async function handleSubmit(data) {
+  await createCase.mutateAsync(data);
+  toast.success("Case created."); // already fired by the hook
+}
+```
+
+**Local UX toasts (no API call involved) belong in the component.**
+
+```ts
+// ✅ A validation or UX event with no API call — component is right
+if (selectedItems.length === 0) {
+  toast.warning("Select at least one item.");
+  return;
+}
+```
+
+Rule summary:
+| Toast trigger | Where |
+|---|---|
+| API call succeeded | hook `onSuccess` |
+| API call failed | hook `onError` |
+| Client-side validation failed | component |
+| UX event (step transition, etc.) | component |
+
+Components that call `mutateAsync` handle **step transitions** in `try/catch` — not toast calls:
+
+```ts
+// The hook fires the toast. The component handles what to do next.
+async function handleSubmit({ email }) {
+  await requestOtp.mutateAsync({ email }); // hook fires onSuccess toast
+  onSuccess(email);                         // component advances the step
+}
+```
 
 ---
 
@@ -246,15 +367,22 @@ All API calls go through a typed client in `lib/api/` — no raw `fetch` in comp
 For global UI state and auth session only. Not for server data (that is React Query's job).
 
 ```ts
-// stores/auth-store.ts
-export const useAuthStore = create<AuthStore>((set) => ({
-  user: null, // { userId, orgId, role, name }
-  setUser: (user) => set({ user }),
-  clearUser: () => set({ user: null }),
+// store/auth-store.ts — holds user object only, NO access token
+interface AuthState {
+  user: AuthUser | null;
+  setAuth: (user: AuthUser) => void;
+  clearAuth: () => void;
+}
+export const useAuthStore = create<AuthState>((set) => ({
+  user: null,
+  setAuth: (user) => set({ user }),
+  clearAuth: () => set({ user: null }),
 }));
 ```
 
-Good candidates: auth user, sidebar state, active modal, toast queue. Everything else: component state or React Query.
+The access token is an httpOnly cookie — JavaScript cannot read it. The store holds only the user object. On page reload the store is empty until a `/auth/me` call rehydrates it.
+
+Good candidates for Zustand: auth user, sidebar collapse state, active modal. Everything else: component state or React Query.
 
 ---
 
@@ -387,88 +515,41 @@ One blank line between each group. No unused imports.
 
 ---
 
-## API Client — `lib/api/`
+## API Client — Three Layers
 
-All backend communication goes through typed API functions. No raw `fetch` in components or hooks.
+See the **Axios API Client — Three-Layer Pattern** section above. The structure is:
 
 ```
-lib/api/
-├── client.ts        # Base fetch wrapper: auth header, error handling
-├── cases.ts
-├── hearings.ts
-├── auth.ts
-└── index.ts         # Re-exports all modules
+api/client.ts       ← Axios instance + interceptors (no feature knowledge)
+api/http.ts         ← Typed GET/POST/PUT/PATCH/DELETE helpers
+services/[name].ts  ← Feature API object (cases, hearings, auth, etc.)
 ```
+
+The feature service is the only import hooks use. No hook or component imports from `api/` directly.
 
 ```ts
-// lib/api/client.ts
-import { useAuthStore } from '@/stores/auth-store';
-import { env } from '@/lib/env';
+// ✅ hooks import from services/
+import { casesApi } from "@/services/cases";
 
-export class ApiError extends Error {
-  constructor(public status: number, message: string) {
-    super(message);
-  }
-}
-
-export async function apiRequest<T>(path: string, options?: RequestInit): Promise<T> {
-  const token = useAuthStore.getState().accessToken;
-
-  const res = await fetch(`${env.API_URL}${path}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options?.headers,
-    },
-  });
-
-  if (!res.ok) {
-    const body = await res.json().catch(() => ({ message: 'Request failed' }));
-    throw new ApiError(res.status, body.message ?? 'Request failed');
-  }
-
-  return res.json() as Promise<T>;
-}
-```
-
-```ts
-// lib/api/cases.ts
-import type { Case, CreateCaseInput, CaseFilters, PaginatedResult } from '@splexa/shared';
-import { apiRequest } from './client';
-
-export const casesApi = {
-  list: (filters: CaseFilters) =>
-    apiRequest<PaginatedResult<Case>>(`/cases?${new URLSearchParams(filters as Record<string, string>)}`),
-
-  getById: (id: string) =>
-    apiRequest<Case>(`/cases/${id}`),
-
-  create: (data: CreateCaseInput) =>
-    apiRequest<Case>('/cases', { method: 'POST', body: JSON.stringify(data) }),
-
-  archive: (id: string) =>
-    apiRequest<void>(`/cases/${id}`, { method: 'DELETE' }),
-};
+// ❌ hooks do not import raw http helpers
+import { GET } from "@/api/http";
 ```
 
 ---
 
 ## JWT Storage — Security Rule
 
-Access tokens live in **Zustand (in-memory) only**. Never in `localStorage`, `sessionStorage`, or a JavaScript-readable cookie.
+Access tokens and refresh tokens are **httpOnly cookies** — JavaScript never reads them. The Zustand store holds **only the user object**, never a token.
 
 ```ts
-// stores/auth-store.ts
-interface AuthStore {
-  user: AuthUser | null;
-  accessToken: string | null;  // In-memory — lost on reload (intentional)
-  setAuth: (user: AuthUser, token: string) => void;
-  clearAuth: () => void;
-}
+// ✅ Correct
+useAuthStore.getState().user          // safe — user object from verifyOtp response
+
+// ❌ Wrong — tokens are not in the store
+useAuthStore.getState().accessToken   // does not exist
 ```
 
-The refresh token is an `httpOnly` + `Secure` + `SameSite=Strict` cookie — JavaScript never reads it. On page reload, silently call `/auth/refresh` to restore the session.
+The 401 → refresh → retry cycle is handled entirely by the axios interceptor in `api/client.ts`. No hook or component needs to know about token refresh.
 
 ---
 
@@ -581,8 +662,10 @@ Override examples:
 
 | Forbidden | Why |
 |---|---|
-| `localStorage` / `sessionStorage` for access tokens | XSS can steal the token |
-| Raw `fetch` in components or hooks | Bypasses typed API client and error handling |
+| `localStorage` / `sessionStorage` for tokens | XSS can steal the token |
+| Storing `accessToken` in Zustand | Tokens are httpOnly cookies; store holds user object only |
+| Raw `fetch` or `axios.get(...)` in components or hooks | Use `services/[feature].ts` → `api/http.ts` |
+| `toast()` in component for an API outcome | Hook `onSuccess`/`onError` owns API result toasts |
 | `useEffect` for data fetching | React Query handles this — no exceptions |
 | Hardcoded hex colors or `style={{ color/background }}` | Breaks theming; use design tokens |
 | Fixed-width elements without `max-w-full` or `w-full` | Causes horizontal scroll on mobile |
@@ -611,9 +694,14 @@ Before declaring frontend work done:
 
 **Data fetching**
 - [ ] All server data via React Query — no `useEffect` + `fetch`
-- [ ] Query key uses the feature's `*Keys` factory
-- [ ] Mutation `onSuccess` invalidates the relevant query keys
-- [ ] API call goes through `lib/api/` — not raw `fetch`
+- [ ] Query key uses the feature's `*Keys` factory (exported from the hooks file)
+- [ ] Mutation `onSuccess` invalidates the relevant query keys + shows a toast
+- [ ] Mutation `onError` shows an error toast with the server message or a fallback
+- [ ] API call goes through `services/[feature].ts` → `api/http.ts` — not raw `fetch` or `axios`
+
+**Toasts**
+- [ ] API result toasts (`onSuccess`, `onError`) are in the hook — not in the component
+- [ ] Component only has toasts for local UX events (no API involved)
 
 **Styling**
 - [ ] Elements with > 4 Tailwind classes extracted to a `globals.css` component class

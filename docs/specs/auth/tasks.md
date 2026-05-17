@@ -1,0 +1,139 @@
+# Auth System — Implementation Log
+
+**Last updated:** 2026-05-17
+
+What was built, what changed from the original plan, and what is still pending. The original plan is at `docs/superpowers/plans/2026-05-16-frontend-auth.md`.
+
+---
+
+## What Was Built
+
+### Backend (`apps/server`)
+
+- [x] `modules/auth/plugin.ts` — Fastify plugin, registers all auth routes under `/api/v1/auth`
+- [x] `modules/auth/routes.ts` — all 9 routes with Zod schemas and preHandlers
+- [x] `modules/auth/controller.ts` — thin controller, calls service, sets cookies
+- [x] `modules/auth/service.ts` — OTP generation, bcrypt, token generation, session management
+- [x] `modules/auth/repository.ts` — all Prisma queries (no Prisma outside this file)
+- [x] `modules/auth/schema.ts` — Zod schemas: `signupSchema`, `otpRequestSchema`, `otpVerifySchema`
+- [x] `modules/auth/helper.ts` — cookie helpers, OTP/token expiry calculations
+- [x] `integrations/email/` — Resend adapter behind `EmailProvider` interface
+- [x] `constants/auth.ts` — `MAX_OTP_ATTEMPTS`, `MAX_OTP_REQUESTS_PER_HOUR`, `OTP_LOCKOUT_MINUTES`, `OTP_RATE_WINDOW_MS`
+- [x] `prisma/schema/models/` — Organization, User, OtpRequest, Session, AuditLog models
+
+### Frontend (`apps/web`)
+
+- [x] Tailwind v4 configured with `@theme inline` two-layer token system
+- [x] Design token CSS variables in `globals.css`
+- [x] `api/client.ts` — Axios instance + 401 → refresh → retry interceptor
+- [x] `api/http.ts` — Typed `GET`, `POST`, `PUT`, `PATCH`, `DELETE` helpers
+- [x] `services/auth.ts` — `authApi` object with all auth endpoints
+- [x] `types/auth.ts`, `types/user.ts`, `types/misc.ts` — TypeScript interfaces
+- [x] `hooks/use-auth.ts` — `useRequestOtp`, `useVerifyOtp`, `useSignup` with toasts in `onSuccess`/`onError`
+- [x] `store/auth-store.ts` — Zustand store (user only, no access token)
+- [x] `lib/utils.ts` — `cn()`, `maskEmail()`
+- [x] `lib/options.ts` — `DESIGNATION_OPTIONS`, `PRACTICE_TYPE_OPTIONS` from shared enums
+- [x] `components/ui/button.tsx` — Button with `loading` prop spinner
+- [x] `components/ui/input.tsx` — Input + `InputGroup` (label + field + error message)
+- [x] `components/ui/select.tsx` — Radix Select primitives
+- [x] `components/ui/multi-select.tsx` — `MultiSelectGroup`: chip display + Radix Select dropdown, controlled
+- [x] `components/ui/otp-input.tsx` — 6-box OTP input (auto-focus, backspace, paste)
+- [x] `components/auth/auth-layout.tsx` — 40/60 split layout
+- [x] `components/auth/auth-panel.tsx` — Left panel brand content
+- [x] `components/auth/login-form/` — `index.tsx` (step machine), `email-step.tsx`, `otp-step.tsx`
+- [x] `components/auth/signup-form/` — `index.tsx` (step machine), `personal-step.tsx`, `practice-step.tsx`, `otp-step.tsx`
+- [x] `app/(auth)/login/page.tsx` — Login page with metadata
+- [x] `app/(auth)/signup/page.tsx` — Signup page with metadata
+- [x] `app/(protected)/dashboard/page.tsx` — Dashboard stub
+- [x] `app/providers.tsx` — QueryClientProvider + Sonner Toaster
+- [x] `packages/shared/src/enums/` — `Designation`, `PracticeType`, `UserRole` enums shared between server and web
+
+---
+
+## Key Divergences from Original Plan
+
+These are places where the implementation differs from `2026-05-16-frontend-auth.md`. The implementation is correct — the plan is outdated.
+
+### File structure changed significantly
+
+| Plan | Actual | Why |
+|---|---|---|
+| `components/auth/login-form.tsx` | `components/auth/login-form/index.tsx` + `email-step.tsx` + `otp-step.tsx` | Split into step files for clarity and testability |
+| `components/auth/signup-form.tsx` | `components/auth/signup-form/index.tsx` + 3 step files | Same |
+| `components/auth/otp-input.tsx` | `components/ui/otp-input.tsx` | OTP input is a reusable UI primitive, not auth-specific |
+| `lib/api/auth.ts` | `services/auth.ts` + `api/client.ts` + `api/http.ts` | Separated concerns: axios client, typed HTTP helpers, feature service object |
+| Single `providers.tsx` | `providers.tsx` + `providers/` folder with sub-files | Split by concern |
+| `app/dashboard/page.tsx` | `app/(protected)/dashboard/page.tsx` | Dashboard is a protected route — correct route group |
+| No `types/` folder | `types/auth.ts`, `types/user.ts`, `types/misc.ts` | Interfaces extracted for reuse across hooks and services |
+| No `lib/options.ts` | `lib/options.ts` | Enum → options conversion extracted to prevent duplication |
+
+### Signup flow step order changed
+
+| Plan | Actual | Why |
+|---|---|---|
+| Step 1: Email → Step 2: OTP → Step 3: Personal → Step 4: Practice → Submit | Step 1: Email → Step 2: Personal → Step 3: Practice (submit here) → Step 4: OTP | Backend `signup` endpoint requires all fields in one call. Submitting all fields first, then OTP, maps cleanly to the API contract. |
+
+### `practiceType` → `practiceTypes` (array)
+
+The original plan had a single `practiceType` field. Changed to `practiceTypes: string[]` throughout:
+- Prisma schema: `practiceTypes PracticeType[]` (PostgreSQL array column)
+- Backend Zod schema: `z.array(z.enum(PracticeType)).min(1)`
+- Frontend: `MultiSelectGroup` component, `Controller` with `defaultValue={[]}`
+- Types: `SignupPayload.practiceTypes: string[]`
+- Migration: `20260517000000_org_practice_types_array`
+
+### Auth store: no `accessToken`
+
+The original plan stored `accessToken` in Zustand. The actual implementation stores **only `user`**. The access token is an httpOnly cookie — JavaScript cannot read it. The Zustand store was updated to remove `accessToken`, `setAuth` now takes only `user: AuthUser`.
+
+### Axios instead of fetch
+
+The original plan used native `fetch`. The actual implementation uses Axios for the 401 → refresh → retry interceptor. This makes silent session refresh transparent to all API callers.
+
+### Toasts moved to hooks
+
+The original plan put `toast()` calls in component `handleSubmit` functions. In the actual implementation, all API result toasts (`onSuccess`, `onError`) live in the hook. Components call `mutateAsync` and handle step transitions only.
+
+### `AUTH_MESSAGES` constant exported from `use-auth.ts`
+
+Added `AUTH_MESSAGES = { loginSuccess, signupSuccess }` and exported it so signup's OTP step can pass the correct success message to `useVerifyOtp`.
+
+### Resend cooldown: 60 seconds (was 30)
+
+Changed from 30s to 60s after review — gives enough time for email delivery before the user clicks resend.
+
+---
+
+## Pending Items
+
+### Function name: `findBlockedEmail`
+
+The repository function for checking OTP lockout was renamed through several iterations. Current state:
+- `service.ts` calls `authRepository.findActiveLockedEmail(...)` (user-modified)
+- `repository.ts` implements `findActiveLockout(...)` (our rename)
+
+**These do not match — the app will throw at runtime for the `requestOtp` lockout check.** Fix: rename the repository function to `findActiveLockedEmail` to match the service call.
+
+### `countRecentOtpRequests` (was `countOtpRequestsInLastHour`)
+
+The rename was agreed but may not have been applied to both files. Verify `service.ts` and `repository.ts` use the same name.
+
+### Abandoned unverified signups
+
+A user can sign up (org + user created) but never verify the OTP. That email address is then permanently blocked from re-registration. No clean-up job or re-registration flow exists yet. This is a Phase 2 item.
+
+### Middleware route protection
+
+`app/(protected)/dashboard/page.tsx` is a stub. No `middleware.ts` exists yet to guard the route. Any unauthenticated user can access `/dashboard` directly. This must be built before the dashboard is real.
+
+### `/auth/me` on dashboard load
+
+The dashboard stub does not call `GET /auth/me` to rehydrate the user session after a page reload. The Zustand store is empty on reload. `useMe()` query with the `authKeys` factory needs to be added to the dashboard layout.
+
+### Activity logging
+
+The auth service has several `// TODO: logActivity()` comments. Audit logging for auth events is not yet wired up.
+
+### HTML email template
+
+OTP email is plain text. An HTML template is deferred until the design system is ready.

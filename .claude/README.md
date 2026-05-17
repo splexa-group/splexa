@@ -1,7 +1,7 @@
 # Splexa — AI Agent Orientation
 
 Splexa is a **multi-tenant legal practice management SaaS** for Indian law firms. Phase 1.
-Stack: pnpm monorepo + Turborepo. Backend: Fastify + Prisma + PostgreSQL + Redis. Frontend: Next.js 14 App Router + React Query + Zustand + Tailwind.
+Stack: pnpm monorepo + Turborepo. Backend: Fastify + Prisma + PostgreSQL (no Redis in Phase 1). Frontend: Next.js 16 App Router + Axios + React Query + Zustand + Tailwind v4.
 
 **Read this file first. Then read only the files relevant to your task.**
 
@@ -112,8 +112,9 @@ Read this before writing anything. These are the most frequent mistakes.
 | Raw JSON Schema object in a route | Pass the Zod schema directly — `@fastify/type-provider-zod` handles it |
 | Throwing `NotFoundError` in a repository | Return `null` — the service decides to throw |
 | `useEffect(() => { fetch('/api/cases')... }, [])` | `const { data } = useCases(filters)` |
-| Raw `fetch(...)` in a hook | `casesApi.list(filters)` from `lib/api/cases.ts` |
-| `localStorage.setItem('token', ...)` | Zustand store only — memory, cleared on reload |
+| Raw `fetch(...)` or `axios.get(...)` in a hook | `casesApi.list(filters)` from `services/cases.ts` |
+| `localStorage.setItem('token', ...)` | Tokens are httpOnly cookies — store holds user object only |
+| `useAuthStore.getState().accessToken` | Field does not exist — store has user object only |
 | `'use client'` on a page file | Default to Server Component; push boundary down |
 | Missing `additionalProperties: false` on schema | Unknown fields pass Fastify validation silently |
 | `any` to silence a TypeScript error | Fix the type — narrow with `unknown`, use a guard |
@@ -159,6 +160,7 @@ return { data, total, page, limit };
 
 ### React Query hook (all server data)
 ```ts
+// Keys factory exported from the hooks file — components never hardcode key strings
 export const caseKeys = {
   all: ['cases'] as const,
   list: (f: CaseFilters) => ['cases', 'list', f] as const,
@@ -166,6 +168,15 @@ export const caseKeys = {
 };
 export function useCases(filters: CaseFilters) {
   return useQuery({ queryKey: caseKeys.list(filters), queryFn: () => casesApi.list(filters) });
+}
+// Mutations: toasts in onSuccess/onError, invalidate in onSuccess
+export function useCreateCase() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: casesApi.create,
+    onSuccess: () => { qc.invalidateQueries({ queryKey: caseKeys.all }); toast.success("Created."); },
+    onError: (err) => toast.error(err.message || "Failed."),
+  });
 }
 ```
 

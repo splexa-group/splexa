@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { AuthLayout } from "@/components/auth/auth-layout";
-import { SignupPanel } from "@/components/auth/signup-panel";
+import { AuthPanel } from "@/components/auth/auth-panel";
 import { SignupForm } from "@/components/auth/signup-form";
 
 export const metadata: Metadata = {
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function SignupPage() {
   return (
-    <AuthLayout leftPanel={<SignupPanel />}>
+    <AuthLayout leftPanel={<AuthPanel />} leftWidthClass="md:w-[50%]">
       <SignupForm />
     </AuthLayout>
   );

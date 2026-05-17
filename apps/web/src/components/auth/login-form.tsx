@@ -91,12 +91,12 @@ export function LoginForm() {
     return (
       <form onSubmit={handleOtpSubmit} className="space-y-6">
         <div>
-          <h1 className="text-[28px] font-bold text-[#0f172a]">
+          <h1 className="text-[28px] font-bold text-dark">
             Check your email
           </h1>
-          <p className="text-[14px] text-[#475569] mt-1">
+          <p className="text-[14px] text-secondary mt-1">
             We sent a 6-digit code to{" "}
-            <span className="font-medium text-[#0f172a]">
+            <span className="font-medium text-dark">
               {maskEmail(email)}
             </span>
           </p>
@@ -122,7 +122,7 @@ export function LoginForm() {
             type="button"
             onClick={handleResend}
             disabled={resendSeconds > 0 || requestOtp.isPending}
-            className="text-[#1e40af] hover:underline disabled:text-[#94a3b8] disabled:no-underline"
+            className="text-brand hover:underline disabled:text-disabled disabled:no-underline"
           >
             {resendSeconds > 0
               ? `Resend code (in ${resendSeconds}s)`
@@ -135,7 +135,7 @@ export function LoginForm() {
               setOtp("");
               setOtpError(false);
             }}
-            className="text-[#475569] hover:text-[#0f172a]"
+            className="text-secondary hover:text-dark"
           >
             ← Back to email
           </button>
@@ -147,10 +147,10 @@ export function LoginForm() {
   return (
     <form onSubmit={handleEmailSubmit} className="space-y-6">
       <div>
-        <h1 className="text-[28px] font-bold text-[#0f172a]">
+        <h1 className="text-[28px] font-bold text-dark">
           Sign in to Splexa
         </h1>
-        <p className="text-[14px] text-[#475569] mt-1">
+        <p className="text-[14px] text-secondary mt-1">
           Enter your email to receive a one-time code.
         </p>
       </div>
@@ -176,12 +176,12 @@ export function LoginForm() {
         {requestOtp.isPending ? "Sending…" : "Continue with email"}
       </Button>
 
-      <div className="border-t border-[#e2e8f0] pt-4 text-center">
-        <p className="text-[13px] text-[#475569]">
+      <div className="border-t border-line pt-4 text-center">
+        <p className="text-[13px] text-secondary">
           Don&apos;t have an account?{" "}
           <Link
             href="/signup"
-            className="text-[#1e40af] hover:underline font-medium"
+            className="text-brand hover:underline font-medium"
           >
             Create one →
           </Link>

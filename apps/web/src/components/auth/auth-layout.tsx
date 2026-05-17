@@ -1,38 +1,36 @@
 import { type ReactNode } from "react";
+import { Logo } from "@/components/ui/logo";
 
 interface AuthLayoutProps {
   leftPanel: ReactNode;
   children: ReactNode;
+  leftWidthClass?: string;
 }
 
-export function AuthLayout({ leftPanel, children }: AuthLayoutProps) {
+export function AuthLayout({ leftPanel, children, leftWidthClass = "md:w-[65%]" }: AuthLayoutProps) {
   return (
     <div className="min-h-screen flex">
-      {/* Left brand panel — 40%, hidden below md */}
+      {/* Left brand panel */}
       <div
-        className="hidden md:flex md:w-2/5 flex-col"
-        style={{
-          background: "linear-gradient(160deg, #0c1445 0%, #1e3a8a 100%)",
-        }}
+        className={`hidden md:flex ${leftWidthClass} flex-col`}
+        style={{ background: "linear-gradient(160deg, var(--surface-dark) 0%, var(--brand-dark) 100%)" }}
       >
         {leftPanel}
       </div>
 
-      {/* Right form panel — full width on mobile, 60% on md+ */}
-      <div className="flex-1 md:w-3/5 bg-white flex flex-col">
+      {/* Right form panel — full width on mobile, remaining width on md+ */}
+      <div className="flex-1 bg-card flex flex-col">
         {/* Mobile compact header */}
         <div
           className="md:hidden flex items-center px-5 h-12 shrink-0"
-          style={{
-            background: "linear-gradient(160deg, #0c1445 0%, #1e3a8a 100%)",
-          }}
+          style={{ background: "linear-gradient(160deg, var(--surface-dark) 0%, var(--brand-dark) 100%)" }}
         >
-          <span className="text-white font-bold text-base">⚖ Splexa</span>
+          <Logo size="sm" variant="white" />
         </div>
 
         {/* Centered form area */}
-        <div className="flex-1 flex items-center justify-center px-6 py-12">
-          <div className="w-full max-w-[400px]">{children}</div>
+        <div className="flex-1 flex items-center justify-center px-8 py-10">
+          <div className="w-full max-w-[360px]">{children}</div>
         </div>
       </div>
     </div>

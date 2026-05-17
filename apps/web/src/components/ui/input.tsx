@@ -57,6 +57,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     );
   },
 );
+
 Input.displayName = "Input";
 
 export interface InputGroupProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -85,7 +86,7 @@ const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
       >
         <label
           htmlFor={id}
-          className="block text-sm font-medium text-muted leading-none mb-1.5"
+          className="block text-[13.5px] font-medium text-label leading-none mb-1.5"
         >
           {label}
           {required && <span className="text-negative ml-0.5">*</span>}
@@ -98,7 +99,7 @@ const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
           aria-describedby={
             error ? `${id}-error` : hint ? `${id}-hint` : undefined
           }
-          className="w-full bg-transparent text-sm text-dark placeholder:text-placeholder focus:outline-none disabled:text-disabled disabled:cursor-not-allowed"
+          className="w-full bg-transparent font-medium text-sm text-dark placeholder:text-placeholder focus:outline-none disabled:text-disabled disabled:cursor-not-allowed"
           {...inputProps}
         />
         {!error && hint && (
@@ -115,6 +116,7 @@ const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
     );
   },
 );
+
 InputGroup.displayName = "InputGroup";
 
 export { Input, InputGroup };

@@ -11,7 +11,9 @@ const MESSAGES = {
   otpSendFailed: "Failed to send code. Try again.",
   loginSuccess: "Welcome back.",
   loginFailed: "Invalid code. Try again.",
+  signupSuccess: "Welcome to Splexa!",
   signupFailed: "Signup failed. Try again.",
+  signupEmailExists: "An account with this email already exists. Sign in instead.",
 } as const;
 
 export function useRequestOtp() {
@@ -22,7 +24,7 @@ export function useRequestOtp() {
   });
 }
 
-export function useVerifyOtp() {
+export function useVerifyOtp(successMessage: string = MESSAGES.loginSuccess) {
   const router = useRouter();
   const setAuth = useAuthStore((s) => s.setAuth);
 
@@ -30,7 +32,7 @@ export function useVerifyOtp() {
     mutationFn: ({ email, otp }) => authApi.verifyOtp(email, otp),
     onSuccess: ({ accessToken, user }) => {
       setAuth(accessToken, user);
-      toast.success(MESSAGES.loginSuccess);
+      toast.success(successMessage);
       router.push("/dashboard");
     },
     onError: (err) => toast.error(err.message || MESSAGES.loginFailed),
@@ -40,6 +42,14 @@ export function useVerifyOtp() {
 export function useSignup() {
   return useMutation<void, Error, SignupPayload>({
     mutationFn: (data) => authApi.signup(data),
-    onError: (err) => toast.error(err.message || MESSAGES.signupFailed),
+    onSuccess: (_, { email }) => toast.info(MESSAGES.otpSent(email)),
+    onError: (err) => {
+      const msg = err.message || MESSAGES.signupFailed;
+      toast.error(
+        msg.toLowerCase().includes("already")
+          ? MESSAGES.signupEmailExists
+          : msg,
+      );
+    },
   });
 }

@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function SignupPage() {
   return (
-    <AuthLayout leftPanel={<AuthPanel />} leftWidthClass="md:w-[50%]">
+    <AuthLayout leftPanel={<AuthPanel />}>
       <SignupForm />
     </AuthLayout>
   );

@@ -4,7 +4,7 @@ import { LoginForm } from "@/components/auth/login-form";
 
 export default function LoginPage() {
   return (
-    <AuthLayout leftPanel={<AuthPanel />} leftWidthClass="md:w-[65%]">
+    <AuthLayout leftPanel={<AuthPanel />}>
       <LoginForm />
     </AuthLayout>
   );

@@ -45,7 +45,7 @@ export function AuthPanel() {
         {TRUST_BADGES.map(({ icon, emoji, label }) => (
           <span
             key={label}
-            className="flex items-center gap-1.5 text-xs font-medium text-white/80"
+            className="flex items-center gap-1.5 text-xs font-medium text-white/90"
           >
             {icon ? (
               <Icon icon={icon} size="sm" className="text-brand-light" />

@@ -3,13 +3,13 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface FieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   hint?: string;
   error?: string;
 }
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
+const Field = React.forwardRef<HTMLInputElement, FieldProps>(
   (
     { label, hint, error, className, id: explicitId, required, ...props },
     ref,
@@ -58,7 +58,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
   },
 );
 
-Input.displayName = "Input";
+Field.displayName = "Field";
 
 export interface InputGroupProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -119,4 +119,4 @@ const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
 
 InputGroup.displayName = "InputGroup";
 
-export { Input, InputGroup };
+export { Field, InputGroup };

@@ -91,14 +91,10 @@ export function LoginForm() {
     return (
       <form onSubmit={handleOtpSubmit} className="space-y-6">
         <div>
-          <h1 className="text-[28px] font-bold text-dark">
-            Check your email
-          </h1>
+          <h1 className="text-[28px] font-bold text-dark">Check your email</h1>
           <p className="text-[14px] text-secondary mt-1">
             We sent a 6-digit code to{" "}
-            <span className="font-medium text-dark">
-              {maskEmail(email)}
-            </span>
+            <span className="font-medium text-dark">{maskEmail(email)}</span>
           </p>
         </div>
 
@@ -147,11 +143,9 @@ export function LoginForm() {
   return (
     <form onSubmit={handleEmailSubmit} className="space-y-6">
       <div>
-        <h1 className="text-[28px] font-bold text-dark">
-          Sign in to Splexa
-        </h1>
+        <h1 className="text-[28px] font-bold text-dark">Welcome back.</h1>
         <p className="text-[14px] text-secondary mt-1">
-          Enter your email to receive a one-time code.
+          Enter your email to continue.
         </p>
       </div>
 
@@ -165,15 +159,15 @@ export function LoginForm() {
         onChange={(e) => setEmail(e.target.value)}
         required
         disabled={requestOtp.isPending}
+        autoFocus
       />
 
       <Button
         type="submit"
         className="w-full"
-        value={"primaryGradient"}
         disabled={!email.trim() || requestOtp.isPending}
       >
-        {requestOtp.isPending ? "Sending…" : "Continue with email"}
+        Continue
       </Button>
 
       <div className="border-t border-line pt-4 text-center">

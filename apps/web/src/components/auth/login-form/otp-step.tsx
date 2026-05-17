@@ -55,9 +55,7 @@ export function LoginOtpStep({ email, onBack }: Props) {
       <div>
         <p className="text-sm text-secondary mt-1">
           We sent a 6-digit code to{" "}
-          <span className="font-medium text-dark">
-            {maskEmail(email)}
-          </span>
+          <span className="font-medium text-dark">{maskEmail(email)}</span>
         </p>
       </div>
 
@@ -77,12 +75,12 @@ export function LoginOtpStep({ email, onBack }: Props) {
         Verify Code
       </Button>
 
-      <div className="flex items-center justify-between text-[13px]">
+      <div className="flex items-center justify-between text-sm">
         <button
           type="button"
           onClick={handleResend}
           disabled={resendSeconds > 0 || isResending}
-          className="text-brand hover:underline disabled:text-disabled disabled:no-underline"
+          className="text-brand disabled:text-disabled disabled:no-underline"
         >
           {resendSeconds > 0
             ? `Resend code (${resendSeconds}s)`

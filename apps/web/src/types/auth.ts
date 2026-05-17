@@ -12,6 +12,6 @@ export interface SignupPayload {
   phoneNumber: string;
   designation: string;
   orgName: string;
-  practiceType: string;
+  practiceTypes: string[];
   city: string;
 }

@@ -8,15 +8,6 @@ import { useVerifyOtp, useRequestOtp } from "@/hooks/use-auth";
 import { maskEmail } from "@/lib/utils";
 
 const RESEND_COOL_DOWN_SECONDS = 30;
-const SUCCESS_MSG = "Welcome to Splexa!";
-
-const LABELS = {
-  heading: "Verify your email",
-  codeSentTo: (email: string) => `We sent a 6-digit code to ${maskEmail(email)}`,
-  verify: "Verify & continue",
-  resend: "Resend code",
-  resendCountdown: (s: number) => `Resend code (${s}s)`,
-} as const;
 
 interface SignupOtpStepProps {
   email: string;
@@ -28,7 +19,7 @@ export function SignupOtpStep({ email, onBack }: SignupOtpStepProps) {
   const [hasError, setHasError] = useState(false);
   const [resendSeconds, setResendSeconds] = useState(RESEND_COOL_DOWN_SECONDS);
 
-  const verifyOtp = useVerifyOtp(SUCCESS_MSG);
+  const verifyOtp = useVerifyOtp();
   const requestOtp = useRequestOtp();
 
   useEffect(() => {
@@ -62,11 +53,19 @@ export function SignupOtpStep({ email, onBack }: SignupOtpStepProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <h1 className="text-[26px] font-bold text-dark">{LABELS.heading}</h1>
-        <p className="text-sm text-secondary mt-1">{LABELS.codeSentTo(email)}</p>
+        <h1 className="text-[26px] font-bold text-dark">Verify your email</h1>
+        <p className="text-sm text-secondary mt-1">
+          We sent a 6-digit code to{" "}
+          <span className="font-medium text-dark">{maskEmail(email)}</span>
+        </p>
       </div>
 
-      <OtpInput value={otp} onChange={setOtp} hasError={hasError} disabled={isVerifying} />
+      <OtpInput
+        value={otp}
+        onChange={setOtp}
+        hasError={hasError}
+        disabled={isVerifying}
+      />
 
       <Button
         type="submit"
@@ -74,7 +73,7 @@ export function SignupOtpStep({ email, onBack }: SignupOtpStepProps) {
         loading={isVerifying}
         disabled={otp.length !== 6 || isVerifying}
       >
-        {LABELS.verify}
+        Verify & Continue
       </Button>
 
       <div className="flex items-center justify-between text-[13px]">
@@ -82,9 +81,11 @@ export function SignupOtpStep({ email, onBack }: SignupOtpStepProps) {
           type="button"
           onClick={handleResend}
           disabled={resendSeconds > 0 || isResending}
-          className="text-brand hover:underline disabled:text-disabled disabled:no-underline"
+          className="text-brand disabled:text-disabled disabled:no-underline"
         >
-          {resendSeconds > 0 ? LABELS.resendCountdown(resendSeconds) : LABELS.resend}
+          {resendSeconds > 0
+            ? `Resend code (${resendSeconds}s)`
+            : "Resend code"}
         </button>
         <button
           type="button"

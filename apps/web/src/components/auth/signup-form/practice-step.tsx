@@ -4,29 +4,18 @@ import { ChevronLeft } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/input";
-import { SelectGroup } from "@/components/ui/select";
+import { MultiSelectGroup } from "@/components/ui/multi-select";
 import { useSignup } from "@/hooks/use-auth";
 import { PRACTICE_TYPE_OPTIONS } from "@/lib/options";
 import type { PersonalFormValues } from "./personal-step";
 
-const LABELS = {
-  heading: "About your practice",
-  orgName: "Firm / chamber name",
-  orgNamePlaceholder: "e.g. Iyer & Associates",
-  practiceType: "Practice type",
-  practiceTypePlaceholder: "Select practice type",
-  city: "City",
-  cityPlaceholder: "e.g. Chennai",
-  submit: "Create account",
-} as const;
-
 interface PracticeFormValues {
   orgName: string;
-  practiceType: string;
+  practiceTypes: string[];
   city: string;
 }
 
-interface SignupPracticeStepProps {
+interface Props {
   personalData: PersonalFormValues;
   defaultValues?: Partial<PracticeFormValues>;
   onSuccess: () => void;
@@ -38,7 +27,7 @@ export function SignupPracticeStep({
   defaultValues,
   onSuccess,
   onBack,
-}: SignupPracticeStepProps) {
+}: Props) {
   const {
     register,
     control,
@@ -57,7 +46,7 @@ export function SignupPracticeStep({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <h1 className="text-[26px] font-bold text-dark">{LABELS.heading}</h1>
+      <h1 className="text-[26px] font-bold text-dark">About your practice</h1>
 
       <div className="space-y-4">
         <InputGroup
@@ -68,16 +57,17 @@ export function SignupPracticeStep({
         />
 
         <Controller
-          name="practiceType"
+          name="practiceTypes"
           control={control}
-          rules={{ required: true }}
+          defaultValue={[]}
+          rules={{ validate: (v) => v.length > 0 }}
           render={({ field }) => (
-            <SelectGroup
-              label="Practice type"
+            <MultiSelectGroup
+              label="Practice types"
               options={PRACTICE_TYPE_OPTIONS}
-              placeholder="e.g. Criminal, Corporate, etc."
-              value={field.value ?? ""}
+              value={field.value}
               onChange={field.onChange}
+              placeholder="e.g. Criminal, Corporate, etc"
               required
               disabled={isPending}
             />

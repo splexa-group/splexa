@@ -29,7 +29,7 @@ export const authRepository = {
         data: {
           id: orgId,
           name: input.orgName,
-          practiceType: input.practiceType,
+          practiceTypes: input.practiceTypes,
           city: input.city,
           createdBy: userId,
         },

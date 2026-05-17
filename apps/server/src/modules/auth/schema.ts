@@ -9,7 +9,7 @@ export const signupSchema = z
     phoneNumber: z.string().min(7).max(20),
     designation: z.enum(Designation),
     orgName: z.string().min(1).max(200),
-    practiceType: z.enum(PracticeType),
+    practiceTypes: z.array(z.enum(PracticeType)).min(1),
     city: z.string().min(1).max(100),
   })
   .strict();

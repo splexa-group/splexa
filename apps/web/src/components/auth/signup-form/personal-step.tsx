@@ -15,16 +15,13 @@ export interface PersonalFormValues {
   phoneNumber: string;
 }
 
-interface SignupPersonalStepProps {
+interface Props {
   defaultValues?: Partial<PersonalFormValues>;
   onSuccess: (data: PersonalFormValues) => void;
   onBack?: () => void;
 }
 
-export function SignupPersonalStep({
-  defaultValues,
-  onSuccess,
-}: SignupPersonalStepProps) {
+export function SignupPersonalStep({ defaultValues, onSuccess }: Props) {
   const {
     register,
     control,

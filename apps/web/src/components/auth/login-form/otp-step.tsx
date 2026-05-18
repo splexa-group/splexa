@@ -51,8 +51,9 @@ export function LoginOtpStep({ email, onBack }: Props) {
   const isResending = requestOtp.isPending;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-[380px]">
       <div>
+        <h1 className="text-[26px] font-bold text-dark">Verify your email</h1>
         <p className="text-sm text-secondary mt-1">
           We sent a 6-digit code to{" "}
           <span className="font-medium text-dark">{maskEmail(email)}</span>

@@ -9,7 +9,7 @@ import { useSignup } from "@/hooks/use-auth";
 import { PRACTICE_TYPE_OPTIONS } from "@/lib/options";
 import type { PersonalFormValues } from "./personal-step";
 
-interface PracticeFormValues {
+export interface PracticeFormValues {
   orgName: string;
   practiceTypes: string[];
   city: string;
@@ -18,7 +18,7 @@ interface PracticeFormValues {
 interface Props {
   personalData: PersonalFormValues;
   defaultValues?: Partial<PracticeFormValues>;
-  onSuccess: () => void;
+  onSuccess: (data: PracticeFormValues) => void;
   onBack: () => void;
 }
 
@@ -39,7 +39,7 @@ export function SignupPracticeStep({
 
   async function onSubmit(data: PracticeFormValues) {
     await signup.mutateAsync({ ...personalData, ...data });
-    onSuccess();
+    onSuccess(data);
   }
 
   const isPending = isSubmitting || signup.isPending;

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { SignupPersonalStep, type PersonalFormValues } from "./personal-step";
-import { SignupPracticeStep } from "./practice-step";
+import { SignupPracticeStep, type PracticeFormValues } from "./practice-step";
 import { SignupOtpStep } from "./otp-step";
 
 enum SignupStep {
@@ -12,15 +12,17 @@ enum SignupStep {
 }
 
 export function SignupForm() {
-  const [step, setStep] = useState<SignupStep>(SignupStep.Personal);
+  const [step, setStep] = useState<SignupStep>(SignupStep.Otp);
   const [personalData, setPersonalData] = useState<PersonalFormValues | null>(null);
+  const [practiceData, setPracticeData] = useState<PracticeFormValues | null>(null);
 
   function handlePersonalSuccess(data: PersonalFormValues) {
     setPersonalData(data);
     setStep(SignupStep.Practice);
   }
 
-  function handlePracticeSuccess() {
+  function handlePracticeSuccess(data: PracticeFormValues) {
+    setPracticeData(data);
     setStep(SignupStep.Otp);
   }
 
@@ -43,6 +45,7 @@ export function SignupForm() {
     return (
       <SignupPracticeStep
         personalData={personalData}
+        defaultValues={practiceData ?? undefined}
         onSuccess={handlePracticeSuccess}
         onBack={handleBack}
       />

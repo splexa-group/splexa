@@ -51,7 +51,7 @@ export function SignupOtpStep({ email, onBack }: SignupOtpStepProps) {
   const isResending = requestOtp.isPending;
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-[380px]">
       <div>
         <h1 className="text-[26px] font-bold text-dark">Verify your email</h1>
         <p className="text-sm text-secondary mt-1">

@@ -2,7 +2,8 @@
   "files.exclude": {
     "**/node_modules": true,
     "**/.turbo": true,
-    "**/dist": true
+    "**/dist": true,
+    "**/.next": true
   },
-  "cSpell.words": ["splexa", "Turborepo"]
+  "cSpell.words": ["Iyer", "Otps", "splexa", "Turborepo"]
 }

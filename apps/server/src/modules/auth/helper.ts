@@ -1,5 +1,6 @@
 import { FastifyReply } from "fastify";
 
+import { env } from "@/config/env";
 import {
   ACCESS_TOKEN_COOKIE,
   ACCESS_TOKEN_MAX_AGE,
@@ -8,7 +9,6 @@ import {
   REFRESH_TOKEN_EXPIRY_DAYS,
   REFRESH_TOKEN_MAX_AGE,
 } from "@/constants/auth";
-import { env } from "@/config/env";
 
 export function maskEmail(email: string): string {
   const [local, domain] = email.split("@");

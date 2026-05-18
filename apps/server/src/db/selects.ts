@@ -17,6 +17,6 @@ export const userSelect = {
 export const orgSelect = {
   id: true,
   name: true,
-  practiceType: true,
+  practiceTypes: true,
   city: true,
 } satisfies Prisma.OrganizationSelect;

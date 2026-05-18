@@ -45,14 +45,15 @@ export const Errors = {
 
   otpNotFound: () =>
     new AppError(
-      401,
+      404,
       ErrorCode.OTP_NOT_FOUND,
       "No active OTP found for this email.",
     ),
-  invalidOtp: (msg?: string) => new AppError(401, ErrorCode.INVALID_OTP, msg ?? "Invalid OTP."),
+  invalidOtp: (msg?: string) =>
+    new AppError(422, ErrorCode.INVALID_OTP, msg ?? "Invalid OTP."),
   otpExpired: () =>
     new AppError(
-      401,
+      422,
       ErrorCode.OTP_EXPIRED,
       "This code has expired. Please request a new one.",
     ),
@@ -60,7 +61,7 @@ export const Errors = {
     new AppError(
       429,
       ErrorCode.OTP_LOCKED,
-      `Too many attempts. Please wait some minutes before trying again.`,
+      `Too many attempts. Please wait 15 minutes before trying again.`,
     ),
   otpRateLimited: () =>
     new AppError(

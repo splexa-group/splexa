@@ -12,7 +12,7 @@ export const authApi = {
   verifyOtp: (email: string, otp: string) =>
     POST<VerifyOtpResponse>("/auth/otp/verify", { email, otp }),
 
-  refresh: () => POST<{ accessToken: string }>("/auth/refresh"),
+  refresh: () => POST("/auth/refresh"),
 
   logout: () => POST<void>("/auth/logout"),
 };

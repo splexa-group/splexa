@@ -19,7 +19,7 @@ interface Props {
   personalData: PersonalFormValues;
   defaultValues?: Partial<PracticeFormValues>;
   onSuccess: (data: PracticeFormValues) => void;
-  onBack: () => void;
+  onBack: (draft: Partial<PracticeFormValues>) => void;
 }
 
 export function SignupPracticeStep({
@@ -32,6 +32,7 @@ export function SignupPracticeStep({
     register,
     control,
     handleSubmit,
+    getValues,
     formState: { isValid, isSubmitting },
   } = useForm<PracticeFormValues>({ mode: "onChange", defaultValues });
 
@@ -93,7 +94,7 @@ export function SignupPracticeStep({
 
       <button
         type="button"
-        onClick={onBack}
+        onClick={() => onBack(getValues())}
         className="flex items-center gap-1 text-sm text-secondary hover:text-dark"
       >
         <ChevronLeft size={14} />

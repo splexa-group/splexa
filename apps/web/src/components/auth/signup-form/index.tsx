@@ -14,7 +14,7 @@ enum SignupStep {
 export function SignupForm() {
   const [step, setStep] = useState<SignupStep>(SignupStep.Otp);
   const [personalData, setPersonalData] = useState<PersonalFormValues | null>(null);
-  const [practiceData, setPracticeData] = useState<PracticeFormValues | null>(null);
+  const [practiceData, setPracticeData] = useState<Partial<PracticeFormValues> | null>(null);
 
   function handlePersonalSuccess(data: PersonalFormValues) {
     setPersonalData(data);
@@ -47,7 +47,7 @@ export function SignupForm() {
         personalData={personalData}
         defaultValues={practiceData ?? undefined}
         onSuccess={handlePracticeSuccess}
-        onBack={handleBack}
+        onBack={(draft) => { setPracticeData(draft); handleBack(); }}
       />
     );
   }

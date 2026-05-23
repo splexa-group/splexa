@@ -81,4 +81,27 @@ export const Errors = {
       ErrorCode.EMAIL_SEND_FAILED,
       "Failed to send OTP, please try again.",
     ),
+
+  clientNotFound: () =>
+    new AppError(404, ErrorCode.CLIENT_NOT_FOUND, "Client not found."),
+
+  caseNotFound: () =>
+    new AppError(404, ErrorCode.CASE_NOT_FOUND, "Case not found."),
+
+  hearingNotFound: () =>
+    new AppError(404, ErrorCode.HEARING_NOT_FOUND, "Hearing not found."),
+
+  hearingCaseMismatch: () =>
+    new AppError(
+      403,
+      ErrorCode.HEARING_CASE_MISMATCH,
+      "Hearing does not belong to this case.",
+    ),
+
+  importantDateNotFound: () =>
+    new AppError(
+      404,
+      ErrorCode.IMPORTANT_DATE_NOT_FOUND,
+      "Important date not found.",
+    ),
 } as const;

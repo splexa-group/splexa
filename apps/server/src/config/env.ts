@@ -34,4 +34,12 @@ export const env = {
   RESEND_API_KEY: getEnvVariable("RESEND_API_KEY"),
   EMAIL_FROM: getEnvVariable("EMAIL_FROM"),
   EMAIL_PROVIDER: getEnvVariable("EMAIL_PROVIDER"),
+  STORAGE_PROVIDER: getEnvVariable("STORAGE_PROVIDER"),
+  R2_ENDPOINT: getEnvVariable("R2_ENDPOINT"),
+  R2_ACCESS_KEY_ID: getEnvVariable("R2_ACCESS_KEY_ID"),
+  R2_SECRET_ACCESS_KEY: getEnvVariable("R2_SECRET_ACCESS_KEY"),
+  R2_BUCKET: getEnvVariable("R2_BUCKET"),
+
+  WHATSAPP_PROVIDER: getEnvVariable("WHATSAPP_PROVIDER"),
+  INTERAKT_API_KEY: getEnvVariable("INTERAKT_API_KEY"),
 } as const;

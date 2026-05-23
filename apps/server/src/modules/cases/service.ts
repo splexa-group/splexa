@@ -1,90 +1,54 @@
-import { prisma } from "@/db/client";
-import { Errors } from "@/utils/errors";
-import { clientsRepository } from "@/modules/clients/repository";
 import type { Prisma } from "@prisma/client";
 
+import { clientsRepository } from "@/modules/clients/repository";
+import type { ServiceContext } from "@/types/service-context";
+import { parseDate } from "@/utils/date";
+import { Errors } from "@/utils/errors";
+
+import { casesRepository } from "./repository";
 import type {
   CreateCaseInput,
-  CreateImportantDateInput,
   ListCasesQuery,
   UpdateCaseInput,
-  UpdateImportantDateInput,
 } from "./schema";
-import { casesRepository } from "./repository";
-
-type Ctx = { orgId: string; userId: string; ipAddress: string };
 
 export const casesService = {
-  async create(input: CreateCaseInput, ctx: Ctx) {
-    const { newClient, clientId, ...caseFields } = input;
+  async create(input: CreateCaseInput, ctx: ServiceContext) {
+    const { newClient, clientId, filingDate, oppositeParties, ...rest } = input;
+
+    const caseFields = {
+      orgId: ctx.orgId,
+      createdBy: ctx.userId,
+      title: rest.title,
+      clientRole: rest.clientRole,
+      caseNumber: rest.caseNumber,
+      caseType: rest.caseType,
+      filingDate: filingDate ? parseDate(filingDate) : undefined,
+      courtName: rest.courtName,
+      courtType: rest.courtType,
+      courtState: rest.courtState,
+      courtCity: rest.courtCity,
+      benchNumber: rest.benchNumber,
+      judgeName: rest.judgeName,
+      judgeDesignation: rest.judgeDesignation,
+      status: rest.status,
+      stage: rest.stage,
+      priority: rest.priority,
+      oppositeParties: oppositeParties as Prisma.InputJsonValue,
+      notes: rest.notes,
+      tags: rest.tags,
+      assignedTo: rest.assignedTo,
+    };
 
     if (clientId) {
       const client = await clientsRepository.findById(clientId, ctx.orgId);
       if (!client) throw Errors.clientNotFound();
-
-      return casesRepository.create({
-        orgId: ctx.orgId,
-        createdBy: ctx.userId,
-        clientId,
-        title: caseFields.title,
-        clientRole: caseFields.clientRole,
-        caseNumber: caseFields.caseNumber,
-        caseType: caseFields.caseType,
-        filingDate: caseFields.filingDate ? new Date(caseFields.filingDate) : undefined,
-        courtName: caseFields.courtName,
-        courtType: caseFields.courtType,
-        courtState: caseFields.courtState,
-        courtCity: caseFields.courtCity,
-        benchNumber: caseFields.benchNumber,
-        judgeName: caseFields.judgeName,
-        judgeDesignation: caseFields.judgeDesignation,
-        status: caseFields.status,
-        stage: caseFields.stage,
-        priority: caseFields.priority,
-        oppositeParties: caseFields.oppositeParties as Prisma.InputJsonValue,
-        notes: caseFields.notes,
-        tags: caseFields.tags,
-        assignedTo: caseFields.assignedTo,
-      });
+      return casesRepository.create({ ...caseFields, clientId });
     }
 
-    // newClient path — create client and case atomically
-    return prisma.$transaction(async (tx) => {
-      const createdClient = await tx.client.create({
-        data: {
-          orgId: ctx.orgId,
-          fullName: newClient!.fullName,
-          phone: newClient!.phone,
-          type: newClient!.type,
-          createdBy: ctx.userId,
-        },
-        select: { id: true },
-      });
-
-      return casesRepository.createInTx(tx, {
-        orgId: ctx.orgId,
-        createdBy: ctx.userId,
-        clientId: createdClient.id,
-        title: caseFields.title,
-        clientRole: caseFields.clientRole,
-        caseNumber: caseFields.caseNumber,
-        caseType: caseFields.caseType,
-        filingDate: caseFields.filingDate ? new Date(caseFields.filingDate) : undefined,
-        courtName: caseFields.courtName,
-        courtType: caseFields.courtType,
-        courtState: caseFields.courtState,
-        courtCity: caseFields.courtCity,
-        benchNumber: caseFields.benchNumber,
-        judgeName: caseFields.judgeName,
-        judgeDesignation: caseFields.judgeDesignation,
-        status: caseFields.status,
-        stage: caseFields.stage,
-        priority: caseFields.priority,
-        oppositeParties: caseFields.oppositeParties as Prisma.InputJsonValue,
-        notes: caseFields.notes,
-        tags: caseFields.tags,
-        assignedTo: caseFields.assignedTo,
-      });
+    return casesRepository.createWithNewClient({
+      ...caseFields,
+      newClient: newClient!,
     });
   },
 
@@ -98,66 +62,28 @@ export const casesService = {
     return c;
   },
 
-  async update(id: string, input: UpdateCaseInput, ctx: Ctx) {
+  async update(id: string, input: UpdateCaseInput, ctx: ServiceContext) {
     const existing = await casesRepository.findById(id, ctx.orgId);
     if (!existing) throw Errors.caseNotFound();
 
     const judgeChanged =
-      (input.judgeName !== undefined && input.judgeName !== existing.judgeName) ||
+      (input.judgeName !== undefined &&
+        input.judgeName !== existing.judgeName) ||
       (input.judgeDesignation !== undefined &&
         input.judgeDesignation !== existing.judgeDesignation);
 
-    const updateData: Record<string, unknown> = { ...input };
-    if (input.filingDate) updateData.filingDate = new Date(input.filingDate);
-    if (judgeChanged) updateData.judgeUpdatedAt = new Date();
+    const updateData: Prisma.CaseUpdateInput = {
+      ...input,
+      ...(input.filingDate ? { filingDate: parseDate(input.filingDate) } : {}),
+      ...(judgeChanged ? { judgeUpdatedAt: new Date() } : {}),
+    };
 
-    return casesRepository.update(id, updateData as Prisma.CaseUpdateInput);
+    return casesRepository.update(id, updateData);
   },
 
-  async delete(id: string, ctx: Ctx) {
+  async delete(id: string, ctx: ServiceContext) {
     const existing = await casesRepository.findById(id, ctx.orgId);
     if (!existing) throw Errors.caseNotFound();
     await casesRepository.softDeleteCascade(id, ctx.orgId);
-  },
-
-  async createImportantDate(
-    caseId: string,
-    input: CreateImportantDateInput,
-    ctx: Ctx,
-  ) {
-    const existing = await casesRepository.findById(caseId, ctx.orgId);
-    if (!existing) throw Errors.caseNotFound();
-
-    const notifyUserId = existing.assignedTo ?? existing.createdBy;
-
-    return casesRepository.createImportantDate(
-      { ...input, caseId, orgId: ctx.orgId },
-      notifyUserId,
-    );
-  },
-
-  async updateImportantDate(
-    caseId: string,
-    dateId: string,
-    input: UpdateImportantDateInput,
-    ctx: Ctx,
-  ) {
-    const date = await casesRepository.findImportantDateById(
-      dateId,
-      caseId,
-      ctx.orgId,
-    );
-    if (!date) throw Errors.importantDateNotFound();
-    return casesRepository.updateImportantDate(dateId, caseId, ctx.orgId, input);
-  },
-
-  async deleteImportantDate(caseId: string, dateId: string, ctx: Ctx) {
-    const date = await casesRepository.findImportantDateById(
-      dateId,
-      caseId,
-      ctx.orgId,
-    );
-    if (!date) throw Errors.importantDateNotFound();
-    await casesRepository.softDeleteImportantDate(dateId, ctx.orgId);
   },
 };

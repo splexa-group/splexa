@@ -1,35 +1,16 @@
-import { type Prisma, $Enums } from "@prisma/client";
-
-import { HearingStatus, ImportantDateType } from "@splexa-group/shared/enums";
+import type { Prisma } from "@prisma/client";
+import {
+  HearingPurpose,
+  HearingStatus,
+  ImportantDateType,
+} from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
-import { hearingSummarySelect } from "@/db/selects";
+import { hearingDetailSelect, hearingSummarySelect } from "@/db/selects";
 import { casesRepository } from "@/modules/cases/repository";
+import { parseDate } from "@/utils/date";
 
 import type { CreateHearingInput, ListHearingsQuery } from "./schema";
-
-const hearingDetailSelect = {
-  id: true,
-  caseId: true,
-  orgId: true,
-  date: true,
-  purpose: true,
-  status: true,
-  notes: true,
-  nextDate: true,
-  adjournmentReason: true,
-  judgePresent: true,
-  addedBy: true,
-  createdAt: true,
-  updatedAt: true,
-  case: {
-    select: {
-      id: true,
-      title: true,
-      client: { select: { id: true, fullName: true } },
-    },
-  },
-} satisfies Prisma.HearingSelect;
 
 export const hearingsRepository = {
   async create(
@@ -45,7 +26,7 @@ export const hearingsRepository = {
         data: {
           caseId: data.caseId,
           orgId: data.orgId,
-          date: new Date(data.date),
+          date: parseDate(data.date),
           purpose: data.purpose,
           notes: data.notes,
           judgePresent: data.judgePresent,
@@ -62,7 +43,7 @@ export const hearingsRepository = {
           caseId: data.caseId,
           orgId: data.orgId,
           dateType: ImportantDateType.HearingDate,
-          date: new Date(data.date),
+          date: parseDate(data.date),
           sourceId: hearing.id,
           notifyUserId: data.notifyUserId,
         },
@@ -97,8 +78,8 @@ export const hearingsRepository = {
       ...(from || to
         ? {
             date: {
-              ...(from ? { gte: new Date(from) } : {}),
-              ...(to ? { lte: new Date(to) } : {}),
+              ...(from ? { gte: parseDate(from) } : {}),
+              ...(to ? { lte: parseDate(to) } : {}),
             },
           }
         : {}),
@@ -123,12 +104,12 @@ export const hearingsRepository = {
     caseId: string,
     orgId: string,
     data: {
-      status?: $Enums.HearingStatus;
+      status?: HearingStatus;
       notes?: string;
       nextDate?: string;
       adjournmentReason?: string;
       judgePresent?: string;
-      purpose?: $Enums.HearingPurpose;
+      purpose?: HearingPurpose;
     },
   ) {
     return prisma.$transaction(async (tx) => {
@@ -137,7 +118,7 @@ export const hearingsRepository = {
         data: {
           ...(data.status !== undefined ? { status: data.status } : {}),
           ...(data.notes !== undefined ? { notes: data.notes } : {}),
-          ...(data.nextDate ? { nextDate: new Date(data.nextDate) } : {}),
+          ...(data.nextDate ? { nextDate: parseDate(data.nextDate) } : {}),
           ...(data.adjournmentReason !== undefined
             ? { adjournmentReason: data.adjournmentReason }
             : {}),
@@ -154,7 +135,7 @@ export const hearingsRepository = {
       if (data.nextDate) {
         await tx.importantDate.updateMany({
           where: { sourceId: id, orgId, deletedAt: null },
-          data: { date: new Date(data.nextDate) },
+          data: { date: parseDate(data.nextDate) },
         });
       }
 

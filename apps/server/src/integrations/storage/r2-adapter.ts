@@ -1,3 +1,5 @@
+import { Buffer } from "node:buffer";
+
 import {
   DeleteObjectCommand,
   GetObjectCommand,
@@ -20,12 +22,12 @@ export class R2Adapter implements StorageProvider {
     },
   });
 
-  async upload(key: string, body: Buffer, mimeType: string): Promise<void> {
+  async upload(key: string, body: Uint8Array, mimeType: string): Promise<void> {
     await this.client.send(
       new PutObjectCommand({
         Bucket: env.R2_BUCKET,
         Key: key,
-        Body: body,
+        Body: Buffer.from(body),
         ContentType: mimeType,
       }),
     );

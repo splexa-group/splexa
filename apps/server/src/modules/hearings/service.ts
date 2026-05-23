@@ -1,17 +1,12 @@
-import { Errors } from "@/utils/errors";
 import { casesRepository } from "@/modules/cases/repository";
+import type { ServiceContext } from "@/types/service-context";
+import { Errors } from "@/utils/errors";
 
-import type {
-  CreateHearingInput,
-  ListHearingsQuery,
-  UpdateHearingInput,
-} from "./schema";
 import { hearingsRepository } from "./repository";
-
-type Ctx = { orgId: string; userId: string; ipAddress: string };
+import type { CreateHearingInput, ListHearingsQuery, UpdateHearingInput } from "./schema";
 
 export const hearingsService = {
-  async create(caseId: string, input: CreateHearingInput, ctx: Ctx) {
+  async create(caseId: string, input: CreateHearingInput, ctx: ServiceContext) {
     const parentCase = await casesRepository.findById(caseId, ctx.orgId);
     if (!parentCase) throw Errors.caseNotFound();
 
@@ -36,14 +31,14 @@ export const hearingsService = {
     return hearingsRepository.listCrossCase(orgId, query);
   },
 
-  async update(id: string, input: UpdateHearingInput, ctx: Ctx) {
+  async update(id: string, input: UpdateHearingInput, ctx: ServiceContext) {
     const hearing = await hearingsRepository.findById(id, ctx.orgId);
     if (!hearing) throw Errors.hearingNotFound();
 
     return hearingsRepository.update(id, hearing.caseId, ctx.orgId, input);
   },
 
-  async delete(id: string, ctx: Ctx) {
+  async delete(id: string, ctx: ServiceContext) {
     const hearing = await hearingsRepository.findById(id, ctx.orgId);
     if (!hearing) throw Errors.hearingNotFound();
 

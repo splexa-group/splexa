@@ -4,7 +4,6 @@ import {
   CaseType,
   ClientType,
   CourtType,
-  ImportantDateType,
   PartyRole,
   Priority,
 } from "@splexa-group/shared/enums";
@@ -103,7 +102,7 @@ export const listCasesQuerySchema = z
     caseType: z.enum(CaseType).optional(),
     priority: z.enum(Priority).optional(),
     courtType: z.enum(CourtType).optional(),
-    clientId: z.string().uuid().optional(),
+    clientId: z.string().optional(),
     page: z.coerce.number().int().positive().default(1),
     limit: z.coerce.number().int().positive().max(100).default(20),
   })
@@ -111,33 +110,7 @@ export const listCasesQuerySchema = z
 
 export const caseParamsSchema = z.object({ id: z.string().uuid() }).strict();
 
-export const createImportantDateSchema = z
-  .object({
-    dateType: z.enum(ImportantDateType),
-    date: z.string().datetime({ offset: true }),
-    description: z.string().max(500).optional(),
-  })
-  .strict();
-
-export const updateImportantDateSchema = z
-  .object({
-    dateType: z.enum(ImportantDateType).optional(),
-    date: z.string().datetime({ offset: true }).optional(),
-    description: z.string().max(500).optional(),
-  })
-  .strict();
-
-export const importantDateParamsSchema = z
-  .object({
-    id: z.string().uuid(),
-    dateId: z.string().uuid(),
-  })
-  .strict();
-
 export type CreateCaseInput = z.infer<typeof createCaseSchema>;
 export type UpdateCaseInput = z.infer<typeof updateCaseSchema>;
 export type ListCasesQuery = z.infer<typeof listCasesQuerySchema>;
 export type CaseParams = z.infer<typeof caseParamsSchema>;
-export type CreateImportantDateInput = z.infer<typeof createImportantDateSchema>;
-export type UpdateImportantDateInput = z.infer<typeof updateImportantDateSchema>;
-export type ImportantDateParams = z.infer<typeof importantDateParamsSchema>;

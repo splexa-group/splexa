@@ -154,7 +154,7 @@ export const hearingsRepository = {
 
       if (data.nextDate) {
         const existingEvent = await tx.scheduledEvent.findFirst({
-          where: { sourceId: id, deletedAt: null },
+          where: { sourceId: id, orgId, deletedAt: null },
         });
 
         if (existingEvent) {
@@ -164,20 +164,23 @@ export const hearingsRepository = {
           });
         } else {
           const parentCase = await tx.case.findFirst({
-            where: { id: caseId },
+            where: { id: caseId, orgId },
             select: { assignedTo: true, createdBy: true },
           });
-          await tx.scheduledEvent.create({
-            data: {
-              orgId,
-              type: $Enums.ScheduledEventType.HearingDate,
-              date: new Date(data.nextDate),
-              sourceId: id,
-              sourceType: "hearing",
-              caseId,
-              notifyUserId: parentCase?.assignedTo ?? parentCase?.createdBy ?? "",
-            },
-          });
+          const notifyUserId = parentCase?.assignedTo ?? parentCase?.createdBy;
+          if (notifyUserId) {
+            await tx.scheduledEvent.create({
+              data: {
+                orgId,
+                type: $Enums.ScheduledEventType.HearingDate,
+                date: new Date(data.nextDate),
+                sourceId: id,
+                sourceType: "hearing",
+                caseId,
+                notifyUserId,
+              },
+            });
+          }
         }
       }
 

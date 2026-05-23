@@ -12,5 +12,11 @@ model Organization {
   members   User[]     @relation("OrgMembers")
   auditLogs AuditLog[]
 
+  clients            Client[]
+  cases              Case[]
+  hearings           Hearing[]
+  caseImportantDates CaseImportantDate[]
+  scheduledEvents    ScheduledEvent[]
+
   @@map("organizations")
 }

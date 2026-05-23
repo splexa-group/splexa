@@ -1,0 +1,55 @@
+model Case {
+  id           String     @id @default(uuid())
+  orgId        String     @map("org_id")
+
+  title        String
+  clientId     String     @map("client_id")
+  clientRole   PartyRole  @map("client_role")
+
+  caseNumber   String?    @map("case_number")
+  caseType     CaseType?  @map("case_type")
+  filingDate   DateTime?  @map("filing_date")
+
+  courtName    String?    @map("court_name")
+  courtType    CourtType? @map("court_type")
+  courtState   String?    @map("court_state")
+  courtCity    String?    @map("court_city")
+  benchNumber  String?    @map("bench_number")
+
+  judgeName        String?   @map("judge_name")
+  judgeDesignation String?   @map("judge_designation")
+  judgeUpdatedAt   DateTime? @map("judge_updated_at")
+
+  status   CaseStatus @default(Active)
+  stage    CaseStage?
+  priority Priority?
+
+  oppositeParties Json? @map("opposite_parties")
+
+  notes String?
+  tags  String[]
+
+  nextHearingDate DateTime? @map("next_hearing_date")
+
+  assignedTo String? @map("assigned_to")
+  createdBy  String  @map("created_by")
+
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  org            Organization        @relation(fields: [orgId], references: [id])
+  client         Client              @relation(fields: [clientId], references: [id])
+  creator        User                @relation("CaseCreator", fields: [createdBy], references: [id])
+  assignedUser   User?               @relation("CaseAssignment", fields: [assignedTo], references: [id])
+  hearings       Hearing[]
+  importantDates CaseImportantDate[]
+  scheduledEvents ScheduledEvent[]
+
+  @@index([orgId])
+  @@index([orgId, status])
+  @@index([orgId, clientId])
+  @@index([orgId, deletedAt])
+  @@index([orgId, nextHearingDate])
+  @@map("cases")
+}

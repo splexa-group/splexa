@@ -1,0 +1,22 @@
+model ScheduledEvent {
+  id           String             @id @default(uuid())
+  orgId        String             @map("org_id")
+  type         ScheduledEventType
+  date         DateTime
+  sourceId     String             @map("source_id")
+  sourceType   String             @map("source_type")
+  caseId       String             @map("case_id")
+  notifyUserId String             @map("notify_user_id")
+  notifiedAt   DateTime?          @map("notified_at")
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+  deletedAt    DateTime?          @map("deleted_at")
+
+  org  Organization @relation(fields: [orgId], references: [id])
+  case Case         @relation(fields: [caseId], references: [id])
+
+  @@index([orgId, date])
+  @@index([sourceId])
+  @@index([orgId, deletedAt])
+  @@map("scheduled_events")
+}

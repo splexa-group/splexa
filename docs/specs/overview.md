@@ -18,18 +18,21 @@ erDiagram
     Organization ||--o{ Case : "owns"
     Organization ||--o{ Hearing : "owns"
     Organization ||--o{ CaseImportantDate : "owns"
+    Organization ||--o{ ScheduledEvent : "owns"
     Organization ||--o{ Document : "owns (future)"
 
     Client ||--o{ Case : "subject of (many cases)"
 
     Case ||--o{ Hearing : "has"
     Case ||--o{ CaseImportantDate : "has"
+    Case ||--o{ ScheduledEvent : "fans out to"
     Case ||--o{ Document : "has (future)"
 
     User ||--o{ Case : "creates"
     User ||--o{ Case : "assigned to"
     User ||--o{ Hearing : "logs"
     User ||--o{ Client : "creates"
+    User ||--o{ ScheduledEvent : "notified by"
     User ||--o{ Document : "uploads (future)"
 
     Hearing ||--o{ Document : "linked to (future)"
@@ -214,24 +217,44 @@ packages/shared/src/enums/
 ├── important-date-type.ts          ← NEW
 └── index.ts                        ← EXTEND — export all new enums
 
+apps/server/src/
+└── workers/
+    └── reminder-worker.ts          ← NEW — node-cron, queries scheduled_events
+
+apps/server/src/integrations/
+├── storage/
+│   ├── storage-interface.ts        ← NEW
+│   ├── r2-adapter.ts               ← NEW (default provider)
+│   └── index.ts                    ← NEW — factory reads STORAGE_PROVIDER env
+├── sms/
+│   ├── sms-interface.ts            ← NEW
+│   ├── msg91-adapter.ts            ← NEW (default provider)
+│   └── index.ts                    ← NEW — factory reads SMS_PROVIDER env
+└── whatsapp/
+    ├── whatsapp-interface.ts       ← NEW
+    ├── interakt-adapter.ts         ← NEW (default provider)
+    └── index.ts                    ← NEW — factory reads WHATSAPP_PROVIDER env
+
 apps/server/prisma/schema/
 ├── enums/
-│   ├── case-type.enum.prisma       ← NEW
-│   ├── case-status.enum.prisma     ← NEW
-│   ├── case-stage.enum.prisma      ← NEW
-│   ├── court-type.enum.prisma      ← NEW
-│   ├── priority.enum.prisma        ← NEW
-│   ├── party-role.enum.prisma      ← NEW
-│   ├── client-type.enum.prisma     ← NEW
-│   ├── preferred-language.enum.prisma ← NEW
-│   ├── hearing-status.enum.prisma  ← NEW
-│   ├── hearing-purpose.enum.prisma ← NEW
-│   └── important-date-type.enum.prisma ← NEW
+│   ├── case-type.enum.prisma            ← NEW
+│   ├── case-status.enum.prisma          ← NEW
+│   ├── case-stage.enum.prisma           ← NEW
+│   ├── court-type.enum.prisma           ← NEW
+│   ├── priority.enum.prisma             ← NEW
+│   ├── party-role.enum.prisma           ← NEW
+│   ├── client-type.enum.prisma          ← NEW
+│   ├── preferred-language.enum.prisma   ← NEW
+│   ├── hearing-status.enum.prisma       ← NEW
+│   ├── hearing-purpose.enum.prisma      ← NEW
+│   ├── important-date-type.enum.prisma  ← NEW
+│   └── scheduled-event-type.enum.prisma ← NEW
 └── models/
     ├── client.prisma               ← NEW
     ├── case.prisma                 ← NEW
     ├── hearing.prisma              ← NEW
-    └── case-important-date.prisma  ← NEW
+    ├── case-important-date.prisma  ← NEW
+    └── scheduled-event.prisma      ← NEW
 ```
 
 ---
@@ -510,6 +533,15 @@ await prisma.$transaction([
 
 **Documents (future):** When the documents module is built, it must also be included in this cascade transaction.
 
+The cascade must also soft-delete all `scheduled_events` rows for the case:
+
+```ts
+prisma.scheduledEvents.updateMany({
+  where: { caseId, orgId, deletedAt: null },
+  data: { deletedAt: now },
+}),
+```
+
 ### Client deleted → no cascade to cases
 
 A client being soft-deleted does NOT cascade to their cases. The cases remain active. The case detail response includes the client record even if `deletedAt` is set — the client's data is still needed for context (name, phone).
@@ -573,6 +605,278 @@ When a document is linked to a hearing (`linkedHearingId`), and that hearing is 
 - The `linkedHearingId` is retained (not nulled out) — it preserves the historical link.
 - The `GET /cases/:caseId/documents` query does NOT filter or join on `hearing.deletedAt`. It returns all non-deleted documents for the case regardless of the linked hearing's state.
 - The frontend handles a deleted linked hearing gracefully: show "Hearing (removed)" instead of the hearing date.
+
+---
+
+## Scheduled Events — Fan-Out Table
+
+### Why it exists
+
+The reminders module (background worker) needs to find all upcoming dates across all cases for an org — hearing dates, limitation dates, bail expiry, and future task deadlines. Without a dedicated table, the worker would need to query and join multiple tables on every run. As new date types are added, the worker query grows more complex.
+
+`scheduled_events` is a fan-out table. It is **not the source of truth** — it is a derived copy maintained for efficient querying by the background worker. The source of truth stays in `hearings`, `case_important_dates`, and future `tasks` tables.
+
+### Schema
+
+```prisma
+model ScheduledEvent {
+  id           String             @id @default(uuid())
+  orgId        String             @map("org_id")
+  caseId       String             @map("case_id")
+  notifyUserId String             @map("notify_user_id")
+  eventType    ScheduledEventType @map("event_type")
+  date         DateTime
+  title        String                                     // "Next Hearing — Sharma vs State"
+  sourceId     String             @map("source_id")      // hearingId / importantDateId / taskId
+  sourceType   String             @map("source_type")    // 'hearing' | 'important_date' | 'task'
+  notifiedAt   DateTime?          @map("notified_at")    // set after reminder is sent
+  deletedAt    DateTime?          @map("deleted_at")
+
+  org        Organization @relation(fields: [orgId], references: [id])
+  case       Case         @relation(fields: [caseId], references: [id])
+  notifyUser User         @relation(fields: [notifyUserId], references: [id])
+
+  @@index([orgId, date])
+  @@index([date, notifiedAt, deletedAt])  // background worker query index
+  @@map("scheduled_events")
+}
+```
+
+```prisma
+enum ScheduledEventType {
+  HearingDate
+  LimitationDate
+  BailExpiry
+  StayExpiry
+  AppealDeadline
+  InjunctionValidity
+  Task
+}
+```
+
+### Who writes to it
+
+| Action | Source table | scheduled_events write |
+|---|---|---|
+| Hearing created (Scheduled) | `hearings` | INSERT — type: HearingDate, date: hearing.date |
+| Hearing updated with nextDate | `hearings` | UPDATE sourceId=hearingId — set new date |
+| Hearing soft-deleted | `hearings` | soft-delete matching row (sourceId=hearingId) |
+| Important date created | `case_important_dates` | INSERT — type matches dateType |
+| Important date updated | `case_important_dates` | UPDATE sourceId=importantDateId |
+| Important date deleted | `case_important_dates` | soft-delete matching row |
+| Case soft-deleted | `cases` | soft-delete ALL rows where caseId matches |
+
+All writes happen inside the same `$transaction` as the source mutation.
+
+### notifyUserId resolution
+
+```ts
+// Resolved at write time, not at query time — keeps the worker simple
+const notifyUserId = case_.assignedTo ?? case_.createdBy
+```
+
+### Background worker query (Phase 1 — node-cron)
+
+```ts
+// runs every hour inside the Fastify process
+const upcoming = await prisma.scheduledEvents.findMany({
+  where: {
+    date: { gte: now, lte: addDays(now, 7) },
+    notifiedAt: null,
+    deletedAt: null,
+  },
+  include: { case: { select: { title: true } }, notifyUser: true },
+})
+
+for (const event of upcoming) {
+  await notificationProvider.send(event)
+  await prisma.scheduledEvents.update({
+    where: { id: event.id },
+    data: { notifiedAt: new Date() },
+  })
+}
+```
+
+One table, one query, zero joins needed. Adding new event types (tasks, court orders) only requires writing to `scheduled_events` from the new module — the worker query never changes.
+
+### Cascade when case is deleted
+
+Add to the case soft-delete transaction:
+
+```ts
+prisma.scheduledEvents.updateMany({
+  where: { caseId, orgId, deletedAt: null },
+  data: { deletedAt: now },
+}),
+```
+
+---
+
+## External Service Adapter Pattern
+
+Every external service (storage, SMS, WhatsApp, email) must be behind an interface with a factory that resolves the provider from an env var. Application code imports only from `@/integrations/[type]/index.ts` — never from an adapter or SDK directly.
+
+This is already established in the codebase for email (`integrations/email/`). The same pattern applies to all new services.
+
+### Pattern (follows existing email adapter exactly)
+
+```
+integrations/
+├── email/
+│   ├── email-interface.ts     ← interface EmailProvider
+│   ├── resend-adapter.ts      ← implements EmailProvider
+│   └── index.ts               ← factory: reads EMAIL_PROVIDER env var
+├── storage/
+│   ├── storage-interface.ts   ← interface StorageProvider   (NEW)
+│   ├── r2-adapter.ts          ← implements StorageProvider  (NEW)
+│   └── index.ts               ← factory: reads STORAGE_PROVIDER env var (NEW)
+├── sms/
+│   ├── sms-interface.ts       ← interface SmsProvider       (NEW)
+│   ├── msg91-adapter.ts       ← implements SmsProvider      (NEW)
+│   └── index.ts               ← factory: reads SMS_PROVIDER env var (NEW)
+└── whatsapp/
+    ├── whatsapp-interface.ts  ← interface WhatsAppProvider  (NEW)
+    ├── interakt-adapter.ts    ← implements WhatsAppProvider (NEW)
+    └── index.ts               ← factory: reads WHATSAPP_PROVIDER env var (NEW)
+```
+
+### Storage adapter
+
+```ts
+// integrations/storage/storage-interface.ts
+export interface StorageProvider {
+  upload(key: string, body: Buffer, mimeType: string): Promise<void>
+  presignedUrl(key: string, expiresInSeconds: number): Promise<string>
+  delete(key: string): Promise<void>
+}
+```
+
+```ts
+// integrations/storage/r2-adapter.ts
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+
+export class R2Adapter implements StorageProvider {
+  private client = new S3Client({
+    region: 'auto',
+    endpoint: env.R2_ENDPOINT,   // https://<account_id>.r2.cloudflarestorage.com
+    credentials: {
+      accessKeyId: env.R2_ACCESS_KEY_ID,
+      secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+    },
+  })
+
+  async upload(key: string, body: Buffer, mimeType: string) {
+    await this.client.send(new PutObjectCommand({
+      Bucket: env.R2_BUCKET,
+      Key: key,
+      Body: body,
+      ContentType: mimeType,
+    }))
+  }
+
+  async presignedUrl(key: string, expiresInSeconds: number) {
+    return getSignedUrl(this.client, new GetObjectCommand({
+      Bucket: env.R2_BUCKET, Key: key,
+    }), { expiresIn: expiresInSeconds })
+  }
+
+  async delete(key: string) {
+    await this.client.send(new DeleteObjectCommand({ Bucket: env.R2_BUCKET, Key: key }))
+  }
+}
+```
+
+```ts
+// integrations/storage/index.ts
+function createStorageProvider(): StorageProvider {
+  switch (env.STORAGE_PROVIDER) {
+    case 'r2':
+    default:
+      return new R2Adapter()
+  }
+}
+export const storageProvider = createStorageProvider()
+```
+
+To switch to AWS S3: add `S3Adapter implements StorageProvider`, set `STORAGE_PROVIDER=s3`. Zero application code changes.
+
+---
+
+### SMS adapter
+
+```ts
+// integrations/sms/sms-interface.ts
+export interface SmsProvider {
+  send(to: string, message: string): Promise<void>
+}
+```
+
+```ts
+// integrations/sms/index.ts
+function createSmsProvider(): SmsProvider {
+  switch (env.SMS_PROVIDER) {
+    case 'msg91':
+    default:
+      return new Msg91Adapter()
+  }
+}
+export const smsProvider = createSmsProvider()
+```
+
+Default: MSG91 (cheapest in India, ~₹0.30/SMS). To switch to Twilio: add `TwilioSmsAdapter`, set `SMS_PROVIDER=twilio`.
+
+---
+
+### WhatsApp adapter
+
+```ts
+// integrations/whatsapp/whatsapp-interface.ts
+export interface WhatsAppProvider {
+  sendHearingReminder(to: string, params: HearingReminderParams): Promise<void>
+}
+```
+
+```ts
+// integrations/whatsapp/index.ts
+function createWhatsAppProvider(): WhatsAppProvider {
+  switch (env.WHATSAPP_PROVIDER) {
+    case 'interakt':
+    default:
+      return new InteraktAdapter()
+  }
+}
+export const whatsAppProvider = createWhatsAppProvider()
+```
+
+Default: Interakt (Indian provider, cheapest for WhatsApp Business API). To switch to Gupshup or Twilio: add adapter, set `WHATSAPP_PROVIDER=gupshup`.
+
+---
+
+### Required env vars
+
+```bash
+# Storage
+STORAGE_PROVIDER=r2
+R2_ENDPOINT=https://<account_id>.r2.cloudflarestorage.com
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET=splexa-documents
+
+# SMS
+SMS_PROVIDER=msg91
+MSG91_API_KEY=
+MSG91_TEMPLATE_ID=
+
+# WhatsApp
+WHATSAPP_PROVIDER=interakt
+INTERAKT_API_KEY=
+
+# Email (already exists)
+EMAIL_PROVIDER=resend
+RESEND_API_KEY=
+EMAIL_FROM=noreply@splexa.in
+```
 
 ---
 

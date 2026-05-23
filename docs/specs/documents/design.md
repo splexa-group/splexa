@@ -219,8 +219,34 @@ ActivityAction.DOCUMENT_DELETED
 
 ## Implementation Notes for Future PR
 
-- Requires: AWS S3 bucket, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_S3_BUCKET`, `AWS_REGION` in env.
-- Use `@aws-sdk/client-s3` and `@aws-sdk/s3-request-presigner`.
-- Fastify multipart: `@fastify/multipart`.
-- File validation happens before S3 upload — reject early, never upload invalid files.
-- The S3 upload adapter follows the existing integration pattern: an interface behind a factory, imported from `@/integrations/storage/index.ts`. Application code never imports from the S3 SDK directly.
+### Storage — adapter pattern, not direct SDK import
+
+Application code imports only from `@/integrations/storage/index.ts`. Never imports `@aws-sdk` directly.
+
+```ts
+// documents-service.ts
+import { storageProvider } from '@/integrations/storage'
+
+await storageProvider.upload(key, fileBuffer, mimeType)
+const url = await storageProvider.presignedUrl(key, 900)
+```
+
+Default provider is **Cloudflare R2** (`STORAGE_PROVIDER=r2`). R2 is S3-compatible — the adapter uses `@aws-sdk/client-s3` pointed at the R2 endpoint. To switch to AWS S3: add `S3Adapter`, set `STORAGE_PROVIDER=s3`. Zero application code changes.
+
+See `overview.md — External Service Adapter Pattern` for the full interface and adapter implementation.
+
+### Required env vars
+
+```bash
+STORAGE_PROVIDER=r2
+R2_ENDPOINT=https://<account_id>.r2.cloudflarestorage.com
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET=splexa-documents
+```
+
+### Other dependencies
+
+- `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` — used by the R2 adapter
+- `@fastify/multipart` — for receiving file uploads
+- File validation runs before upload — reject on size or mime type before touching storage

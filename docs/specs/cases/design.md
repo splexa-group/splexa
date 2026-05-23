@@ -252,9 +252,9 @@ GET    /api/v1/cases/:id                          Get one case (full detail)
 PATCH  /api/v1/cases/:id                          Update a case
 DELETE /api/v1/cases/:id                          Soft delete a case
 
-POST   /api/v1/cases/:id/important-dates          Add an important date
-PATCH  /api/v1/cases/:id/important-dates/:dateId  Update an important date
-DELETE /api/v1/cases/:id/important-dates/:dateId  Remove an important date
+POST   /api/v1/cases/:id/important-dates          Add an important date (also writes to scheduled_events)
+PATCH  /api/v1/cases/:id/important-dates/:dateId  Update an important date (also updates scheduled_events)
+DELETE /api/v1/cases/:id/important-dates/:dateId  Remove an important date (also soft-deletes scheduled_events row)
 ```
 
 ### POST /api/v1/cases

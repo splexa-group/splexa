@@ -137,10 +137,11 @@ Creates a scheduled hearing. The advocate adds this when they know a court date 
 }
 ```
 
-On creation:
+On creation, inside a single `$transaction`:
 1. Creates the hearing with `status = Scheduled`.
 2. Recalculates `nextHearingDate` on the parent case — sets it to the earliest future `Scheduled` hearing date.
-3. Logs `ActivityAction.HEARING_ADDED`.
+3. Inserts a row into `scheduled_events` (type: `HearingDate`, date: hearing.date, sourceId: hearing.id, sourceType: `'hearing'`, notifyUserId: `case.assignedTo ?? case.createdBy`).
+4. Logs `ActivityAction.HEARING_ADDED`.
 
 Returns `201` with the hearing.
 
@@ -184,7 +185,10 @@ The primary action after a hearing happens. The advocate opens the case, finds t
 - Find the earliest future `Scheduled` hearing for this case.
 - Set `cases.nextHearingDate` to that date (or `null` if none).
 
-Both the hearing update and the case update happen inside a `$transaction`.
+All writes happen inside a single `$transaction`:
+- Update hearing record.
+- Recalculate `cases.nextHearingDate`.
+- If `nextDate` was set or changed: update the `scheduled_events` row (sourceId: hearing.id) with the new date. If no `scheduled_events` row exists for this hearing yet, insert one.
 
 Returns `200` with the updated hearing.
 
@@ -192,7 +196,10 @@ Logs `ActivityAction.HEARING_OUTCOME_UPDATED`.
 
 ### DELETE /api/v1/hearings/:id
 
-Soft delete — sets `deletedAt`. The hearing is excluded from all timeline and list queries. After deletion, recalculates `cases.nextHearingDate` (ignoring deleted hearings).
+Soft delete — inside a single `$transaction`:
+1. Sets `deletedAt` on the hearing.
+2. Recalculates `cases.nextHearingDate` (excluding deleted hearing).
+3. Soft-deletes the matching `scheduled_events` row (where `sourceId = hearingId`).
 
 Logs `ActivityAction.HEARING_DELETED`.
 

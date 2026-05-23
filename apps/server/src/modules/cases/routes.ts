@@ -1,5 +1,11 @@
 import type { FastifyInstance } from "fastify";
 
+import {
+  caseHearingParamsSchema,
+  createHearingSchema,
+} from "@/modules/hearings/schema";
+import { hearingsController } from "@/modules/hearings/controller";
+
 import { casesController } from "./controller";
 import {
   caseParamsSchema,
@@ -61,5 +67,17 @@ export function casesRoutes(router: FastifyInstance): void {
     schema: { params: importantDateParamsSchema },
     preHandler: [router.authenticate],
     handler: casesController.deleteImportantDate,
+  });
+
+  router.post("/:caseId/hearings", {
+    schema: { params: caseHearingParamsSchema, body: createHearingSchema },
+    preHandler: [router.authenticate],
+    handler: hearingsController.create,
+  });
+
+  router.get("/:caseId/hearings", {
+    schema: { params: caseHearingParamsSchema },
+    preHandler: [router.authenticate],
+    handler: hearingsController.listForCase,
   });
 }

@@ -1,0 +1,9 @@
+enum HearingPurpose {
+  Arguments
+  Evidence
+  CrossExamination
+  Order
+  Mention
+  Settlement
+  Miscellaneous
+}

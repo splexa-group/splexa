@@ -1,0 +1,12 @@
+enum PreferredLanguage {
+  English
+  Hindi
+  Telugu
+  Tamil
+  Kannada
+  Malayalam
+  Marathi
+  Bengali
+  Gujarati
+  Punjabi
+}

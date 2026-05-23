@@ -1,0 +1,8 @@
+enum ImportantDateType {
+  Limitation
+  BailExpiry
+  StayExpiry
+  AppealDeadline
+  InjunctionValidity
+  Other
+}

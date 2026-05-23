@@ -1,0 +1,11 @@
+enum CaseType {
+  Civil
+  Criminal
+  Family
+  Consumer
+  Labour
+  Revenue
+  Writ
+  Corporate
+  Other
+}

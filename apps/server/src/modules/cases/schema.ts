@@ -92,7 +92,7 @@ export const updateCaseSchema = z
     oppositeParties: z.array(oppositePartySchema).optional(),
     notes: z.string().max(5000).optional(),
     tags: z.array(z.string().max(50)).optional(),
-    assignedTo: z.string().uuid().optional(),
+    assignedTo: z.string().uuid().nullable().optional(),
   })
   .strict();
 
@@ -109,7 +109,7 @@ export const listCasesQuerySchema = z
   })
   .strict();
 
-export const caseParamsSchema = z.object({ id: z.string().uuid() });
+export const caseParamsSchema = z.object({ id: z.string().uuid() }).strict();
 
 export const createImportantDateSchema = z
   .object({
@@ -127,10 +127,12 @@ export const updateImportantDateSchema = z
   })
   .strict();
 
-export const importantDateParamsSchema = z.object({
-  id: z.string().uuid(),
-  dateId: z.string().uuid(),
-});
+export const importantDateParamsSchema = z
+  .object({
+    id: z.string().uuid(),
+    dateId: z.string().uuid(),
+  })
+  .strict();
 
 export type CreateCaseInput = z.infer<typeof createCaseSchema>;
 export type UpdateCaseInput = z.infer<typeof updateCaseSchema>;

@@ -1,4 +1,7 @@
-import type { Prisma, $Enums } from "@prisma/client";
+import { $Enums } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
+
+import { HearingStatus } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
 import { caseSummarySelect, clientSelect, hearingSummarySelect } from "@/db/selects";
@@ -155,7 +158,7 @@ export const casesRepository = {
         data: { deletedAt: now },
       });
       await tx.scheduledEvent.updateMany({
-        where: { caseId: id, deletedAt: null },
+        where: { caseId: id, orgId, deletedAt: null },
         data: { deletedAt: now },
       });
     });
@@ -170,7 +173,7 @@ export const casesRepository = {
       where: {
         caseId,
         orgId,
-        status: "Scheduled",
+        status: HearingStatus.Scheduled,
         date: { gte: new Date() },
         deletedAt: null,
       },
@@ -202,7 +205,7 @@ export const casesRepository = {
       await tx.scheduledEvent.create({
         data: {
           orgId: data.orgId,
-          type: "ImportantDate",
+          type: $Enums.ScheduledEventType.ImportantDate,
           date: new Date(data.date),
           sourceId: importantDate.id,
           sourceType: "important-date",
@@ -257,7 +260,7 @@ export const casesRepository = {
         data: { deletedAt: new Date() },
       });
       await tx.scheduledEvent.updateMany({
-        where: { sourceId: id, deletedAt: null },
+        where: { sourceId: id, orgId, deletedAt: null },
         data: { deletedAt: new Date() },
       });
     });

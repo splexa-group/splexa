@@ -1,6 +1,7 @@
 import { prisma } from "@/db/client";
 import { Errors } from "@/utils/errors";
 import { clientsRepository } from "@/modules/clients/repository";
+import type { Prisma } from "@prisma/client";
 
 import type {
   CreateCaseInput,
@@ -40,7 +41,7 @@ export const casesService = {
         status: caseFields.status,
         stage: caseFields.stage,
         priority: caseFields.priority,
-        oppositeParties: caseFields.oppositeParties as never,
+        oppositeParties: caseFields.oppositeParties as Prisma.InputJsonValue,
         notes: caseFields.notes,
         tags: caseFields.tags,
         assignedTo: caseFields.assignedTo,
@@ -79,7 +80,7 @@ export const casesService = {
         status: caseFields.status,
         stage: caseFields.stage,
         priority: caseFields.priority,
-        oppositeParties: caseFields.oppositeParties as never,
+        oppositeParties: caseFields.oppositeParties as Prisma.InputJsonValue,
         notes: caseFields.notes,
         tags: caseFields.tags,
         assignedTo: caseFields.assignedTo,
@@ -110,7 +111,7 @@ export const casesService = {
     if (input.filingDate) updateData.filingDate = new Date(input.filingDate);
     if (judgeChanged) updateData.judgeUpdatedAt = new Date();
 
-    return casesRepository.update(id, updateData as never);
+    return casesRepository.update(id, updateData as Prisma.CaseUpdateInput);
   },
 
   async delete(id: string, ctx: Ctx) {

@@ -1,0 +1,8 @@
+export enum ImportantDateType {
+  Limitation = "Limitation",
+  BailExpiry = "BailExpiry",
+  StayExpiry = "StayExpiry",
+  AppealDeadline = "AppealDeadline",
+  InjunctionValidity = "InjunctionValidity",
+  Other = "Other",
+}

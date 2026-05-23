@@ -15,8 +15,7 @@ model Organization {
   clients            Client[]
   cases              Case[]
   hearings           Hearing[]
-  caseImportantDates CaseImportantDate[]
-  scheduledEvents    ScheduledEvent[]
+  importantDates ImportantDate[]
 
   @@map("organizations")
 }

@@ -55,6 +55,7 @@ const caseDetailSelect = {
       dateType: true,
       date: true,
       description: true,
+      sourceId: true,
       createdAt: true,
     },
   },
@@ -153,11 +154,7 @@ export const casesRepository = {
         where: { caseId: id, orgId, deletedAt: null },
         data: { deletedAt: now },
       });
-      await tx.caseImportantDate.updateMany({
-        where: { caseId: id, orgId, deletedAt: null },
-        data: { deletedAt: now },
-      });
-      await tx.scheduledEvent.updateMany({
+      await tx.importantDate.updateMany({
         where: { caseId: id, orgId, deletedAt: null },
         data: { deletedAt: now },
       });
@@ -191,35 +188,20 @@ export const casesRepository = {
     data: CreateImportantDateInput & { caseId: string; orgId: string },
     notifyUserId: string,
   ) {
-    return prisma.$transaction(async (tx) => {
-      const importantDate = await tx.caseImportantDate.create({
-        data: {
-          caseId: data.caseId,
-          orgId: data.orgId,
-          dateType: data.dateType,
-          date: new Date(data.date),
-          description: data.description,
-        },
-      });
-
-      await tx.scheduledEvent.create({
-        data: {
-          orgId: data.orgId,
-          type: $Enums.ScheduledEventType.ImportantDate,
-          date: new Date(data.date),
-          sourceId: importantDate.id,
-          sourceType: "important-date",
-          caseId: data.caseId,
-          notifyUserId,
-        },
-      });
-
-      return importantDate;
+    return prisma.importantDate.create({
+      data: {
+        caseId: data.caseId,
+        orgId: data.orgId,
+        dateType: data.dateType,
+        date: new Date(data.date),
+        description: data.description,
+        notifyUserId,
+      },
     });
   },
 
   async findImportantDateById(id: string, caseId: string, orgId: string) {
-    return prisma.caseImportantDate.findFirst({
+    return prisma.importantDate.findFirst({
       where: { id, caseId, orgId, deletedAt: null },
     });
   },
@@ -230,39 +212,22 @@ export const casesRepository = {
     orgId: string,
     data: UpdateImportantDateInput,
   ) {
-    return prisma.$transaction(async (tx) => {
-      const updated = await tx.caseImportantDate.update({
-        where: { id },
-        data: {
-          ...(data.dateType ? { dateType: data.dateType } : {}),
-          ...(data.date ? { date: new Date(data.date) } : {}),
-          ...(data.description !== undefined
-            ? { description: data.description }
-            : {}),
-        },
-      });
-
-      if (data.date) {
-        await tx.scheduledEvent.updateMany({
-          where: { sourceId: id, deletedAt: null },
-          data: { date: new Date(data.date) },
-        });
-      }
-
-      return updated;
+    return prisma.importantDate.update({
+      where: { id },
+      data: {
+        ...(data.dateType ? { dateType: data.dateType } : {}),
+        ...(data.date ? { date: new Date(data.date) } : {}),
+        ...(data.description !== undefined
+          ? { description: data.description }
+          : {}),
+      },
     });
   },
 
   async softDeleteImportantDate(id: string, orgId: string) {
-    return prisma.$transaction(async (tx) => {
-      await tx.caseImportantDate.updateMany({
-        where: { id, orgId, deletedAt: null },
-        data: { deletedAt: new Date() },
-      });
-      await tx.scheduledEvent.updateMany({
-        where: { sourceId: id, orgId, deletedAt: null },
-        data: { deletedAt: new Date() },
-      });
+    return prisma.importantDate.updateMany({
+      where: { id, orgId, deletedAt: null },
+      data: { deletedAt: new Date() },
     });
   },
 };

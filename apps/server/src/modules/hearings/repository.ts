@@ -1,6 +1,6 @@
 import { type Prisma, $Enums } from "@prisma/client";
 
-import { HearingStatus } from "@splexa-group/shared/enums";
+import { HearingStatus, ImportantDateType } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
 import { hearingSummarySelect } from "@/db/selects";
@@ -57,14 +57,13 @@ export const hearingsRepository = {
 
       await casesRepository.updateNextHearingDate(data.caseId, data.orgId, tx);
 
-      await tx.scheduledEvent.create({
+      await tx.importantDate.create({
         data: {
+          caseId: data.caseId,
           orgId: data.orgId,
-          type: $Enums.ScheduledEventType.HearingDate,
+          dateType: ImportantDateType.HearingDate,
           date: new Date(data.date),
           sourceId: hearing.id,
-          sourceType: "hearing",
-          caseId: data.caseId,
           notifyUserId: data.notifyUserId,
         },
       });
@@ -153,35 +152,10 @@ export const hearingsRepository = {
       await casesRepository.updateNextHearingDate(caseId, orgId, tx);
 
       if (data.nextDate) {
-        const existingEvent = await tx.scheduledEvent.findFirst({
+        await tx.importantDate.updateMany({
           where: { sourceId: id, orgId, deletedAt: null },
+          data: { date: new Date(data.nextDate) },
         });
-
-        if (existingEvent) {
-          await tx.scheduledEvent.updateMany({
-            where: { sourceId: id, orgId, deletedAt: null },
-            data: { date: new Date(data.nextDate) },
-          });
-        } else {
-          const parentCase = await tx.case.findFirst({
-            where: { id: caseId, orgId },
-            select: { assignedTo: true, createdBy: true },
-          });
-          const notifyUserId = parentCase?.assignedTo ?? parentCase?.createdBy;
-          if (notifyUserId) {
-            await tx.scheduledEvent.create({
-              data: {
-                orgId,
-                type: $Enums.ScheduledEventType.HearingDate,
-                date: new Date(data.nextDate),
-                sourceId: id,
-                sourceType: "hearing",
-                caseId,
-                notifyUserId,
-              },
-            });
-          }
-        }
       }
 
       return updated;
@@ -197,7 +171,7 @@ export const hearingsRepository = {
 
       await casesRepository.updateNextHearingDate(caseId, orgId, tx);
 
-      await tx.scheduledEvent.updateMany({
+      await tx.importantDate.updateMany({
         where: { sourceId: id, orgId, deletedAt: null },
         data: { deletedAt: new Date() },
       });

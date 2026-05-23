@@ -1,4 +1,5 @@
 export enum ImportantDateType {
+  HearingDate = "HearingDate",
   Limitation = "Limitation",
   BailExpiry = "BailExpiry",
   StayExpiry = "StayExpiry",

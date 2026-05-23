@@ -1,4 +1,5 @@
 enum ImportantDateType {
+  HearingDate
   Limitation
   BailExpiry
   StayExpiry

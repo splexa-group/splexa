@@ -43,8 +43,7 @@ model Case {
   creator        User                @relation("CaseCreator", fields: [createdBy], references: [id])
   assignedUser   User?               @relation("CaseAssignment", fields: [assignedTo], references: [id])
   hearings       Hearing[]
-  importantDates CaseImportantDate[]
-  scheduledEvents ScheduledEvent[]
+  importantDates ImportantDate[]
 
   @@index([orgId])
   @@index([orgId, status])

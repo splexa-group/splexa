@@ -1,30 +1,30 @@
-"use client";
+'use client';
 
-import { createContext, useContext, useState, type ReactNode } from "react";
-
-export type TopBarConfig =
-  | { variant: "default"; title: string }
-  | { variant: "detail"; title: string; typeTag?: string };
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
 interface TopBarContextValue {
-  config: TopBarConfig | null;
-  setTopBar: (config: TopBarConfig) => void;
+  resourceTitle: string | null;
+  setResourceTitle: (title: string | null) => void;
 }
 
-const TopBarContext = createContext<TopBarContextValue | null>(null);
+export const TopBarContext = createContext<TopBarContextValue | null>(null);
 
 export function TopBarProvider({ children }: { children: ReactNode }) {
-  const [config, setTopBar] = useState<TopBarConfig | null>(null);
-
+  const [resourceTitle, setResourceTitle] = useState<string | null>(null);
   return (
-    <TopBarContext.Provider value={{ config, setTopBar }}>
+    <TopBarContext.Provider value={{ resourceTitle, setResourceTitle }}>
       {children}
     </TopBarContext.Provider>
   );
 }
 
-export function useTopBar() {
+// Only detail pages need this — one line, e.g. usePageTitle(caseData.title)
+export function usePageTitle(title: string) {
   const ctx = useContext(TopBarContext);
-  if (!ctx) throw new Error("useTopBar must be used inside TopBarProvider");
-  return ctx;
+  if (!ctx) throw new Error('usePageTitle must be used inside TopBarProvider');
+  const { setResourceTitle } = ctx;
+  useEffect(() => {
+    setResourceTitle(title);
+    return () => setResourceTitle(null);
+  }, [title, setResourceTitle]);
 }

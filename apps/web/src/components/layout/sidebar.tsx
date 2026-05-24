@@ -57,7 +57,7 @@ export function Sidebar() {
   const popoverRef = useRef<HTMLDivElement>(null);
 
   const displayName = user
-    ? (user.orgName ?? `${user.firstName} Advocates`)
+    ? (user.orgName ?? `${user.firstName} ${user.lastName}`)
     : "";
   const initial = displayName.charAt(0).toUpperCase();
 
@@ -91,13 +91,13 @@ export function Sidebar() {
 
   return (
     <aside className="hidden md:flex flex-col md:w-14 lg:w-[220px] bg-surface-dark shrink-0 h-screen overflow-hidden">
-      {/* Header - org name */}
-      <div className="h-[52px] flex items-center px-4 border-b border-white/[0.07] shrink-0">
-        <span className="hidden lg:block text-[15px] font-semibold text-white truncate">
-          {displayName}
-        </span>
-        <span className="lg:hidden text-[15px] font-semibold text-brand-light mx-auto">
+      {/* Header */}
+      <div className="h-[52px] flex items-center px-3 gap-2 border-b border-white/[0.07] shrink-0">
+        <div className="w-7 h-7 rounded-md bg-brand-light/20 flex items-center justify-center text-brand-light text-[13px] font-bold shrink-0">
           {initial}
+        </div>
+        <span className="hidden lg:block text-[14px] font-semibold text-white truncate">
+          {displayName}
         </span>
       </div>
 

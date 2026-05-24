@@ -27,6 +27,10 @@ export const hearingsController = {
     return hearingsService.listForCase(req.params.caseId, req.user.orgId);
   },
 
+  async getById(req: FastifyRequest<{ Params: HearingParams }>) {
+    return hearingsService.findById(req.params.id, req.user.orgId);
+  },
+
   async listCrossCase(req: FastifyRequest<{ Querystring: ListHearingsQuery }>) {
     const { data, total } = await hearingsService.listCrossCase(
       req.user.orgId,

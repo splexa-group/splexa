@@ -13,19 +13,25 @@ import { env } from "@/config/env";
 import type { StorageProvider } from "./storage-interface";
 
 export class R2Adapter implements StorageProvider {
-  private client = new S3Client({
-    region: "auto",
-    endpoint: env.R2_ENDPOINT,
-    credentials: {
-      accessKeyId: env.R2_ACCESS_KEY_ID,
-      secretAccessKey: env.R2_SECRET_ACCESS_KEY,
-    },
-  });
+  private client: S3Client;
+  private bucket: string;
+
+  constructor() {
+    this.bucket = env.R2_BUCKET;
+    this.client = new S3Client({
+      region: "auto",
+      endpoint: env.R2_ENDPOINT,
+      credentials: {
+        accessKeyId: env.R2_ACCESS_KEY_ID,
+        secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+      },
+    });
+  }
 
   async upload(key: string, body: Uint8Array, mimeType: string): Promise<void> {
     await this.client.send(
       new PutObjectCommand({
-        Bucket: env.R2_BUCKET,
+        Bucket: this.bucket,
         Key: key,
         Body: Buffer.from(body),
         ContentType: mimeType,
@@ -34,16 +40,13 @@ export class R2Adapter implements StorageProvider {
   }
 
   async presignedUrl(key: string, expiresInSeconds: number): Promise<string> {
-    const command = new GetObjectCommand({
-      Bucket: env.R2_BUCKET,
-      Key: key,
-    });
+    const command = new GetObjectCommand({ Bucket: this.bucket, Key: key });
     return getSignedUrl(this.client, command, { expiresIn: expiresInSeconds });
   }
 
   async delete(key: string): Promise<void> {
     await this.client.send(
-      new DeleteObjectCommand({ Bucket: env.R2_BUCKET, Key: key }),
+      new DeleteObjectCommand({ Bucket: this.bucket, Key: key }),
     );
   }
 }

@@ -7,6 +7,11 @@ export interface PaginatedResult<T> {
   limit: number;
 }
 
+export interface WithWarnings<T> {
+  data: T;
+  warnings?: string[];
+}
+
 export interface AuthTokenResponse {
   accessToken: string;
   user: {

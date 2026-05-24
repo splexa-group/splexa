@@ -48,11 +48,11 @@ describe("clientsService.create", () => {
       ctx,
     );
 
-    expect(result).toEqual(mockClient);
-    expect(result).not.toHaveProperty("warning");
+    expect(result).toEqual({ data: mockClient });
+    expect(result.warnings).toBeUndefined();
   });
 
-  it("returns warning when phone already exists", async () => {
+  it("returns warnings array when phone already exists", async () => {
     vi.mocked(clientsRepository.findByPhone).mockResolvedValue({
       id: "existing-1",
       fullName: "Old Ravi",
@@ -64,8 +64,8 @@ describe("clientsService.create", () => {
       ctx,
     );
 
-    expect(result).toHaveProperty("warning", "PHONE_ALREADY_EXISTS");
-    expect(result).toHaveProperty("existingClientId", "existing-1");
+    expect(result.data).toEqual(mockClient);
+    expect(result.warnings).toEqual(["Old Ravi already has this phone number"]);
   });
 });
 
@@ -107,6 +107,7 @@ describe("clientsService.update", () => {
     expect(result).toEqual(updatedClient);
     expect(clientsRepository.update).toHaveBeenCalledWith(
       "client-1",
+      "org-1",
       { fullName: "New Name" },
     );
   });

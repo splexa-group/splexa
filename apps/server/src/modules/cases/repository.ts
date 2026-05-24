@@ -80,8 +80,9 @@ export const casesRepository = {
     return { data, total };
   },
 
-  async update(id: string, data: Prisma.CaseUpdateInput) {
-    return prisma.case.update({ where: { id }, data, select: caseDetailSelect });
+  async update(id: string, orgId: string, data: Prisma.CaseUpdateInput) {
+    await prisma.case.updateMany({ where: { id, orgId, deletedAt: null }, data });
+    return prisma.case.findFirstOrThrow({ where: { id, orgId }, select: caseDetailSelect });
   },
 
   async softDeleteCascade(id: string, orgId: string) {

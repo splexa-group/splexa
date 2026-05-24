@@ -12,6 +12,7 @@ export const createHearingSchema = z
 
 export const updateHearingSchema = z
   .object({
+    date: z.string().datetime({ offset: true }).optional(),
     status: z.enum(HearingStatus).optional(),
     notes: z.string().max(2000).optional(),
     nextDate: z.string().datetime({ offset: true }).optional(),

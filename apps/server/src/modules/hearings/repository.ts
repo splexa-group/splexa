@@ -106,6 +106,7 @@ export const hearingsRepository = {
     data: {
       status?: HearingStatus;
       notes?: string;
+      date?: string;
       nextDate?: string;
       adjournmentReason?: string;
       judgePresent?: string;
@@ -113,11 +114,12 @@ export const hearingsRepository = {
     },
   ) {
     return prisma.$transaction(async (tx) => {
-      const updated = await tx.hearing.update({
-        where: { id },
+      await tx.hearing.updateMany({
+        where: { id, orgId, deletedAt: null },
         data: {
           ...(data.status !== undefined ? { status: data.status } : {}),
           ...(data.notes !== undefined ? { notes: data.notes } : {}),
+          ...(data.date ? { date: parseDate(data.date) } : {}),
           ...(data.nextDate ? { nextDate: parseDate(data.nextDate) } : {}),
           ...(data.adjournmentReason !== undefined
             ? { adjournmentReason: data.adjournmentReason }
@@ -127,16 +129,47 @@ export const hearingsRepository = {
             : {}),
           ...(data.purpose !== undefined ? { purpose: data.purpose } : {}),
         },
+      });
+
+      const updated = await tx.hearing.findFirstOrThrow({
+        where: { id, orgId },
         select: hearingSummarySelect,
       });
 
       await casesRepository.updateNextHearingDate(caseId, orgId, tx);
 
-      if (data.nextDate) {
+      if (
+        data.status === HearingStatus.Cancelled ||
+        data.status === HearingStatus.Completed
+      ) {
+        // Terminal status — no more reminders needed for this hearing
         await tx.importantDate.updateMany({
           where: { sourceId: id, orgId, deletedAt: null },
-          data: { date: parseDate(data.nextDate) },
+          data: { deletedAt: new Date() },
         });
+      } else {
+        if (data.date) {
+          await tx.importantDate.updateMany({
+            where: {
+              sourceId: id,
+              orgId,
+              dateType: ImportantDateType.HearingDate,
+              deletedAt: null,
+            },
+            data: { date: parseDate(data.date) },
+          });
+        }
+        if (data.nextDate) {
+          await tx.importantDate.updateMany({
+            where: {
+              sourceId: id,
+              orgId,
+              dateType: ImportantDateType.HearingDate,
+              deletedAt: null,
+            },
+            data: { date: parseDate(data.nextDate) },
+          });
+        }
       }
 
       return updated;

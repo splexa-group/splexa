@@ -32,17 +32,16 @@ export const importantDatesRepository = {
     });
   },
 
-  async update(id: string, data: UpdateImportantDateInput) {
-    return prisma.importantDate.update({
-      where: { id },
+  async update(id: string, orgId: string, data: UpdateImportantDateInput) {
+    await prisma.importantDate.updateMany({
+      where: { id, orgId, deletedAt: null },
       data: {
         ...(data.dateType ? { dateType: data.dateType } : {}),
         ...(data.date ? { date: parseDate(data.date) } : {}),
-        ...(data.description !== undefined
-          ? { description: data.description }
-          : {}),
+        ...(data.description !== undefined ? { description: data.description } : {}),
       },
     });
+    return prisma.importantDate.findFirstOrThrow({ where: { id, orgId } });
   },
 
   async softDelete(id: string, orgId: string) {

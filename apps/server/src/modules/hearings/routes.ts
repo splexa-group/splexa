@@ -9,11 +9,17 @@ import {
   updateHearingSchema,
 } from "./schema";
 
-export function hearingsStandaloneRoutes(router: FastifyInstance): void {
+export function hearingsRoutes(router: FastifyInstance): void {
   router.get("/", {
     schema: { querystring: listHearingsQuerySchema },
     preHandler: [router.authenticate],
     handler: hearingsController.listCrossCase,
+  });
+
+  router.get("/:id", {
+    schema: { params: hearingParamsSchema },
+    preHandler: [router.authenticate],
+    handler: hearingsController.getById,
   });
 
   router.patch("/:id", {
@@ -29,6 +35,7 @@ export function hearingsStandaloneRoutes(router: FastifyInstance): void {
   });
 }
 
+// Case-scoped: registered under /api/v1/cases in the plugin
 export function hearingsCaseScopedRoutes(router: FastifyInstance): void {
   router.post("/:caseId/hearings", {
     schema: { params: caseHearingParamsSchema, body: createHearingSchema },

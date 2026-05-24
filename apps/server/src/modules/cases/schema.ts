@@ -102,7 +102,7 @@ export const listCasesQuerySchema = z
     caseType: z.enum(CaseType).optional(),
     priority: z.enum(Priority).optional(),
     courtType: z.enum(CourtType).optional(),
-    clientId: z.string().optional(),
+    clientId: z.string().uuid().optional(),
     page: z.coerce.number().int().positive().default(1),
     limit: z.coerce.number().int().positive().max(100).default(20),
   })

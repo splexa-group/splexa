@@ -18,7 +18,7 @@ vi.mock("../repository", () => ({
 }));
 
 vi.mock("@/modules/clients/repository", () => ({
-  clientsRepository: { findById: vi.fn() },
+  clientsRepository: { findById: vi.fn(), findByPhone: vi.fn() },
 }));
 
 const ctx = { orgId: "org-1", userId: "user-1", ipAddress: "127.0.0.1" };
@@ -66,27 +66,50 @@ describe("casesService.create with clientId", () => {
       ctx,
     );
 
-    expect(result).toEqual(mockCase);
+    expect(result.data).toEqual(mockCase);
+    expect(result.warnings).toBeUndefined();
     expect(casesRepository.create).toHaveBeenCalled();
   });
 });
 
 describe("casesService.create with newClient", () => {
-  it("creates client and case atomically", async () => {
+  it("creates client and case atomically, no warning when phone is unique", async () => {
+    vi.mocked(clientsRepository.findByPhone).mockResolvedValue(null);
     vi.mocked(casesRepository.createWithNewClient).mockResolvedValue(mockCase as never);
 
     const result = await casesService.create(
       {
         title: "Test",
         clientRole: "Petitioner" as never,
-        newClient: { fullName: "Ravi Kumar", phone: "9999999999", type: "Individual" as never },
+        newClient: { fullName: "Suresh Nair", phone: "9999999999", type: "Individual" as never },
         status: "Active" as never,
       },
       ctx,
     );
 
-    expect(result).toEqual(mockCase);
-    expect(casesRepository.createWithNewClient).toHaveBeenCalled();
+    expect(result.data).toEqual(mockCase);
+    expect(result.warnings).toBeUndefined();
+  });
+
+  it("returns warnings when new client phone belongs to an existing client", async () => {
+    vi.mocked(clientsRepository.findByPhone).mockResolvedValue({
+      id: "other-client",
+      fullName: "Anita Desai",
+    });
+    vi.mocked(casesRepository.createWithNewClient).mockResolvedValue(mockCase as never);
+
+    const result = await casesService.create(
+      {
+        title: "Test",
+        clientRole: "Petitioner" as never,
+        newClient: { fullName: "Suresh Nair", phone: "9999999999", type: "Individual" as never },
+        status: "Active" as never,
+      },
+      ctx,
+    );
+
+    expect(result.data).toEqual(mockCase);
+    expect(result.warnings).toEqual(["Anita Desai already has this phone number"]);
   });
 });
 
@@ -141,6 +164,7 @@ describe("casesService.update", () => {
     expect(result).toHaveProperty("title", "New Title");
     expect(casesRepository.update).toHaveBeenCalledWith(
       "case-1",
+      "org-1",
       expect.objectContaining({ title: "New Title" }),
     );
   });

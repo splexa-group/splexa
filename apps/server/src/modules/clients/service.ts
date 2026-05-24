@@ -16,14 +16,12 @@ export const clientsService = {
 
     if (existing) {
       return {
-        ...client,
-        warning: "PHONE_ALREADY_EXISTS" as const,
-        existingClientId: existing.id,
-        existingClientName: existing.fullName,
+        data: client,
+        warnings: [`${existing.fullName} already has this phone number`],
       };
     }
 
-    return client;
+    return { data: client };
   },
 
   async list(orgId: string, query: ListClientsQuery) {
@@ -39,7 +37,7 @@ export const clientsService = {
   async update(id: string, input: UpdateClientInput, ctx: ServiceContext) {
     const existing = await clientsRepository.findById(id, ctx.orgId);
     if (!existing) throw Errors.clientNotFound();
-    return clientsRepository.update(id, input);
+    return clientsRepository.update(id, ctx.orgId, input);
   },
 
   async delete(id: string, ctx: ServiceContext) {

@@ -1,16 +1,22 @@
 import cron from "node-cron";
 
+import { logger } from "@/config/logger";
 import { prisma } from "@/db/client";
 
 export function startReminderWorker(): void {
   cron.schedule("*/10 * * * *", async () => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(23, 59, 59, 999);
+    const now = new Date();
+    // Use explicit UTC arithmetic to avoid server timezone affecting IST date comparisons
+    const startOfTodayUTC = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
+    const endOfTomorrowUTC = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 2) - 1,
+    );
 
     const dates = await prisma.importantDate.findMany({
       where: {
-        date: { lte: tomorrow },
+        date: { gte: startOfTodayUTC, lte: endOfTomorrowUTC },
         notifiedAt: null,
         deletedAt: null,
       },
@@ -31,8 +37,8 @@ export function startReminderWorker(): void {
           where: { id: date.id },
           data: { notifiedAt: new Date() },
         });
-      } catch {
-        // Log and continue — one failure should not block other notifications
+      } catch (error) {
+        logger.error({ importantDateId: date.id, error }, "reminder-worker: failed to process importantDate");
       }
     }
   });

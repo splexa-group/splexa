@@ -18,7 +18,7 @@ export const importantDatesService = {
   async update(caseId: string, dateId: string, input: UpdateImportantDateInput, ctx: ServiceContext) {
     const date = await importantDatesRepository.findById(dateId, caseId, ctx.orgId);
     if (!date) throw Errors.importantDateNotFound();
-    return importantDatesRepository.update(dateId, input);
+    return importantDatesRepository.update(dateId, ctx.orgId, input);
   },
 
   async delete(caseId: string, dateId: string, ctx: ServiceContext) {

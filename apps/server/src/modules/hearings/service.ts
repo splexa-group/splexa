@@ -27,6 +27,12 @@ export const hearingsService = {
     return hearingsRepository.findByCaseId(caseId, orgId);
   },
 
+  async findById(id: string, orgId: string) {
+    const hearing = await hearingsRepository.findById(id, orgId);
+    if (!hearing) throw Errors.hearingNotFound();
+    return hearing;
+  },
+
   async listCrossCase(orgId: string, query: ListHearingsQuery) {
     return hearingsRepository.listCrossCase(orgId, query);
   },

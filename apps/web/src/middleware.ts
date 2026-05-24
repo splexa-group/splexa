@@ -35,8 +35,14 @@ export function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    ...PROTECTED_PREFIXES.map((route) => `${route}/:path*`),
-    ...AUTH_ROUTE_PREFIXES,
+    '/dashboard/:path*',
+    '/cases/:path*',
+    '/clients/:path*',
+    '/calendar/:path*',
+    '/documents/:path*',
+    '/settings/:path*',
+    '/login',
+    '/signup',
     '/',
   ],
 };

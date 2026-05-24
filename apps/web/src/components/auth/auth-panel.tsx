@@ -19,7 +19,7 @@ export function AuthPanel() {
   return (
     <div className="flex flex-col justify-between h-full px-20 py-50">
       <div className="max-w-[400px]">
-        <Logo size="md" variant="white" className="mb-10" />
+        <Logo size="lg" variant="white" className="mb-10" />
 
         <h1 className="text-[34px] font-bold text-white leading-tight tracking-tight">
           Practice Smarter.

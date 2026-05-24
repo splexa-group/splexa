@@ -174,3 +174,24 @@ summary {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-placeholder);
 }
+
+@layer components {
+  /*  Sidebar nav item  */
+  .nav-item {
+    @apply flex items-center gap-3 rounded-md px-3 py-[9px] min-h-[36px];
+    @apply text-[13.5px] text-white/95 transition-colors cursor-pointer;
+    @apply hover:bg-white/5 hover:text-white/90;
+  }
+  .nav-item-active {
+    @apply bg-white/12 text-white/95;
+  }
+
+  /*  Mobile bottom tab  */
+  .bottom-tab {
+    @apply flex flex-1 flex-col items-center justify-center gap-[3px] min-h-[44px] cursor-pointer;
+    @apply text-[11px] text-placeholder;
+  }
+  .bottom-tab-active {
+    @apply text-brand font-medium;
+  }
+}

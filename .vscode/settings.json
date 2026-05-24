@@ -5,5 +5,5 @@
     "**/dist": true,
     "**/.next": true
   },
-  "cSpell.words": ["Iyer", "Otps", "splexa", "Turborepo"]
+  "cSpell.words": ["Iyer", "Otps", "Rehydrator", "splexa", "Turborepo"]
 }

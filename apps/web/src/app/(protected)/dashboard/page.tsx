@@ -1,7 +1,13 @@
+'use client';
+
+import { usePageTitle } from '@/components/layout/top-bar-context';
+
 export default function DashboardPage() {
+  usePageTitle({ title: 'Dashboard', action: { label: 'Add New Case', href: '/cases/new' } });
+
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <p className="text-[#475569] text-sm">Dashboard — coming soon.</p>
+      <p className="text-secondary text-sm">Dashboard — coming soon.</p>
     </div>
   );
 }

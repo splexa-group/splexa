@@ -231,7 +231,9 @@ export default function ProtectedLayout({ children }) {
 
 | File | Purpose |
 |---|---|
+| `middleware.ts` | Edge middleware — auth + auth-route redirects |
 | `app/(protected)/layout.tsx` | Protected shell — new file |
+| `app/(protected)/cases/page.tsx` | Cases stub — "coming soon" placeholder |
 | `components/layout/sidebar.tsx` | Dark sidebar — new file |
 | `components/layout/top-bar.tsx` | Context-aware top bar — new file |
 | `components/layout/bottom-nav.tsx` | Mobile tab bar — new file |
@@ -248,9 +250,87 @@ export default function ProtectedLayout({ children }) {
 
 ---
 
+## Route Protection (`middleware.ts`)
+
+Next.js middleware runs on the edge before any page renders. It is the only place that enforces auth redirects — no page component does its own auth check.
+
+### Rules
+
+| Situation | Action |
+|---|---|
+| No `access_token` cookie + visiting a protected route | Redirect to `/login` |
+| Has `access_token` cookie + visiting `/login` or `/signup` | Redirect to `/dashboard` |
+| All other cases | Pass through |
+
+### Protected route matcher
+
+All routes under `/(protected)` are protected. The middleware `config.matcher` targets:
+```
+/dashboard/:path*
+/cases/:path*
+/clients/:path*
+/calendar/:path*
+/documents/:path*
+/settings/:path*
+```
+
+### Auth route matcher
+
+`/login` and `/signup` redirect to `/dashboard` when a session cookie is present.
+
+### Implementation
+
+```ts
+// apps/web/src/middleware.ts
+import { NextRequest, NextResponse } from 'next/server';
+
+const PROTECTED = ['/dashboard', '/cases', '/clients', '/calendar', '/documents', '/settings'];
+const AUTH_ROUTES = ['/login', '/signup'];
+
+export function middleware(req: NextRequest) {
+  const token = req.cookies.get('access_token')?.value;
+  const { pathname } = req.nextUrl;
+
+  const isProtected = PROTECTED.some(p => pathname.startsWith(p));
+  const isAuthRoute = AUTH_ROUTES.some(p => pathname.startsWith(p));
+
+  if (isProtected && !token) {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+  if (isAuthRoute && token) {
+    return NextResponse.redirect(new URL('/dashboard', req.url));
+  }
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ['/dashboard/:path*', '/cases/:path*', '/clients/:path*',
+            '/calendar/:path*', '/documents/:path*', '/settings/:path*',
+            '/login', '/signup'],
+};
+```
+
+> **Note:** Middleware only checks for the cookie's presence, not its validity. The API server validates the JWT on every request. If the token is expired, the Axios 401 interceptor triggers a refresh — or redirects to `/login` on failure. No JWT verification happens in middleware.
+
+---
+
+## Cases Page Stub (`app/(protected)/cases/page.tsx`)
+
+A placeholder page so navigation to `/cases` does not 404. Uses `useTopBar` with `variant: 'default'`.
+
+```tsx
+// Simple coming-soon stub — replace when Cases module is built
+export default function CasesPage() { ... }
+```
+
+Content: centred text "Cases — coming soon." matching the existing dashboard stub style (`text-secondary text-sm`).
+
+---
+
 ## Out of Scope
 
 - Global search functionality (search pill is a visual stub only)
 - Notifications
 - Profile edit page
-- Any page beyond Dashboard (Cases, Calendar, Clients, Documents, Settings pages are not built — layout only)
+- Calendar, Clients, Documents, Settings stub pages (only Dashboard and Cases stubs are in scope)
+- JWT validation in middleware (presence check only — API validates the token)

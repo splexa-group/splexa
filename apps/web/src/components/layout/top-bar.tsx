@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ChevronLeft, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
+import { Button } from "@/components/ui/button";
 import { TopBarContext } from "./top-bar-context";
 
 export function TopBar() {
@@ -43,22 +44,17 @@ export function TopBar() {
 
       {config?.action && (
         config.action.href ? (
-          <Link
-            href={config.action.href}
-            className="flex items-center gap-1.5 px-3 h-[30px] bg-brand text-white text-[12px] font-medium rounded-lg hover:bg-brand-dark transition-colors shrink-0"
-          >
-            <Icon icon={Plus} size="xs" />
-            {config.action.label}
-          </Link>
+          <Button asChild variant="primary" size="sm">
+            <Link href={config.action.href}>
+              <Icon icon={Plus} size="xs" />
+              {config.action.label}
+            </Link>
+          </Button>
         ) : (
-          <button
-            type="button"
-            onClick={config.action.onClick}
-            className="flex items-center gap-1.5 px-3 h-[30px] bg-brand text-white text-[12px] font-medium rounded-lg hover:bg-brand-dark transition-colors shrink-0"
-          >
+          <Button variant="primary" size="sm" onClick={config.action.onClick}>
             <Icon icon={Plus} size="xs" />
             {config.action.label}
-          </button>
+          </Button>
         )
       )}
     </header>

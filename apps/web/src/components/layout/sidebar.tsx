@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, HelpCircle, CalendarPlus, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -110,6 +111,7 @@ export function Sidebar() {
             <Icon icon={CalendarPlus} size="md" />
           </button>
         </div>
+        <Image src="/white-dark.svg" alt="Splexa" width={72} height={20} className="opacity-60" />
       </div>
     </aside>
   );

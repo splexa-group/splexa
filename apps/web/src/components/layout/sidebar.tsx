@@ -95,14 +95,16 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex flex-col md:w-16 lg:w-[250px] bg-surface-dark shrink-0 h-screen overflow-hidden">
       {/* Header */}
-      <div className="h-[60px] flex items-center px-3 gap-3 border-b border-white/[0.07] shrink-0">
-        <div className="w-7 h-7 rounded-md bg-brand-light/20 flex items-center justify-center text-brand-light text-[13px] font-bold shrink-0">
+      <div className="h-[58px] flex items-center px-3 gap-3 shrink-0">
+        <div className="w-7.5 h-7.5 rounded-md bg-brand-light/25 flex items-center justify-center text-brand-light text-sm font-bold shrink-0">
           {initial}
         </div>
-        <span className="hidden lg:block text-sm font-semibold text-white truncate">
+        <span className="hidden lg:block text-[15px] font-medium text-white truncate">
           {displayName}
         </span>
       </div>
+
+      <div className="h-px bg-white/15 shrink-0" />
 
       {/* Top nav group */}
       <nav className="flex flex-col gap-1 px-2 pt-3 flex-1 overflow-y-auto">

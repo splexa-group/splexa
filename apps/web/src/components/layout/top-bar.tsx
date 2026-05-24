@@ -10,7 +10,7 @@ export function TopBar() {
   const router = useRouter();
 
   return (
-    <header className="h-[52px] bg-card border-b border-line flex items-center px-5 gap-3 shrink-0 z-30">
+    <header className="h-[58px] bg-card border-b border-line flex items-center px-5 gap-3 shrink-0 z-30">
       {!config || config.variant === 'default' ? (
         <>
           <h1 className="text-[15px] font-semibold text-dark flex-1 truncate">

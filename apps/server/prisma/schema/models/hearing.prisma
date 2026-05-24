@@ -1,0 +1,26 @@
+model Hearing {
+  id                String          @id @default(uuid())
+  caseId            String          @map("case_id")
+  orgId             String          @map("org_id")
+  date              DateTime
+  purpose           HearingPurpose?
+  status            HearingStatus   @default(Scheduled)
+  notes             String?
+  nextDate          DateTime?       @map("next_date")
+  adjournmentReason String?         @map("adjournment_reason")
+  judgePresent      String?         @map("judge_present")
+  addedBy           String          @map("added_by")
+  createdAt         DateTime        @default(now()) @map("created_at")
+  updatedAt         DateTime        @updatedAt @map("updated_at")
+  deletedAt         DateTime?       @map("deleted_at")
+
+  case    Case         @relation(fields: [caseId], references: [id])
+  org     Organization @relation(fields: [orgId], references: [id])
+  adder   User         @relation("HearingAdder", fields: [addedBy], references: [id])
+
+  @@index([caseId])
+  @@index([orgId, date])
+  @@index([orgId, status])
+  @@index([orgId, deletedAt])
+  @@map("hearings")
+}

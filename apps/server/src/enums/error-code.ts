@@ -25,4 +25,20 @@ export enum ErrorCode {
 
   // email delivery
   EMAIL_SEND_FAILED = "AUTH_EMAIL_SEND_FAILED",
+
+  // clients
+  CLIENT_NOT_FOUND = "CLIENT_NOT_FOUND",
+
+  // cases
+  CASE_NOT_FOUND = "CASE_NOT_FOUND",
+
+  // hearings
+  HEARING_NOT_FOUND = "HEARING_NOT_FOUND",
+  HEARING_CASE_MISMATCH = "HEARING_CASE_MISMATCH",
+
+  // important dates
+  IMPORTANT_DATE_NOT_FOUND = "IMPORTANT_DATE_NOT_FOUND",
+
+  // documents
+  DOCUMENT_NOT_FOUND = "DOCUMENT_NOT_FOUND",
 }

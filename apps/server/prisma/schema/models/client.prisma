@@ -1,0 +1,25 @@
+model Client {
+  id                String             @id @default(uuid())
+  orgId             String             @map("org_id")
+  fullName          String             @map("full_name")
+  phone             String
+  type              ClientType
+  email             String?
+  address           String?
+  companyName       String?            @map("company_name")
+  notes             String?
+  preferredLanguage PreferredLanguage? @map("preferred_language")
+  createdBy         String             @map("created_by")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  deletedAt         DateTime?          @map("deleted_at")
+
+  org     Organization @relation(fields: [orgId], references: [id])
+  creator User         @relation("ClientCreator", fields: [createdBy], references: [id])
+  cases   Case[]
+
+  @@index([orgId])
+  @@index([orgId, deletedAt])
+  @@index([orgId, phone])
+  @@map("clients")
+}

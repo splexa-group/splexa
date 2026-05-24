@@ -17,6 +17,12 @@ model User {
   sessions    Session[]
   auditLogs   AuditLog[]
 
+  clientsCreated Client[]   @relation("ClientCreator")
+  casesCreated   Case[]     @relation("CaseCreator")
+  casesAssigned  Case[]     @relation("CaseAssignment")
+  hearingsAdded     Hearing[]  @relation("HearingAdder")
+  documentsUploaded Document[] @relation("DocumentUploader")
+
   @@index([orgId])
   @@map("users")
 }

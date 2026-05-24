@@ -1,0 +1,23 @@
+model ImportantDate {
+  id           String            @id @default(uuid())
+  caseId       String            @map("case_id")
+  orgId        String            @map("org_id")
+  dateType     ImportantDateType @map("date_type")
+  date         DateTime
+  description  String?
+  sourceId     String?           @map("source_id")
+  notifyUserId String            @map("notify_user_id")
+  notifiedAt   DateTime?         @map("notified_at")
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+  deletedAt    DateTime?         @map("deleted_at")
+
+  case Case         @relation(fields: [caseId], references: [id])
+  org  Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId, date])
+  @@index([caseId])
+  @@index([orgId, deletedAt])
+  @@index([orgId, notifiedAt])
+  @@map("important_dates")
+}

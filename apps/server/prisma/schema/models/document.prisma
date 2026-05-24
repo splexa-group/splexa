@@ -1,0 +1,21 @@
+model Document {
+  id         String    @id @default(uuid())
+  orgId      String    @map("org_id")
+  caseId     String    @map("case_id")
+  name       String
+  mimeType   String    @map("mime_type")
+  size       Int
+  storageKey String    @map("storage_key")
+  uploadedBy String    @map("uploaded_by")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  deletedAt  DateTime? @map("deleted_at")
+
+  org      Organization @relation(fields: [orgId], references: [id])
+  case     Case         @relation(fields: [caseId], references: [id])
+  uploader User         @relation("DocumentUploader", fields: [uploadedBy], references: [id])
+
+  @@index([orgId])
+  @@index([caseId, orgId])
+  @@index([orgId, deletedAt])
+  @@map("documents")
+}

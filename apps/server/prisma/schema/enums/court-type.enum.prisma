@@ -1,0 +1,9 @@
+enum CourtType {
+  DistrictCourt
+  HighCourt
+  SupremeCourt
+  Tribunal
+  ConsumerForum
+  FamilyCourt
+  Other
+}

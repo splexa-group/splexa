@@ -21,6 +21,9 @@ Add a persistent app shell to all protected routes in Splexa. The shell consists
 | Sidebar collapse | Pure CSS — no JS/Zustand toggle |
 | User menu location | Bottom-left of the sidebar |
 | Notifications | Not in scope (Phase 1) |
+| Sidebar header | Org name if set, else `"{firstName} Advocates"` — no "Splexa" wordmark in header |
+| Nav: "Hearings" renamed | "Calendar" (`/calendar`) |
+| Settings in mobile bottom bar | No — sidebar only; accessible via user popover on mobile |
 
 ---
 
@@ -60,8 +63,8 @@ The `(protected)/layout.tsx` file does not yet exist. It must be created. The da
 
 ### Sections (top to bottom)
 
-1. **Logo area** — "Splexa" wordmark in `--brand-light` (`#60a5fa`). At `md` (collapsed), shows "S" only.
-2. **Top nav group** — Dashboard, Cases, Hearings, Clients, Documents. Icon + label; at `md` label is hidden.
+1. **Header area** — Organisation name (see Org Name Display below). At `md` (collapsed), shows initials only (first letter of the org/fallback name).
+2. **Top nav group** — Dashboard, Cases, Clients, Calendar, Documents. Icon + label; at `md` label is hidden.
 3. **Spacer** — `flex-1` pushes everything below it to the bottom.
 4. **Bottom nav group** — Settings only. Same item style as top group.
 5. **User section** — fixed at the very bottom. Shows avatar initials, name, email at `lg+`; avatar only at `md`. Click opens a small popover with profile details and a logout action.
@@ -76,8 +79,8 @@ Two groups, separated by a `flex-1` spacer that pushes the bottom group down:
 |---|---|---|
 | Dashboard | `/dashboard` | `LayoutDashboard` |
 | Cases | `/cases` | `FileText` |
-| Hearings | `/hearings` | `Clock` |
 | Clients | `/clients` | `User` |
+| Calendar | `/calendar` | `CalendarDays` |
 | Documents | `/documents` | `File` |
 
 **Bottom group** (sits just above the user section):
@@ -85,6 +88,27 @@ Two groups, separated by a `flex-1` spacer that pushes the bottom group down:
 | Label | Route | Icon (Lucide) |
 |---|---|---|
 | Settings | `/settings` | `Settings` |
+
+### Org Name Display
+
+The sidebar header shows the organisation's name, not the product name. This makes the product feel like the advocate's own system.
+
+**Priority:**
+```
+1. org.name (from JWT)        →  "Mehta & Associates"
+2. fallback                   →  "{user.firstName} Advocates"
+```
+
+Examples:
+- Org name set: "Mehta & Associates"
+- No org name, user is Rajesh Kumar: "Rajesh Advocates"
+
+At `lg+` (expanded): full name in `--brand-light` (`#60a5fa`), `font-semibold text-[15px]`, truncated with `truncate max-w-full`.  
+At `md` (collapsed): first letter of the displayed name, same colour, centred.
+
+The name is read from `useAuthStore` — `user.orgName ?? `${user.firstName} Advocates``.
+
+---
 
 ### Active state
 
@@ -112,7 +136,7 @@ Use a simple `useState` toggle for the popover. No Radix needed — keep it a po
 
 ### Two modes
 
-**Default mode** (list/section pages — Dashboard, Cases, Hearings, etc.):
+**Default mode** (list/section pages — Dashboard, Cases, Calendar, etc.):
 ```
 [Page title]                    [Search pill]
 ```
@@ -166,9 +190,11 @@ Option A keeps the top bar visually fixed and consistent. Option B is simpler bu
 |---|---|---|
 | Dashboard | `/dashboard` | `LayoutDashboard` |
 | Cases | `/cases` | `FileText` |
-| Hearings | `/hearings` | `Clock` |
 | Clients | `/clients` | `User` |
+| Calendar | `/calendar` | `CalendarDays` |
 | Docs | `/documents` | `File` |
+
+Settings is not in the bottom tab bar — it is accessible via the sidebar on desktop and via the user popover on mobile.
 
 Active tab: icon and label in `--brand` (`#1e40af`), label `font-semibold`.  
 Inactive tab: icon and label in `--text-placeholder`.  
@@ -227,4 +253,4 @@ export default function ProtectedLayout({ children }) {
 - Global search functionality (search pill is a visual stub only)
 - Notifications
 - Profile edit page
-- Any page beyond Dashboard (Cases, Hearings, Clients, Documents, Settings pages are not built — layout only)
+- Any page beyond Dashboard (Cases, Calendar, Clients, Documents, Settings pages are not built — layout only)

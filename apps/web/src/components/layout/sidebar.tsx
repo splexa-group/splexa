@@ -13,6 +13,8 @@ import {
   Settings,
   LogOut,
   MoreVertical,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
@@ -43,6 +45,7 @@ function NavItem({
     <Link href={href} className={cn("nav-item", active && "nav-item--active")}>
       <Icon icon={icon} size="sm" />
       <span className="hidden lg:block truncate">{label}</span>
+      <Icon icon={ChevronRight} size="sm" className="hidden lg:block ml-auto shrink-0 text-white/30" />
     </Link>
   );
 }
@@ -116,7 +119,6 @@ export function Sidebar() {
 
       {/* Bottom nav group + user */}
       <div className="px-2 pb-2 flex flex-col gap-1">
-
         {/* User section */}
         <div className="relative mt-1" ref={popoverRef}>
           {/* Popover */}

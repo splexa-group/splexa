@@ -2,29 +2,40 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
+export interface TopBarAction {
+  label: string;
+  href: string;
+}
+
+export interface TopBarConfig {
+  title: string;
+  resourceTitle?: string;
+  action?: TopBarAction;
+}
+
 interface TopBarContextValue {
-  resourceTitle: string | null;
-  setResourceTitle: (title: string | null) => void;
+  config: TopBarConfig | null;
+  setConfig: (config: TopBarConfig | null) => void;
 }
 
 export const TopBarContext = createContext<TopBarContextValue | null>(null);
 
 export function TopBarProvider({ children }: { children: ReactNode }) {
-  const [resourceTitle, setResourceTitle] = useState<string | null>(null);
+  const [config, setConfig] = useState<TopBarConfig | null>(null);
   return (
-    <TopBarContext.Provider value={{ resourceTitle, setResourceTitle }}>
+    <TopBarContext.Provider value={{ config, setConfig }}>
       {children}
     </TopBarContext.Provider>
   );
 }
 
-// Only detail pages need this — one line, e.g. usePageTitle(caseData.title)
-export function usePageTitle(title: string) {
+export function usePageTitle(config: TopBarConfig) {
   const ctx = useContext(TopBarContext);
   if (!ctx) throw new Error('usePageTitle must be used inside TopBarProvider');
-  const { setResourceTitle } = ctx;
+  const { setConfig } = ctx;
   useEffect(() => {
-    setResourceTitle(title);
-    return () => setResourceTitle(null);
-  }, [title, setResourceTitle]);
+    setConfig(config);
+    return () => setConfig(null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config.title, config.resourceTitle, config.action?.href]);
 }

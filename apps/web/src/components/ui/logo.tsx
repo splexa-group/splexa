@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";
@@ -7,32 +7,27 @@ interface LogoProps {
   className?: string;
 }
 
-const sizeConfig = {
-  sm: { wrap: "gap-1.5", icon: "text-lg", text: "text-base font-bold" },
-  md: { wrap: "gap-2", icon: "text-3xl", text: "text-[22px] font-bold" },
-  lg: { wrap: "gap-3", icon: "text-4xl", text: "text-[28px] font-bold" },
+const SIZE_MAP = {
+  sm: { width: 64,  height: 18 },
+  md: { width: 88,  height: 24 },
+  lg: { width: 112, height: 30 },
 };
 
-const variantColor = {
-  white: "text-white",
-  brand: "text-brand",
-  brandLight: "text-brand-light",
+const VARIANT_SRC: Record<NonNullable<LogoProps["variant"]>, string> = {
+  white:      "/white-dark.svg",
+  brand:      "/brand.svg",
+  brandLight: "/white-brand.svg",
 };
 
 export function Logo({ size = "md", variant = "white", className }: LogoProps) {
-  const { wrap, icon, text } = sizeConfig[size];
-  const color = variantColor[variant];
-
+  const { width, height } = SIZE_MAP[size];
   return (
-    <div className={cn("flex items-center", wrap, color, className)}>
-      <Image
-        src="/white-dark.svg"
-        alt="Splexa"
-        width={32}
-        height={32}
-        className={cn(icon)}
-      />
-      <span className={text}>Splexa</span>
-    </div>
+    <Image
+      src={VARIANT_SRC[variant]}
+      alt="Splexa"
+      width={width}
+      height={height}
+      className={cn("shrink-0", className)}
+    />
   );
 }

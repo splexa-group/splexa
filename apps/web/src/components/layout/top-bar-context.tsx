@@ -35,6 +35,7 @@ export function usePageTitle(config: TopBarConfig) {
   useEffect(() => {
     setConfig(config);
     return () => setConfig(null);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config.title, config.resourceTitle, config.action?.href, config.action?.onClick]);
+    // `config` is a new object on every render — depend on individual fields to avoid infinite loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config.title, config.resourceTitle, config.action?.label, config.action?.href, config.action?.onClick, setConfig]);
 }

@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, useContext, useState, type ReactNode } from "react";
 
 export type TopBarConfig =
-  | { variant: 'default'; title: string }
-  | { variant: 'detail'; title: string; typeTag?: string };
+  | { variant: "default"; title: string }
+  | { variant: "detail"; title: string; typeTag?: string };
 
 interface TopBarContextValue {
   config: TopBarConfig | null;
@@ -25,6 +25,6 @@ export function TopBarProvider({ children }: { children: ReactNode }) {
 
 export function useTopBar() {
   const ctx = useContext(TopBarContext);
-  if (!ctx) throw new Error('useTopBar must be used inside TopBarProvider');
+  if (!ctx) throw new Error("useTopBar must be used inside TopBarProvider");
   return ctx;
 }

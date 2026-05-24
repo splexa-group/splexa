@@ -32,7 +32,7 @@ export function BottomNav() {
           <Link
             key={href}
             href={href}
-            className={cn('bottom-tab', active && 'bottom-tab--active')}
+            className={cn('bottom-tab', active && 'bottom-tab-active')}
           >
             <Icon icon={icon} size="md" />
             <span>{label}</span>

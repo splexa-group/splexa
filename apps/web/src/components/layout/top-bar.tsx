@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { ChevronLeft, Search } from 'lucide-react';
-import { useTopBar } from './top-bar-context';
-import { Icon } from '@/components/ui/icon';
+import { useRouter } from "next/navigation";
+import { ChevronLeft } from "lucide-react";
+import { useTopBar } from "./top-bar-context";
+import { Icon } from "@/components/ui/icon";
 
 export function TopBar() {
   const { config } = useTopBar();
@@ -11,20 +11,11 @@ export function TopBar() {
 
   return (
     <header className="h-[58px] bg-card border-b border-line flex items-center px-5 gap-3 shrink-0 z-30">
-      {!config || config.variant === 'default' ? (
+      {!config || config.variant === "default" ? (
         <>
           <h1 className="text-[15px] font-semibold text-dark flex-1 truncate">
-            {config?.title ?? ''}
+            {config?.title ?? ""}
           </h1>
-          <button
-            type="button"
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-subtle text-[12px] text-placeholder cursor-default"
-            tabIndex={-1}
-            aria-label="Search"
-          >
-            <Icon icon={Search} size="xs" />
-            <span className="hidden sm:inline">Search cases, clients…</span>
-          </button>
         </>
       ) : (
         <>
@@ -40,7 +31,9 @@ export function TopBar() {
             {config.title}
           </h1>
           {config.typeTag && (
-            <span className="text-xs text-placeholder shrink-0">· {config.typeTag}</span>
+            <span className="text-xs text-placeholder shrink-0">
+              · {config.typeTag}
+            </span>
           )}
         </>
       )}

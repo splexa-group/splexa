@@ -82,21 +82,19 @@ export function Sidebar() {
   return (
     <aside className="hidden md:flex flex-col md:w-16 lg:w-[250px] bg-surface-dark shrink-0 h-screen overflow-hidden">
       {/* Header — identity */}
-      <div className="flex items-center gap-3 px-3 py-3 shrink-0">
-        <div className="w-8 h-8 rounded-md bg-brand-light/20 flex items-center justify-center text-brand-light text-[13px] font-bold shrink-0">
+      <div className="flex items-center gap-3 px-3 py-5 shrink-0">
+        <div className="w-8 h-8 rounded-md bg-brand-soft flex items-center justify-center text-brand text-[14.5px] font-bold shrink-0">
           {initial}
         </div>
         <div className="hidden lg:flex flex-col min-w-0">
-          <span className="text-[13px] font-semibold text-white truncate leading-tight">
+          <span className="text-sm font-semibold text-white truncate leading-tight">
             {displayName}
           </span>
-          <span className="text-[11px] text-white/40 truncate leading-tight">
+          <span className="text-[11px] text-white/40 truncate leading-tight mt-0.5">
             {user?.email}
           </span>
         </div>
       </div>
-
-      <div className="h-px bg-white/15 shrink-0" />
 
       {/* Nav */}
       <nav className="flex flex-col gap-1 px-2 pt-3 flex-1 overflow-y-auto">

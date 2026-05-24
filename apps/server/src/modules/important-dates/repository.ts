@@ -28,6 +28,17 @@ export const importantDatesRepository = {
     });
   },
 
+  async listForOrg(orgId: string) {
+    return prisma.importantDate.findMany({
+      where: {
+        orgId,
+        deletedAt: null,
+        dateType: { not: ImportantDateType.HearingDate },
+      },
+      orderBy: { date: "asc" },
+    });
+  },
+
   async listForCase(caseId: string, orgId: string) {
     return prisma.importantDate.findMany({
       where: {
@@ -47,7 +58,7 @@ export const importantDatesRepository = {
   },
 
   async update(id: string, orgId: string, data: UpdateImportantDateInput) {
-    await prisma.importantDate.updateMany({
+    const { count } = await prisma.importantDate.updateMany({
       where: { id, orgId, deletedAt: null },
       data: {
         ...(data.dateType ? { dateType: data.dateType } : {}),
@@ -55,7 +66,8 @@ export const importantDatesRepository = {
         ...(data.description !== undefined ? { description: data.description } : {}),
       },
     });
-    return prisma.importantDate.findFirstOrThrow({ where: { id, orgId } });
+    if (count === 0) return null;
+    return prisma.importantDate.findFirstOrThrow({ where: { id, orgId, deletedAt: null } });
   },
 
   async softDelete(id: string, orgId: string) {

@@ -9,6 +9,10 @@ import type {
 import { importantDatesService } from "./service";
 
 export const importantDatesController = {
+  async listForOrg(req: FastifyRequest) {
+    return importantDatesService.listForOrg(req.user.orgId);
+  },
+
   async listForCase(req: FastifyRequest<{ Params: CaseParams }>) {
     return importantDatesService.listForCase(req.params.caseId, req.user.orgId);
   },

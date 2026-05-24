@@ -1,7 +1,8 @@
 import type { MultipartFile } from "@fastify/multipart";
 
-import { MAX_UPLOAD_BYTES } from "@/constants/misc";
-import { R2Adapter } from "@/integrations/storage/r2-adapter";
+import { logger } from "@/config/logger";
+import { MAX_UPLOAD_BYTES, PRESIGNED_URL_TTL_SECONDS } from "@/constants/misc";
+import { storageProvider } from "@/integrations/storage";
 import { casesRepository } from "@/modules/cases/repository";
 import type { ServiceContext } from "@/types/service-context";
 import { generateUUID } from "@/utils/crypto";
@@ -9,8 +10,6 @@ import { AppError, Errors } from "@/utils/errors";
 
 import { documentsRepository } from "./repository";
 import type { ListDocumentsOrgQuery, ListDocumentsQuery } from "./schema";
-
-const storage = new R2Adapter();
 
 export const documentsService = {
   async upload(caseId: string, file: MultipartFile, ctx: ServiceContext) {
@@ -25,7 +24,7 @@ export const documentsService = {
     const ext = file.filename.includes(".") ? file.filename.split(".").pop() : "";
     const storageKey = `orgs/${ctx.orgId}/cases/${caseId}/documents/${generateUUID()}${ext ? `.${ext}` : ""}`;
 
-    await storage.upload(storageKey, buffer, file.mimetype);
+    await storageProvider.upload(storageKey, buffer, file.mimetype);
 
     return documentsRepository.create({
       orgId: ctx.orgId,
@@ -51,13 +50,17 @@ export const documentsService = {
   async getPresignedUrl(documentId: string, caseId: string, orgId: string) {
     const doc = await documentsRepository.findById(documentId, caseId, orgId);
     if (!doc) throw Errors.documentNotFound();
-    return { url: await storage.presignedUrl(doc.storageKey, 3600) };
+    return { url: await storageProvider.presignedUrl(doc.storageKey, PRESIGNED_URL_TTL_SECONDS) };
   },
 
   async delete(documentId: string, caseId: string, ctx: ServiceContext) {
     const doc = await documentsRepository.findById(documentId, caseId, ctx.orgId);
     if (!doc) throw Errors.documentNotFound();
-    await storage.delete(doc.storageKey);
+    // Soft-delete DB record first so the document is immediately inaccessible
     await documentsRepository.softDelete(documentId, ctx.orgId);
+    // Storage cleanup is best-effort — a failed delete leaves an orphaned object but keeps DB consistent
+    storageProvider.delete(doc.storageKey).catch((err: unknown) => {
+      logger.error({ documentId, storageKey: doc.storageKey, err }, "documents: failed to delete object from storage");
+    });
   },
 };

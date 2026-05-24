@@ -71,8 +71,9 @@ export const clientsRepository = {
   },
 
   async update(id: string, orgId: string, data: UpdateClientInput) {
-    await prisma.client.updateMany({ where: { id, orgId, deletedAt: null }, data });
-    return prisma.client.findFirstOrThrow({ where: { id, orgId }, select: clientSelect });
+    const { count } = await prisma.client.updateMany({ where: { id, orgId, deletedAt: null }, data });
+    if (count === 0) return null;
+    return prisma.client.findFirstOrThrow({ where: { id, orgId, deletedAt: null }, select: clientSelect });
   },
 
   async softDelete(id: string, orgId: string) {

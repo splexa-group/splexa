@@ -114,7 +114,7 @@ export const hearingsRepository = {
     },
   ) {
     return prisma.$transaction(async (tx) => {
-      await tx.hearing.updateMany({
+      const { count } = await tx.hearing.updateMany({
         where: { id, orgId, deletedAt: null },
         data: {
           ...(data.status !== undefined ? { status: data.status } : {}),
@@ -131,8 +131,10 @@ export const hearingsRepository = {
         },
       });
 
+      if (count === 0) return null;
+
       const updated = await tx.hearing.findFirstOrThrow({
-        where: { id, orgId },
+        where: { id, orgId, deletedAt: null },
         select: hearingSummarySelect,
       });
 

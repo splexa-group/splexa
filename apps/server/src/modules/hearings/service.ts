@@ -41,7 +41,9 @@ export const hearingsService = {
     const hearing = await hearingsRepository.findById(id, ctx.orgId);
     if (!hearing) throw Errors.hearingNotFound();
 
-    return hearingsRepository.update(id, hearing.caseId, ctx.orgId, input);
+    const updated = await hearingsRepository.update(id, hearing.caseId, ctx.orgId, input);
+    if (!updated) throw Errors.hearingNotFound();
+    return updated;
   },
 
   async delete(id: string, ctx: ServiceContext) {

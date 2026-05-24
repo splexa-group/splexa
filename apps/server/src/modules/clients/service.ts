@@ -37,7 +37,9 @@ export const clientsService = {
   async update(id: string, input: UpdateClientInput, ctx: ServiceContext) {
     const existing = await clientsRepository.findById(id, ctx.orgId);
     if (!existing) throw Errors.clientNotFound();
-    return clientsRepository.update(id, ctx.orgId, input);
+    const updated = await clientsRepository.update(id, ctx.orgId, input);
+    if (!updated) throw Errors.clientNotFound();
+    return updated;
   },
 
   async delete(id: string, ctx: ServiceContext) {

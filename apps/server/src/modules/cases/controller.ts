@@ -5,13 +5,13 @@ import { casesService } from "./service";
 
 export const casesController = {
   async create(req: FastifyRequest<{ Body: CreateCaseInput }>, reply: FastifyReply) {
-    const result = await casesService.create(req.body, {
+    const { data, warnings } = await casesService.create(req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
       ipAddress: req.ip,
     });
     reply.code(201);
-    return result;
+    return warnings ? { ...data, warnings } : data;
   },
 
   async list(req: FastifyRequest<{ Querystring: ListCasesQuery }>) {

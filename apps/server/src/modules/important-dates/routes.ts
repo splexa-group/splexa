@@ -9,6 +9,13 @@ import {
 } from "./schema";
 
 export function importantDatesRoutes(router: FastifyInstance): void {
+  router.get("/", {
+    preHandler: [router.authenticate],
+    handler: importantDatesController.listForOrg,
+  });
+}
+
+export function importantDatesCaseScopeRoutes(router: FastifyInstance): void {
   router.get("/:caseId/important-dates", {
     schema: { params: caseParamsSchema },
     preHandler: [router.authenticate],

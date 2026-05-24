@@ -6,6 +6,10 @@ import { importantDatesRepository } from "./repository";
 import type { CreateImportantDateInput, UpdateImportantDateInput } from "./schema";
 
 export const importantDatesService = {
+  async listForOrg(orgId: string) {
+    return importantDatesRepository.listForOrg(orgId);
+  },
+
   async listForCase(caseId: string, orgId: string) {
     return importantDatesRepository.listForCase(caseId, orgId);
   },
@@ -22,7 +26,9 @@ export const importantDatesService = {
   async update(caseId: string, dateId: string, input: UpdateImportantDateInput, ctx: ServiceContext) {
     const date = await importantDatesRepository.findById(dateId, caseId, ctx.orgId);
     if (!date) throw Errors.importantDateNotFound();
-    return importantDatesRepository.update(dateId, ctx.orgId, input);
+    const updated = await importantDatesRepository.update(dateId, ctx.orgId, input);
+    if (!updated) throw Errors.importantDateNotFound();
+    return updated;
   },
 
   async delete(caseId: string, dateId: string, ctx: ServiceContext) {

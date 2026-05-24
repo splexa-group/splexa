@@ -10,12 +10,13 @@ import { clientsService } from "./service";
 
 export const clientsController = {
   async create(req: FastifyRequest<{ Body: CreateClientInput }>, reply: FastifyReply) {
-    reply.code(201);
-    return clientsService.create(req.body, {
+    const { data, warnings } = await clientsService.create(req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
       ipAddress: req.ip,
     });
+    reply.code(201);
+    return warnings ? { ...data, warnings } : data;
   },
 
   async list(req: FastifyRequest<{ Querystring: ListClientsQuery }>) {

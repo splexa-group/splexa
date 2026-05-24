@@ -68,7 +68,9 @@ export const casesService = {
       ...(judgeChanged ? { judgeUpdatedAt: new Date() } : {}),
     };
 
-    return casesRepository.update(id, ctx.orgId, updateData);
+    const updated = await casesRepository.update(id, ctx.orgId, updateData);
+    if (!updated) throw Errors.caseNotFound();
+    return updated;
   },
 
   async delete(id: string, ctx: ServiceContext) {

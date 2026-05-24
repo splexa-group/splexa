@@ -12,6 +12,7 @@ import {
   Settings,
   LogOut,
   HelpCircle,
+  CalendarPlus,
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,7 +43,7 @@ function NavItem({
   return (
     <Link
       href={href}
-      className={cn("nav-item", active && "nav-item--active")}
+      className={cn("nav-item", active && "nav-item-active")}
     >
       <Icon icon={icon} size="sm" />
       <span className="hidden lg:block truncate">{label}</span>
@@ -111,23 +112,36 @@ export function Sidebar() {
       </nav>
 
       {/* Bottom actions */}
-      <div className="px-2 pb-3 pt-2 flex flex-col gap-1 border-t border-white/10">
+      <div className="flex items-center justify-around px-3 pb-4 pt-2">
         <button
           type="button"
-          className="nav-item w-full text-left"
+          title="Support"
           onClick={() => window.open("mailto:support@splexa.com")}
+          className="p-2 rounded-lg text-white/40 hover:text-white/70 hover:bg-white/5 transition-colors"
         >
           <Icon icon={HelpCircle} size="sm" />
-          <span className="hidden lg:block truncate">Support</span>
         </button>
         <button
           type="button"
-          className="nav-item w-full text-left"
+          title="Book a demo"
+          className="p-2 rounded-lg text-white/40 hover:text-white/70 hover:bg-white/5 transition-colors"
+        >
+          <Icon icon={CalendarPlus} size="sm" />
+        </button>
+        <button
+          type="button"
+          title="Log out"
           onClick={handleLogout}
+          className="p-2 rounded-lg text-white/40 hover:text-white/70 hover:bg-white/5 transition-colors"
         >
           <Icon icon={LogOut} size="sm" />
-          <span className="hidden lg:block truncate">Log out</span>
         </button>
+        <span
+          title="Splexa"
+          className="p-2 text-white/20 select-none"
+        >
+          ⚖
+        </span>
       </div>
     </aside>
   );

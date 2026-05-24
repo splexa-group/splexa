@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import type { LucideIcon } from 'lucide-react';
+import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import type { LucideIcon } from "lucide-react";
 import {
   LayoutDashboard,
   FileText,
@@ -13,22 +13,19 @@ import {
   Settings,
   LogOut,
   MoreVertical,
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Icon } from '@/components/ui/icon';
-import { useAuthStore } from '@/store/auth-store';
-import { authApi } from '@/services/auth';
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Icon } from "@/components/ui/icon";
+import { useAuthStore } from "@/store/auth-store";
+import { authApi } from "@/services/auth";
 
 const TOP_NAV: { label: string; href: string; icon: LucideIcon }[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Cases',     href: '/cases',     icon: FileText },
-  { label: 'Clients',   href: '/clients',   icon: User },
-  { label: 'Calendar',  href: '/calendar',  icon: CalendarDays },
-  { label: 'Documents', href: '/documents', icon: File },
-];
-
-const BOTTOM_NAV: { label: string; href: string; icon: LucideIcon }[] = [
-  { label: 'Settings', href: '/settings', icon: Settings },
+  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Cases", href: "/cases", icon: FileText },
+  { label: "Clients", href: "/clients", icon: User },
+  { label: "Calendar", href: "/calendar", icon: CalendarDays },
+  { label: "Documents", href: "/documents", icon: File },
+  { label: "Settings", href: "/settings", icon: Settings },
 ];
 
 function NavItem({
@@ -43,7 +40,7 @@ function NavItem({
   active: boolean;
 }) {
   return (
-    <Link href={href} className={cn('nav-item', active && 'nav-item--active')}>
+    <Link href={href} className={cn("nav-item", active && "nav-item--active")}>
       <Icon icon={icon} size="sm" />
       <span className="hidden lg:block truncate">{label}</span>
     </Link>
@@ -61,23 +58,26 @@ export function Sidebar() {
 
   const displayName = user
     ? (user.orgName ?? `${user.firstName} Advocates`)
-    : '';
+    : "";
   const initial = displayName.charAt(0).toUpperCase();
 
   const avatarInitials = user
     ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-    : '';
+    : "";
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
-      if (popoverRef.current && !popoverRef.current.contains(e.target as Node)) {
+      if (
+        popoverRef.current &&
+        !popoverRef.current.contains(e.target as Node)
+      ) {
         setPopoverOpen(false);
       }
     }
     if (popoverOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside);
     }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [popoverOpen]);
 
   async function handleLogout() {
@@ -85,15 +85,15 @@ export function Sidebar() {
       await authApi.logout();
     } finally {
       clearAuth();
-      router.push('/login');
+      router.push("/login");
     }
   }
 
   return (
     <aside className="hidden md:flex flex-col md:w-14 lg:w-[220px] bg-surface-dark shrink-0 h-screen overflow-hidden">
-      {/* Header — org name */}
+      {/* Header - org name */}
       <div className="h-[52px] flex items-center px-4 border-b border-white/[0.07] shrink-0">
-        <span className="hidden lg:block text-[15px] font-semibold text-brand-light truncate">
+        <span className="hidden lg:block text-[15px] font-semibold text-white truncate">
           {displayName}
         </span>
         <span className="lg:hidden text-[15px] font-semibold text-brand-light mx-auto">
@@ -109,22 +109,13 @@ export function Sidebar() {
             href={href}
             icon={icon}
             label={label}
-            active={pathname === href || pathname.startsWith(href + '/')}
+            active={pathname === href || pathname.startsWith(href + "/")}
           />
         ))}
       </nav>
 
       {/* Bottom nav group + user */}
       <div className="px-2 pb-2 flex flex-col gap-1">
-        {BOTTOM_NAV.map(({ href, icon, label }) => (
-          <NavItem
-            key={href}
-            href={href}
-            icon={icon}
-            label={label}
-            active={pathname === href || pathname.startsWith(href + '/')}
-          />
-        ))}
 
         {/* User section */}
         <div className="relative mt-1" ref={popoverRef}>
@@ -139,7 +130,9 @@ export function Sidebar() {
                   <p className="text-[12px] font-medium text-dark truncate">
                     {user?.firstName} {user?.lastName}
                   </p>
-                  <p className="text-[11px] text-secondary truncate">{user?.email}</p>
+                  <p className="text-[11px] text-secondary truncate">
+                    {user?.email}
+                  </p>
                 </div>
               </div>
               <button
@@ -170,7 +163,11 @@ export function Sidebar() {
                 {user?.email}
               </span>
             </div>
-            <Icon icon={MoreVertical} size="xs" className="hidden lg:block text-white/30 shrink-0" />
+            <Icon
+              icon={MoreVertical}
+              size="xs"
+              className="hidden lg:block text-white/30 shrink-0"
+            />
           </button>
         </div>
       </div>

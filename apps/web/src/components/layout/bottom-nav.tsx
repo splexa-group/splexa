@@ -2,24 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import type { LucideIcon } from 'lucide-react';
-import {
-  LayoutDashboard,
-  FileText,
-  User,
-  CalendarDays,
-  File,
-} from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Icon } from '@/components/ui/icon';
+import { NAV_ITEMS } from './nav-items';
 
-const TABS: { label: string; href: string; icon: LucideIcon }[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Cases',     href: '/cases',     icon: FileText },
-  { label: 'Clients',   href: '/clients',   icon: User },
-  { label: 'Calendar',  href: '/calendar',  icon: CalendarDays },
-  { label: 'Docs',      href: '/documents', icon: File },
-];
+const TABS = NAV_ITEMS
+  .filter((item) => item.href !== '/settings')
+  .map((item) => ({ ...item, label: item.shortLabel ?? item.label }));
 
 export function BottomNav() {
   const pathname = usePathname();

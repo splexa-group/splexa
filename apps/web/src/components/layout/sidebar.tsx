@@ -2,44 +2,19 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import type { LucideIcon } from "lucide-react";
-import {
-  LayoutDashboard,
-  FileText,
-  User,
-  CalendarDays,
-  File,
-  Settings,
-  LogOut,
-  HelpCircle,
-  CalendarPlus,
-  ChevronRight,
-} from "lucide-react";
+import { LogOut, HelpCircle, CalendarPlus, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
 import { useAuthStore } from "@/store/auth-store";
 import { authApi } from "@/services/auth";
-
-const TOP_NAV: { label: string; href: string; icon: LucideIcon }[] = [
-  { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { label: "Cases", href: "/cases", icon: FileText },
-  { label: "Clients", href: "/clients", icon: User },
-  { label: "Calendar", href: "/calendar", icon: CalendarDays },
-  { label: "Documents", href: "/documents", icon: File },
-  { label: "Settings", href: "/settings", icon: Settings },
-];
+import { NAV_ITEMS, type NavItem } from "./nav-items";
 
 function NavItem({
   href,
   icon,
   label,
   active,
-}: {
-  href: string;
-  icon: LucideIcon;
-  label: string;
-  active: boolean;
-}) {
+}: NavItem & { active: boolean }) {
   return (
     <Link href={href} className={cn("nav-item", active && "nav-item-active")}>
       <Icon icon={icon} size="sm" />
@@ -95,7 +70,7 @@ export function Sidebar() {
 
       {/* Nav */}
       <nav className="flex flex-col gap-1 px-2 pt-3 flex-1 overflow-y-auto">
-        {TOP_NAV.map(({ href, icon, label }) => (
+        {NAV_ITEMS.map(({ href, icon, label }) => (
           <NavItem
             key={href}
             href={href}

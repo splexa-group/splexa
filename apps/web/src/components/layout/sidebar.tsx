@@ -42,7 +42,7 @@ function NavItem({
   active: boolean;
 }) {
   return (
-    <Link href={href} className={cn("nav-item", active && "nav-item--active")}>
+    <Link href={href} className={cn("nav-item", active && "nav-item-active")}>
       <Icon icon={icon} size="sm" />
       <span className="hidden lg:block truncate">{label}</span>
       <Icon icon={ChevronRight} size="sm" className={cn("hidden lg:block ml-auto shrink-0", active ? "text-white" : "text-white/30")} />
@@ -93,13 +93,13 @@ export function Sidebar() {
   }
 
   return (
-    <aside className="hidden md:flex flex-col md:w-14 lg:w-[220px] bg-surface-dark shrink-0 h-screen overflow-hidden">
+    <aside className="hidden md:flex flex-col md:w-16 lg:w-[250px] bg-surface-dark shrink-0 h-screen overflow-hidden">
       {/* Header */}
-      <div className="h-[52px] flex items-center px-3 gap-2 border-b border-white/[0.07] shrink-0">
+      <div className="h-[60px] flex items-center px-3 gap-3 border-b border-white/[0.07] shrink-0">
         <div className="w-7 h-7 rounded-md bg-brand-light/20 flex items-center justify-center text-brand-light text-[13px] font-bold shrink-0">
           {initial}
         </div>
-        <span className="hidden lg:block text-[14px] font-semibold text-white truncate">
+        <span className="hidden lg:block text-sm font-semibold text-white truncate">
           {displayName}
         </span>
       </div>

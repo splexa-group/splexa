@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import type { LucideIcon } from "lucide-react";
@@ -12,8 +11,7 @@ import {
   File,
   Settings,
   LogOut,
-  MoreVertical,
-  ChevronLeft,
+  HelpCircle,
   ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -42,10 +40,20 @@ function NavItem({
   active: boolean;
 }) {
   return (
-    <Link href={href} className={cn("nav-item", active && "nav-item-active")}>
+    <Link
+      href={href}
+      className={cn("nav-item", active && "nav-item--active")}
+    >
       <Icon icon={icon} size="sm" />
       <span className="hidden lg:block truncate">{label}</span>
-      <Icon icon={ChevronRight} size="sm" className={cn("hidden lg:block ml-auto shrink-0", active ? "text-white" : "text-white/30")} />
+      <Icon
+        icon={ChevronRight}
+        size="sm"
+        className={cn(
+          "hidden lg:block ml-auto shrink-0",
+          active ? "text-white" : "text-white/30"
+        )}
+      />
     </Link>
   );
 }
@@ -56,32 +64,10 @@ export function Sidebar() {
   const user = useAuthStore((s) => s.user);
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
-  const [popoverOpen, setPopoverOpen] = useState(false);
-  const popoverRef = useRef<HTMLDivElement>(null);
-
   const displayName = user
     ? (user.orgName ?? `${user.firstName} ${user.lastName}`)
     : "";
   const initial = displayName.charAt(0).toUpperCase();
-
-  const avatarInitials = user
-    ? `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-    : "";
-
-  useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (
-        popoverRef.current &&
-        !popoverRef.current.contains(e.target as Node)
-      ) {
-        setPopoverOpen(false);
-      }
-    }
-    if (popoverOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [popoverOpen]);
 
   async function handleLogout() {
     try {
@@ -94,19 +80,24 @@ export function Sidebar() {
 
   return (
     <aside className="hidden md:flex flex-col md:w-16 lg:w-[250px] bg-surface-dark shrink-0 h-screen overflow-hidden">
-      {/* Header */}
-      <div className="h-[58px] flex items-center px-3 gap-3 shrink-0">
-        <div className="w-7.5 h-7.5 rounded-md bg-brand-light/25 flex items-center justify-center text-brand-light text-sm font-bold shrink-0">
+      {/* Header — identity */}
+      <div className="flex items-center gap-3 px-3 py-3 shrink-0">
+        <div className="w-8 h-8 rounded-md bg-brand-light/20 flex items-center justify-center text-brand-light text-[13px] font-bold shrink-0">
           {initial}
         </div>
-        <span className="hidden lg:block text-[15px] font-medium text-white truncate">
-          {displayName}
-        </span>
+        <div className="hidden lg:flex flex-col min-w-0">
+          <span className="text-[13px] font-semibold text-white truncate leading-tight">
+            {displayName}
+          </span>
+          <span className="text-[11px] text-white/40 truncate leading-tight">
+            {user?.email}
+          </span>
+        </div>
       </div>
 
       <div className="h-px bg-white/15 shrink-0" />
 
-      {/* Top nav group */}
+      {/* Nav */}
       <nav className="flex flex-col gap-1 px-2 pt-3 flex-1 overflow-y-auto">
         {TOP_NAV.map(({ href, icon, label }) => (
           <NavItem
@@ -119,61 +110,24 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* Bottom nav group + user */}
-      <div className="px-2 pb-2 flex flex-col gap-1">
-        {/* User section */}
-        <div className="relative mt-1" ref={popoverRef}>
-          {/* Popover */}
-          {popoverOpen && (
-            <div className="absolute bottom-full mb-2 left-0 right-0 bg-card border border-line rounded-lg shadow-lg p-3 z-50">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-white text-[11px] font-semibold shrink-0">
-                  {avatarInitials}
-                </div>
-                <div className="min-w-0 hidden lg:block">
-                  <p className="text-[12px] font-medium text-dark truncate">
-                    {user?.firstName} {user?.lastName}
-                  </p>
-                  <p className="text-[11px] text-secondary truncate">
-                    {user?.email}
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="flex items-center gap-2 w-full px-2 py-1.5 rounded-md text-[12px] text-negative hover:bg-negative-muted transition-colors"
-              >
-                <Icon icon={LogOut} size="xs" />
-                Log out
-              </button>
-            </div>
-          )}
-
-          {/* User row trigger */}
-          <button
-            type="button"
-            onClick={() => setPopoverOpen((v) => !v)}
-            className="flex items-center gap-2 w-full rounded-lg px-2 py-2 hover:bg-white/5 transition-colors border-t border-white/[0.07] mt-1"
-          >
-            <div className="w-[30px] h-[30px] rounded-full bg-brand flex items-center justify-center text-white text-[11px] font-semibold shrink-0">
-              {avatarInitials}
-            </div>
-            <div className="hidden lg:flex flex-col items-start min-w-0 flex-1">
-              <span className="text-[12px] font-medium text-white truncate w-full text-left">
-                {user?.firstName} {user?.lastName}
-              </span>
-              <span className="text-[10px] text-white/40 truncate w-full text-left">
-                {user?.email}
-              </span>
-            </div>
-            <Icon
-              icon={MoreVertical}
-              size="xs"
-              className="hidden lg:block text-white/30 shrink-0"
-            />
-          </button>
-        </div>
+      {/* Bottom actions */}
+      <div className="px-2 pb-3 pt-2 flex flex-col gap-1 border-t border-white/10">
+        <button
+          type="button"
+          className="nav-item w-full text-left"
+          onClick={() => window.open("mailto:support@splexa.com")}
+        >
+          <Icon icon={HelpCircle} size="sm" />
+          <span className="hidden lg:block truncate">Support</span>
+        </button>
+        <button
+          type="button"
+          className="nav-item w-full text-left"
+          onClick={handleLogout}
+        >
+          <Icon icon={LogOut} size="sm" />
+          <span className="hidden lg:block truncate">Log out</span>
+        </button>
       </div>
     </aside>
   );

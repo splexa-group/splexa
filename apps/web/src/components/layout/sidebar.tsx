@@ -109,7 +109,7 @@ export function Sidebar() {
             href={href}
             icon={icon}
             label={label}
-            active={pathname.startsWith(href)}
+            active={pathname === href || pathname.startsWith(href + '/')}
           />
         ))}
       </nav>
@@ -122,7 +122,7 @@ export function Sidebar() {
             href={href}
             icon={icon}
             label={label}
-            active={pathname.startsWith(href)}
+            active={pathname === href || pathname.startsWith(href + '/')}
           />
         ))}
 
@@ -130,7 +130,7 @@ export function Sidebar() {
         <div className="relative mt-1" ref={popoverRef}>
           {/* Popover */}
           {popoverOpen && (
-            <div className="absolute bottom-full mb-2 left-0 right-0 lg:right-auto lg:w-[196px] bg-card border border-line rounded-lg shadow-lg p-3 z-50">
+            <div className="absolute bottom-full mb-2 left-0 right-0 bg-card border border-line rounded-lg shadow-lg p-3 z-50">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-8 h-8 rounded-full bg-brand flex items-center justify-center text-white text-[11px] font-semibold shrink-0">
                   {avatarInitials}
@@ -157,7 +157,7 @@ export function Sidebar() {
           <button
             type="button"
             onClick={() => setPopoverOpen((v) => !v)}
-            className="flex items-center gap-2 w-full rounded-lg px-2 py-2 hover:bg-white/5 transition-colors border-t border-white/[0.07] pt-3 mt-1"
+            className="flex items-center gap-2 w-full rounded-lg px-2 py-2 hover:bg-white/5 transition-colors border-t border-white/[0.07] mt-1"
           >
             <div className="w-[30px] h-[30px] rounded-full bg-brand flex items-center justify-center text-white text-[11px] font-semibold shrink-0">
               {avatarInitials}

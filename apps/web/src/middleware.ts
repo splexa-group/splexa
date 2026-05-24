@@ -7,12 +7,12 @@ const PROTECTED_PREFIXES = [
   '/calendar',
   '/documents',
   '/settings',
-];
+] as const;
 
-const AUTH_ROUTE_PREFIXES = ['/login', '/signup'];
+const AUTH_ROUTE_PREFIXES = ['/login', '/signup'] as const;
 
 export function middleware(req: NextRequest) {
-  const token = req.cookies.get('access_token')?.value;
+  const token = req.cookies.get('access_token')?.value ?? null;
   const { pathname } = req.nextUrl;
 
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
@@ -26,18 +26,17 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', req.url));
   }
 
+  if (pathname === '/' && token) {
+    return NextResponse.redirect(new URL('/dashboard', req.url));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/cases/:path*',
-    '/clients/:path*',
-    '/calendar/:path*',
-    '/documents/:path*',
-    '/settings/:path*',
-    '/login',
-    '/signup',
+    ...PROTECTED_PREFIXES.map((route) => `${route}/:path*`),
+    ...AUTH_ROUTE_PREFIXES,
+    '/',
   ],
 };

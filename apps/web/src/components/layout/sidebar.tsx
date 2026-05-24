@@ -45,7 +45,7 @@ function NavItem({
     <Link href={href} className={cn("nav-item", active && "nav-item--active")}>
       <Icon icon={icon} size="sm" />
       <span className="hidden lg:block truncate">{label}</span>
-      <Icon icon={ChevronRight} size="sm" className="hidden lg:block ml-auto shrink-0 text-white/30" />
+      <Icon icon={ChevronRight} size="sm" className={cn("hidden lg:block ml-auto shrink-0", active ? "text-white" : "text-white/30")} />
     </Link>
   );
 }

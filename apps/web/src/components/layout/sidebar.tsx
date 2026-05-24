@@ -41,10 +41,7 @@ function NavItem({
   active: boolean;
 }) {
   return (
-    <Link
-      href={href}
-      className={cn("nav-item", active && "nav-item-active")}
-    >
+    <Link href={href} className={cn("nav-item", active && "nav-item-active")}>
       <Icon icon={icon} size="sm" />
       <span className="hidden lg:block truncate">{label}</span>
       <Icon
@@ -52,7 +49,7 @@ function NavItem({
         size="sm"
         className={cn(
           "hidden lg:block ml-auto shrink-0",
-          active ? "text-white" : "text-white/30"
+          active ? "text-white" : "text-white/30",
         )}
       />
     </Link>
@@ -109,37 +106,35 @@ export function Sidebar() {
         ))}
       </nav>
 
+      <div className="h-px bg-white/20 shrink-0" />
+
       {/* Bottom actions */}
-      <div className="flex items-center justify-around px-3 pb-4 pt-2">
-        <button
-          type="button"
-          title="Support"
-          onClick={() => window.open("mailto:support@splexa.com")}
-          className="p-2 rounded-lg text-white/40 hover:text-white/70 hover:bg-white/5 transition-colors"
-        >
-          <Icon icon={HelpCircle} size="sm" />
-        </button>
-        <button
-          type="button"
-          title="Book a demo"
-          className="p-2 rounded-lg text-white/40 hover:text-white/70 hover:bg-white/5 transition-colors"
-        >
-          <Icon icon={CalendarPlus} size="sm" />
-        </button>
-        <button
-          type="button"
-          title="Log out"
-          onClick={handleLogout}
-          className="p-2 rounded-lg text-white/40 hover:text-white/70 hover:bg-white/5 transition-colors"
-        >
-          <Icon icon={LogOut} size="sm" />
-        </button>
-        <span
-          title="Splexa"
-          className="p-2 text-white/20 select-none"
-        >
-          ⚖
-        </span>
+      <div className="flex items-center justify-between px-3 pb-4 pt-2">
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            title="Log out"
+            onClick={handleLogout}
+            className="p-2 rounded-lg text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
+          >
+            <Icon icon={LogOut} size="md" />
+          </button>
+          <button
+            type="button"
+            title="Support"
+            onClick={() => window.open("mailto:support@splexa.in")}
+            className="p-2 rounded-lg text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
+          >
+            <Icon icon={HelpCircle} size="md" />
+          </button>
+          <button
+            type="button"
+            title="Book a demo"
+            className="p-2 rounded-lg text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
+          >
+            <Icon icon={CalendarPlus} size="md" />
+          </button>
+        </div>
       </div>
     </aside>
   );

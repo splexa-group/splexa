@@ -43,6 +43,7 @@ describe("casesService.create with clientId", () => {
       casesService.create(
         {
           title: "Test",
+          description: "Test description",
           clientRole: "Petitioner" as never,
           clientId: "bad-id",
           status: "Active" as never,
@@ -59,6 +60,7 @@ describe("casesService.create with clientId", () => {
     const result = await casesService.create(
       {
         title: "Test",
+        description: "Test description",
         clientRole: "Petitioner" as never,
         clientId: "client-1",
         status: "Active" as never,
@@ -80,6 +82,7 @@ describe("casesService.create with newClient", () => {
     const result = await casesService.create(
       {
         title: "Test",
+        description: "Test description",
         clientRole: "Petitioner" as never,
         newClient: { fullName: "Suresh Nair", phone: "9999999999", type: "Individual" as never },
         status: "Active" as never,
@@ -101,6 +104,7 @@ describe("casesService.create with newClient", () => {
     const result = await casesService.create(
       {
         title: "Test",
+        description: "Test description",
         clientRole: "Petitioner" as never,
         newClient: { fullName: "Suresh Nair", phone: "9999999999", type: "Individual" as never },
         status: "Active" as never,

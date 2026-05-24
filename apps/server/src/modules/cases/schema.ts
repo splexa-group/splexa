@@ -43,11 +43,11 @@ export const createCaseSchema = z
     benchNumber: z.string().max(50).optional(),
     judgeName: z.string().max(200).optional(),
     judgeDesignation: z.string().max(200).optional(),
+    description: z.string().min(1),
     status: z.enum(CaseStatus).default(CaseStatus.Active),
     stage: z.enum(CaseStage).optional(),
     priority: z.enum(Priority).optional(),
     oppositeParties: z.array(oppositePartySchema).optional(),
-    notes: z.string().max(5000).optional(),
     tags: z.array(z.string().max(50)).optional(),
     assignedTo: z.string().uuid().optional(),
   })
@@ -87,9 +87,9 @@ export const updateCaseSchema = z
     judgeDesignation: z.string().max(200).optional(),
     status: z.enum(CaseStatus).optional(),
     stage: z.enum(CaseStage).optional(),
+    description: z.string().min(1).optional(),
     priority: z.enum(Priority).optional(),
     oppositeParties: z.array(oppositePartySchema).optional(),
-    notes: z.string().max(5000).optional(),
     tags: z.array(z.string().max(50)).optional(),
     assignedTo: z.string().uuid().nullable().optional(),
   })

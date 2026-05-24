@@ -16,6 +16,7 @@ model Organization {
   cases              Case[]
   hearings           Hearing[]
   importantDates ImportantDate[]
+  documents      Document[]
 
   @@map("organizations")
 }

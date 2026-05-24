@@ -13,6 +13,7 @@ export interface CreateCaseData {
   orgId: string;
   createdBy: string;
   title: string;
+  description: string;
   clientId: string;
   clientRole: PartyRole;
   caseNumber?: string;
@@ -29,7 +30,6 @@ export interface CreateCaseData {
   stage?: CaseStage;
   priority?: Priority;
   oppositeParties?: Prisma.InputJsonValue;
-  notes?: string;
   tags?: string[];
   assignedTo?: string | null;
 }

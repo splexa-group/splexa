@@ -91,6 +91,7 @@ export const casesRepository = {
       await tx.case.updateMany({ where: { id, orgId, deletedAt: null }, data: { deletedAt: now } });
       await tx.hearing.updateMany({ where: { caseId: id, orgId, deletedAt: null }, data: { deletedAt: now } });
       await tx.importantDate.updateMany({ where: { caseId: id, orgId, deletedAt: null }, data: { deletedAt: now } });
+      await tx.document.updateMany({ where: { caseId: id, orgId, deletedAt: null }, data: { deletedAt: now } });
     });
   },
 

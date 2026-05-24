@@ -7,8 +7,6 @@ import type {
   Priority,
 } from "../enums";
 import type { Client, ClientSummary } from "./client";
-import type { HearingSummary } from "./hearing";
-import type { ImportantDateSummary } from "./important-date";
 
 export interface OppositeParty {
   name: string;
@@ -50,8 +48,8 @@ export interface CaseDetail {
   status: CaseStatus;
   stage?: CaseStage | null;
   priority?: Priority | null;
+  description: string;
   oppositeParties?: OppositeParty[] | null;
-  notes?: string | null;
   tags?: string[] | null;
   nextHearingDate?: string | null;
   assignedTo?: string | null;
@@ -59,6 +57,4 @@ export interface CaseDetail {
   createdAt: string;
   updatedAt: string;
   client: Client;
-  hearings: HearingSummary[];
-  importantDates: ImportantDateSummary[];
 }

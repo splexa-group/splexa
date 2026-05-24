@@ -91,8 +91,8 @@ export const caseDetailSelect = {
   status: true,
   stage: true,
   priority: true,
+  description: true,
   oppositeParties: true,
-  notes: true,
   tags: true,
   nextHearingDate: true,
   assignedTo: true,
@@ -100,25 +100,19 @@ export const caseDetailSelect = {
   createdAt: true,
   updatedAt: true,
   client: { select: clientSelect },
-  hearings: {
-    where: { deletedAt: null },
-    orderBy: { date: "desc" as const },
-    take: 5,
-    select: hearingSummarySelect,
-  },
-  importantDates: {
-    where: { deletedAt: null },
-    orderBy: { date: "asc" as const },
-    select: {
-      id: true,
-      dateType: true,
-      date: true,
-      description: true,
-      sourceId: true,
-      createdAt: true,
-    },
-  },
 } satisfies Prisma.CaseSelect;
+
+export const documentSelect = {
+  id: true,
+  caseId: true,
+  orgId: true,
+  name: true,
+  mimeType: true,
+  size: true,
+  storageKey: true,
+  uploadedBy: true,
+  createdAt: true,
+} satisfies Prisma.DocumentSelect;
 
 export const hearingDetailSelect = {
   id: true,

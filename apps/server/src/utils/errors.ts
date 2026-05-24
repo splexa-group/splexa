@@ -104,4 +104,7 @@ export const Errors = {
       ErrorCode.IMPORTANT_DATE_NOT_FOUND,
       "Important date not found.",
     ),
+
+  documentNotFound: () =>
+    new AppError(404, ErrorCode.DOCUMENT_NOT_FOUND, "Document not found."),
 } as const;

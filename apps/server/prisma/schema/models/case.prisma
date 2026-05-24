@@ -26,8 +26,8 @@ model Case {
 
   oppositeParties Json? @map("opposite_parties")
 
-  notes String?
-  tags  String[]
+  description String   @db.Text
+  tags        String[]
 
   nextHearingDate DateTime? @map("next_hearing_date")
 
@@ -44,6 +44,7 @@ model Case {
   assignedUser   User?               @relation("CaseAssignment", fields: [assignedTo], references: [id])
   hearings       Hearing[]
   importantDates ImportantDate[]
+  documents      Document[]
 
   @@index([orgId])
   @@index([orgId, status])

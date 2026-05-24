@@ -38,4 +38,7 @@ export enum ErrorCode {
 
   // important dates
   IMPORTANT_DATE_NOT_FOUND = "IMPORTANT_DATE_NOT_FOUND",
+
+  // documents
+  DOCUMENT_NOT_FOUND = "DOCUMENT_NOT_FOUND",
 }

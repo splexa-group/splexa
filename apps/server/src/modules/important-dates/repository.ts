@@ -1,3 +1,5 @@
+import { ImportantDateType } from "@splexa-group/shared/enums";
+
 import { prisma } from "@/db/client";
 import { parseDate } from "@/utils/date";
 
@@ -23,6 +25,18 @@ export const importantDatesRepository = {
         description: data.description,
         notifyUserId: data.notifyUserId,
       },
+    });
+  },
+
+  async listForCase(caseId: string, orgId: string) {
+    return prisma.importantDate.findMany({
+      where: {
+        caseId,
+        orgId,
+        deletedAt: null,
+        dateType: { not: ImportantDateType.HearingDate },
+      },
+      orderBy: { date: "asc" },
     });
   },
 

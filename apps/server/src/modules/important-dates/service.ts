@@ -6,6 +6,10 @@ import { importantDatesRepository } from "./repository";
 import type { CreateImportantDateInput, UpdateImportantDateInput } from "./schema";
 
 export const importantDatesService = {
+  async listForCase(caseId: string, orgId: string) {
+    return importantDatesRepository.listForCase(caseId, orgId);
+  },
+
   async create(caseId: string, input: CreateImportantDateInput, ctx: ServiceContext) {
     const parentCase = await casesRepository.findById(caseId, ctx.orgId);
     if (!parentCase) throw Errors.caseNotFound();

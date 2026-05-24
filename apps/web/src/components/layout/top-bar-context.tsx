@@ -2,10 +2,9 @@
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 
-export interface TopBarAction {
-  label: string;
-  href: string;
-}
+export type TopBarAction =
+  | { label: string; href: string; onClick?: never }
+  | { label: string; onClick: () => void; href?: never };
 
 export interface TopBarConfig {
   title: string;
@@ -37,5 +36,5 @@ export function usePageTitle(config: TopBarConfig) {
     setConfig(config);
     return () => setConfig(null);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config.title, config.resourceTitle, config.action?.href]);
+  }, [config.title, config.resourceTitle, config.action?.href, config.action?.onClick]);
 }

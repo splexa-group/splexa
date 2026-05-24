@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 interface LogoProps {
   size?: "sm" | "md" | "lg";
@@ -24,7 +25,13 @@ export function Logo({ size = "md", variant = "white", className }: LogoProps) {
 
   return (
     <div className={cn("flex items-center", wrap, color, className)}>
-      <span className={icon}>⚖</span>
+      <Image
+        src="/white-dark.svg"
+        alt="Splexa"
+        width={32}
+        height={32}
+        className={cn(icon)}
+      />
       <span className={text}>Splexa</span>
     </div>
   );

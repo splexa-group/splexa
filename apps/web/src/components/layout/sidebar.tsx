@@ -111,7 +111,7 @@ export function Sidebar() {
             <Icon icon={CalendarPlus} size="md" />
           </button>
         </div>
-        <Image src="/white-dark.svg" alt="Splexa" width={72} height={20} className="opacity-60" />
+        <Image src="/white-dark.svg" alt="Splexa" width={25} height={25} />
       </div>
     </aside>
   );

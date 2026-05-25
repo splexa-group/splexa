@@ -10,12 +10,7 @@ import { useAuthStore } from "@/store/auth-store";
 import { authApi } from "@/services/auth";
 import { NAV_ITEMS, type NavItem } from "./nav-items";
 
-function NavItem({
-  href,
-  icon,
-  label,
-  active,
-}: NavItem & { active: boolean }) {
+function NavLink({ href, icon, label, active }: NavItem & { active: boolean }) {
   return (
     <Link href={href} className={cn("nav-item", active && "nav-item-active")}>
       <Icon icon={icon} size="sm" />
@@ -72,7 +67,7 @@ export function Sidebar() {
       {/* Nav */}
       <nav className="flex flex-col gap-1 px-2 pt-3 flex-1 overflow-y-auto">
         {NAV_ITEMS.map(({ href, icon, label }) => (
-          <NavItem
+          <NavLink
             key={href}
             href={href}
             icon={icon}
@@ -111,7 +106,7 @@ export function Sidebar() {
             <Icon icon={CalendarPlus} size="md" />
           </button>
         </div>
-        <Image src="/white-dark.svg" alt="Splexa" width={25} height={25} />
+        <Image src="/white-dark.svg" alt="Splexa" width={22} height={22} />
       </div>
     </aside>
   );

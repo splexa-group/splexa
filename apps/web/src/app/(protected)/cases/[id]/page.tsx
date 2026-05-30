@@ -13,6 +13,8 @@ import { OppositePartySection } from '@/components/cases/sections/opposite-party
 import { PageFooter } from '@/components/ui/page-footer';
 import { Button } from '@/components/ui/button';
 import { ConfirmDeleteModal } from '@/components/ui/confirm-delete-modal';
+import { ClientTab } from '@/components/cases/client-tab';
+import { HearingsTab } from '@/components/cases/hearings-tab';
 import type { UpdateCaseInput } from '@/types/cases';
 
 export default function CaseEditPage({ params }: { params: Promise<{ id: string }> }) {
@@ -101,12 +103,8 @@ function CaseEditContent({ caseId }: { caseId: string }) {
                 <OppositePartySection />
               </>
             )}
-            {activeTab === 'client' && (
-              <div className="text-sm text-secondary p-4">Client tab — coming in next task.</div>
-            )}
-            {activeTab === 'hearings' && (
-              <div className="text-sm text-secondary p-4">Hearings tab — coming in next task.</div>
-            )}
+            {activeTab === 'client' && <ClientTab case_={case_} />}
+            {activeTab === 'hearings' && <HearingsTab caseId={caseId} />}
             {activeTab === 'documents' && (
               <div className="text-sm text-secondary p-4">Documents tab — coming in next task.</div>
             )}

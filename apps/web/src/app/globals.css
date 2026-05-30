@@ -49,6 +49,12 @@
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
+
+  /*  Priority  */
+  --color-priority-high:         var(--priority-high);
+  --color-priority-high-muted:   var(--priority-high-muted);
+  --color-priority-medium:       var(--priority-medium);
+  --color-priority-medium-muted: var(--priority-medium-muted);
 }
 
 :root {
@@ -88,6 +94,11 @@
   --positive: #16a34a;
   --positive-dark: #15803d;
   --positive-muted: #dcfce7;
+
+  --priority-high:         #ef4444;
+  --priority-high-muted:   #fee2e2;
+  --priority-medium:       #f97316;
+  --priority-medium-muted: #ffedd5;
 }
 
 *,

@@ -3,7 +3,7 @@
 import { useContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export function TopBar() {
             : "text-placeholder opacity-40 cursor-default",
         )}
       >
-        <Icon icon={ChevronLeft} size="sm" />
+        <Icon icon={ArrowLeft} size="sm" />
       </button>
 
       <h1 className="text-[15px] font-semibold text-dark flex-1 truncate">

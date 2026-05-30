@@ -30,7 +30,7 @@ const newClientSchema = z
 export const createCaseSchema = z
   .object({
     title: z.string().min(1).max(300),
-    clientRole: z.enum(PartyRole),
+    clientRole: z.enum(PartyRole).optional(),
     clientId: z.string().uuid().optional(),
     newClient: newClientSchema.optional(),
     caseNumber: z.string().max(100).optional(),
@@ -43,7 +43,7 @@ export const createCaseSchema = z
     benchNumber: z.string().max(50).optional(),
     judgeName: z.string().max(200).optional(),
     judgeDesignation: z.string().max(200).optional(),
-    description: z.string().min(1),
+    description: z.string().optional(),
     status: z.enum(CaseStatus).default(CaseStatus.Active),
     stage: z.enum(CaseStage).optional(),
     priority: z.enum(Priority).optional(),
@@ -53,19 +53,10 @@ export const createCaseSchema = z
   })
   .strict()
   .superRefine((data, ctx) => {
-    const hasClientId = !!data.clientId;
-    const hasNewClient = !!data.newClient;
-    if (hasClientId && hasNewClient) {
+    if (data.clientId && data.newClient) {
       ctx.addIssue({
         code: "custom",
         message: "Provide either clientId or newClient, not both",
-        path: ["clientId"],
-      });
-    }
-    if (!hasClientId && !hasNewClient) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Either clientId or newClient is required",
         path: ["clientId"],
       });
     }

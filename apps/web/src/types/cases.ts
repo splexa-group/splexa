@@ -29,16 +29,16 @@ export interface CaseSummary {
   priority: Priority | null;
   courtName: string | null;
   nextHearingDate: string | null;
-  clientRole: PartyRole;
-  client: ClientSummary;
+  clientRole: PartyRole | null;
+  client: ClientSummary | null;
 }
 
 export interface CaseDetail {
   id: string;
   orgId: string;
   title: string;
-  clientId: string;
-  clientRole: PartyRole;
+  clientId: string | null;
+  clientRole: PartyRole | null;
   caseNumber: string | null;
   caseType: CaseType | null;
   filingDate: string | null;
@@ -65,7 +65,7 @@ export interface CaseDetail {
     phone: string;
     type: string;
     email: string | null;
-  };
+  } | null;
 }
 
 export interface CaseListResponse {
@@ -86,7 +86,7 @@ export interface CaseFilters {
 
 export interface CreateCaseInput {
   title: string;
-  clientRole: PartyRole;
+  clientRole?: PartyRole;
   clientId?: string;
   newClient?: { fullName: string; phone: string; type: string };
   caseNumber?: string;

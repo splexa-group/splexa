@@ -37,7 +37,7 @@ export function CaseTableRow({ case_, onDelete }: CaseTableRowProps) {
       </div>
 
       {/* Client */}
-      <p className="text-sm text-label pr-4 truncate">{case_.client.fullName}</p>
+      <p className="text-sm text-label pr-4 truncate">{case_.client?.fullName ?? '—'}</p>
 
       {/* Court */}
       <p className="text-xs text-secondary pr-4 truncate">{case_.courtName ?? "—"}</p>
@@ -62,7 +62,7 @@ export function CaseTableRow({ case_, onDelete }: CaseTableRowProps) {
       <div onClick={(e) => e.stopPropagation()}>
         <CaseRowMenu
           onEdit={() => router.push(`/cases/${case_.id}`)}
-          onViewClient={() => router.push(`/clients/${case_.client.id}`)}
+          onViewClient={() => case_.client && router.push(`/clients/${case_.client.id}`)}
           onDelete={() => onDelete(case_)}
         />
       </div>

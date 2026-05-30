@@ -3,8 +3,8 @@ model Case {
   orgId        String     @map("org_id")
 
   title        String
-  clientId     String     @map("client_id")
-  clientRole   PartyRole  @map("client_role")
+  clientId     String?    @map("client_id")
+  clientRole   PartyRole? @map("client_role")
 
   caseNumber   String?    @map("case_number")
   caseType     CaseType?  @map("case_type")
@@ -26,7 +26,7 @@ model Case {
 
   oppositeParties Json? @map("opposite_parties")
 
-  description String   @db.Text
+  description String?  @db.Text
   tags        String[]
 
   nextHearingDate DateTime? @map("next_hearing_date")
@@ -39,7 +39,7 @@ model Case {
   deletedAt DateTime? @map("deleted_at")
 
   org            Organization        @relation(fields: [orgId], references: [id])
-  client         Client              @relation(fields: [clientId], references: [id])
+  client         Client?             @relation(fields: [clientId], references: [id])
   creator        User                @relation("CaseCreator", fields: [createdBy], references: [id])
   assignedUser   User?               @relation("CaseAssignment", fields: [assignedTo], references: [id])
   hearings       Hearing[]

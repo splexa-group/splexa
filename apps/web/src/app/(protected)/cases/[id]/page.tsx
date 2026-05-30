@@ -47,7 +47,7 @@ function CaseEditContent({ caseId }: { caseId: string }) {
     values: case_
       ? {
           title: case_.title,
-          clientRole: case_.clientRole,
+          clientRole: case_.clientRole ?? undefined,
           caseNumber: case_.caseNumber ?? '',
           caseType: case_.caseType ?? undefined,
           filingDate: case_.filingDate ? case_.filingDate.substring(0, 10) : '',
@@ -89,7 +89,7 @@ function CaseEditContent({ caseId }: { caseId: string }) {
             {case_.title}
           </h1>
           <p className="text-xs text-secondary mb-3">
-            {[case_.caseNumber, case_.client.fullName, case_.courtName]
+            {[case_.caseNumber, case_.client?.fullName, case_.courtName]
               .filter(Boolean)
               .join(' · ')}
           </p>

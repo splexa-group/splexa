@@ -3,7 +3,6 @@ import type { Prisma } from "@prisma/client";
 import { clientsRepository } from "@/modules/clients/repository";
 import type { ServiceContext } from "@/types/service-context";
 import { parseDate } from "@/utils/date";
-import { AppError } from "@/utils/errors";
 import { Errors } from "@/utils/errors";
 
 import { casesRepository } from "./repository";
@@ -27,8 +26,9 @@ export const casesService = {
       return { data: await casesRepository.create({ ...caseFields, clientId }) };
     }
 
-    // unreachable at runtime: superRefine above guarantees newClient when clientId is absent
-    if (!newClient) throw new AppError(422, "VALIDATION_ERROR", "newClient is required");
+    if (!newClient) {
+      return { data: await casesRepository.create(caseFields) };
+    }
 
     const existingWithPhone = await clientsRepository.findByPhone(newClient.phone, ctx.orgId);
     const data = await casesRepository.createWithNewClient({ ...caseFields, newClient });

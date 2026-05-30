@@ -15,6 +15,17 @@ interface ClientTabProps {
 export function ClientTab({ case_ }: ClientTabProps) {
   const { control } = useFormContext<UpdateCaseInput>();
 
+  if (!case_.client) {
+    return (
+      <div className="bg-card border border-line rounded-xl p-6 text-center">
+        <p className="text-sm font-medium text-label mb-1">No client linked</p>
+        <p className="text-xs text-placeholder">
+          Edit the case to link a client.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-card border border-line rounded-xl overflow-hidden">
       <div className="px-4 py-3 border-b border-line flex items-center justify-between">

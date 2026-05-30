@@ -58,7 +58,7 @@ export function CaseCard({ case_, onDelete: _ }: CaseCardProps) {
 
         {/* Client + court */}
         <p className="text-xs text-secondary mb-2 truncate">
-          {case_.client.fullName}
+          {case_.client?.fullName ?? '—'}
           {case_.courtName && ` · ${case_.courtName}`}
         </p>
 

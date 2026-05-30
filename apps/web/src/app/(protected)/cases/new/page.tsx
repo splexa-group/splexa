@@ -22,6 +22,7 @@ import {
   PRIORITY_OPTIONS,
 } from '@/lib/options';
 import type { CreateCaseInput } from '@/types/cases';
+import { toISODatetime } from '@/lib/utils';
 
 type NewClientMode = 'search' | 'new';
 
@@ -76,7 +77,10 @@ export default function NewCasePage() {
     } else {
       payload.clientId = undefined;
     }
-    const result = await createCase.mutateAsync(payload);
+    const result = await createCase.mutateAsync({
+      ...payload,
+      filingDate: toISODatetime(payload.filingDate),
+    });
     router.push(`/cases/${result.id}?tab=case`);
   }
 

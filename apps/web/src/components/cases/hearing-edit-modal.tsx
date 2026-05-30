@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { HEARING_PURPOSE_OPTIONS, HEARING_STATUS_OPTIONS } from "@/lib/options";
 import type { Hearing, UpdateHearingInput, CreateHearingInput } from "@/types/hearings";
 import { HearingStatus } from "@splexa-group/shared/enums";
+import { toISODatetime } from "@/lib/utils";
 
 interface HearingEditModalProps {
   open: boolean;
@@ -64,7 +65,11 @@ export function HearingEditModal({
       onClose={onClose}
       title={hearing ? "Edit Hearing" : "Add Hearing"}
     >
-      <form onSubmit={handleSubmit(onSave)} className="p-5 space-y-4">
+      <form onSubmit={handleSubmit((data) => onSave({
+        ...data,
+        date: toISODatetime(data.date) ?? data.date,
+        nextDate: toISODatetime(data.nextDate),
+      }))} className="p-5 space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <Field label="Hearing Date" type="date" required {...register("date")} />
           <Controller

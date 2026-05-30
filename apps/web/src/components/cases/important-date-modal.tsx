@@ -9,6 +9,7 @@ import { TextareaField } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { IMPORTANT_DATE_TYPE_OPTIONS } from "@/lib/options";
 import type { ImportantDate, CreateImportantDateInput, UpdateImportantDateInput } from "@/types/important-dates";
+import { toISODatetime } from "@/lib/utils";
 
 interface ImportantDateModalProps {
   open: boolean;
@@ -39,7 +40,10 @@ export function ImportantDateModal({ open, date, onClose, onSave, isPending }: I
 
   return (
     <Modal open={open} onClose={onClose} title={date ? "Edit Date" : "Add Important Date"}>
-      <form onSubmit={handleSubmit(onSave)} className="p-5 space-y-4">
+      <form onSubmit={handleSubmit((data) => onSave({
+        ...data,
+        date: toISODatetime(data.date) ?? data.date,
+      }))} className="p-5 space-y-4">
         <Controller
           name="dateType"
           control={control}

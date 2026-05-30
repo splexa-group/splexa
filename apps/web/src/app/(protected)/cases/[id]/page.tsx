@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
 import { usePageTitle } from '@/components/layout/top-bar-context';
 import { useCase, useUpdateCase, useDeleteCase } from '@/hooks/use-cases';
+import { toISODatetime } from '@/lib/utils';
 import { useActiveTab, CaseTabs } from '@/components/cases/case-tabs';
 import { CaseDetailsSection } from '@/components/cases/sections/case-details-section';
 import { CourtDetailsSection } from '@/components/cases/sections/court-details-section';
@@ -71,7 +72,10 @@ function CaseEditContent({ caseId }: { caseId: string }) {
   }
 
   async function handleSave(data: UpdateCaseInput) {
-    await updateCase.mutateAsync(data);
+    await updateCase.mutateAsync({
+      ...data,
+      filingDate: toISODatetime(data.filingDate),
+    });
   }
 
   const showSaveFooter = activeTab === 'case' || activeTab === 'client';

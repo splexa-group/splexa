@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCases, useDeleteCase } from "@/hooks/use-cases";
@@ -18,8 +17,7 @@ const STATUS_TABS: { label: string; value: CaseStatus | "All" }[] = [
   { label: "Disposed", value: CaseStatus.Disposed },
 ];
 
-export function CaseList() {
-  const router = useRouter();
+export function CaseList({ onAdd }: { onAdd?: () => void }) {
   const [search, setSearch] = useState("");
   const [statusTab, setStatusTab] = useState<CaseStatus | "All">("All");
   const [toDelete, setToDelete] = useState<CaseSummary | null>(null);
@@ -77,7 +75,7 @@ export function CaseList() {
       {/* Desktop table */}
       <div className="hidden md:block flex-1 overflow-y-auto px-6">
         {!isLoading && cases.length === 0 ? (
-          <EmptyState onAdd={() => router.push("/cases/new")} />
+          <EmptyState onAdd={onAdd} />
         ) : (
           <div className="bg-card border border-line rounded-xl overflow-hidden">
             {/* Column headers */}
@@ -98,7 +96,7 @@ export function CaseList() {
       {/* Mobile cards */}
       <div className="md:hidden flex-1 overflow-y-auto px-4 pb-24 space-y-2">
         {!isLoading && cases.length === 0 ? (
-          <EmptyState onAdd={() => router.push("/cases/new")} />
+          <EmptyState onAdd={onAdd} />
         ) : (
           cases.map((c) => (
             <CaseCard key={c.id} case_={c} onDelete={setToDelete} />
@@ -122,7 +120,7 @@ export function CaseList() {
   );
 }
 
-function EmptyState({ onAdd }: { onAdd: () => void }) {
+function EmptyState({ onAdd }: { onAdd?: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center">
       <p className="text-sm text-secondary mb-4">No cases yet.</p>

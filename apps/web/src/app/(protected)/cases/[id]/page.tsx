@@ -15,6 +15,8 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDeleteModal } from '@/components/ui/confirm-delete-modal';
 import { ClientTab } from '@/components/cases/client-tab';
 import { HearingsTab } from '@/components/cases/hearings-tab';
+import { DocumentsTab } from '@/components/cases/documents-tab';
+import { ImportantDatesTab } from '@/components/cases/important-dates-tab';
 import type { UpdateCaseInput } from '@/types/cases';
 
 export default function CaseEditPage({ params }: { params: Promise<{ id: string }> }) {
@@ -105,12 +107,8 @@ function CaseEditContent({ caseId }: { caseId: string }) {
             )}
             {activeTab === 'client' && <ClientTab case_={case_} />}
             {activeTab === 'hearings' && <HearingsTab caseId={caseId} />}
-            {activeTab === 'documents' && (
-              <div className="text-sm text-secondary p-4">Documents tab — coming in next task.</div>
-            )}
-            {activeTab === 'important-dates' && (
-              <div className="text-sm text-secondary p-4">Important Dates tab — coming in next task.</div>
-            )}
+            {activeTab === 'documents' && <DocumentsTab caseId={caseId} />}
+            {activeTab === 'important-dates' && <ImportantDatesTab caseId={caseId} />}
           </div>
         </div>
 

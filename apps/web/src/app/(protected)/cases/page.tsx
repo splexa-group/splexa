@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
-import { CaseList } from "@/components/cases/list/case-list";
+import { CasesTable } from "@/components/cases/cases-table";
 import { CreateCaseModal } from "@/components/cases/create-case-modal";
 
 export default function CasesPage() {
@@ -18,7 +18,7 @@ export default function CasesPage() {
 
   return (
     <>
-      <CaseList onAdd={openModal} />
+      <CasesTable onAdd={openModal} />
 
       {/* Modals */}
       <CreateCaseModal open={modalOpen} onClose={closeModal} />

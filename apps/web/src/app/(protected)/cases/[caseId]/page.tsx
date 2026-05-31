@@ -8,7 +8,11 @@ import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
 import { toISODatetime } from "@/lib/utils";
 import { CaseTabs } from "@/components/cases/case-tabs";
 import { useCaseActiveTab } from "@/hooks/use-active-tab";
-import { statusBadgeClass, hearingCountdown, formatFiledDate } from "@/components/cases/case-utils";
+import {
+  statusBadgeClass,
+  hearingCountdown,
+  formatFiledDate,
+} from "@/components/cases/case-utils";
 import { cn } from "@/lib/utils";
 import { CaseDetailsSection } from "@/components/cases/case-tab/case-details-section";
 import { CourtDetailsSection } from "@/components/cases/case-tab/court-details-section";
@@ -97,23 +101,30 @@ function CaseEditContent({ caseId }: { caseId: string }) {
             <h1 className="text-xl font-bold text-dark tracking-tight leading-tight">
               {case_.title}
             </h1>
-            <span className={cn(
-              "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium shrink-0 mt-0.5",
-              statusBadgeClass(case_.status),
-            )}>
+            <span
+              className={cn(
+                "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium shrink-0 mt-0.5",
+                statusBadgeClass(case_.status),
+              )}
+            >
               {case_.status}
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-3 text-xs text-secondary">
             {case_.caseNumber && <span>{case_.caseNumber}</span>}
-            {case_.caseNumber && (case_.courtName || case_.caseType) && <span className="text-line">·</span>}
-            {case_.courtName && <span>{case_.courtName}</span>}
-            {case_.courtName && case_.caseType && <span className="text-line">·</span>}
-            {case_.caseType && <span>{case_.caseType}</span>}
-            {(case_.caseNumber || case_.courtName || case_.caseType) && case_.filingDate && (
+            {case_.caseNumber && (case_.courtName || case_.caseType) && (
               <span className="text-line">·</span>
             )}
-            {case_.filingDate && <span>Filed {formatFiledDate(case_.filingDate)}</span>}
+            {case_.courtName && <span>{case_.courtName}</span>}
+            {case_.courtName && case_.caseType && (
+              <span className="text-line">·</span>
+            )}
+            {case_.caseType && <span>{case_.caseType}</span>}
+            {(case_.caseNumber || case_.courtName || case_.caseType) &&
+              case_.filingDate && <span className="text-line">·</span>}
+            {case_.filingDate && (
+              <span>Filed {formatFiledDate(case_.filingDate)}</span>
+            )}
             {(() => {
               const h = hearingCountdown(case_.nextHearingDate);
               if (!h) return null;
@@ -153,26 +164,17 @@ function CaseEditContent({ caseId }: { caseId: string }) {
         {/* Footer */}
         {showSaveFooter && (
           <PageFooter
-            left={
-              activeTab === "case" && (
-                <Button
-                  variant="negativeOutline"
-                  size="sm"
-                  onClick={() => setShowDelete(true)}
-                >
-                  Delete Case
-                </Button>
-              )
-            }
             right={
               <>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => router.push("/cases")}
-                >
-                  Cancel
-                </Button>
+                {activeTab === "case" && (
+                  <Button
+                    variant="negative"
+                    size="sm"
+                    onClick={() => setShowDelete(true)}
+                  >
+                    Delete Case
+                  </Button>
+                )}
                 <Button
                   size="sm"
                   loading={updateCase.isPending}
@@ -186,6 +188,7 @@ function CaseEditContent({ caseId }: { caseId: string }) {
         )}
       </div>
 
+      {/* modals */}
       <ConfirmDeleteModal
         open={showDelete}
         title="case"

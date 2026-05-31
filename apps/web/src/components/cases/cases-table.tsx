@@ -18,7 +18,7 @@ import {
   priorityBorderClass,
   statusBadgeClass,
   formatHearingDate,
-} from "../case-utils";
+} from "./case-utils";
 
 const PAGE_SIZE = 30;
 
@@ -34,7 +34,7 @@ const COLUMNS = [
 
 const COLUMN_WIDTHS = "200px 200px 1fr 130px 120px 120px 35px";
 
-export function CaseList({ onAdd }: { onAdd?: () => void }) {
+export function CasesTable({ onAdd }: { onAdd?: () => void }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");

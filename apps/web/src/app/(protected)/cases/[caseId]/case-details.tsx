@@ -4,7 +4,7 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
-import { CaseTabs } from "@/components/cases/case-tabs";
+import { CaseTabs } from "@/app/(protected)/cases/[caseId]/case-tabs";
 import { useCaseActiveTab } from "@/hooks/use-active-tab";
 import { CaseDetailsSection } from "@/components/cases/case-tab/case-details-section";
 import { CourtDetailsSection } from "@/components/cases/case-tab/court-details-section";
@@ -54,9 +54,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
   return (
     <FormProvider {...methods}>
       <div className="flex flex-col h-full overflow-hidden">
-        {/* Header */}
         <CaseTabs caseId={caseId} />
-        {/* <div className="px-6 pt-4 pb-0 bg-card border-b border-line flex-shrink-0"></div> */}
 
         {/* Tab body */}
         <div className="flex-1 overflow-y-auto bg-page">
@@ -81,7 +79,6 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
         </div>
 
         {/* Footer */}
-
         <PageFooter
           right={
             <>

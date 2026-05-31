@@ -33,7 +33,7 @@ const COLUMNS = [
   "",
 ];
 
-const COLUMN_WIDTHS = "1fr 200px 140px 130px 70px 110px 36px";
+const COLUMN_WIDTHS = "200px 200px 1fr 130px 120px 120px 35px";
 
 export function CaseList({ onAdd }: { onAdd?: () => void }) {
   const router = useRouter();

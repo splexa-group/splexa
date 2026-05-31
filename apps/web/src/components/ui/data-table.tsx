@@ -57,7 +57,7 @@ export function DataTable({
               {columns.map((col, i) => (
                 <div
                   key={i}
-                  className="text-[11.5px] font-semibold uppercase tracking-widest text-secondary"
+                  className="text-xs font-semibold uppercase tracking-widest text-secondary"
                 >
                   {col}
                 </div>

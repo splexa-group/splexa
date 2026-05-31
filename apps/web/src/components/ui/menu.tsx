@@ -24,10 +24,10 @@ export function Menu({ items, trigger }: MenuProps) {
         {trigger ?? (
           <button
             type="button"
-            className="p-1.5 rounded-md text-placeholder hover:text-secondary hover:bg-subtle transition-colors outline-none"
+            className="p-1.5 rounded-md text-secondary hover:text-label hover:bg-subtle transition-colors outline-none"
             aria-label="Actions"
           >
-            <MoreHorizontal className="size-4" />
+            <MoreHorizontal color="currentColor" className="size-4" />
           </button>
         )}
       </DropdownMenu.Trigger>

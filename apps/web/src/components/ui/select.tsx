@@ -2,7 +2,7 @@
 
 import { useId } from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, XIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface SelectOption {
@@ -14,6 +14,7 @@ export interface SelectProps {
   options: SelectOption[];
   value?: string;
   onChange?: (value: string) => void;
+  onClear?: () => void;
   placeholder?: string;
   disabled?: boolean;
   className?: string;
@@ -23,32 +24,51 @@ function Select({
   options,
   value,
   onChange,
+  onClear,
   placeholder = "Select...",
   disabled,
   className,
 }: SelectProps) {
+  const showClear = !!(value && onClear);
+
   return (
-    <SelectPrimitive.Root
-      value={value}
-      onValueChange={onChange}
-      disabled={disabled}
-    >
-      <SelectPrimitive.Trigger
-        className={cn(
-          "flex w-full items-center justify-between rounded-md border border-line bg-card px-3 py-[9px] text-sm text-dark transition-colors [&>span]:line-clamp-1",
-          "focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20",
-          "data-[placeholder]:text-placeholder",
-          "disabled:bg-subtle disabled:text-disabled disabled:cursor-not-allowed",
-          className,
-        )}
+    <div className="relative">
+      <SelectPrimitive.Root
+        value={value}
+        onValueChange={onChange}
+        disabled={disabled}
       >
-        <SelectPrimitive.Value placeholder={placeholder} />
-        <SelectPrimitive.Icon asChild>
-          <ChevronDownIcon className="size-4 text-placeholder shrink-0" />
-        </SelectPrimitive.Icon>
-      </SelectPrimitive.Trigger>
-      <SelectDropdown options={options} />
-    </SelectPrimitive.Root>
+        <SelectPrimitive.Trigger
+          className={cn(
+            "flex w-full items-center justify-between rounded-md border border-line bg-card px-3 py-[9px] text-sm text-dark transition-colors [&>span]:line-clamp-1",
+            "focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20",
+            "data-[placeholder]:text-placeholder",
+            "disabled:bg-subtle disabled:text-disabled disabled:cursor-not-allowed",
+            showClear && "pr-9",
+            className,
+          )}
+        >
+          <SelectPrimitive.Value placeholder={placeholder} />
+          {!showClear && (
+            <SelectPrimitive.Icon asChild>
+              <ChevronDownIcon className="size-4 text-placeholder shrink-0" />
+            </SelectPrimitive.Icon>
+          )}
+        </SelectPrimitive.Trigger>
+        <SelectDropdown options={options} />
+      </SelectPrimitive.Root>
+      {showClear && (
+        <button
+          type="button"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={onClear}
+          className="absolute right-3 top-1/2 -translate-y-1/2 text-placeholder hover:text-secondary transition-colors"
+          aria-label="Clear"
+        >
+          <XIcon className="size-4" />
+        </button>
+      )}
+    </div>
   );
 }
 

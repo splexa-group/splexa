@@ -18,9 +18,9 @@ export function middleware(req: NextRequest) {
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
   const isAuthRoute = AUTH_ROUTE_PREFIXES.some((p) => pathname.startsWith(p));
 
-  if (isProtected && !token) {
-    return NextResponse.redirect(new URL('/login', req.url));
-  }
+  // if (isProtected && !token) {
+  //   return NextResponse.redirect(new URL('/login', req.url));
+  // }
 
   if (isAuthRoute && token) {
     return NextResponse.redirect(new URL('/dashboard', req.url));

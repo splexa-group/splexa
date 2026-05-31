@@ -80,6 +80,7 @@ export interface CaseFilters {
   status?: CaseStatus;
   priority?: Priority;
   courtType?: CourtType;
+  sortBy?: "hearingDate" | "createdAt";
   page?: number;
   limit?: number;
 }

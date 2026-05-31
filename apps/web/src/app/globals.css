@@ -15,12 +15,14 @@
   --color-surface-dark: var(--surface-dark);
 
   /*  Page surfaces  */
-  --color-page: var(--page);
   --color-card: var(--card);
+  --color-page: var(--page);
+  --color-surface: var(--surface);
   --color-subtle: var(--subtle);
 
-  /*  Text — slate 900 → 700 → 600 → 400 → 300  */
+  /*  Text — slate 900 → 800 → 700 → 600 → 400 → 300  */
   --color-dark: var(--text-dark);
+  --color-body: var(--text-body);
   --color-label: var(--text-label);
   --color-secondary: var(--text-secondary);
   --color-placeholder: var(--text-placeholder);
@@ -70,11 +72,13 @@
   --ring: var(--brand);
 
   /* NEUTRAL — stable across themes  */
-  --page: #f8fafc;
-  --card: #ffffff;
-  --subtle: #f1f5f9;
+  --card:    #ffffff;  /* pure white — cards, modals, inputs */
+  --page:    #f8fafc;  /* slate-50   — page background */
+  --surface: #f5f7fa;  /* slate-75   — sections inside cards, table row hover */
+  --subtle:  #f1f5f9;  /* slate-100  — column headers, sidebar active */
 
-  --text-dark: #0f172a; /* slate-900 — headings, strong text */
+  --text-dark: #0f172a;  /* slate-900 — headings, strong text */
+  --text-body: #1e293b;  /* slate-800 — table rows, primary data */
   --text-label: #334155; /* slate-700 — form labels, body copy */
   --text-secondary: #475569; /* slate-600 — captions, descriptions */
   --text-placeholder: #94a3b8; /* slate-400 — input placeholders */

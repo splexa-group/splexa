@@ -7,10 +7,22 @@ export function priorityStripeClass(priority: Priority | null | undefined): stri
   return "bg-transparent";
 }
 
+export function priorityBorderClass(priority: Priority | null | undefined): string {
+  if (priority === "High") return "border-l-2 border-l-priority-high";
+  if (priority === "Medium") return "border-l-2 border-l-priority-medium";
+  return "border-l-2 border-l-transparent";
+}
+
 export function statusDotClass(status: CaseStatus): string {
   if (status === "Active") return "bg-positive";
   if (status === "Stayed") return "bg-brand-light";
   return "bg-placeholder";
+}
+
+export function statusBadgeClass(status: CaseStatus): string {
+  if (status === "Active") return "bg-positive-muted text-positive";
+  if (status === "Stayed") return "bg-brand-soft text-brand";
+  return "bg-subtle text-secondary";
 }
 
 export function hearingDateColor(date: string | null): string {

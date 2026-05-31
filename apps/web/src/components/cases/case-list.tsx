@@ -1,108 +1,164 @@
 "use client";
 
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useCases, useDeleteCase } from "@/hooks/use-cases";
 import { ConfirmDeleteModal } from "@/components/ui/confirm-delete-modal";
-import { CaseTableRow } from "./case-table-row";
-import { CaseCard } from "./case-card";
-import type { CaseSummary } from "@/types/cases";
+import { Select } from "@/components/ui/select";
+import { Search } from "@/components/ui/search";
+import { FiltersBar } from "@/components/ui/filters-bar";
+import { DataTable } from "@/components/ui/data-table";
+import { Menu } from "@/components/ui/menu";
+import { Pencil, Trash2, User } from "lucide-react";
+import type { CaseSummary, CaseFilters } from "@/types/cases";
 import { CaseStatus } from "@splexa-group/shared/enums";
+import { CASE_STATUS_OPTIONS, CASE_SORT_OPTIONS } from "@/lib/options";
+import {
+  priorityBorderClass,
+  statusBadgeClass,
+  hearingDateColor,
+  formatHearingDate,
+} from "./case-utils";
 
-const STATUS_TABS: { label: string; value: CaseStatus | "All" }[] = [
-  { label: "All", value: "All" },
-  { label: "Active", value: CaseStatus.Active },
-  { label: "Stayed", value: CaseStatus.Stayed },
-  { label: "Disposed", value: CaseStatus.Disposed },
+const PAGE_SIZE = 30;
+
+const COLUMNS = [
+  "Case",
+  "Number",
+  "Client",
+  "Court",
+  "Status",
+  "Next Hearing",
+  "",
 ];
 
+const COLUMN_WIDTHS = "1fr 200px 140px 130px 70px 110px 36px";
+
 export function CaseList({ onAdd }: { onAdd?: () => void }) {
+  const router = useRouter();
   const [search, setSearch] = useState("");
-  const [statusTab, setStatusTab] = useState<CaseStatus | "All">("All");
+  const [status, setStatus] = useState("");
+  const [sortBy, setSortBy] = useState("");
+  const [page, setPage] = useState(1);
   const [toDelete, setToDelete] = useState<CaseSummary | null>(null);
 
-  const filters = {
+  const filters: CaseFilters = {
     search: search || undefined,
-    status: statusTab !== "All" ? statusTab : undefined,
+    status: (status as CaseStatus) || undefined,
+    sortBy: (sortBy as CaseFilters["sortBy"]) || undefined,
+    page,
+    limit: PAGE_SIZE,
   };
 
   const { data, isLoading } = useCases(filters);
   const deleteCase = useDeleteCase();
-
   const cases = data?.data ?? [];
+
+  const rows = cases.map((c) => ({
+    key: c.id,
+    onClick: () => router.push(`/cases/${c.id}`),
+    className: cn(
+      priorityBorderClass(c.priority),
+      (c.status === CaseStatus.Stayed || c.status === CaseStatus.Disposed) &&
+        "opacity-40",
+    ),
+    cells: [
+      <p key="title" className="text-sm text-body truncate pr-4">
+        {c.title}
+      </p>,
+
+      <p key="number" className="text-sm text-body pr-4 truncate">
+        {c.caseNumber ?? "No case number"}
+      </p>,
+
+      <p key="client" className="text-sm text-body pr-4 truncate">
+        {c.client?.fullName ?? "No client"}
+      </p>,
+
+      <p key="court" className="text-sm text-body pr-4 truncate">
+        {c.courtName ?? "No court"}
+      </p>,
+
+      <span
+        key="status"
+        className={cn(
+          "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium w-fit",
+          statusBadgeClass(c.status),
+        )}
+      >
+        {c.status}
+      </span>,
+
+      <span
+        key="hearing"
+        className={cn(
+          "text-xs font-semibold",
+          hearingDateColor(c.nextHearingDate),
+        )}
+      >
+        {formatHearingDate(c.nextHearingDate)}
+      </span>,
+
+      <div key="actions" onClick={(e) => e.stopPropagation()}>
+        <Menu
+          items={[
+            { label: "Edit", icon: Pencil, onClick: () => router.push(`/cases/${c.id}`) },
+            ...(c.client ? [{ label: "View client", icon: User, onClick: () => router.push(`/clients/${c.client!.id}`) }] : []),
+            { label: "Delete", icon: Trash2, onClick: () => setToDelete(c), danger: true },
+          ]}
+        />
+      </div>,
+    ],
+  }));
 
   return (
     <div className="flex flex-col h-full">
-      {/* Controls */}
-      <div className="px-4 md:px-6 pt-4 pb-0 space-y-3">
-        <div className="flex gap-2">
-          <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-3.5 text-placeholder" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search cases, clients, case numbers…"
-              className="w-full h-9 pl-9 pr-3 rounded-lg border border-line bg-card text-sm text-dark placeholder:text-placeholder focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
-            />
-          </div>
-        </div>
+      <FiltersBar columns="1fr 300px 300px">
+        <Search
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onClear={() => {
+            setSearch("");
+            setPage(1);
+          }}
+          placeholder="Search cases, clients, case numbers..."
+        />
+        <Select
+          options={CASE_STATUS_OPTIONS}
+          value={status}
+          onChange={setStatus}
+          onClear={() => {
+            setStatus("");
+            setPage(1);
+          }}
+          placeholder="Filter by status..."
+        />
+        <Select
+          options={CASE_SORT_OPTIONS}
+          value={sortBy}
+          onChange={setSortBy}
+          onClear={() => {
+            setSortBy("");
+            setPage(1);
+          }}
+          placeholder="Sort by..."
+        />
+      </FiltersBar>
 
-        {/* Status tabs */}
-        <div className="flex border-b border-line overflow-x-auto -mb-px">
-          {STATUS_TABS.map((tab) => (
-            <button
-              key={tab.value}
-              type="button"
-              onClick={() => setStatusTab(tab.value)}
-              className={cn(
-                "px-4 py-2 text-xs font-medium whitespace-nowrap border-b-2 -mb-px transition-colors",
-                statusTab === tab.value
-                  ? "border-dark text-dark font-bold"
-                  : "border-transparent text-placeholder hover:text-secondary",
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div className="px-4 md:px-6 py-2 text-xs text-placeholder">
-        {isLoading ? "Loading…" : `${data?.total ?? 0} cases · sorted by next hearing`}
-      </div>
-
-      {/* Desktop table */}
-      <div className="hidden md:block flex-1 overflow-y-auto px-6">
-        {!isLoading && cases.length === 0 ? (
-          <EmptyState onAdd={onAdd} />
-        ) : (
-          <div className="bg-card border border-line rounded-xl overflow-hidden">
-            {/* Column headers */}
-            <div className="grid px-4 py-2 bg-subtle border-b border-line grid-cols-[12px_1fr_140px_130px_70px_110px_36px]">
-              {["", "Case / Number", "Client", "Court", "Status", "Next Hearing", ""].map((h, i) => (
-                <span key={i} className="text-[10px] font-bold uppercase tracking-widest text-placeholder">
-                  {h}
-                </span>
-              ))}
-            </div>
-            {cases.map((c) => (
-              <CaseTableRow key={c.id} case_={c} onDelete={setToDelete} />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Mobile cards */}
-      <div className="md:hidden flex-1 overflow-y-auto px-4 pb-24 space-y-2">
-        {!isLoading && cases.length === 0 ? (
-          <EmptyState onAdd={onAdd} />
-        ) : (
-          cases.map((c) => (
-            <CaseCard key={c.id} case_={c} onDelete={setToDelete} />
-          ))
-        )}
-      </div>
+      <DataTable
+        columns={COLUMNS}
+        columnWidths={COLUMN_WIDTHS}
+        rows={rows}
+        isLoading={isLoading}
+        emptyStateText="No cases found."
+        emptyStateAction={
+          onAdd ? { label: "Add new case", onClick: onAdd } : undefined
+        }
+        page={page}
+        totalRows={data?.total ?? 0}
+        onPageChange={setPage}
+      />
 
       <ConfirmDeleteModal
         open={!!toDelete}
@@ -116,21 +172,6 @@ export function CaseList({ onAdd }: { onAdd?: () => void }) {
           setToDelete(null);
         }}
       />
-    </div>
-  );
-}
-
-function EmptyState({ onAdd }: { onAdd?: () => void }) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      <p className="text-sm text-secondary mb-4">No cases yet.</p>
-      <button
-        type="button"
-        onClick={onAdd}
-        className="text-sm font-semibold text-brand hover:underline"
-      >
-        Add your first case
-      </button>
     </div>
   );
 }

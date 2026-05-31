@@ -45,7 +45,7 @@ export const casesRepository = {
   },
 
   async list(orgId: string, query: ListCasesQuery) {
-    const { search, status, caseType, priority, courtType, clientId, page, limit } = query;
+    const { search, status, caseType, priority, courtType, clientId, sortBy, page, limit } = query;
     const where: Prisma.CaseWhereInput = {
       orgId,
       deletedAt: null,
@@ -70,7 +70,9 @@ export const casesRepository = {
       prisma.case.findMany({
         where,
         select: caseSummarySelect,
-        orderBy: [{ nextHearingDate: "asc" }, { updatedAt: "desc" }],
+        orderBy: sortBy === "createdAt"
+          ? [{ createdAt: "desc" }]
+          : [{ nextHearingDate: "asc" }, { updatedAt: "desc" }],
         skip: (page - 1) * limit,
         take: limit,
       }),

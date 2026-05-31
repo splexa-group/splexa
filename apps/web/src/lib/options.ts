@@ -45,3 +45,8 @@ export const CLIENT_TYPE_OPTIONS = toPascalOptions(ClientType);
 export const HEARING_PURPOSE_OPTIONS = toPascalOptions(HearingPurpose);
 export const HEARING_STATUS_OPTIONS = toPascalOptions(HearingStatus);
 export const IMPORTANT_DATE_TYPE_OPTIONS = toPascalOptions(ImportantDateType);
+
+export const CASE_SORT_OPTIONS = [
+  { value: "hearingDate", label: "Hearing date" },
+  { value: "createdAt", label: "Date created" },
+];

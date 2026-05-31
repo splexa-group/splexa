@@ -18,7 +18,7 @@ import { JudgeDetailsSection } from "@/components/cases/case-tab/judge-details-s
 import { OppositePartySection } from "@/components/cases/case-tab/opposite-party-section";
 import { PageFooter } from "@/components/layout/page-footer";
 import { Button } from "@/components/ui/button";
-import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete-modal";
+import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete";
 import { ClientTab } from "@/components/cases/client-tab/client-tab";
 import { HearingsTab } from "@/components/cases/hearings-tab/hearings-tab";
 import { DocumentsTab } from "@/components/cases/documents-tab/documents-tab";

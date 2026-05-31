@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
-import { CreateCaseModal } from "@/components/cases/create-case-modal";
+import { CreateCaseModal } from "@/components/ui/modals/create-case";
 
 export default function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false);

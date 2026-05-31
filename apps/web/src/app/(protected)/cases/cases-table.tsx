@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useCases, useDeleteCase } from "@/hooks/use-cases";
-import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete-modal";
+import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete";
 import { Select } from "@/components/ui/form/select";
 import { Search } from "@/components/ui/form/search";
 import { FiltersBar } from "@/components/ui/filters-bar";
@@ -18,7 +18,7 @@ import {
   priorityBorderClass,
   statusBadgeClass,
   formatHearingDate,
-} from "./case-utils";
+} from "../../../components/cases/case-utils";
 
 const PAGE_SIZE = 30;
 
@@ -53,6 +53,12 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
   const { data, isLoading } = useCases(filters);
   const deleteCase = useDeleteCase();
   const cases = data?.data ?? [];
+
+  const handleDelete = async () => {
+    if (!toDelete) return;
+    await deleteCase.mutateAsync(toDelete.id);
+    setToDelete(null);
+  };
 
   const rows = cases.map((c) => ({
     key: c.id,
@@ -176,11 +182,7 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
         entityName={toDelete?.title ?? ""}
         isPending={deleteCase.isPending}
         onCancel={() => setToDelete(null)}
-        onConfirm={async () => {
-          if (!toDelete) return;
-          await deleteCase.mutateAsync(toDelete.id);
-          setToDelete(null);
-        }}
+        onConfirm={handleDelete}
       />
     </div>
   );

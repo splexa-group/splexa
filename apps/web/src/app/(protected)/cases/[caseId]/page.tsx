@@ -10,17 +10,17 @@ import { CaseTabs } from "@/components/cases/case-tabs";
 import { useCaseActiveTab } from "@/hooks/use-active-tab";
 import { statusBadgeClass, hearingCountdown, formatFiledDate } from "@/components/cases/case-utils";
 import { cn } from "@/lib/utils";
-import { CaseDetailsSection } from "@/components/cases/tabs/case/case-details-section";
-import { CourtDetailsSection } from "@/components/cases/tabs/case/court-details-section";
-import { JudgeDetailsSection } from "@/components/cases/tabs/case/judge-details-section";
-import { OppositePartySection } from "@/components/cases/tabs/case/opposite-party-section";
+import { CaseDetailsSection } from "@/components/cases/case-tab/case-details-section";
+import { CourtDetailsSection } from "@/components/cases/case-tab/court-details-section";
+import { JudgeDetailsSection } from "@/components/cases/case-tab/judge-details-section";
+import { OppositePartySection } from "@/components/cases/case-tab/opposite-party-section";
 import { PageFooter } from "@/components/layout/page-footer";
 import { Button } from "@/components/ui/button";
 import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete-modal";
-import { ClientTab } from "@/components/cases/tabs/client/client-tab";
-import { HearingsTab } from "@/components/cases/tabs/hearings/hearings-tab";
-import { DocumentsTab } from "@/components/cases/tabs/documents/documents-tab";
-import { ImportantDatesTab } from "@/components/cases/tabs/important-dates/important-dates-tab";
+import { ClientTab } from "@/components/cases/client-tab/client-tab";
+import { HearingsTab } from "@/components/cases/hearings-tab/hearings-tab";
+import { DocumentsTab } from "@/components/cases/documents-tab/documents-tab";
+import { ImportantDatesTab } from "@/components/cases/important-dates/important-dates-tab";
 import type { UpdateCaseInput } from "@/types/cases";
 
 export default function CaseEditPage({

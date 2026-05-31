@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
-import { Modal } from "@/components/ui/modal";
-import { InputGroup } from "@/components/ui/input";
+import { Modal } from "@/components/ui/modals/modal";
+import { InputGroup } from "@/components/ui/form/input";
 import { Button } from "@/components/ui/button";
 import { useCreateCase } from "@/hooks/use-cases";
 

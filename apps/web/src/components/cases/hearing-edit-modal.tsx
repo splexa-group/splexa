@@ -2,13 +2,17 @@
 
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Modal } from "@/components/ui/modal";
-import { Field } from "@/components/ui/input";
-import { SelectGroup } from "@/components/ui/select";
-import { TextareaField } from "@/components/ui/textarea";
+import { Modal } from "@/components/ui/modals/modal";
+import { Field } from "@/components/ui/form/input";
+import { SelectGroup } from "@/components/ui/form/select";
+import { TextareaField } from "@/components/ui/form/textarea";
 import { Button } from "@/components/ui/button";
 import { HEARING_PURPOSE_OPTIONS, HEARING_STATUS_OPTIONS } from "@/lib/options";
-import type { Hearing, UpdateHearingInput, CreateHearingInput } from "@/types/hearings";
+import type {
+  Hearing,
+  UpdateHearingInput,
+  CreateHearingInput,
+} from "@/types/hearings";
 import { HearingStatus } from "@splexa-group/shared/enums";
 import { toISODatetime } from "@/lib/utils";
 
@@ -27,17 +31,18 @@ export function HearingEditModal({
   onSave,
   isPending,
 }: HearingEditModalProps) {
-  const { register, control, watch, handleSubmit, reset } = useForm<UpdateHearingInput>({
-    defaultValues: {
-      date: "",
-      purpose: undefined,
-      status: HearingStatus.Scheduled,
-      judgePresent: "",
-      notes: "",
-      nextDate: "",
-      adjournmentReason: "",
-    },
-  });
+  const { register, control, watch, handleSubmit, reset } =
+    useForm<UpdateHearingInput>({
+      defaultValues: {
+        date: "",
+        purpose: undefined,
+        status: HearingStatus.Scheduled,
+        judgePresent: "",
+        notes: "",
+        nextDate: "",
+        adjournmentReason: "",
+      },
+    });
 
   const status = watch("status");
 
@@ -65,13 +70,23 @@ export function HearingEditModal({
       onClose={onClose}
       title={hearing ? "Edit Hearing" : "Add Hearing"}
     >
-      <form onSubmit={handleSubmit((data) => onSave({
-        ...data,
-        date: toISODatetime(data.date) ?? data.date,
-        nextDate: toISODatetime(data.nextDate),
-      }))} className="p-5 space-y-4">
+      <form
+        onSubmit={handleSubmit((data) =>
+          onSave({
+            ...data,
+            date: toISODatetime(data.date) ?? data.date,
+            nextDate: toISODatetime(data.nextDate),
+          }),
+        )}
+        className="p-5 space-y-4"
+      >
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Hearing Date" type="date" required {...register("date")} />
+          <Field
+            label="Hearing Date"
+            type="date"
+            required
+            {...register("date")}
+          />
           <Controller
             name="purpose"
             control={control}
@@ -109,7 +124,10 @@ export function HearingEditModal({
         {status === HearingStatus.Adjourned && (
           <>
             <Field label="Next Date" type="date" {...register("nextDate")} />
-            <Field label="Adjournment Reason" {...register("adjournmentReason")} />
+            <Field
+              label="Adjournment Reason"
+              {...register("adjournmentReason")}
+            />
           </>
         )}
 

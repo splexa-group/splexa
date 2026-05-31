@@ -1,8 +1,8 @@
 "use client";
 
 import { Controller, useFormContext } from "react-hook-form";
-import { Field } from "@/components/ui/input";
-import { SelectGroup } from "@/components/ui/select";
+import { Field } from "@/components/ui/form/input";
+import { SelectGroup } from "@/components/ui/form/select";
 import { COURT_TYPE_OPTIONS } from "@/lib/options";
 import type { UpdateCaseInput } from "@/types/cases";
 

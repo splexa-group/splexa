@@ -1,26 +1,30 @@
-'use client';
+"use client";
 
-import { use, Suspense, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { FormProvider, useForm } from 'react-hook-form';
-import { usePageTitle } from '@/components/layout/top-bar-context';
-import { useCase, useUpdateCase, useDeleteCase } from '@/hooks/use-cases';
-import { toISODatetime } from '@/lib/utils';
-import { useActiveTab, CaseTabs } from '@/components/cases/case-tabs';
-import { CaseDetailsSection } from '@/components/cases/sections/case-details-section';
-import { CourtDetailsSection } from '@/components/cases/sections/court-details-section';
-import { JudgeDetailsSection } from '@/components/cases/sections/judge-details-section';
-import { OppositePartySection } from '@/components/cases/sections/opposite-party-section';
-import { PageFooter } from '@/components/ui/page-footer';
-import { Button } from '@/components/ui/button';
-import { ConfirmDeleteModal } from '@/components/ui/confirm-delete-modal';
-import { ClientTab } from '@/components/cases/client-tab';
-import { HearingsTab } from '@/components/cases/hearings-tab';
-import { DocumentsTab } from '@/components/cases/documents-tab';
-import { ImportantDatesTab } from '@/components/cases/important-dates-tab';
-import type { UpdateCaseInput } from '@/types/cases';
+import { use, Suspense, useState } from "react";
+import { useRouter } from "next/navigation";
+import { FormProvider, useForm } from "react-hook-form";
+import { usePageTitle } from "@/components/layout/top-bar-context";
+import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
+import { toISODatetime } from "@/lib/utils";
+import { useActiveTab, CaseTabs } from "@/components/cases/case-tabs";
+import { CaseDetailsSection } from "@/components/cases/sections/case-details-section";
+import { CourtDetailsSection } from "@/components/cases/sections/court-details-section";
+import { JudgeDetailsSection } from "@/components/cases/sections/judge-details-section";
+import { OppositePartySection } from "@/components/cases/sections/opposite-party-section";
+import { PageFooter } from "@/components/layout/page-footer";
+import { Button } from "@/components/ui/button";
+import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete-modal";
+import { ClientTab } from "@/components/cases/client-tab";
+import { HearingsTab } from "@/components/cases/hearings-tab";
+import { DocumentsTab } from "@/components/cases/documents-tab";
+import { ImportantDatesTab } from "@/components/cases/important-dates-tab";
+import type { UpdateCaseInput } from "@/types/cases";
 
-export default function CaseEditPage({ params }: { params: Promise<{ id: string }> }) {
+export default function CaseEditPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
   return (
     <Suspense>
@@ -39,8 +43,8 @@ function CaseEditContent({ caseId }: { caseId: string }) {
   const deleteCase = useDeleteCase();
 
   usePageTitle({
-    title: 'Cases',
-    resourceTitle: case_?.title ?? '…',
+    title: "Cases",
+    resourceTitle: case_?.title ?? "…",
   });
 
   const methods = useForm<UpdateCaseInput>({
@@ -48,21 +52,22 @@ function CaseEditContent({ caseId }: { caseId: string }) {
       ? {
           title: case_.title,
           clientRole: case_.clientRole ?? undefined,
-          caseNumber: case_.caseNumber ?? '',
+          caseNumber: case_.caseNumber ?? "",
           caseType: case_.caseType ?? undefined,
-          filingDate: case_.filingDate ? case_.filingDate.substring(0, 10) : '',
-          courtName: case_.courtName ?? '',
+          filingDate: case_.filingDate ? case_.filingDate.substring(0, 10) : "",
+          courtName: case_.courtName ?? "",
           courtType: case_.courtType ?? undefined,
-          courtState: case_.courtState ?? '',
-          courtCity: case_.courtCity ?? '',
-          benchNumber: case_.benchNumber ?? '',
-          judgeName: case_.judgeName ?? '',
-          judgeDesignation: case_.judgeDesignation ?? '',
+          courtState: case_.courtState ?? "",
+          courtCity: case_.courtCity ?? "",
+          benchNumber: case_.benchNumber ?? "",
+          judgeName: case_.judgeName ?? "",
+          judgeDesignation: case_.judgeDesignation ?? "",
           status: case_.status,
           stage: case_.stage ?? undefined,
           priority: case_.priority ?? undefined,
-          description: case_.description ?? '',
-          oppositeParties: (case_.oppositeParties as UpdateCaseInput['oppositeParties']) ?? [],
+          description: case_.description ?? "",
+          oppositeParties:
+            (case_.oppositeParties as UpdateCaseInput["oppositeParties"]) ?? [],
         }
       : undefined,
   });
@@ -78,7 +83,7 @@ function CaseEditContent({ caseId }: { caseId: string }) {
     });
   }
 
-  const showSaveFooter = activeTab === 'case' || activeTab === 'client';
+  const showSaveFooter = activeTab === "case" || activeTab === "client";
 
   return (
     <FormProvider {...methods}>
@@ -91,7 +96,7 @@ function CaseEditContent({ caseId }: { caseId: string }) {
           <p className="text-xs text-secondary mb-3">
             {[case_.caseNumber, case_.client?.fullName, case_.courtName]
               .filter(Boolean)
-              .join(' · ')}
+              .join(" · ")}
           </p>
           <CaseTabs caseId={caseId} />
         </div>
@@ -99,7 +104,7 @@ function CaseEditContent({ caseId }: { caseId: string }) {
         {/* Tab body */}
         <div className="flex-1 overflow-y-auto bg-page">
           <div className="p-6 space-y-4 max-w-4xl">
-            {activeTab === 'case' && (
+            {activeTab === "case" && (
               <>
                 <CaseDetailsSection />
                 <div className="grid md:grid-cols-2 gap-4">
@@ -109,10 +114,12 @@ function CaseEditContent({ caseId }: { caseId: string }) {
                 <OppositePartySection />
               </>
             )}
-            {activeTab === 'client' && <ClientTab case_={case_} />}
-            {activeTab === 'hearings' && <HearingsTab caseId={caseId} />}
-            {activeTab === 'documents' && <DocumentsTab caseId={caseId} />}
-            {activeTab === 'important-dates' && <ImportantDatesTab caseId={caseId} />}
+            {activeTab === "client" && <ClientTab case_={case_} />}
+            {activeTab === "hearings" && <HearingsTab caseId={caseId} />}
+            {activeTab === "documents" && <DocumentsTab caseId={caseId} />}
+            {activeTab === "important-dates" && (
+              <ImportantDatesTab caseId={caseId} />
+            )}
           </div>
         </div>
 
@@ -120,7 +127,7 @@ function CaseEditContent({ caseId }: { caseId: string }) {
         {showSaveFooter && (
           <PageFooter
             left={
-              activeTab === 'case' && (
+              activeTab === "case" && (
                 <Button
                   variant="negativeOutline"
                   size="sm"
@@ -132,7 +139,11 @@ function CaseEditContent({ caseId }: { caseId: string }) {
             }
             right={
               <>
-                <Button variant="secondary" size="sm" onClick={() => router.push('/cases')}>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => router.push("/cases")}
+                >
                   Cancel
                 </Button>
                 <Button
@@ -156,7 +167,7 @@ function CaseEditContent({ caseId }: { caseId: string }) {
         onCancel={() => setShowDelete(false)}
         onConfirm={async () => {
           await deleteCase.mutateAsync(caseId);
-          router.push('/cases');
+          router.push("/cases");
         }}
       />
     </FormProvider>

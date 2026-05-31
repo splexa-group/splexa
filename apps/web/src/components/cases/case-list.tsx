@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useCases, useDeleteCase } from "@/hooks/use-cases";
-import { ConfirmDeleteModal } from "@/components/ui/confirm-delete-modal";
-import { Select } from "@/components/ui/select";
-import { Search } from "@/components/ui/search";
+import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete-modal";
+import { Select } from "@/components/ui/form/select";
+import { Search } from "@/components/ui/form/search";
 import { FiltersBar } from "@/components/ui/filters-bar";
 import { DataTable } from "@/components/ui/data-table";
 import { Menu } from "@/components/ui/menu";
@@ -103,9 +103,26 @@ export function CaseList({ onAdd }: { onAdd?: () => void }) {
       <div key="actions" onClick={(e) => e.stopPropagation()}>
         <Menu
           items={[
-            { label: "Edit", icon: Pencil, onClick: () => router.push(`/cases/${c.id}`) },
-            ...(c.client ? [{ label: "View client", icon: User, onClick: () => router.push(`/clients/${c.client!.id}`) }] : []),
-            { label: "Delete", icon: Trash2, onClick: () => setToDelete(c), danger: true },
+            {
+              label: "Edit",
+              icon: Pencil,
+              onClick: () => router.push(`/cases/${c.id}`),
+            },
+            ...(c.client
+              ? [
+                  {
+                    label: "View client",
+                    icon: User,
+                    onClick: () => router.push(`/clients/${c.client!.id}`),
+                  },
+                ]
+              : []),
+            {
+              label: "Delete",
+              icon: Trash2,
+              onClick: () => setToDelete(c),
+              danger: true,
+            },
           ]}
         />
       </div>,

@@ -3,7 +3,7 @@
 import { Controller, useFormContext } from "react-hook-form";
 import Link from "next/link";
 import { Lock } from "lucide-react";
-import { SelectGroup } from "@/components/ui/select";
+import { SelectGroup } from "@/components/ui/form/select";
 import { PARTY_ROLE_OPTIONS } from "@/lib/options";
 import type { CaseDetail } from "@/types/cases";
 import type { UpdateCaseInput } from "@/types/cases";

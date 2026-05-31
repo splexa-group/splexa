@@ -2,14 +2,23 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { useHearings, useCreateHearing, useUpdateHearing, useDeleteHearing } from "@/hooks/use-hearings";
+import {
+  useHearings,
+  useCreateHearing,
+  useUpdateHearing,
+  useDeleteHearing,
+} from "@/hooks/use-hearings";
 import { HearingCard } from "./hearing-card";
 import { HearingEditModal } from "./hearing-edit-modal";
-import { ConfirmDeleteModal } from "@/components/ui/confirm-delete-modal";
-import { PageFooter } from "@/components/ui/page-footer";
+import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete-modal";
+import { PageFooter } from "@/components/layout/page-footer";
 import { Button } from "@/components/ui/button";
 import { HearingStatus } from "@splexa-group/shared/enums";
-import type { Hearing, CreateHearingInput, UpdateHearingInput } from "@/types/hearings";
+import type {
+  Hearing,
+  CreateHearingInput,
+  UpdateHearingInput,
+} from "@/types/hearings";
 
 interface HearingsTabProps {
   caseId: string;
@@ -41,7 +50,9 @@ export function HearingsTab({ caseId }: HearingsTabProps) {
         </div>
 
         {!isLoading && hearings.length === 0 && (
-          <p className="text-sm text-secondary text-center py-8">No hearings yet.</p>
+          <p className="text-sm text-secondary text-center py-8">
+            No hearings yet.
+          </p>
         )}
 
         {/* Timeline */}
@@ -78,7 +89,10 @@ export function HearingsTab({ caseId }: HearingsTabProps) {
           if (editHearing === "new") {
             await createHearing.mutateAsync(data as CreateHearingInput);
           } else if (editHearing) {
-            await updateHearing.mutateAsync({ id: editHearing.id, data: data as UpdateHearingInput });
+            await updateHearing.mutateAsync({
+              id: editHearing.id,
+              data: data as UpdateHearingInput,
+            });
           }
           setEditHearing(null);
         }}
@@ -87,7 +101,9 @@ export function HearingsTab({ caseId }: HearingsTabProps) {
       <ConfirmDeleteModal
         open={!!toDelete}
         title="hearing"
-        entityName={toDelete ? new Date(toDelete.date).toLocaleDateString("en-IN") : ""}
+        entityName={
+          toDelete ? new Date(toDelete.date).toLocaleDateString("en-IN") : ""
+        }
         isPending={deleteHearing.isPending}
         onCancel={() => setToDelete(null)}
         onConfirm={async () => {

@@ -3,8 +3,8 @@
 import { useForm, Controller } from "react-hook-form";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { InputGroup } from "@/components/ui/input";
-import { SelectGroup } from "@/components/ui/select";
+import { InputGroup } from "@/components/ui/form/input";
+import { SelectGroup } from "@/components/ui/form/select";
 import { DESIGNATION_OPTIONS } from "@/lib/options";
 
 export interface PersonalFormValues {

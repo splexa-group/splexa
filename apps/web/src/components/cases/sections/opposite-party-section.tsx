@@ -3,8 +3,8 @@
 import { useFieldArray, useFormContext, Controller } from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
 import { PartyRole } from "@splexa-group/shared/enums";
-import { Field } from "@/components/ui/input";
-import { SelectGroup } from "@/components/ui/select";
+import { Field } from "@/components/ui/form/input";
+import { SelectGroup } from "@/components/ui/form/select";
 import { PARTY_ROLE_OPTIONS } from "@/lib/options";
 import type { UpdateCaseInput } from "@/types/cases";
 
@@ -23,7 +23,14 @@ export function OppositePartySection() {
         </h3>
         <button
           type="button"
-          onClick={() => append({ name: "", role: PartyRole.Respondent, advocateName: "", advocatePhone: "" })}
+          onClick={() =>
+            append({
+              name: "",
+              role: PartyRole.Respondent,
+              advocateName: "",
+              advocatePhone: "",
+            })
+          }
           className="flex items-center gap-1 text-xs font-semibold text-brand hover:underline"
         >
           <Plus className="size-3" /> Add party
@@ -31,12 +38,19 @@ export function OppositePartySection() {
       </div>
       <div className="p-4 space-y-4">
         {fields.length === 0 && (
-          <p className="text-xs text-placeholder text-center py-2">No opposite parties added.</p>
+          <p className="text-xs text-placeholder text-center py-2">
+            No opposite parties added.
+          </p>
         )}
         {fields.map((field, index) => (
-          <div key={field.id} className="border border-line rounded-lg p-3 space-y-3">
+          <div
+            key={field.id}
+            className="border border-line rounded-lg p-3 space-y-3"
+          >
             <div className="flex justify-between items-center">
-              <span className="text-xs font-semibold text-secondary">Party {index + 1}</span>
+              <span className="text-xs font-semibold text-secondary">
+                Party {index + 1}
+              </span>
               <button
                 type="button"
                 onClick={() => remove(index)}
@@ -46,7 +60,11 @@ export function OppositePartySection() {
               </button>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Name" required {...register(`oppositeParties.${index}.name`)} />
+              <Field
+                label="Name"
+                required
+                {...register(`oppositeParties.${index}.name`)}
+              />
               <Controller
                 name={`oppositeParties.${index}.role`}
                 control={control}
@@ -60,8 +78,14 @@ export function OppositePartySection() {
                   />
                 )}
               />
-              <Field label="Advocate name" {...register(`oppositeParties.${index}.advocateName`)} />
-              <Field label="Advocate phone" {...register(`oppositeParties.${index}.advocatePhone`)} />
+              <Field
+                label="Advocate name"
+                {...register(`oppositeParties.${index}.advocateName`)}
+              />
+              <Field
+                label="Advocate phone"
+                {...register(`oppositeParties.${index}.advocatePhone`)}
+              />
             </div>
           </div>
         ))}

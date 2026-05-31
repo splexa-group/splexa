@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormContext } from "react-hook-form";
-import { Field } from "@/components/ui/input";
+import { Field } from "@/components/ui/form/input";
 import type { UpdateCaseInput } from "@/types/cases";
 
 export function JudgeDetailsSection() {

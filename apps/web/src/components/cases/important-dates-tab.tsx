@@ -11,12 +11,21 @@ import {
   useDeleteImportantDate,
 } from "@/hooks/use-important-dates";
 import { ImportantDateModal } from "./important-date-modal";
-import { ConfirmDeleteModal } from "@/components/ui/confirm-delete-modal";
-import { PageFooter } from "@/components/ui/page-footer";
+import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete-modal";
+import { PageFooter } from "@/components/layout/page-footer";
 import { Button } from "@/components/ui/button";
-import type { ImportantDate, CreateImportantDateInput, UpdateImportantDateInput } from "@/types/important-dates";
+import type {
+  ImportantDate,
+  CreateImportantDateInput,
+  UpdateImportantDateInput,
+} from "@/types/important-dates";
 
-const CRITICAL_TYPES = ["Limitation", "BailExpiry", "StayExpiry", "AppealDeadline"];
+const CRITICAL_TYPES = [
+  "Limitation",
+  "BailExpiry",
+  "StayExpiry",
+  "AppealDeadline",
+];
 
 interface ImportantDatesTabProps {
   caseId: string;
@@ -63,7 +72,9 @@ export function ImportantDatesTab({ caseId }: ImportantDatesTabProps) {
         </div>
 
         {!isLoading && dates.length === 0 && (
-          <p className="text-sm text-secondary text-center py-8">No important dates added yet.</p>
+          <p className="text-sm text-secondary text-center py-8">
+            No important dates added yet.
+          </p>
         )}
 
         {sorted.length > 0 && (
@@ -76,17 +87,26 @@ export function ImportantDatesTab({ caseId }: ImportantDatesTabProps) {
                   i < sorted.length - 1 && "border-b border-line",
                 )}
               >
-                <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap", badgeClass(d.dateType))}>
+                <span
+                  className={cn(
+                    "text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap",
+                    badgeClass(d.dateType),
+                  )}
+                >
                   {d.dateType.replace(/([A-Z])/g, " $1").trim()}
                 </span>
                 <div className="flex-1 min-w-0">
                   <p className={cn("text-sm font-semibold", dateColor(d.date))}>
                     {new Date(d.date).toLocaleDateString("en-IN", {
-                      day: "numeric", month: "long", year: "numeric",
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
                     })}
                   </p>
                   {d.description && (
-                    <p className="text-xs text-secondary truncate">{d.description}</p>
+                    <p className="text-xs text-secondary truncate">
+                      {d.description}
+                    </p>
                   )}
                 </div>
                 <DateRowMenu
@@ -116,7 +136,10 @@ export function ImportantDatesTab({ caseId }: ImportantDatesTabProps) {
           if (modal === "new") {
             await createDate.mutateAsync(data as CreateImportantDateInput);
           } else if (modal) {
-            await updateDate.mutateAsync({ dateId: modal.id, data: data as UpdateImportantDateInput });
+            await updateDate.mutateAsync({
+              dateId: modal.id,
+              data: data as UpdateImportantDateInput,
+            });
           }
           setModal(null);
         }}
@@ -138,13 +161,20 @@ export function ImportantDatesTab({ caseId }: ImportantDatesTabProps) {
   );
 }
 
-function DateRowMenu({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
+function DateRowMenu({
+  onEdit,
+  onDelete,
+}: {
+  onEdit: () => void;
+  onDelete: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     function handle(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target as Node))
+        setOpen(false);
     }
     document.addEventListener("mousedown", handle);
     return () => document.removeEventListener("mousedown", handle);
@@ -161,10 +191,24 @@ function DateRowMenu({ onEdit, onDelete }: { onEdit: () => void; onDelete: () =>
       </button>
       {open && (
         <div className="absolute right-0 top-7 z-30 w-36 bg-card border border-line rounded-lg shadow-md py-1">
-          <button type="button" onClick={() => { setOpen(false); onEdit(); }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-label hover:bg-subtle">
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              onEdit();
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2 text-xs text-label hover:bg-subtle"
+          >
             <Pencil className="size-3.5" /> Edit
           </button>
-          <button type="button" onClick={() => { setOpen(false); onDelete(); }} className="w-full flex items-center gap-2 px-3 py-2 text-xs text-negative hover:bg-negative-muted">
+          <button
+            type="button"
+            onClick={() => {
+              setOpen(false);
+              onDelete();
+            }}
+            className="w-full flex items-center gap-2 px-3 py-2 text-xs text-negative hover:bg-negative-muted"
+          >
             <Trash2 className="size-3.5" /> Delete
           </button>
         </div>

@@ -1,9 +1,9 @@
 "use client";
 
 import { Controller, useFormContext } from "react-hook-form";
-import { Field } from "@/components/ui/input";
-import { SelectGroup } from "@/components/ui/select";
-import { TextareaField } from "@/components/ui/textarea";
+import { Field } from "@/components/ui/form/input";
+import { SelectGroup } from "@/components/ui/form/select";
+import { TextareaField } from "@/components/ui/form/textarea";
 import {
   CASE_STAGE_OPTIONS,
   CASE_STATUS_OPTIONS,
@@ -13,7 +13,11 @@ import {
 import type { UpdateCaseInput } from "@/types/cases";
 
 export function CaseDetailsSection() {
-  const { register, control, formState: { errors } } = useFormContext<UpdateCaseInput>();
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<UpdateCaseInput>();
 
   return (
     <div className="bg-card border border-line rounded-xl overflow-hidden">

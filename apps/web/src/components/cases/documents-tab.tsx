@@ -1,6 +1,6 @@
 "use client";
 
-import { PageFooter } from "@/components/ui/page-footer";
+import { PageFooter } from "@/components/layout/page-footer";
 import { Button } from "@/components/ui/button";
 
 interface DocumentsTabProps {

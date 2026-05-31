@@ -1,15 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Modal } from "@/components/ui/modal";
 import { InputGroup } from "@/components/ui/input";
-import { DateInputGroup } from "@/components/ui/date-input";
 import { Button } from "@/components/ui/button";
 import { useCreateCase } from "@/hooks/use-cases";
-import { toISODatetime } from "@/lib/utils";
 
-interface CreateCaseModalProps {
+interface Props {
   open: boolean;
   onClose: () => void;
 }
@@ -17,30 +15,28 @@ interface CreateCaseModalProps {
 interface FormValues {
   title: string;
   caseNumber: string;
-  filingDate: string;
 }
 
-export function CreateCaseModal({ open, onClose }: CreateCaseModalProps) {
+export function CreateCaseModal({ open, onClose }: Props) {
   const router = useRouter();
   const createCase = useCreateCase();
 
   const {
     register,
     handleSubmit,
-    watch,
+    control,
     reset,
     formState: { errors },
   } = useForm<FormValues>({
-    defaultValues: { title: "", caseNumber: "", filingDate: "" },
+    defaultValues: { title: "", caseNumber: "" },
   });
 
-  const title = watch("title");
+  const title = useWatch({ control, name: "title" });
 
   async function onSubmit(data: FormValues) {
     const result = await createCase.mutateAsync({
       title: data.title.trim(),
       ...(data.caseNumber.trim() ? { caseNumber: data.caseNumber.trim() } : {}),
-      ...(data.filingDate ? { filingDate: toISODatetime(data.filingDate) } : {}),
     });
     reset();
     onClose();
@@ -53,31 +49,33 @@ export function CreateCaseModal({ open, onClose }: CreateCaseModalProps) {
   }
 
   return (
-    <Modal open={open} onClose={handleClose} title="New Case">
+    <Modal open={open} onClose={handleClose} title="Create New Case">
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="p-5 flex flex-col gap-3">
           <InputGroup
             label="Case Title"
             required
-            placeholder="e.g. Sharma v State of AP"
+            placeholder="Enter case title..."
             error={errors.title?.message}
             {...register("title", { required: "Case title is required" })}
           />
           <InputGroup
             label="Case Number"
-            placeholder="e.g. OS / 234 / 2024"
+            placeholder="Enter case number..."
             {...register("caseNumber")}
           />
-          <DateInputGroup
-            label="Filed Date"
-            {...register("filingDate")}
-          />
-          <p className="text-xs text-placeholder text-center pt-1">
-            Add client details, hearings, and documents after creating
+          <p className="text-xs text-placeholder text-left pt-1">
+            You can add detailed case information, client details, hearing
+            records, and supporting documents after creating the case.{" "}
           </p>
         </div>
         <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-line">
-          <Button type="button" variant="secondary" size="sm" onClick={handleClose}>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            onClick={handleClose}
+          >
             Cancel
           </Button>
           <Button

@@ -6,7 +6,7 @@ import { CaseTabs as Tabs } from "@/enums/case-tabs";
 import { useCaseActiveTab } from "@/hooks/use-active-tab";
 
 const TABS: { id: Tabs; label: string }[] = [
-  { id: Tabs.CASE, label: "Case" },
+  { id: Tabs.CASE, label: "Case Details" },
   { id: Tabs.CLIENT, label: "Client" },
   { id: Tabs.HEARINGS, label: "Hearings" },
   { id: Tabs.DOCUMENTS, label: "Documents" },
@@ -22,22 +22,24 @@ export function CaseTabs({ caseId }: Props) {
   const active = useCaseActiveTab();
 
   return (
-    <div className="flex overflow-x-auto border-b border-line -mb-px [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-      {TABS.map((tab) => (
-        <button
-          key={tab.id}
-          type="button"
-          onClick={() => router.push(`/cases/${caseId}?tab=${tab.id}`)}
-          className={cn(
-            "px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 -mb-px transition-colors",
-            active === tab.id
-              ? "border-dark text-dark font-bold"
-              : "border-transparent text-placeholder hover:text-secondary",
-          )}
-        >
-          {tab.label}
-        </button>
-      ))}
+    <div className="flex justify-center bg-card border-b border-line flex-shrink-0">
+      <div className="flex items-center gap-2 py-3">
+        {TABS.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => router.push(`/cases/${caseId}?tab=${tab.id}`)}
+            className={cn(
+              "rounded-md px-3 py-2 text-sm font-medium transition-all",
+              active === tab.id
+                ? "bg-brand-soft text-brand"
+                : "text-body hover:bg-subtle/80",
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

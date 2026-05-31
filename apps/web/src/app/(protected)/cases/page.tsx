@@ -5,7 +5,7 @@ import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { CasesTable } from "@/app/(protected)/cases/cases-table";
 import { CreateCaseModal } from "@/components/ui/modals/create-case";
 
-export default function CasesPage() {
+export default function Page() {
   const [modalOpen, setModalOpen] = useState(false);
 
   const openModal = useCallback(() => setModalOpen(true), []);

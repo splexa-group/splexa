@@ -9,13 +9,13 @@ import type { CaseDetail } from "@/types/cases";
 import type { UpdateCaseInput } from "@/types/cases";
 
 interface ClientTabProps {
-  case_: CaseDetail;
+  caseDetail: CaseDetail;
 }
 
-export function ClientTab({ case_ }: ClientTabProps) {
+export function ClientTab({ caseDetail }: ClientTabProps) {
   const { control } = useFormContext<UpdateCaseInput>();
 
-  if (!case_.client) {
+  if (!caseDetail.client) {
     return (
       <div className="bg-card border border-line rounded-xl p-6 text-center">
         <p className="text-sm font-medium text-label mb-1">No client linked</p>
@@ -33,7 +33,7 @@ export function ClientTab({ case_ }: ClientTabProps) {
           Client Info
         </h3>
         <Link
-          href={`/clients/${case_.clientId}`}
+          href={`/clients/${caseDetail.clientId}`}
           className="text-xs font-semibold text-brand hover:underline"
         >
           View full profile →
@@ -48,7 +48,7 @@ export function ClientTab({ case_ }: ClientTabProps) {
           <input
             readOnly
             disabled
-            value={case_.client.fullName}
+            value={caseDetail.client.fullName}
             className="w-full rounded-md border border-line bg-subtle px-3 py-[9px] text-sm text-secondary cursor-not-allowed"
           />
         </div>
@@ -61,7 +61,7 @@ export function ClientTab({ case_ }: ClientTabProps) {
           <input
             readOnly
             disabled
-            value={case_.client.type}
+            value={caseDetail.client.type}
             className="w-full rounded-md border border-line bg-subtle px-3 py-[9px] text-sm text-secondary cursor-not-allowed"
           />
         </div>
@@ -74,7 +74,7 @@ export function ClientTab({ case_ }: ClientTabProps) {
           <input
             readOnly
             disabled
-            value={case_.client.phone}
+            value={caseDetail.client.phone}
             className="w-full rounded-md border border-line bg-subtle px-3 py-[9px] text-sm text-secondary cursor-not-allowed"
           />
         </div>

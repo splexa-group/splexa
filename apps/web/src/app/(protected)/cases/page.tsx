@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState, useCallback } from 'react';
-import { usePageTitle } from '@/components/layout/top-bar-context';
-import { CaseList } from '@/components/cases/case-list';
-import { CreateCaseModal } from '@/components/cases/create-case-modal';
+import { useState, useCallback } from "react";
+import { usePageTitle } from "@/components/layout/top/top-bar-context";
+import { CaseList } from "@/components/cases/case-list";
+import { CreateCaseModal } from "@/components/cases/create-case-modal";
 
 export default function CasesPage() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -12,8 +12,8 @@ export default function CasesPage() {
   const closeModal = useCallback(() => setModalOpen(false), []);
 
   usePageTitle({
-    title: 'Cases',
-    action: { label: 'Add Case', onClick: openModal },
+    title: "Cases",
+    action: { label: "Add Case", onClick: openModal },
   });
 
   return (

@@ -3,7 +3,7 @@
 import { use, Suspense, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm } from "react-hook-form";
-import { usePageTitle } from "@/components/layout/top-bar-context";
+import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
 import { toISODatetime } from "@/lib/utils";
 import { useActiveTab, CaseTabs } from "@/components/cases/case-tabs";

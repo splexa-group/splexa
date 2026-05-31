@@ -62,23 +62,26 @@ export const createCaseSchema = z
     }
   });
 
+const emptyToUndefined = <T extends z.ZodTypeAny>(schema: T) =>
+  z.preprocess((v) => (v === "" ? undefined : v), schema);
+
 export const updateCaseSchema = z
   .object({
-    title: z.string().min(1).max(300).optional(),
+    title: emptyToUndefined(z.string().min(1).max(300)).optional(),
     clientRole: z.enum(PartyRole).optional(),
-    caseNumber: z.string().max(100).optional(),
+    caseNumber: emptyToUndefined(z.string().max(100)).optional(),
     caseType: z.enum(CaseType).optional(),
-    filingDate: z.string().datetime({ offset: true }).optional(),
-    courtName: z.string().max(200).optional(),
+    filingDate: emptyToUndefined(z.string().datetime({ offset: true })).optional(),
+    courtName: emptyToUndefined(z.string().max(200)).optional(),
     courtType: z.enum(CourtType).optional(),
-    courtState: z.string().max(100).optional(),
-    courtCity: z.string().max(100).optional(),
-    benchNumber: z.string().max(50).optional(),
-    judgeName: z.string().max(200).optional(),
-    judgeDesignation: z.string().max(200).optional(),
+    courtState: emptyToUndefined(z.string().max(100)).optional(),
+    courtCity: emptyToUndefined(z.string().max(100)).optional(),
+    benchNumber: emptyToUndefined(z.string().max(50)).optional(),
+    judgeName: emptyToUndefined(z.string().max(200)).optional(),
+    judgeDesignation: emptyToUndefined(z.string().max(200)).optional(),
     status: z.enum(CaseStatus).optional(),
     stage: z.enum(CaseStage).optional(),
-    description: z.string().min(1).optional(),
+    description: emptyToUndefined(z.string()).optional(),
     priority: z.enum(Priority).optional(),
     oppositeParties: z.array(oppositePartySchema).optional(),
     tags: z.array(z.string().max(50)).optional(),

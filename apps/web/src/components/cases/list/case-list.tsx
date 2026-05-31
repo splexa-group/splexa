@@ -18,7 +18,7 @@ import {
   priorityBorderClass,
   statusBadgeClass,
   formatHearingDate,
-} from "./case-utils";
+} from "../case-utils";
 
 const PAGE_SIZE = 30;
 

@@ -6,7 +6,10 @@ import { FormProvider, useForm } from "react-hook-form";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
 import { toISODatetime } from "@/lib/utils";
-import { useActiveTab, CaseTabs } from "@/components/cases/case-tabs";
+import { CaseTabs } from "@/components/cases/case-tabs";
+import { useCaseActiveTab } from "@/hooks/use-active-tab";
+import { statusBadgeClass, hearingCountdown, formatFiledDate } from "@/components/cases/case-utils";
+import { cn } from "@/lib/utils";
 import { CaseDetailsSection } from "@/components/cases/tabs/case/case-details-section";
 import { CourtDetailsSection } from "@/components/cases/tabs/case/court-details-section";
 import { JudgeDetailsSection } from "@/components/cases/tabs/case/judge-details-section";
@@ -35,7 +38,7 @@ export default function CaseEditPage({
 
 function CaseEditContent({ caseId }: { caseId: string }) {
   const router = useRouter();
-  const activeTab = useActiveTab();
+  const activeTab = useCaseActiveTab();
   const [showDelete, setShowDelete] = useState(false);
 
   const { data: case_, isLoading } = useCase(caseId);
@@ -90,14 +93,38 @@ function CaseEditContent({ caseId }: { caseId: string }) {
       <div className="flex flex-col h-full overflow-hidden">
         {/* Header */}
         <div className="px-6 pt-4 pb-0 bg-card border-b border-line flex-shrink-0">
-          <h1 className="text-xl font-extrabold text-dark tracking-tight leading-tight mb-1">
-            {case_.title}
-          </h1>
-          <p className="text-xs text-secondary mb-3">
-            {[case_.caseNumber, case_.client?.fullName, case_.courtName]
-              .filter(Boolean)
-              .join(" · ")}
-          </p>
+          <div className="flex items-start justify-between gap-3 mb-1">
+            <h1 className="text-xl font-bold text-dark tracking-tight leading-tight">
+              {case_.title}
+            </h1>
+            <span className={cn(
+              "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium shrink-0 mt-0.5",
+              statusBadgeClass(case_.status),
+            )}>
+              {case_.status}
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mb-3 text-xs text-secondary">
+            {case_.caseNumber && <span>{case_.caseNumber}</span>}
+            {case_.caseNumber && (case_.courtName || case_.caseType) && <span className="text-line">·</span>}
+            {case_.courtName && <span>{case_.courtName}</span>}
+            {case_.courtName && case_.caseType && <span className="text-line">·</span>}
+            {case_.caseType && <span>{case_.caseType}</span>}
+            {(case_.caseNumber || case_.courtName || case_.caseType) && case_.filingDate && (
+              <span className="text-line">·</span>
+            )}
+            {case_.filingDate && <span>Filed {formatFiledDate(case_.filingDate)}</span>}
+            {(() => {
+              const h = hearingCountdown(case_.nextHearingDate);
+              if (!h) return null;
+              return (
+                <>
+                  <span className="text-line">·</span>
+                  <span className={h.color}>{h.text}</span>
+                </>
+              );
+            })()}
+          </div>
           <CaseTabs caseId={caseId} />
         </div>
 

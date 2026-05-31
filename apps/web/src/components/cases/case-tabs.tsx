@@ -2,8 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
-
-export type CaseTab = "case" | "client" | "hearings" | "documents" | "important-dates";
+import type { CaseTab } from "@/hooks/use-active-tab";
 
 const TABS: { id: CaseTab; label: string }[] = [
   { id: "case", label: "Case" },
@@ -13,17 +12,17 @@ const TABS: { id: CaseTab; label: string }[] = [
   { id: "important-dates", label: "Important Dates" },
 ];
 
-interface CaseTabsProps {
+interface Props {
   caseId: string;
 }
 
-export function CaseTabs({ caseId }: CaseTabsProps) {
+export function CaseTabs({ caseId }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const active = (searchParams.get("tab") ?? "case") as CaseTab;
 
   return (
-    <div className="flex overflow-x-auto border-b border-line -mb-px">
+    <div className="flex overflow-x-auto border-b border-line -mb-px [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {TABS.map((tab) => (
         <button
           key={tab.id}
@@ -41,9 +40,4 @@ export function CaseTabs({ caseId }: CaseTabsProps) {
       ))}
     </div>
   );
-}
-
-export function useActiveTab(): CaseTab {
-  const searchParams = useSearchParams();
-  return (searchParams.get("tab") ?? "case") as CaseTab;
 }

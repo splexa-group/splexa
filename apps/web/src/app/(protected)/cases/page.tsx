@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
-import { CaseList } from "@/components/cases/case-list";
+import { CaseList } from "@/components/cases/list/case-list";
 import { CreateCaseModal } from "@/components/cases/create-case-modal";
 
 export default function CasesPage() {

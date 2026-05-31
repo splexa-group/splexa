@@ -10,7 +10,7 @@ export function priorityStripeClass(priority: Priority | null | undefined): stri
 export function priorityBorderClass(priority: Priority | null | undefined): string {
   if (priority === "High") return "border-l-2 border-l-priority-high";
   if (priority === "Medium") return "border-l-2 border-l-priority-medium";
-  return "border-l-2 border-l-transparent";
+  return "border-l-1 border-l-transparent";
 }
 
 export function statusDotClass(status: CaseStatus): string {

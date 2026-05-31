@@ -19,7 +19,7 @@ import {
   statusBadgeClass,
   hearingDateColor,
   formatHearingDate,
-} from "./case-utils";
+} from "../case-utils";
 
 const PAGE_SIZE = 30;
 
@@ -83,20 +83,14 @@ export function CaseList({ onAdd }: { onAdd?: () => void }) {
       <span
         key="status"
         className={cn(
-          "inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium w-fit",
+          "inline-flex items-center px-2.5 py-0.5 rounded-full text-sm w-fit",
           statusBadgeClass(c.status),
         )}
       >
         {c.status}
       </span>,
 
-      <span
-        key="hearing"
-        className={cn(
-          "text-xs font-semibold",
-          hearingDateColor(c.nextHearingDate),
-        )}
-      >
+      <span key="hearing" className="text-sm text-body pr-4 truncate">
         {formatHearingDate(c.nextHearingDate)}
       </span>,
 

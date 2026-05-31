@@ -8,7 +8,7 @@ import {
   hearingDateColor,
   priorityStripeClass,
   statusDotClass,
-} from "./case-utils";
+} from "../case-utils";
 
 interface CaseCardProps {
   case_: CaseSummary;

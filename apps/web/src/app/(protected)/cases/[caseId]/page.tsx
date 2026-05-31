@@ -7,28 +7,28 @@ import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
 import { toISODatetime } from "@/lib/utils";
 import { useActiveTab, CaseTabs } from "@/components/cases/case-tabs";
-import { CaseDetailsSection } from "@/components/cases/sections/case-details-section";
-import { CourtDetailsSection } from "@/components/cases/sections/court-details-section";
-import { JudgeDetailsSection } from "@/components/cases/sections/judge-details-section";
-import { OppositePartySection } from "@/components/cases/sections/opposite-party-section";
+import { CaseDetailsSection } from "@/components/cases/tabs/case/case-details-section";
+import { CourtDetailsSection } from "@/components/cases/tabs/case/court-details-section";
+import { JudgeDetailsSection } from "@/components/cases/tabs/case/judge-details-section";
+import { OppositePartySection } from "@/components/cases/tabs/case/opposite-party-section";
 import { PageFooter } from "@/components/layout/page-footer";
 import { Button } from "@/components/ui/button";
 import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete-modal";
-import { ClientTab } from "@/components/cases/client-tab";
-import { HearingsTab } from "@/components/cases/hearings-tab";
-import { DocumentsTab } from "@/components/cases/documents-tab";
-import { ImportantDatesTab } from "@/components/cases/important-dates-tab";
+import { ClientTab } from "@/components/cases/tabs/client/client-tab";
+import { HearingsTab } from "@/components/cases/tabs/hearings/hearings-tab";
+import { DocumentsTab } from "@/components/cases/tabs/documents/documents-tab";
+import { ImportantDatesTab } from "@/components/cases/tabs/important-dates/important-dates-tab";
 import type { UpdateCaseInput } from "@/types/cases";
 
 export default function CaseEditPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ caseId: string }>;
 }) {
-  const { id } = use(params);
+  const { caseId } = use(params);
   return (
     <Suspense>
-      <CaseEditContent caseId={id} />
+      <CaseEditContent caseId={caseId} />
     </Suspense>
   );
 }

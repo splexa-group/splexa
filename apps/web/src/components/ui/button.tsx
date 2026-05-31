@@ -31,15 +31,15 @@ const buttonVariants = cva(
           "border border-positive text-positive-dark hover:bg-positive-muted",
       },
       size: {
-        default: "px-4 py-[11.5px]",
-        sm: "px-3 py-2 text-xs",
-        lg: "px-6 py-3",
+        default: "h-10 px-4",
+        sm: "h-9 px-3 text-[12.5px]",
+        lg: "h-10 px-5",
         icon: "size-9",
       },
     },
     defaultVariants: {
       variant: "primary",
-      size: "default",
+      size: "sm",
     },
   },
 );

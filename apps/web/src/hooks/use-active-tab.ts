@@ -1,15 +1,9 @@
 "use client";
 
+import { CaseTabs } from "@/enums/case-tabs";
 import { useSearchParams } from "next/navigation";
 
-export type CaseTab =
-  | "case"
-  | "client"
-  | "hearings"
-  | "documents"
-  | "important-dates";
-
-export function useCaseActiveTab(): CaseTab {
+export function useCaseActiveTab(): CaseTabs {
   const searchParams = useSearchParams();
-  return (searchParams.get("tab") ?? "case") as CaseTab;
+  return (searchParams.get("tab") ?? CaseTabs.CASE) as CaseTabs;
 }

@@ -1,15 +1,16 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
-import type { CaseTab } from "@/hooks/use-active-tab";
+import { CaseTabs as Tabs } from "@/enums/case-tabs";
+import { useCaseActiveTab } from "@/hooks/use-active-tab";
 
-const TABS: { id: CaseTab; label: string }[] = [
-  { id: "case", label: "Case" },
-  { id: "client", label: "Client" },
-  { id: "hearings", label: "Hearings" },
-  { id: "documents", label: "Documents" },
-  { id: "important-dates", label: "Important Dates" },
+const TABS: { id: Tabs; label: string }[] = [
+  { id: Tabs.CASE, label: "Case" },
+  { id: Tabs.CLIENT, label: "Client" },
+  { id: Tabs.HEARINGS, label: "Hearings" },
+  { id: Tabs.DOCUMENTS, label: "Documents" },
+  { id: Tabs.IMPORTANT_DATES, label: "Important Dates" },
 ];
 
 interface Props {
@@ -18,8 +19,7 @@ interface Props {
 
 export function CaseTabs({ caseId }: Props) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const active = (searchParams.get("tab") ?? "case") as CaseTab;
+  const active = useCaseActiveTab();
 
   return (
     <div className="flex overflow-x-auto border-b border-line -mb-px [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">

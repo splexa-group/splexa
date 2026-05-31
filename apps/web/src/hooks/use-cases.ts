@@ -1,7 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { casesApi } from "@/services/cases";
-import type { CaseFilters, CreateCaseInput, UpdateCaseInput } from "@/types/cases";
+import type {
+  CaseFilters,
+  CreateCaseInput,
+  UpdateCaseInput,
+} from "@/types/cases";
+import { useRouter } from "next/navigation";
 
 export const caseKeys = {
   all: ["cases"] as const,
@@ -32,7 +37,8 @@ export function useCreateCase() {
       qc.invalidateQueries({ queryKey: caseKeys.all });
       toast.success("Case created");
     },
-    onError: (err: Error) => toast.error(err.message || "Failed to create case"),
+    onError: (err: Error) =>
+      toast.error(err.message || "Failed to create case"),
   });
 }
 
@@ -51,12 +57,15 @@ export function useUpdateCase(id: string) {
 
 export function useDeleteCase() {
   const qc = useQueryClient();
+  const router = useRouter();
   return useMutation({
     mutationFn: (id: string) => casesApi.delete(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: caseKeys.all });
       toast.success("Case deleted");
+      router.push("/cases");
     },
-    onError: (err: Error) => toast.error(err.message || "Failed to delete case"),
+    onError: (err: Error) =>
+      toast.error(err.message || "Failed to delete case"),
   });
 }

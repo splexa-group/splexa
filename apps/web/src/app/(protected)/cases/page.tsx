@@ -19,6 +19,8 @@ export default function CasesPage() {
   return (
     <>
       <CaseList onAdd={openModal} />
+
+      {/* Modals */}
       <CreateCaseModal open={modalOpen} onClose={closeModal} />
     </>
   );

@@ -17,7 +17,6 @@ import { CASE_STATUS_OPTIONS, CASE_SORT_OPTIONS } from "@/lib/options";
 import {
   priorityBorderClass,
   statusBadgeClass,
-  hearingDateColor,
   formatHearingDate,
 } from "../case-utils";
 

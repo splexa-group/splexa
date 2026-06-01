@@ -216,7 +216,7 @@ export function DatePicker({
       {open && (
         <div
           className={cn(
-            "absolute right-0 w-72 z-20 bg-card border border-line rounded-xl shadow-xl overflow-hidden select-none",
+            "absolute right-0 w-68 z-20 bg-card border border-line rounded-xl shadow-xl overflow-hidden select-none",
             dropUp ? "bottom-full mb-1" : "top-full mt-1",
           )}
         >
@@ -303,7 +303,7 @@ export function DatePicker({
                       disabled={!cell.current}
                       onClick={() => cell.current && selectDay(cell.day)}
                       className={cn(
-                        "h-8 w-full rounded-md text-sm transition-colors",
+                        "h-9.5 w-full rounded-md text-sm transition-colors",
                         !cell.current && "text-placeholder/30 cursor-default",
                         cell.current &&
                           !sel &&

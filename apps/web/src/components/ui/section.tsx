@@ -39,11 +39,11 @@ export function Section({
   return (
     <div
       className={cn(
-        "w-full bg-card border border-line rounded-xl overflow-hidden",
+        "w-full bg-card border border-line rounded-xl",
         className,
       )}
     >
-      <div className="bg-placeholder/15 px-4 h-10.5 shrink-0 border-b border-line flex items-center justify-between gap-3">
+      <div className="bg-placeholder/15 rounded-t-xl px-4 h-11 shrink-0 border-b border-line flex items-center justify-between gap-3">
         <h3 className="text-xs font-bold uppercase tracking-widest text-secondary">
           {title}
         </h3>

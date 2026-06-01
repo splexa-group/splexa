@@ -111,7 +111,7 @@ function SelectGroup({
     >
       <p
         id={id}
-        className="text-sm font-medium text-secondary leading-none mb-1.5"
+        className="text-sm font-medium text-label/90 leading-none mb-1.5"
       >
         {label}
         {required && <span className="text-negative ml-0.5">*</span>}
@@ -123,7 +123,7 @@ function SelectGroup({
       >
         <SelectPrimitive.Trigger
           aria-labelledby={id}
-          className="flex w-full items-center justify-between bg-transparent text-sm text-dark [&>span]:line-clamp-1 focus:outline-none data-[placeholder]:text-placeholder disabled:text-disabled disabled:cursor-not-allowed"
+          className="flex w-full items-center justify-between bg-transparent font-medium text-sm text-dark [&>span]:line-clamp-1 focus:outline-none data-[placeholder]:text-placeholder disabled:text-disabled disabled:cursor-not-allowed"
         >
           <SelectPrimitive.Value placeholder={placeholder} />
           <SelectPrimitive.Icon asChild>
@@ -160,7 +160,7 @@ function SelectDropdown({ options }: { options: SelectOption[] }) {
               key={opt.value}
               value={opt.value}
               className={cn(
-                "relative flex w-full cursor-default select-none items-center px-3 py-2.5 text-sm text-dark outline-none",
+                "relative flex w-full font-medium cursor-default select-none items-center px-3 py-2.5 text-sm text-dark outline-none",
                 "border-b border-line last:border-b-0",
                 "data-[highlighted]:bg-subtle",
                 "data-[state=checked]:bg-brand-soft data-[state=checked]:text-brand data-[state=checked]:font-medium",

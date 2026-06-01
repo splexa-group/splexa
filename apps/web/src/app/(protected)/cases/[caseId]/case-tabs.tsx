@@ -32,7 +32,7 @@ export function CaseTabs({ caseId }: Props) {
             className={cn(
               "rounded-md px-3 py-2 text-sm font-medium transition-all",
               active === tab.id
-                ? "bg-brand-soft text-brand"
+                ? "bg-brand-soft/40 text-brand"
                 : "text-body hover:bg-subtle/80",
             )}
           >

@@ -17,6 +17,7 @@ import { ClientTab } from "@/components/cases/client-tab/client-tab";
 import { HearingsTab } from "@/components/cases/hearings-tab/hearings-tab";
 import { DocumentsTab } from "@/components/cases/documents-tab/documents-tab";
 import { ImportantDatesTab } from "@/components/cases/important-dates/important-dates-tab";
+import { PageContent } from "@/components/layout/page-content";
 import { UpdateCaseInput } from "@/types/cases";
 import { mapCaseToFormValues } from "@/mappers/case-form";
 
@@ -58,7 +59,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
 
         {/* Tab body */}
         <div className="flex-1 overflow-y-auto bg-page">
-          <div className="p-6 space-y-4 max-w-4xl">
+          <PageContent className="space-y-4">
             {activeTab === "case" && (
               <>
                 <CaseDetailsSection />
@@ -75,7 +76,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
             {activeTab === "important-dates" && (
               <ImportantDatesTab caseId={caseId} />
             )}
-          </div>
+          </PageContent>
         </div>
 
         {/* Footer */}

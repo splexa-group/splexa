@@ -3,10 +3,12 @@
 import { useFieldArray, useFormContext, Controller } from "react-hook-form";
 import { Plus, Trash2 } from "lucide-react";
 import { PartyRole } from "@splexa-group/shared/enums";
-import { Field } from "@/components/ui/form/input";
+import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
+import { Section } from "@/components/ui/section";
 import { PARTY_ROLE_OPTIONS } from "@/lib/options";
-import type { UpdateCaseInput } from "@/types/cases";
+import { UpdateCaseInput } from "@/types/cases";
+import { Button } from "@/components/ui/button";
 
 export function OppositePartySection() {
   const { register, control } = useFormContext<UpdateCaseInput>();
@@ -16,13 +18,12 @@ export function OppositePartySection() {
   });
 
   return (
-    <div className="bg-card border border-line rounded-xl overflow-hidden">
-      <div className="px-4 py-3 border-b border-line flex items-center justify-between">
-        <h3 className="text-[11px] font-bold uppercase tracking-widest text-placeholder">
-          Opposite Party
-        </h3>
-        <button
+    <Section
+      title="Opposite Parties"
+      action={
+        <Button
           type="button"
+          // variant="primarySoft"
           onClick={() =>
             append({
               name: "",
@@ -31,23 +32,20 @@ export function OppositePartySection() {
               advocatePhone: "",
             })
           }
-          className="flex items-center gap-1 text-xs font-semibold text-brand hover:underline"
         >
-          <Plus className="size-3" /> Add party
-        </button>
-      </div>
-      <div className="p-4 space-y-4">
-        {fields.length === 0 && (
-          <p className="text-xs text-placeholder text-center py-2">
-            No opposite parties added.
-          </p>
-        )}
+          Add Party
+        </Button>
+      }
+    >
+      {fields.length === 0 && (
+        <p className="text-[13px] text-placeholder text-center py-2">
+          No opposite parties added.
+        </p>
+      )}
+      <div className="space-y-3">
         {fields.map((field, index) => (
-          <div
-            key={field.id}
-            className="border border-line rounded-lg p-3 space-y-3"
-          >
-            <div className="flex justify-between items-center">
+          <div key={field.id} className="border border-line rounded-lg p-3">
+            <div className="flex justify-between items-center mb-3">
               <span className="text-xs font-semibold text-secondary">
                 Party {index + 1}
               </span>
@@ -60,8 +58,9 @@ export function OppositePartySection() {
               </button>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <Field
+              <InputGroup
                 label="Name"
+                placeholder="Enter party name"
                 required
                 {...register(`oppositeParties.${index}.name`)}
               />
@@ -78,18 +77,20 @@ export function OppositePartySection() {
                   />
                 )}
               />
-              <Field
-                label="Advocate name"
+              <InputGroup
+                label="Advocate Name"
+                placeholder="Enter advocate name..."
                 {...register(`oppositeParties.${index}.advocateName`)}
               />
-              <Field
-                label="Advocate phone"
+              <InputGroup
+                label="Advocate Phone"
+                placeholder="Enter phone number..."
                 {...register(`oppositeParties.${index}.advocatePhone`)}
               />
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </Section>
   );
 }

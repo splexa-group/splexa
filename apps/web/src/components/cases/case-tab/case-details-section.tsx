@@ -1,7 +1,7 @@
 "use client";
 
 import { Controller, useFormContext } from "react-hook-form";
-import { Field } from "@/components/ui/form/input";
+import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
 import { TextareaField } from "@/components/ui/form/textarea";
 import { Section } from "@/components/ui/section";
@@ -12,6 +12,7 @@ import {
   PRIORITY_OPTIONS,
 } from "@/lib/options";
 import type { UpdateCaseInput } from "@/types/cases";
+import { DatePicker } from "@/components/ui/form/date-picker";
 
 export function CaseDetailsSection() {
   const {
@@ -22,14 +23,23 @@ export function CaseDetailsSection() {
 
   return (
     <Section title="Case Details" cols={3}>
-      <div className="col-span-full">
-        <Field
-          label="Case Title"
-          error={errors.title?.message}
-          {...register("title")}
-        />
-      </div>
-      <Field label="Case Number" {...register("caseNumber")} />
+      <InputGroup
+        label="Case Title"
+        required
+        type="text"
+        autoComplete="off"
+        placeholder="Enter case title..."
+        {...register("title", {
+          required: true,
+        })}
+      />
+      <InputGroup
+        label="Case Number"
+        type="text"
+        autoComplete="off"
+        placeholder="Enter case number..."
+        {...register("caseNumber")}
+      />
       <Controller
         name="caseType"
         control={control}
@@ -39,11 +49,21 @@ export function CaseDetailsSection() {
             options={CASE_TYPE_OPTIONS}
             value={field.value ?? ""}
             onChange={field.onChange}
-            placeholder="Select type"
+            placeholder="Select type..."
           />
         )}
       />
-      <Field label="Filing Date" type="date" {...register("filingDate")} />
+      <Controller
+        name="filingDate"
+        control={control}
+        render={({ field }) => (
+          <DatePicker
+            label="Filing Date"
+            value={field.value ?? ""}
+            onChange={field.onChange}
+          />
+        )}
+      />
       <Controller
         name="stage"
         control={control}
@@ -53,7 +73,7 @@ export function CaseDetailsSection() {
             options={CASE_STAGE_OPTIONS}
             value={field.value ?? ""}
             onChange={field.onChange}
-            placeholder="Select stage"
+            placeholder="Select stage..."
           />
         )}
       />
@@ -66,6 +86,7 @@ export function CaseDetailsSection() {
             options={CASE_STATUS_OPTIONS}
             value={field.value ?? ""}
             onChange={field.onChange}
+            placeholder="Select status..."
           />
         )}
       />
@@ -78,13 +99,14 @@ export function CaseDetailsSection() {
             options={PRIORITY_OPTIONS}
             value={field.value ?? ""}
             onChange={field.onChange}
-            placeholder="Select priority"
+            placeholder="Select priority..."
           />
         )}
       />
       <div className="col-span-full">
         <TextareaField
           label="Description"
+          placeholder="Enter a detailed case description..."
           rows={4}
           error={errors.description?.message}
           {...register("description")}

@@ -86,7 +86,7 @@ const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
       >
         <label
           htmlFor={id}
-          className="block text-[13.5px] font-medium text-label leading-none mb-1.5"
+          className="block text-[13.5px] font-medium text-label/90 leading-none mb-1.5"
         >
           {label}
           {required && <span className="text-negative ml-0.5">*</span>}

@@ -42,8 +42,8 @@ export function TopBar() {
         {displayTitle}
       </h1>
 
-      {config?.action && (
-        config.action.href ? (
+      {config?.action &&
+        (config.action.href ? (
           <Button asChild variant="primary" size="sm">
             <Link href={config.action.href}>
               <Icon icon={Plus} size="xs" />
@@ -55,8 +55,7 @@ export function TopBar() {
             <Icon icon={Plus} size="xs" />
             {config.action.label}
           </Button>
-        )
-      )}
+        ))}
     </header>
   );
 }

@@ -12,7 +12,7 @@ const mdColsClass: Record<GridCols, string> = {
   4: "md:grid-cols-4",
 };
 
-interface SectionProps {
+interface Props {
   title: string;
   cols?: GridCols;
   action?: ReactNode;
@@ -20,13 +20,7 @@ interface SectionProps {
   className?: string;
 }
 
-export function Section({
-  title,
-  cols,
-  action,
-  children,
-  className,
-}: SectionProps) {
+export function Section({ title, cols, action, children, className }: Props) {
   return (
     <div
       className={cn(
@@ -34,8 +28,10 @@ export function Section({
         className,
       )}
     >
-      <div className="px-4 py-3 border-b border-line flex items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold text-brand">{title}</h3>
+      <div className="bg-placeholder/15 px-4 py-3 border-b border-line flex items-center justify-between gap-3">
+        <h3 className="text-xs font-bold uppercase tracking-widest text-secondary">
+          {title}
+        </h3>
         {action && <div className="shrink-0">{action}</div>}
       </div>
       <div

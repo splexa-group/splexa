@@ -86,14 +86,12 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
               {activeTab === "case" && (
                 <Button
                   variant="negative"
-                  size="sm"
                   onClick={() => setShowDelete(true)}
                 >
                   Delete Case
                 </Button>
               )}
               <Button
-                size="sm"
                 loading={updateCase.isPending}
                 onClick={methods.handleSubmit(handleSave)}
               >

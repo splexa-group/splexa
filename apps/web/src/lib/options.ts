@@ -33,6 +33,12 @@ function toPascalOptions<T extends Record<string, string>>(enumObj: T) {
   }));
 }
 
+export function withNone<T extends { value: string; label: string }>(
+  options: T[],
+): ({ value: string; label: string } | T)[] {
+  return [{ value: "", label: "None" }, ...options];
+}
+
 export const DESIGNATION_OPTIONS = toOptions(Designation);
 export const PRACTICE_TYPE_OPTIONS = toOptions(PracticeType);
 export const CASE_TYPE_OPTIONS = toPascalOptions(CaseType);

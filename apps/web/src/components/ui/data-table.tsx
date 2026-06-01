@@ -3,6 +3,7 @@
 import { type ReactNode } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export interface DataTableRow {
   key: string;
@@ -142,25 +143,3 @@ export function DataTable({
   );
 }
 
-function EmptyState({
-  text,
-  action,
-}: {
-  text: string;
-  action?: { label: string; onClick: () => void };
-}) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      <p className="text-sm text-secondary mb-4">{text}</p>
-      {action && (
-        <button
-          type="button"
-          onClick={action.onClick}
-          className="text-sm font-semibold text-brand hover:underline"
-        >
-          {action.label}
-        </button>
-      )}
-    </div>
-  );
-}

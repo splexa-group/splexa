@@ -77,6 +77,7 @@ export interface SelectGroupProps {
   options: SelectOption[];
   value?: string;
   onChange?: (value: string) => void;
+  onClear?: () => void;
   placeholder?: string;
   disabled?: boolean;
   hint?: string;
@@ -90,6 +91,7 @@ function SelectGroup({
   options,
   value,
   onChange,
+  onClear,
   placeholder = "Select...",
   disabled,
   hint,
@@ -98,6 +100,7 @@ function SelectGroup({
   className,
 }: SelectGroupProps) {
   const id = useId();
+  const showClear = !!(value && onClear);
 
   return (
     <div
@@ -116,22 +119,40 @@ function SelectGroup({
         {label}
         {required && <span className="text-negative ml-0.5">*</span>}
       </p>
-      <SelectPrimitive.Root
-        value={value}
-        onValueChange={onChange}
-        disabled={disabled}
-      >
-        <SelectPrimitive.Trigger
-          aria-labelledby={id}
-          className="flex w-full items-center justify-between bg-transparent font-medium text-sm text-dark [&>span]:line-clamp-1 focus:outline-none data-[placeholder]:text-placeholder disabled:text-disabled disabled:cursor-not-allowed"
+      <div className="relative">
+        <SelectPrimitive.Root
+          value={value}
+          onValueChange={onChange}
+          disabled={disabled}
         >
-          <SelectPrimitive.Value placeholder={placeholder} />
-          <SelectPrimitive.Icon asChild>
-            <ChevronDownIcon className="size-4 text-placeholder shrink-0" />
-          </SelectPrimitive.Icon>
-        </SelectPrimitive.Trigger>
-        <SelectDropdown options={options} />
-      </SelectPrimitive.Root>
+          <SelectPrimitive.Trigger
+            aria-labelledby={id}
+            className={cn(
+              "flex w-full items-center justify-between bg-transparent font-medium text-sm text-dark [&>span]:line-clamp-1 focus:outline-none data-[placeholder]:text-placeholder disabled:text-disabled disabled:cursor-not-allowed",
+              showClear && "pr-5",
+            )}
+          >
+            <SelectPrimitive.Value placeholder={placeholder} />
+            {!showClear && (
+              <SelectPrimitive.Icon asChild>
+                <ChevronDownIcon className="size-4 text-placeholder shrink-0" />
+              </SelectPrimitive.Icon>
+            )}
+          </SelectPrimitive.Trigger>
+          <SelectDropdown options={options} />
+        </SelectPrimitive.Root>
+        {showClear && (
+          <button
+            type="button"
+            onPointerDown={(e) => e.stopPropagation()}
+            onClick={onClear}
+            className="absolute right-0 top-1/2 -translate-y-1/2 text-placeholder hover:text-secondary transition-colors"
+            aria-label="Clear"
+          >
+            <XIcon className="size-4" />
+          </button>
+        )}
+      </div>
       {!error && hint && (
         <p className="mt-1.5 text-xs text-secondary">{hint}</p>
       )}

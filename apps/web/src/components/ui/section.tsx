@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/empty-state";
 import type { ReactNode } from "react";
 
 type GridCols = 1 | 2 | 3 | 4;
@@ -16,11 +17,25 @@ interface Props {
   title: string;
   cols?: GridCols;
   action?: ReactNode;
-  children: ReactNode;
+  isEmpty?: boolean;
+  emptyLabel?: string;
+  onAdd?: () => void;
+  addLabel?: string;
+  children?: ReactNode;
   className?: string;
 }
 
-export function Section({ title, cols, action, children, className }: Props) {
+export function Section({
+  title,
+  cols,
+  action,
+  isEmpty,
+  emptyLabel,
+  onAdd,
+  addLabel = "Add",
+  children,
+  className,
+}: Props) {
   return (
     <div
       className={cn(
@@ -28,20 +43,28 @@ export function Section({ title, cols, action, children, className }: Props) {
         className,
       )}
     >
-      <div className="bg-placeholder/15 px-4 py-3 border-b border-line flex items-center justify-between gap-3">
+      <div className="bg-placeholder/15 px-4 h-10.5 shrink-0 border-b border-line flex items-center justify-between gap-3">
         <h3 className="text-xs font-bold uppercase tracking-widest text-secondary">
           {title}
         </h3>
         {action && <div className="shrink-0">{action}</div>}
       </div>
-      <div
-        className={cn(
-          "p-4",
-          cols && cn("grid grid-cols-1 gap-4", mdColsClass[cols]),
-        )}
-      >
-        {children}
-      </div>
+
+      {isEmpty ? (
+        <EmptyState
+          text={emptyLabel ?? `No ${title.toLowerCase()} added.`}
+          action={onAdd ? { label: addLabel, onClick: onAdd } : undefined}
+        />
+      ) : (
+        <div
+          className={cn(
+            "p-4",
+            cols && cn("grid grid-cols-1 gap-4", mdColsClass[cols]),
+          )}
+        >
+          {children}
+        </div>
+      )}
     </div>
   );
 }

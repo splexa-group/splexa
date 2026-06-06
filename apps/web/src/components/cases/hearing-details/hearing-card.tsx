@@ -15,19 +15,10 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import type { Hearing } from "@/types/hearings";
-import { HearingStatus } from "@splexa-group/shared/enums";
+import { Hearing } from "@/types/hearings";
+import { HEARING_STATUS_PILL } from "./hearing-status";
 
-const STATUS_PILL: Record<HearingStatus, { pill: string; dot: string }> = {
-  [HearingStatus.Scheduled]: { pill: "bg-amber-muted text-amber-dark", dot: "bg-amber" },
-  [HearingStatus.Completed]: { pill: "bg-positive-muted text-positive", dot: "bg-positive" },
-  [HearingStatus.Adjourned]: { pill: "bg-brand-soft text-brand", dot: "bg-brand" },
-  [HearingStatus.Cancelled]: { pill: "bg-negative-muted text-negative", dot: "bg-negative" },
-};
-
-// ─── Compact card used in the timeline ───────────────────────────────────────
-
-interface HearingCardProps {
+interface Props {
   hearing: Hearing;
   courtName?: string | null;
   benchNumber?: string | null;
@@ -41,10 +32,10 @@ export function HearingCard({
   benchNumber,
   onEdit,
   onDelete,
-}: HearingCardProps) {
+}: Props) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const style = STATUS_PILL[hearing.status];
+  const style = HEARING_STATUS_PILL[hearing.status];
 
   useEffect(() => {
     function handle(e: MouseEvent) {
@@ -66,7 +57,10 @@ export function HearingCard({
     year: "numeric",
   });
 
-  const courtParts = [courtName, benchNumber ? `Hall ${benchNumber}` : null].filter(Boolean);
+  const courtParts = [
+    courtName,
+    benchNumber ? `Hall ${benchNumber}` : null,
+  ].filter(Boolean);
 
   return (
     <div className="bg-card border border-line rounded-lg">
@@ -84,13 +78,17 @@ export function HearingCard({
               {courtParts.length > 0 && (
                 <div className="flex items-center gap-1.5">
                   <Landmark className="size-3 text-placeholder shrink-0" />
-                  <span className="text-xs text-secondary">{courtParts.join(" · ")}</span>
+                  <span className="text-xs text-secondary">
+                    {courtParts.join(" · ")}
+                  </span>
                 </div>
               )}
               {hearing.judgePresent && (
                 <div className="flex items-center gap-1.5">
                   <User className="size-3 text-placeholder shrink-0" />
-                  <span className="text-xs text-secondary">{hearing.judgePresent}</span>
+                  <span className="text-xs text-secondary">
+                    {hearing.judgePresent}
+                  </span>
                 </div>
               )}
             </div>
@@ -126,14 +124,20 @@ export function HearingCard({
               <div className="absolute right-0 top-7 z-30 w-36 bg-card border border-line rounded shadow-md py-1">
                 <button
                   type="button"
-                  onClick={() => { setMenuOpen(false); onEdit(); }}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onEdit();
+                  }}
                   className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-label hover:bg-subtle"
                 >
                   <Pencil className="size-3.5" /> Edit
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setMenuOpen(false); onDelete(); }}
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onDelete();
+                  }}
                   className="w-full flex items-center gap-2 px-3 py-2 text-xs font-medium text-negative hover:bg-negative-muted"
                 >
                   <Trash2 className="size-3.5" /> Delete
@@ -170,7 +174,9 @@ export function UpNextCard({
 }: UpNextCardProps) {
   const date = new Date(hearing.date);
   const day = date.toLocaleDateString("en-IN", { day: "2-digit" });
-  const month = date.toLocaleDateString("en-IN", { month: "short" }).toUpperCase();
+  const month = date
+    .toLocaleDateString("en-IN", { month: "short" })
+    .toUpperCase();
   const year = date.getFullYear();
 
   const purposeLabel = hearing.purpose
@@ -184,7 +190,10 @@ export function UpNextCard({
     year: "numeric",
   });
 
-  const courtParts = [courtName, benchNumber ? `Hall ${benchNumber}` : null].filter(Boolean);
+  const courtParts = [
+    courtName,
+    benchNumber ? `Hall ${benchNumber}` : null,
+  ].filter(Boolean);
 
   return (
     <div className="bg-amber-muted border border-amber rounded-lg overflow-hidden">
@@ -197,10 +206,14 @@ export function UpNextCard({
         {/* Date block */}
         <div className="flex flex-col items-center rounded-lg overflow-hidden border border-amber/40 shrink-0 w-16 text-center">
           <div className="w-full bg-brand px-2 py-1">
-            <span className="text-[10px] font-bold text-white uppercase tracking-wider">{month}</span>
+            <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+              {month}
+            </span>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center bg-card px-2 py-2">
-            <span className="text-2xl font-bold text-dark leading-none">{day}</span>
+            <span className="text-2xl font-bold text-dark leading-none">
+              {day}
+            </span>
             <span className="text-[10px] text-placeholder mt-0.5">{year}</span>
           </div>
         </div>
@@ -219,13 +232,17 @@ export function UpNextCard({
               {courtParts.length > 0 && (
                 <div className="flex items-center gap-1.5">
                   <Landmark className="size-3 text-placeholder shrink-0" />
-                  <span className="text-xs text-secondary">{courtParts.join(" · ")}</span>
+                  <span className="text-xs text-secondary">
+                    {courtParts.join(" · ")}
+                  </span>
                 </div>
               )}
               {hearing.judgePresent && (
                 <div className="flex items-center gap-1.5">
                   <User className="size-3 text-placeholder shrink-0" />
-                  <span className="text-xs text-secondary">{hearing.judgePresent}</span>
+                  <span className="text-xs text-secondary">
+                    {hearing.judgePresent}
+                  </span>
                 </div>
               )}
             </div>

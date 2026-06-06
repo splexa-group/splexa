@@ -16,7 +16,7 @@ import { CourtDetailsSection } from "@/components/cases/case-details/court-detai
 import { JudgeDetailsSection } from "@/components/cases/case-details/judge-details";
 import { OppositePartySection } from "@/components/cases/case-details/opposite-parties";
 import { ClientDetails } from "@/components/cases/client/client-details";
-import { HearingsTab } from "@/components/cases/hearing-details/hearings";
+import { HearingsDetails } from "@/components/cases/hearing-details/hearings";
 import { ImportantDatesTab } from "@/components/cases/important-dates/important-dates-tab";
 import { PageFooter } from "@/components/layout/page-footer";
 import { PageContent } from "@/components/layout/page-content";
@@ -56,7 +56,13 @@ function CaseSubTabContent({ subTab }: { subTab: string }) {
   }
 }
 
-function TabContent({ tab, subTab, caseId, caseForm, clientForm }: TabContentProps) {
+function TabContent({
+  tab,
+  subTab,
+  caseId,
+  caseForm,
+  clientForm,
+}: TabContentProps) {
   switch (tab) {
     case CaseTabs.CLIENT:
       return (
@@ -73,7 +79,7 @@ function TabContent({ tab, subTab, caseId, caseForm, clientForm }: TabContentPro
       );
 
     case CaseTabs.HEARINGS:
-      return <HearingsTab caseId={caseId} />;
+      return <HearingsDetails caseId={caseId} />;
 
     case CaseTabs.IMPORTANT_DATES:
       return <ImportantDatesTab caseId={caseId} />;
@@ -116,7 +122,8 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
     return <div className="p-6 text-sm text-secondary">Loading…</div>;
   }
 
-  const isEditableTab = activeTab === CaseTabs.CASE || activeTab === CaseTabs.CLIENT;
+  const isEditableTab =
+    activeTab === CaseTabs.CASE || activeTab === CaseTabs.CLIENT;
   const isSaving =
     activeTab === CaseTabs.CLIENT
       ? updateClient.isPending || addClientToCase.isPending

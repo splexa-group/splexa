@@ -20,20 +20,19 @@ import { PageFooter } from "@/components/layout/page-footer";
 import { PageContent } from "@/components/layout/page-content";
 import { Button } from "@/components/ui/button";
 import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
-import type { UpdateCaseInput, CaseDetail } from "@/types/cases";
+import type { UpdateCaseInput } from "@/types/cases";
 import { mapCaseToFormValues } from "@/mappers/case-form";
 
 interface TabContentProps {
   tab: CaseTabs;
   subTab: string;
   caseId: string;
-  caseDetails: CaseDetail;
 }
 
-function TabContent({ tab, subTab, caseId, caseDetails }: TabContentProps) {
+function TabContent({ tab, subTab, caseId }: TabContentProps) {
   switch (tab) {
     case CaseTabs.CLIENT:
-      return <ClientTab caseDetail={caseDetails} />;
+      return <ClientTab />;
 
     case CaseTabs.CASE:
       switch (subTab) {
@@ -108,7 +107,6 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
               tab={activeTab}
               subTab={activeSubTab}
               caseId={caseId}
-              caseDetails={caseDetails}
             />
           </PageContent>
         </div>

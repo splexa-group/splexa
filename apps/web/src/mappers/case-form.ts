@@ -19,5 +19,11 @@ export function mapCaseToFormValues(caseDetail: CaseDetail): UpdateCaseInput {
     priority: caseDetail.priority ?? undefined,
     description: caseDetail.description ?? "",
     oppositeParties: caseDetail.oppositeParties ?? [],
+    client: {
+      fullName: caseDetail.client?.fullName ?? "",
+      phone: caseDetail.client?.phone ?? "",
+      email: caseDetail.client?.email ?? "",
+      type: caseDetail.client?.type ?? "",
+    },
   };
 }

@@ -19,7 +19,7 @@ import { ImportantDatesTab } from "@/components/cases/important-dates/important-
 import { PageFooter } from "@/components/layout/page-footer";
 import { PageContent } from "@/components/layout/page-content";
 import { Button } from "@/components/ui/button";
-import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import type { UpdateCaseInput, CaseDetail } from "@/types/cases";
 import { mapCaseToFormValues } from "@/mappers/case-form";
 

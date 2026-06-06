@@ -8,13 +8,9 @@ import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/ui/modals/modal";
+import { Modal } from "@/components/modals/modal";
 import { PARTY_ROLE_OPTIONS } from "@/lib/options";
 import type { UpdateCaseInput } from "@/types/cases";
-
-// ---------------------------------------------------------------------------
-// Role dot badge
-// ---------------------------------------------------------------------------
 
 const ROLE_BADGE_STYLES: Record<PartyRole, string> = {
   [PartyRole.Petitioner]: "bg-brand-soft text-brand",
@@ -34,10 +30,6 @@ function RoleDotBadge({ role }: { role: PartyRole }) {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Party form state
-// ---------------------------------------------------------------------------
-
 interface PartyFormData {
   name: string;
   role: PartyRole;
@@ -51,10 +43,6 @@ const DEFAULT_FORM: PartyFormData = {
   advocateName: "",
   advocatePhone: "",
 };
-
-// ---------------------------------------------------------------------------
-// Main section
-// ---------------------------------------------------------------------------
 
 export function OppositePartySection() {
   const { control } = useFormContext<UpdateCaseInput>();
@@ -134,9 +122,7 @@ export function OppositePartySection() {
               </span>
 
               {/* Role badge */}
-              <div>
-                {field.role && <RoleDotBadge role={field.role} />}
-              </div>
+              <div>{field.role && <RoleDotBadge role={field.role} />}</div>
 
               {/* Advocate */}
               <span className="flex items-center gap-1.5 text-sm text-secondary truncate">
@@ -178,7 +164,9 @@ export function OppositePartySection() {
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title={editIndex !== null ? "Edit Opposite Party" : "Add Opposite Party"}
+        title={
+          editIndex !== null ? "Edit Opposite Party" : "Add Opposite Party"
+        }
       >
         <div className="p-5 space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -212,7 +200,11 @@ export function OppositePartySection() {
           </div>
 
           <div className="flex justify-end gap-2 pt-1">
-            <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
             <Button type="button" onClick={handleSave}>

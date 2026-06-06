@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Modal } from "@/components/ui/modals/modal";
+import { Modal } from "@/components/modals/modal";
 import { Field } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
 import { TextareaField } from "@/components/ui/form/textarea";

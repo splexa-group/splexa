@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import { Plus, Hammer } from "lucide-react";
+import { Hammer } from "lucide-react";
 import {
   useHearings,
   useCreateHearing,
@@ -10,7 +10,7 @@ import {
 } from "@/hooks/use-hearings";
 import { useCase } from "@/hooks/use-cases";
 import { HearingCard, NextHearingCard } from "./hearing-card";
-import { HearingModal } from "@/components/modals/add-hearing";
+import { AddHearingModal } from "@/components/modals/add-hearing";
 import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/ui/section";
@@ -83,6 +83,12 @@ export function HearingsDetails({ caseId }: Props) {
     setToDelete(null);
   };
 
+  const handleHearingStatus = (id: string, status: HearingStatus) =>
+    updateHearing.mutateAsync({
+      id,
+      data: { status },
+    });
+
   return (
     <>
       <div className="space-y-4">
@@ -94,16 +100,10 @@ export function HearingsDetails({ caseId }: Props) {
             benchNumber={caseData?.benchNumber}
             onEdit={() => openEdit(upNext)}
             onMarkHeard={() =>
-              void updateHearing.mutateAsync({
-                id: upNext.id,
-                data: { status: HearingStatus.Completed },
-              })
+              void handleHearingStatus(upNext.id, HearingStatus.Completed)
             }
             onMarkMissed={() =>
-              void updateHearing.mutateAsync({
-                id: upNext.id,
-                data: { status: HearingStatus.Cancelled },
-              })
+              void handleHearingStatus(upNext.id, HearingStatus.Cancelled)
             }
             onAdjourn={() => openEdit(upNext)}
           />
@@ -189,7 +189,8 @@ export function HearingsDetails({ caseId }: Props) {
         </Section>
       </div>
 
-      <HearingModal
+      {/** Modals */}
+      <AddHearingModal
         open={modalOpen}
         hearing={hearingToEdit}
         isPending={createHearing.isPending || updateHearing.isPending}

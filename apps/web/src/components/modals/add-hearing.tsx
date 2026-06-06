@@ -15,6 +15,7 @@ import { toISODatetime } from "@/lib/utils";
 interface Props {
   open: boolean;
   hearing?: Hearing | null;
+  defaultStatus?: HearingStatus;
   onClose: () => void;
   onSave: (data: UpdateHearingInput) => void;
   isPending?: boolean;
@@ -30,7 +31,7 @@ const defaultValues: UpdateHearingInput = {
   adjournmentReason: "",
 };
 
-export function HearingModal({
+export function AddHearingModal({
   open,
   hearing,
   onClose,

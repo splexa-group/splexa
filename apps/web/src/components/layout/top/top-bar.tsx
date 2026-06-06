@@ -29,7 +29,7 @@ export function TopBar() {
         onClick={() => isChild && router.back()}
         aria-label="Go back"
         className={cn(
-          "w-[30px] h-[30px] flex items-center justify-center rounded-md transition-colors shrink-0",
+          "w-[30px] h-[30px] flex items-center justify-center rounded transition-colors shrink-0",
           isChild
             ? "bg-subtle text-label hover:bg-line cursor-pointer"
             : "text-placeholder opacity-40 cursor-default",

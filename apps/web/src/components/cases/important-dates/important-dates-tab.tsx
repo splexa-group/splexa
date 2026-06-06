@@ -78,7 +78,7 @@ export function ImportantDatesTab({ caseId }: ImportantDatesTabProps) {
         )}
 
         {sorted.length > 0 && (
-          <div className="bg-card border border-line rounded-xl overflow-hidden">
+          <div className="bg-card border border-line rounded overflow-hidden">
             {sorted.map((d, i) => (
               <div
                 key={d.id}
@@ -190,7 +190,7 @@ function DateRowMenu({
         <MoreVertical className="size-4" />
       </button>
       {open && (
-        <div className="absolute right-0 top-7 z-30 w-36 bg-card border border-line rounded-lg shadow-md py-1">
+        <div className="absolute right-0 top-7 z-30 w-36 bg-card border border-line rounded shadow-md py-1">
           <button
             type="button"
             onClick={() => {

@@ -51,7 +51,7 @@ export function HearingCard({ hearing, onEdit, onDelete, faded }: HearingCardPro
         )}
       />
 
-      <div className="bg-card border border-line rounded-xl overflow-hidden">
+      <div className="bg-card border border-line rounded overflow-hidden">
         <div className="px-4 py-3 flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-sm font-bold text-dark mb-0.5">{dateStr}</p>
@@ -68,12 +68,12 @@ export function HearingCard({ hearing, onEdit, onDelete, faded }: HearingCardPro
               <button
                 type="button"
                 onClick={() => setMenuOpen((p) => !p)}
-                className="p-1 rounded-md text-placeholder hover:text-secondary hover:bg-subtle transition-colors"
+                className="p-1 rounded text-placeholder hover:text-secondary hover:bg-subtle transition-colors"
               >
                 <MoreVertical className="size-4" />
               </button>
               {menuOpen && (
-                <div className="absolute right-0 top-7 z-30 w-36 bg-card border border-line rounded-lg shadow-md py-1">
+                <div className="absolute right-0 top-7 z-30 w-36 bg-card border border-line rounded shadow-md py-1">
                   <button
                     type="button"
                     onClick={() => { setMenuOpen(false); onEdit(); }}

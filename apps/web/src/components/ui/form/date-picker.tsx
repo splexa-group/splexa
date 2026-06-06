@@ -176,7 +176,7 @@ export function DatePicker({
           setOpen((p) => !p);
         }}
         className={cn(
-          "rounded-sm border bg-card px-3.5 pt-4.5 pb-3.5 transition-colors",
+          "rounded border bg-card px-3.5 pt-4.5 pb-3.5 transition-colors",
           error
             ? "border-negative focus-within:ring-1 focus-within:ring-negative/30"
             : open
@@ -216,7 +216,7 @@ export function DatePicker({
       {open && (
         <div
           className={cn(
-            "absolute right-0 w-68 z-20 bg-card border border-line rounded-xl shadow-xl overflow-hidden select-none",
+            "absolute right-0 w-68 z-20 bg-card border border-line rounded shadow-xl overflow-hidden select-none",
             dropUp ? "bottom-full mb-1" : "top-full mt-1",
           )}
         >
@@ -245,7 +245,7 @@ export function DatePicker({
               <button
                 type="button"
                 onClick={() => setShowYearPicker((p) => !p)}
-                className="flex items-center gap-1 px-3 py-1 rounded-md bg-white/15 hover:bg-white/25 text-white text-sm font-semibold transition-colors"
+                className="flex items-center gap-1 px-3 py-1 rounded bg-white/15 hover:bg-white/25 text-white text-sm font-semibold transition-colors"
               >
                 {viewYear}
                 <ChevronDown
@@ -280,7 +280,7 @@ export function DatePicker({
                     setShowYearPicker(false);
                   }}
                   className={cn(
-                    "py-1.5 rounded-md text-sm font-medium transition-colors",
+                    "py-1.5 rounded text-sm font-medium transition-colors",
                     y === viewYear
                       ? "bg-brand text-white"
                       : "hover:bg-subtle text-label",
@@ -303,7 +303,7 @@ export function DatePicker({
                       disabled={!cell.current}
                       onClick={() => cell.current && selectDay(cell.day)}
                       className={cn(
-                        "h-9.5 w-full rounded-md text-sm transition-colors",
+                        "h-9.5 w-full rounded text-sm transition-colors",
                         !cell.current && "text-placeholder/30 cursor-default",
                         cell.current &&
                           !sel &&

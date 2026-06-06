@@ -24,7 +24,7 @@ export function Menu({ items, trigger }: MenuProps) {
         {trigger ?? (
           <button
             type="button"
-            className="p-1.5 rounded-md text-secondary hover:text-label hover:bg-subtle transition-colors outline-none"
+            className="p-1.5 rounded text-secondary hover:text-label hover:bg-subtle transition-colors outline-none"
             aria-label="Actions"
           >
             <MoreHorizontal color="currentColor" className="size-4" />
@@ -37,7 +37,7 @@ export function Menu({ items, trigger }: MenuProps) {
           align="end"
           sideOffset={4}
           className={cn(
-            "z-50 min-w-[160px] bg-card border border-line rounded-lg shadow-md py-1",
+            "z-50 min-w-[160px] bg-card border border-line rounded shadow-md py-1",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
             "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",

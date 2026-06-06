@@ -18,7 +18,7 @@ const Search = React.forwardRef<HTMLInputElement, SearchProps>(
           type="search"
           value={value}
           className={cn(
-            "w-full rounded-md border border-line bg-card pl-9 pr-9 py-[9px] text-sm text-dark placeholder:text-placeholder transition-colors",
+            "w-full rounded border border-line bg-card pl-9 pr-9 py-[9px] text-sm text-dark placeholder:text-placeholder transition-colors",
             "focus-visible:outline-none focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/20",
             "disabled:bg-subtle disabled:text-disabled disabled:cursor-not-allowed",
             className

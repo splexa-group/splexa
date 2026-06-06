@@ -49,7 +49,7 @@ export function DataTable({
         {isEmpty ? (
           <EmptyState text={emptyStateText} action={emptyStateAction} />
         ) : (
-          <div className="bg-card border border-line rounded-md overflow-hidden min-w-max md:min-w-0">
+          <div className="bg-card border border-line rounded overflow-hidden min-w-max md:min-w-0">
             {/* Header */}
             <div
               className="grid px-4 py-3 bg-subtle border-b border-line"
@@ -119,7 +119,7 @@ export function DataTable({
               type="button"
               onClick={() => onPageChange?.(page - 1)}
               disabled={page <= 1}
-              className="p-1.5 rounded-md text-placeholder hover:text-secondary hover:bg-subtle disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded text-placeholder hover:text-secondary hover:bg-subtle disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Previous page"
             >
               <ArrowLeft className="size-4" />
@@ -131,7 +131,7 @@ export function DataTable({
               type="button"
               onClick={() => onPageChange?.(page + 1)}
               disabled={page >= totalPages}
-              className="p-1.5 rounded-md text-placeholder hover:text-secondary hover:bg-subtle disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded text-placeholder hover:text-secondary hover:bg-subtle disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Next page"
             >
               <ArrowRight className="size-4" />

@@ -30,7 +30,7 @@ const TextareaField = React.forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
           className={cn(
-            "w-full rounded-sm border border-line bg-card px-3.5 py-3 text-sm font-medium text-dark placeholder:text-placeholder placeholder:text-sm placeholder:font-normal transition-colors resize-none",
+            "w-full rounded border border-line bg-card px-3.5 py-3 text-sm font-medium text-dark placeholder:text-placeholder placeholder:text-sm placeholder:font-normal transition-colors resize-none",
             "focus-visible:outline-none focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/20",
             error && "border-negative focus-visible:border-negative focus-visible:ring-negative/20",
             "disabled:bg-subtle disabled:text-disabled disabled:cursor-not-allowed",

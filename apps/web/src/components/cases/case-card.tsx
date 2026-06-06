@@ -28,7 +28,7 @@ export function CaseCard({ case_, onDelete: _ }: CaseCardProps) {
       onClick={() => router.push(`/cases/${case_.id}`)}
       onKeyDown={(e) => e.key === "Enter" && router.push(`/cases/${case_.id}`)}
       className={cn(
-        "bg-card rounded-xl border flex overflow-hidden cursor-pointer active:scale-[0.99] transition-transform min-h-[44px]",
+        "bg-card rounded border flex overflow-hidden cursor-pointer active:scale-[0.99] transition-transform min-h-[44px]",
         isUrgent ? "border-priority-high-muted" : "border-line",
       )}
     >

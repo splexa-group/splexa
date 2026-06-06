@@ -38,7 +38,7 @@ export function Section({
 }: Props) {
   return (
     <div className={cn("w-full space-y-4", className)}>
-      <div className="flex items-center justify-between bg-brand/5 px-4 py-2.5 rounded-lg">
+      <div className="flex items-center justify-between bg-brand/5 px-4 py-2.5 rounded">
         <h3 className="text-sm font-medium text-brand">{title}</h3>
         {action && <div className="shrink-0">{action}</div>}
       </div>

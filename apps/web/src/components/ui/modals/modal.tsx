@@ -21,7 +21,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
         <Dialog.Content
           className={cn(
             "fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
-            "w-full max-w-md bg-card rounded-lg shadow-xl border border-line",
+            "w-full max-w-md bg-card rounded shadow-xl border border-line",
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
             "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
@@ -35,7 +35,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
             <Dialog.Close asChild>
               <button
                 type="button"
-                className="rounded-md p-1 text-placeholder hover:text-secondary hover:bg-subtle transition-colors"
+                className="rounded p-1 text-placeholder hover:text-secondary hover:bg-subtle transition-colors"
                 aria-label="Close"
               >
                 <X className="size-4" />

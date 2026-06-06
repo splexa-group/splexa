@@ -17,7 +17,7 @@ export function ClientTab({ caseDetail }: ClientTabProps) {
 
   if (!caseDetail.client) {
     return (
-      <div className="bg-card border border-line rounded-xl p-6 text-center">
+      <div className="bg-card border border-line rounded p-6 text-center">
         <p className="text-sm font-medium text-label mb-1">No client linked</p>
         <p className="text-xs text-placeholder">
           Edit the case to link a client.
@@ -27,7 +27,7 @@ export function ClientTab({ caseDetail }: ClientTabProps) {
   }
 
   return (
-    <div className="bg-card border border-line rounded-xl overflow-hidden">
+    <div className="bg-card border border-line rounded overflow-hidden">
       <div className="px-4 py-3 border-b border-line flex items-center justify-between">
         <h3 className="text-[11px] font-bold uppercase tracking-widest text-placeholder">
           Client Info
@@ -49,7 +49,7 @@ export function ClientTab({ caseDetail }: ClientTabProps) {
             readOnly
             disabled
             value={caseDetail.client.fullName}
-            className="w-full rounded-md border border-line bg-subtle px-3 py-[9px] text-sm text-secondary cursor-not-allowed"
+            className="w-full rounded border border-line bg-subtle px-3 py-[9px] text-sm text-secondary cursor-not-allowed"
           />
         </div>
 
@@ -62,7 +62,7 @@ export function ClientTab({ caseDetail }: ClientTabProps) {
             readOnly
             disabled
             value={caseDetail.client.type}
-            className="w-full rounded-md border border-line bg-subtle px-3 py-[9px] text-sm text-secondary cursor-not-allowed"
+            className="w-full rounded border border-line bg-subtle px-3 py-[9px] text-sm text-secondary cursor-not-allowed"
           />
         </div>
 
@@ -75,7 +75,7 @@ export function ClientTab({ caseDetail }: ClientTabProps) {
             readOnly
             disabled
             value={caseDetail.client.phone}
-            className="w-full rounded-md border border-line bg-subtle px-3 py-[9px] text-sm text-secondary cursor-not-allowed"
+            className="w-full rounded border border-line bg-subtle px-3 py-[9px] text-sm text-secondary cursor-not-allowed"
           />
         </div>
 

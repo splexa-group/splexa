@@ -40,7 +40,7 @@ function Select({
       >
         <SelectPrimitive.Trigger
           className={cn(
-            "flex w-full items-center justify-between rounded-sm border border-line bg-card px-3.5 py-[9px] text-sm text-dark transition-colors [&>span]:line-clamp-1",
+            "flex w-full items-center justify-between rounded border border-line bg-card px-3.5 py-[9px] text-sm text-dark transition-colors [&>span]:line-clamp-1",
             "focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20",
             "data-[placeholder]:text-placeholder",
             "disabled:bg-subtle disabled:text-disabled disabled:cursor-not-allowed",
@@ -102,7 +102,7 @@ function SelectGroup({
   return (
     <div
       className={cn(
-        "rounded-sm border bg-card px-3.5 pt-4.5 pb-3.5 transition-colors",
+        "rounded border bg-card px-3.5 pt-4.5 pb-3.5 transition-colors",
         error
           ? "border-negative focus-within:ring-1 focus-within:ring-negative/30"
           : "border-line focus-within:border-brand focus-within:ring-1 focus-within:ring-brand/30",
@@ -156,7 +156,7 @@ function SelectDropdown({ options, showNone }: { options: SelectOption[]; showNo
         alignOffset={-14}
         className={cn(
           "relative z-50 max-h-72 w-[calc(var(--radix-select-trigger-width)+1.75rem)] overflow-hidden",
-          "rounded-sm border border-line bg-card shadow-md",
+          "rounded border border-line bg-card shadow-md",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
           "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",

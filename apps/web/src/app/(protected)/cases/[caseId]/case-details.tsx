@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { CaseTabs } from "@/enums/case-tabs";
+import { CaseTabs, HearingsSubTabs, PartiesSubTabs } from "@/enums/case-tabs";
 import { CaseTabs as CaseTabsNav } from "@/app/(protected)/cases/[caseId]/case-tabs";
-import { useCaseActiveTab } from "@/hooks/use-active-tab";
+import { useCaseActiveTab, useCaseActiveSubTab } from "@/hooks/use-active-tab";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
 import { CaseDetailsSection } from "@/components/cases/case-details/case-details";
@@ -23,41 +23,64 @@ import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete";
 import type { UpdateCaseInput, CaseDetail } from "@/types/cases";
 import { mapCaseToFormValues } from "@/mappers/case-form";
 
+// ---------------------------------------------------------------------------
+// Tab content — add a new case here when adding a new tab to CASE_TAB_CONFIG
+// ---------------------------------------------------------------------------
+
 interface TabContentProps {
   tab: CaseTabs;
+  subTab: string;
   caseId: string;
   caseDetails: CaseDetail;
 }
 
-function TabContent({ tab, caseId, caseDetails }: TabContentProps) {
+function TabContent({ tab, subTab, caseId, caseDetails }: TabContentProps) {
   switch (tab) {
     case CaseTabs.CASE:
       return (
         <>
           <CaseDetailsSection />
+          <CourtDetailsSection />
+          <JudgeDetailsSection />
           <CaseDescriptionSection />
-          <div className="grid md:grid-cols-2 gap-4">
-            <CourtDetailsSection />
-            <JudgeDetailsSection />
-          </div>
-          <OppositePartySection />
         </>
       );
-    case CaseTabs.CLIENT:
-      return <ClientTab caseDetail={caseDetails} />;
+
+    case CaseTabs.PARTIES:
+      switch (subTab) {
+        case PartiesSubTabs.CLIENT:
+          return <ClientTab caseDetail={caseDetails} />;
+        case PartiesSubTabs.OPPOSITE_PARTIES:
+          return <OppositePartySection />;
+        default:
+          return null;
+      }
+
     case CaseTabs.HEARINGS:
-      return <HearingsTab caseId={caseId} />;
+      switch (subTab) {
+        case HearingsSubTabs.HEARINGS:
+          return <HearingsTab caseId={caseId} />;
+        case HearingsSubTabs.IMPORTANT_DATES:
+          return <ImportantDatesTab caseId={caseId} />;
+        default:
+          return null;
+      }
+
     case CaseTabs.DOCUMENTS:
       return <DocumentsTab caseId={caseId} />;
-    case CaseTabs.IMPORTANT_DATES:
-      return <ImportantDatesTab caseId={caseId} />;
+
     default:
       return null;
   }
 }
 
+// ---------------------------------------------------------------------------
+// Page component
+// ---------------------------------------------------------------------------
+
 const CaseDetails = ({ caseId }: { caseId: string }) => {
   const activeTab = useCaseActiveTab();
+  const activeSubTab = useCaseActiveSubTab(activeTab);
   const [showDelete, setShowDelete] = useState(false);
 
   const { data: caseDetails, isLoading } = useCase(caseId);
@@ -91,9 +114,10 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
         <CaseTabsNav caseId={caseId} />
 
         <div className="flex-1 overflow-y-auto bg-page">
-          <PageContent className="space-y-4">
+          <PageContent className="space-y-6">
             <TabContent
               tab={activeTab}
+              subTab={activeSubTab}
               caseId={caseId}
               caseDetails={caseDetails}
             />

@@ -176,7 +176,7 @@ export function DatePicker({
           setOpen((p) => !p);
         }}
         className={cn(
-          "rounded-md border bg-card px-3 pt-3 pb-2.5 transition-colors",
+          "rounded-sm border bg-card px-3.5 pt-4 pb-3 transition-colors",
           error
             ? "border-negative focus-within:ring-1 focus-within:ring-negative/30"
             : open
@@ -189,7 +189,7 @@ export function DatePicker({
       >
         <label
           htmlFor={id}
-          className="block text-[13.5px] font-medium text-label leading-none mb-1.5 cursor-pointer"
+          className="block text-[13px] font-medium text-label/70 leading-none mb-1.5 cursor-pointer"
         >
           {label}
           {required && <span className="text-negative ml-0.5">*</span>}
@@ -197,8 +197,8 @@ export function DatePicker({
         <div className="flex items-center justify-between gap-2">
           <span
             className={cn(
-              "text-sm font-medium flex-1",
-              value ? "text-dark" : "text-placeholder",
+              "text-sm font-normal flex-1",
+              value ? "text-dark font-medium" : "text-placeholder",
             )}
           >
             {value ? formatDisplay(value) : placeholder}

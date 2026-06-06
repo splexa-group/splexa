@@ -11,13 +11,12 @@ import {
   PRIORITY_OPTIONS,
 } from "@/lib/options";
 import type { UpdateCaseInput } from "@/types/cases";
-import { DatePicker } from "@/components/ui/form/date-picker";
 
 export function CaseDetailsSection() {
   const { register, control } = useFormContext<UpdateCaseInput>();
 
   return (
-    <Section title="Case Details" cols={3}>
+    <Section title="Case Details" cols={2}>
       <InputGroup
         label="Case Title"
         required
@@ -46,17 +45,6 @@ export function CaseDetailsSection() {
             onChange={field.onChange}
             onClear={() => field.onChange("")}
             placeholder="Select type..."
-          />
-        )}
-      />
-      <Controller
-        name="filingDate"
-        control={control}
-        render={({ field }) => (
-          <DatePicker
-            label="Filing Date"
-            value={field.value ?? ""}
-            onChange={field.onChange}
           />
         )}
       />

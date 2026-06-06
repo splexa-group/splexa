@@ -105,7 +105,7 @@ function SelectGroup({
   return (
     <div
       className={cn(
-        "rounded-md border bg-card px-3 pt-3 pb-2.5 transition-colors",
+        "rounded-sm border bg-card px-3.5 pt-4 pb-3 transition-colors",
         error
           ? "border-negative focus-within:ring-1 focus-within:ring-negative/30"
           : "border-line focus-within:border-brand focus-within:ring-1 focus-within:ring-brand/30",
@@ -114,7 +114,7 @@ function SelectGroup({
     >
       <p
         id={id}
-        className="text-sm font-medium text-label/90 leading-none mb-1.5"
+        className="text-[13px] font-medium text-label/70 leading-none mb-1.5"
       >
         {label}
         {required && <span className="text-negative ml-0.5">*</span>}

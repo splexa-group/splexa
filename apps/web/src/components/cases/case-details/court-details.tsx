@@ -43,7 +43,7 @@ export function CourtDetailsSection() {
         {...register("courtState")}
       />
       <InputGroup
-        label="Cit"
+        label="City"
         placeholder="Enter city..."
         {...register("courtCity")}
       />

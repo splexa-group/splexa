@@ -37,16 +37,9 @@ export function Section({
   className,
 }: Props) {
   return (
-    <div
-      className={cn(
-        "w-full bg-card border border-line rounded-xl",
-        className,
-      )}
-    >
-      <div className="bg-placeholder/15 rounded-t-xl px-4 h-11 shrink-0 border-b border-line flex items-center justify-between gap-3">
-        <h3 className="text-xs font-bold uppercase tracking-widest text-secondary">
-          {title}
-        </h3>
+    <div className={cn("w-full space-y-4", className)}>
+      <div className="flex items-center justify-between bg-brand/5 px-4 py-2.5 rounded-lg">
+        <h3 className="text-sm font-medium text-brand">{title}</h3>
         {action && <div className="shrink-0">{action}</div>}
       </div>
 
@@ -54,11 +47,12 @@ export function Section({
         <EmptyState
           text={emptyLabel ?? `No ${title.toLowerCase()} added.`}
           action={onAdd ? { label: addLabel, onClick: onAdd } : undefined}
+          className="py-6"
         />
       ) : (
         <div
           className={cn(
-            "p-4",
+            "px-1",
             cols && cn("grid grid-cols-1 gap-4", mdColsClass[cols]),
           )}
         >

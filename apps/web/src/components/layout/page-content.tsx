@@ -17,7 +17,7 @@ interface PageContentProps {
 }
 
 export function PageContent({
-  width = "xl",
+  width = "lg",
   children,
   className,
 }: PageContentProps) {

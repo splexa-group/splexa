@@ -6,13 +6,14 @@ import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-type ModalSize = "sm" | "md" | "lg" | "xl";
+type ModalSize = "sm" | "md" | "lg" | "xl" | "xxl";
 
 const SIZE_CLASS: Record<ModalSize, string> = {
   sm: "max-w-sm",
   md: "max-w-md",
   lg: "max-w-lg",
   xl: "max-w-xl",
+  xxl: "max-w-2xl",
 };
 
 interface ModalProps {
@@ -37,7 +38,7 @@ export function Modal({
   onClose,
   title,
   children,
-  size = "md",
+  size = "lg",
   className,
   onSave,
   saveLabel = "Save",

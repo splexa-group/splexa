@@ -7,8 +7,8 @@ import { CASE_TAB_CONFIG } from "@/config/case-tabs";
 
 export function useActiveTab(tabs: TabConfig[], defaultTab: string): string {
   const searchParams = useSearchParams();
-  const tab = searchParams.get("tab")!;
-  const isValid = tabs.some((t) => t.id === tab);
+  const tab = searchParams.get("tab");
+  const isValid = tab !== null && tabs.some((t) => t.id === tab);
   return isValid ? tab : defaultTab;
 }
 
@@ -23,7 +23,7 @@ export function useActiveSubTab(activeTab: string, tabs: TabConfig[]): string {
 
 // Case wrappers
 export function useCaseActiveTab(): CaseTabs {
-  return useActiveTab(CASE_TAB_CONFIG, CaseTabs.CLIENT) as CaseTabs;
+  return useActiveTab(CASE_TAB_CONFIG, CaseTabs.CASE) as CaseTabs;
 }
 
 export function useCaseActiveSubTab(tab: CaseTabs): string {

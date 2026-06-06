@@ -10,6 +10,8 @@ interface Props {
   caseId: string;
 }
 
+const tabClass = "px-4 py-2 text-sm font-medium rounded-lg transition-all";
+
 export function CaseTabs({ caseId }: Props) {
   const router = useRouter();
   const activeTab = useCaseActiveTab();
@@ -26,17 +28,17 @@ export function CaseTabs({ caseId }: Props) {
   return (
     <div className="bg-card border-b border-line flex-shrink-0">
       {/* Main tab row */}
-      <div className="flex justify-center px-4 py-2 gap-1">
+      <div className="flex justify-center px-4 py-2 gap-2">
         {CASE_TAB_CONFIG.map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => navigateTo(tab.id, tab.subTabs?.[0]?.id)}
             className={cn(
-              "px-4 py-2 text-sm font-medium rounded-lg transition-all",
+              tabClass,
               activeTab === tab.id
                 ? "bg-brand/10 text-brand"
-                : "text-body hover:bg-subtle hover:text-dark",
+                : "bg-subtle text-body hover:bg-line hover:text-dark",
             )}
           >
             {tab.label}
@@ -46,17 +48,17 @@ export function CaseTabs({ caseId }: Props) {
 
       {/* Sub-tab row — rendered automatically when the active tab has subTabs */}
       {activeTabConfig?.subTabs?.length && (
-        <div className="flex justify-center border-t border-line bg-subtle/30 px-4 py-1.5 gap-1">
+        <div className="flex justify-center border-t border-line bg-subtle/30 px-4 py-2 gap-2">
           {activeTabConfig.subTabs.map((sub) => (
             <button
               key={sub.id}
               type="button"
               onClick={() => navigateTo(activeTab, sub.id)}
               className={cn(
-                "px-3 py-1.5 text-sm font-medium rounded-md transition-all",
+                tabClass,
                 activeSubTab === sub.id
                   ? "bg-brand/10 text-brand"
-                  : "text-secondary hover:text-dark hover:bg-subtle",
+                  : "bg-subtle text-body hover:bg-line hover:text-dark",
               )}
             >
               {sub.label}

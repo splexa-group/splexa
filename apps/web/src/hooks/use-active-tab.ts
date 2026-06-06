@@ -8,7 +8,7 @@ export function useCaseActiveTab(): CaseTabs {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab") as CaseTabs | null;
   const isValid = CASE_TAB_CONFIG.some((t) => t.id === tab);
-  return isValid ? tab! : CaseTabs.CASE;
+  return isValid ? tab! : CaseTabs.CLIENT;
 }
 
 export function useCaseActiveSubTab(tab: CaseTabs): string {

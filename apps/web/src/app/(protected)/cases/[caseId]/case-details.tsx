@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { CaseTabs, HearingsSubTabs, PartiesSubTabs } from "@/enums/case-tabs";
+import { CaseTabs, CaseSubTabs } from "@/enums/case-tabs";
 import { CaseTabs as CaseTabsNav } from "@/app/(protected)/cases/[caseId]/case-tabs";
 import { useCaseActiveTab, useCaseActiveSubTab } from "@/hooks/use-active-tab";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
@@ -14,7 +14,6 @@ import { JudgeDetailsSection } from "@/components/cases/case-details/judge-detai
 import { OppositePartySection } from "@/components/cases/case-details/opposite-parties";
 import { ClientTab } from "@/components/cases/client/client-details";
 import { HearingsTab } from "@/components/cases/hearings-tab/hearings-tab";
-import { DocumentsTab } from "@/components/cases/documents-tab/documents-tab";
 import { ImportantDatesTab } from "@/components/cases/important-dates/important-dates-tab";
 import { PageFooter } from "@/components/layout/page-footer";
 import { PageContent } from "@/components/layout/page-content";
@@ -36,38 +35,33 @@ interface TabContentProps {
 
 function TabContent({ tab, subTab, caseId, caseDetails }: TabContentProps) {
   switch (tab) {
-    case CaseTabs.CASE:
-      return (
-        <>
-          <CaseDetailsSection />
-          <CourtDetailsSection />
-          <JudgeDetailsSection />
-          <CaseDescriptionSection />
-        </>
-      );
+    case CaseTabs.CLIENT:
+      return <ClientTab caseDetail={caseDetails} />;
 
-    case CaseTabs.PARTIES:
+    case CaseTabs.CASE:
       switch (subTab) {
-        case PartiesSubTabs.CLIENT:
-          return <ClientTab caseDetail={caseDetails} />;
-        case PartiesSubTabs.OPPOSITE_PARTIES:
-          return <OppositePartySection />;
+        case CaseSubTabs.DETAILS:
+          return (
+            <>
+              <CaseDetailsSection />
+              <CourtDetailsSection />
+              <JudgeDetailsSection />
+            </>
+          );
+        case CaseSubTabs.DESCRIPTION:
+          return <CaseDescriptionSection />;
         default:
           return null;
       }
+
+    case CaseTabs.OPPOSITE_PARTIES:
+      return <OppositePartySection />;
 
     case CaseTabs.HEARINGS:
-      switch (subTab) {
-        case HearingsSubTabs.HEARINGS:
-          return <HearingsTab caseId={caseId} />;
-        case HearingsSubTabs.IMPORTANT_DATES:
-          return <ImportantDatesTab caseId={caseId} />;
-        default:
-          return null;
-      }
+      return <HearingsTab caseId={caseId} />;
 
-    case CaseTabs.DOCUMENTS:
-      return <DocumentsTab caseId={caseId} />;
+    case CaseTabs.IMPORTANT_DATES:
+      return <ImportantDatesTab caseId={caseId} />;
 
     default:
       return null;

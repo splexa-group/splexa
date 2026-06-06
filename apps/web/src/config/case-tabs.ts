@@ -1,4 +1,4 @@
-import { CaseTabs, HearingsSubTabs, PartiesSubTabs } from "@/enums/case-tabs";
+import { CaseTabs, CaseSubTabs } from "@/enums/case-tabs";
 
 export interface SubTabConfig {
   id: string;
@@ -15,28 +15,16 @@ export interface CaseTabConfig {
 // If the tab has sub-tabs, add them in the subTabs array.
 // Then add a matching case in TabContent inside case-details.tsx.
 export const CASE_TAB_CONFIG: CaseTabConfig[] = [
+  { id: CaseTabs.CLIENT, label: "Client" },
   {
     id: CaseTabs.CASE,
     label: "Case",
-  },
-  {
-    id: CaseTabs.PARTIES,
-    label: "Parties",
     subTabs: [
-      { id: PartiesSubTabs.CLIENT, label: "Client" },
-      { id: PartiesSubTabs.OPPOSITE_PARTIES, label: "Opposite Parties" },
+      { id: CaseSubTabs.DETAILS, label: "Case Details" },
+      { id: CaseSubTabs.DESCRIPTION, label: "Case Description" },
     ],
   },
-  {
-    id: CaseTabs.HEARINGS,
-    label: "Hearings",
-    subTabs: [
-      { id: HearingsSubTabs.HEARINGS, label: "Hearings" },
-      { id: HearingsSubTabs.IMPORTANT_DATES, label: "Important Dates" },
-    ],
-  },
-  {
-    id: CaseTabs.DOCUMENTS,
-    label: "Documents",
-  },
+  { id: CaseTabs.OPPOSITE_PARTIES, label: "Opposite Parties" },
+  { id: CaseTabs.HEARINGS, label: "Hearings" },
+  { id: CaseTabs.IMPORTANT_DATES, label: "Important Dates" },
 ];

@@ -4,6 +4,7 @@ import * as React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 type ModalSize = "sm" | "md" | "lg" | "xl";
 
@@ -21,9 +22,33 @@ interface ModalProps {
   children: React.ReactNode;
   size?: ModalSize;
   className?: string;
+  // Footer actions
+  onSave?: () => void;
+  saveLabel?: string;
+  saveLoading?: boolean;
+  saveDisabled?: boolean;
+  onDelete?: () => void;
+  deleteLabel?: string;
+  cancelLabel?: string;
 }
 
-export function Modal({ open, onClose, title, children, size = "md", className }: ModalProps) {
+export function Modal({
+  open,
+  onClose,
+  title,
+  children,
+  size = "md",
+  className,
+  onSave,
+  saveLabel = "Save",
+  saveLoading,
+  saveDisabled,
+  onDelete,
+  deleteLabel = "Delete",
+  cancelLabel = "Cancel",
+}: ModalProps) {
+  const showFooter = !!(onSave || onDelete);
+
   return (
     <Dialog.Root open={open} onOpenChange={(o) => !o && onClose()}>
       <Dialog.Portal>
@@ -31,14 +56,16 @@ export function Modal({ open, onClose, title, children, size = "md", className }
         <Dialog.Content
           className={cn(
             "fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2",
-            "w-full bg-card rounded shadow-xl border border-line", SIZE_CLASS[size],
+            "w-full bg-card rounded shadow-xl border border-line",
+            SIZE_CLASS[size],
             "data-[state=open]:animate-in data-[state=closed]:animate-out",
             "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
             "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
             className,
           )}
         >
-          <div className="flex items-center justify-between p-5 border-b border-line">
+          {/* Header */}
+          <div className="flex items-center justify-between px-5 py-4 border-b border-line">
             <Dialog.Title className="text-base font-semibold text-dark">
               {title}
             </Dialog.Title>
@@ -52,7 +79,34 @@ export function Modal({ open, onClose, title, children, size = "md", className }
               </button>
             </Dialog.Close>
           </div>
+
+          {/* Body */}
           {children}
+
+          {/* Footer */}
+          {showFooter && (
+            <div className="flex items-center gap-2 px-5 py-4 border-t border-line">
+              {onDelete && (
+                <Button type="button" variant="negative" onClick={onDelete}>
+                  {deleteLabel}
+                </Button>
+              )}
+              <div className="flex-1" />
+              <Button type="button" variant="secondary" onClick={onClose}>
+                {cancelLabel}
+              </Button>
+              {onSave && (
+                <Button
+                  type="button"
+                  loading={saveLoading}
+                  disabled={saveDisabled}
+                  onClick={onSave}
+                >
+                  {saveLabel}
+                </Button>
+              )}
+            </div>
+          )}
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

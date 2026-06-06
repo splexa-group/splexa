@@ -2,9 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
-import { Modal } from "@/components/ui/modals/modal";
+import { Modal } from "@/components/modals/modal";
 import { InputGroup } from "@/components/ui/form/input";
-import { Button } from "@/components/ui/button";
 import { useCreateCase } from "@/hooks/use-cases";
 
 interface Props {
@@ -49,45 +48,33 @@ export function CreateCaseModal({ open, onClose }: Props) {
   }
 
   return (
-    <Modal open={open} onClose={handleClose} title="Create New Case">
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="p-5 flex flex-col gap-3">
-          <InputGroup
-            label="Case Title"
-            required
-            placeholder="Enter case title..."
-            error={errors.title?.message}
-            {...register("title", { required: "Case title is required" })}
-          />
-          <InputGroup
-            label="Case Number"
-            placeholder="Enter case number..."
-            {...register("caseNumber")}
-          />
-          <p className="text-xs text-placeholder text-left pt-1">
-            You can add detailed case information, client details, hearing
-            records, and supporting documents after creating the case.{" "}
-          </p>
-        </div>
-        <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-line">
-          <Button
-            type="button"
-            variant="secondary"
-            size="sm"
-            onClick={handleClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            size="sm"
-            disabled={!title?.trim()}
-            loading={createCase.isPending}
-          >
-            Create Case
-          </Button>
-        </div>
-      </form>
+    <Modal
+      open={open}
+      onClose={handleClose}
+      title="Create New Case"
+      onSave={handleSubmit(onSubmit)}
+      saveLabel="Create Case"
+      saveLoading={createCase.isPending}
+      saveDisabled={!title?.trim()}
+    >
+      <div className="p-5 flex flex-col gap-3">
+        <InputGroup
+          label="Case Title"
+          required
+          placeholder="Enter case title..."
+          error={errors.title?.message}
+          {...register("title", { required: "Case title is required" })}
+        />
+        <InputGroup
+          label="Case Number"
+          placeholder="Enter case number..."
+          {...register("caseNumber")}
+        />
+        <p className="text-xs text-placeholder text-left pt-1">
+          You can add detailed case information, client details, hearing
+          records, and supporting documents after creating the case.
+        </p>
+      </div>
     </Modal>
   );
 }

@@ -10,8 +10,8 @@ import { Search } from "@/components/ui/form/search";
 import { FiltersBar } from "@/components/ui/filters-bar";
 import { DataTable } from "@/components/ui/data-table";
 import { Menu } from "@/components/ui/menu";
-import { Pencil, Trash2, User } from "lucide-react";
-import type { CaseSummary, CaseFilters } from "@/types/cases";
+import { Pencil, Trash2 } from "lucide-react";
+import { CaseSummary, CaseFilters } from "@/types/cases";
 import { CaseStatus } from "@splexa-group/shared/enums";
 import { CASE_STATUS_OPTIONS, CASE_SORT_OPTIONS } from "@/lib/options";
 import {
@@ -21,6 +21,19 @@ import {
 } from "../../../components/cases/case-utils";
 
 const PAGE_SIZE = 30;
+
+function isCaseStatus(v: string): v is CaseStatus {
+  return (Object.values(CaseStatus) as string[]).includes(v);
+}
+
+const SORT_BY_VALUES: NonNullable<CaseFilters["sortBy"]>[] = [
+  "hearingDate",
+  "createdAt",
+];
+
+function isSortBy(v: string): v is NonNullable<CaseFilters["sortBy"]> {
+  return SORT_BY_VALUES.includes(v as NonNullable<CaseFilters["sortBy"]>);
+}
 
 const COLUMNS = [
   "Case",
@@ -44,8 +57,8 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
 
   const filters: CaseFilters = {
     search: search || undefined,
-    status: (status as CaseStatus) || undefined,
-    sortBy: (sortBy as CaseFilters["sortBy"]) || undefined,
+    status: isCaseStatus(status) ? status : undefined,
+    sortBy: isSortBy(sortBy) ? sortBy : undefined,
     page,
     limit: PAGE_SIZE,
   };
@@ -60,73 +73,66 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
     setToDelete(null);
   };
 
-  const rows = cases.map((c) => ({
-    key: c.id,
-    onClick: () => router.push(`/cases/${c.id}`),
-    className: cn(
-      priorityBorderClass(c.priority),
-      (c.status === CaseStatus.Stayed || c.status === CaseStatus.Disposed) &&
-        "opacity-40",
-    ),
-    cells: [
-      <p key="title" className="text-sm text-body truncate pr-4">
-        {c.title}
-      </p>,
+  const rows = cases.map((c) => {
+    return {
+      key: c.id,
+      onClick: () => router.push(`/cases/${c.id}`),
+      className: cn(
+        priorityBorderClass(c.priority),
+        (c.status === CaseStatus.Stayed || c.status === CaseStatus.Disposed) &&
+          "opacity-40",
+      ),
+      cells: [
+        <p key="title" className="text-sm text-body truncate pr-4">
+          {c.title}
+        </p>,
 
-      <p key="number" className="text-sm text-body pr-4 truncate">
-        {c.caseNumber ?? "No case number"}
-      </p>,
+        <p key="number" className="text-sm text-body pr-4 truncate">
+          {c.caseNumber ?? "No case number"}
+        </p>,
 
-      <p key="client" className="text-sm text-body pr-4 truncate">
-        {c.client?.fullName ?? "No client"}
-      </p>,
+        <p key="client" className="text-sm text-body pr-4 truncate">
+          {c.client?.fullName ?? "No client"}
+        </p>,
 
-      <p key="court" className="text-sm text-body pr-4 truncate">
-        {c.courtName ?? "No court"}
-      </p>,
+        <p key="court" className="text-sm text-body pr-4 truncate">
+          {c.courtName ?? "No court"}
+        </p>,
 
-      <span
-        key="status"
-        className={cn(
-          "inline-flex items-center px-2.5 py-0.5 rounded-full text-sm w-fit",
-          statusBadgeClass(c.status),
-        )}
-      >
-        {c.status}
-      </span>,
+        <span
+          key="status"
+          className={cn(
+            "inline-flex items-center px-2.5 py-0.5 rounded-full text-sm w-fit",
+            statusBadgeClass(c.status),
+          )}
+        >
+          {c.status}
+        </span>,
 
-      <span key="hearing" className="text-sm text-body pr-4 truncate">
-        {formatHearingDate(c.nextHearingDate)}
-      </span>,
+        <span key="hearing" className="text-sm text-body pr-4 truncate">
+          {formatHearingDate(c.nextHearingDate)}
+        </span>,
 
-      <div key="actions" onClick={(e) => e.stopPropagation()}>
-        <Menu
-          items={[
-            {
-              label: "Edit",
-              icon: Pencil,
-              onClick: () => router.push(`/cases/${c.id}`),
-            },
-            ...(c.client
-              ? [
-                  {
-                    label: "View client",
-                    icon: User,
-                    onClick: () => router.push(`/clients/${c.client!.id}`),
-                  },
-                ]
-              : []),
-            {
-              label: "Delete",
-              icon: Trash2,
-              onClick: () => setToDelete(c),
-              danger: true,
-            },
-          ]}
-        />
-      </div>,
-    ],
-  }));
+        <div key="actions" onClick={(e) => e.stopPropagation()}>
+          <Menu
+            items={[
+              {
+                label: "Edit",
+                icon: Pencil,
+                onClick: () => router.push(`/cases/${c.id}`),
+              },
+              {
+                label: "Delete",
+                icon: Trash2,
+                onClick: () => setToDelete(c),
+                danger: true,
+              },
+            ]}
+          />
+        </div>,
+      ],
+    };
+  });
 
   return (
     <div className="flex flex-col h-full">

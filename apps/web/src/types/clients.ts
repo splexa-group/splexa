@@ -1,5 +1,15 @@
 import type { ClientType } from "@splexa-group/shared/enums";
 
+export interface CreateClientInput {
+  fullName: string;
+  phone: string;
+  type: ClientType;
+  email?: string;
+  address?: string;
+  companyName?: string;
+  notes?: string;
+}
+
 export interface ClientSearchResult {
   id: string;
   fullName: string;

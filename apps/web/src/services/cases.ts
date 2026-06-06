@@ -6,6 +6,7 @@ import type {
   CreateCaseInput,
   UpdateCaseInput,
 } from "@/types/cases";
+import { CreateClientInput } from "@/types/clients";
 
 export const casesApi = {
   list: (filters: CaseFilters = {}) =>
@@ -17,6 +18,9 @@ export const casesApi = {
 
   update: (id: string, data: UpdateCaseInput) =>
     PATCH<CaseDetail>(`/cases/${id}`, data),
+
+  addClient: (id: string, data: CreateClientInput) =>
+    POST<CaseDetail>(`/cases/${id}/client`, data),
 
   delete: (id: string) => DELETE<void>(`/cases/${id}`),
 };

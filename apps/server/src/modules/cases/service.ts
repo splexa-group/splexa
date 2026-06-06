@@ -1,12 +1,17 @@
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { clientsRepository } from "@/modules/clients/repository";
-import type { ServiceContext } from "@/types/service-context";
+import { ServiceContext } from "@/types/service-context";
 import { parseDate } from "@/utils/date";
 import { Errors } from "@/utils/errors";
 
 import { casesRepository } from "./repository";
-import type { CreateCaseInput, ListCasesQuery, UpdateCaseInput } from "./schema";
+import {
+  AddClientToCaseInput,
+  CreateCaseInput,
+  ListCasesQuery,
+  UpdateCaseInput,
+} from "./schema";
 
 export const casesService = {
   async create(input: CreateCaseInput, ctx: ServiceContext) {
@@ -23,20 +28,30 @@ export const casesService = {
     if (clientId) {
       const client = await clientsRepository.findById(clientId, ctx.orgId);
       if (!client) throw Errors.clientNotFound();
-      return { data: await casesRepository.create({ ...caseFields, clientId }) };
+      return {
+        data: await casesRepository.create({ ...caseFields, clientId }),
+      };
     }
 
     if (!newClient) {
       return { data: await casesRepository.create(caseFields) };
     }
 
-    const existingWithPhone = await clientsRepository.findByPhone(newClient.phone, ctx.orgId);
-    const data = await casesRepository.createWithNewClient({ ...caseFields, newClient });
+    const existingWithPhone = await clientsRepository.findByPhone(
+      newClient.phone,
+      ctx.orgId,
+    );
+    const data = await casesRepository.createWithNewClient({
+      ...caseFields,
+      newClient,
+    });
 
     if (existingWithPhone) {
       return {
         data,
-        warnings: [`${existingWithPhone.fullName} already has this phone number`],
+        warnings: [
+          `${existingWithPhone.fullName} already has this phone number`,
+        ],
       };
     }
 
@@ -57,8 +72,17 @@ export const casesService = {
     const existing = await casesRepository.findById(id, ctx.orgId);
     if (!existing) throw Errors.caseNotFound();
 
+    if (input.clientId) {
+      const client = await clientsRepository.findById(
+        input.clientId,
+        ctx.orgId,
+      );
+      if (!client) throw Errors.clientNotFound();
+    }
+
     const judgeChanged =
-      (input.judgeName !== undefined && input.judgeName !== existing.judgeName) ||
+      (input.judgeName !== undefined &&
+        input.judgeName !== existing.judgeName) ||
       (input.judgeDesignation !== undefined &&
         input.judgeDesignation !== existing.judgeDesignation);
 
@@ -71,6 +95,41 @@ export const casesService = {
     const updated = await casesRepository.update(id, ctx.orgId, updateData);
     if (!updated) throw Errors.caseNotFound();
     return updated;
+  },
+
+  async addClient(
+    caseId: string,
+    input: AddClientToCaseInput,
+    ctx: ServiceContext,
+  ) {
+    const existing = await casesRepository.findById(caseId, ctx.orgId);
+    if (!existing) throw Errors.caseNotFound();
+    if (existing.clientId) throw Errors.caseClientExists();
+
+    const existingWithPhone = await clientsRepository.findByPhone(
+      input.phone,
+      ctx.orgId,
+    );
+
+    const updated = await casesRepository.createClientAndLink(
+      caseId,
+      ctx.orgId,
+      {
+        ...input,
+        orgId: ctx.orgId,
+        createdBy: ctx.userId,
+      },
+    );
+
+    if (existingWithPhone) {
+      return {
+        data: updated,
+        warnings: [
+          `${existingWithPhone.fullName} already has this phone number`,
+        ],
+      };
+    }
+    return { data: updated };
   },
 
   async delete(id: string, ctx: ServiceContext) {

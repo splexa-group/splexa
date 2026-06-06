@@ -18,7 +18,7 @@ export function useActiveSubTab(activeTab: string, tabs: TabConfig[]): string {
   const tabConfig = tabs.find((t) => t.id === activeTab);
   if (!tabConfig?.subTabs?.length) return "";
   const isValid = tabConfig.subTabs.some((s) => s.id === subTab);
-  return isValid ? subTab! : tabConfig.subTabs[0].id;
+  return isValid ? (subTab ?? tabConfig.subTabs[0].id) : tabConfig.subTabs[0].id;
 }
 
 // Case wrappers

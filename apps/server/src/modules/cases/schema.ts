@@ -24,6 +24,10 @@ const newClientSchema = z
     fullName: z.string().min(1).max(200),
     phone: z.string().min(7).max(20),
     type: z.enum(ClientType),
+    email: z.email().optional(),
+    address: z.string().max(500).optional(),
+    companyName: z.string().max(200).optional(),
+    notes: z.string().max(2000).optional(),
   })
   .strict();
 
@@ -31,11 +35,11 @@ export const createCaseSchema = z
   .object({
     title: z.string().min(1).max(300),
     clientRole: z.enum(PartyRole).optional(),
-    clientId: z.string().uuid().optional(),
+    clientId: z.uuid().optional(),
     newClient: newClientSchema.optional(),
     caseNumber: z.string().max(100).optional(),
     caseType: z.enum(CaseType).optional(),
-    filingDate: z.string().datetime({ offset: true }).optional(),
+    filingDate: z.iso.datetime({ offset: true }).optional(),
     courtName: z.string().max(200).optional(),
     courtType: z.enum(CourtType).optional(),
     courtState: z.string().max(100).optional(),
@@ -49,7 +53,7 @@ export const createCaseSchema = z
     priority: z.enum(Priority).optional(),
     oppositeParties: z.array(oppositePartySchema).optional(),
     tags: z.array(z.string().max(50)).optional(),
-    assignedTo: z.string().uuid().optional(),
+    assignedTo: z.uuid().optional(),
   })
   .strict()
   .superRefine((data, ctx) => {
@@ -67,25 +71,26 @@ const emptyToUndefined = <T extends z.ZodTypeAny>(schema: T) =>
 
 export const updateCaseSchema = z
   .object({
-    title: emptyToUndefined(z.string().min(1).max(300)).optional(),
+    title: emptyToUndefined(z.string().min(1).max(300).optional()),
+    clientId: z.uuid().optional(),
     clientRole: z.enum(PartyRole).optional(),
-    caseNumber: emptyToUndefined(z.string().max(100)).optional(),
+    caseNumber: emptyToUndefined(z.string().max(100).optional()),
     caseType: z.enum(CaseType).optional(),
-    filingDate: emptyToUndefined(z.string().datetime({ offset: true })).optional(),
-    courtName: emptyToUndefined(z.string().max(200)).optional(),
+    filingDate: emptyToUndefined(z.iso.datetime({ offset: true }).optional()),
+    courtName: emptyToUndefined(z.string().max(200).optional()),
     courtType: z.enum(CourtType).optional(),
-    courtState: emptyToUndefined(z.string().max(100)).optional(),
-    courtCity: emptyToUndefined(z.string().max(100)).optional(),
-    benchNumber: emptyToUndefined(z.string().max(50)).optional(),
-    judgeName: emptyToUndefined(z.string().max(200)).optional(),
-    judgeDesignation: emptyToUndefined(z.string().max(200)).optional(),
+    courtState: emptyToUndefined(z.string().max(100).optional()),
+    courtCity: emptyToUndefined(z.string().max(100).optional()),
+    benchNumber: emptyToUndefined(z.string().max(50).optional()),
+    judgeName: emptyToUndefined(z.string().max(200).optional()),
+    judgeDesignation: emptyToUndefined(z.string().max(200).optional()),
     status: z.enum(CaseStatus).optional(),
     stage: z.enum(CaseStage).optional(),
-    description: emptyToUndefined(z.string()).optional(),
+    description: emptyToUndefined(z.string().optional()),
     priority: z.enum(Priority).optional(),
     oppositeParties: z.array(oppositePartySchema).optional(),
     tags: z.array(z.string().max(50)).optional(),
-    assignedTo: z.string().uuid().nullable().optional(),
+    assignedTo: z.uuid().nullable().optional(),
   })
   .strict();
 
@@ -96,16 +101,19 @@ export const listCasesQuerySchema = z
     caseType: z.enum(CaseType).optional(),
     priority: z.enum(Priority).optional(),
     courtType: z.enum(CourtType).optional(),
-    clientId: z.string().uuid().optional(),
+    clientId: z.uuid().optional(),
     sortBy: z.enum(["hearingDate", "createdAt"]).default("hearingDate").optional(),
     page: z.coerce.number().int().positive().default(1),
     limit: z.coerce.number().int().positive().max(100).default(20),
   })
   .strict();
 
-export const caseParamsSchema = z.object({ id: z.string().uuid() }).strict();
+export const caseParamsSchema = z.object({ id: z.uuid() }).strict();
+
+export const addClientToCaseSchema = newClientSchema;
 
 export type CreateCaseInput = z.infer<typeof createCaseSchema>;
 export type UpdateCaseInput = z.infer<typeof updateCaseSchema>;
+export type AddClientToCaseInput = z.infer<typeof addClientToCaseSchema>;
 export type ListCasesQuery = z.infer<typeof listCasesQuerySchema>;
 export type CaseParams = z.infer<typeof caseParamsSchema>;

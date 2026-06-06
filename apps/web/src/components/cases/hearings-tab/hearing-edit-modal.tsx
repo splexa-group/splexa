@@ -8,11 +8,7 @@ import { SelectGroup } from "@/components/ui/form/select";
 import { TextareaField } from "@/components/ui/form/textarea";
 import { Button } from "@/components/ui/button";
 import { HEARING_PURPOSE_OPTIONS, HEARING_STATUS_OPTIONS } from "@/lib/options";
-import type {
-  Hearing,
-  UpdateHearingInput,
-  CreateHearingInput,
-} from "@/types/hearings";
+import type { Hearing, UpdateHearingInput } from "@/types/hearings";
 import { HearingStatus } from "@splexa-group/shared/enums";
 import { toISODatetime } from "@/lib/utils";
 
@@ -20,7 +16,7 @@ interface HearingEditModalProps {
   open: boolean;
   hearing?: Hearing | null;
   onClose: () => void;
-  onSave: (data: UpdateHearingInput | CreateHearingInput) => void;
+  onSave: (data: UpdateHearingInput) => void;
   isPending?: boolean;
 }
 

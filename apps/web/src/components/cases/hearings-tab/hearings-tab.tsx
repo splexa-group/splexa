@@ -14,11 +14,8 @@ import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import { PageFooter } from "@/components/layout/page-footer";
 import { Button } from "@/components/ui/button";
 import { HearingStatus } from "@splexa-group/shared/enums";
-import type {
-  Hearing,
-  CreateHearingInput,
-  UpdateHearingInput,
-} from "@/types/hearings";
+import { toast } from "sonner";
+import type { Hearing } from "@/types/hearings";
 
 interface HearingsTabProps {
   caseId: string;
@@ -87,12 +84,14 @@ export function HearingsTab({ caseId }: HearingsTabProps) {
         onClose={() => setEditHearing(null)}
         onSave={async (data) => {
           if (editHearing === "new") {
-            await createHearing.mutateAsync(data as CreateHearingInput);
+            const { date, purpose, notes, judgePresent } = data;
+            if (!date) {
+              toast.error("Hearing date is required");
+              return;
+            }
+            await createHearing.mutateAsync({ date, purpose, notes, judgePresent });
           } else if (editHearing) {
-            await updateHearing.mutateAsync({
-              id: editHearing.id,
-              data: data as UpdateHearingInput,
-            });
+            await updateHearing.mutateAsync({ id: editHearing.id, data });
           }
           setEditHearing(null);
         }}

@@ -8,18 +8,14 @@ import { SelectGroup } from "@/components/ui/form/select";
 import { TextareaField } from "@/components/ui/form/textarea";
 import { Button } from "@/components/ui/button";
 import { IMPORTANT_DATE_TYPE_OPTIONS } from "@/lib/options";
-import type {
-  ImportantDate,
-  CreateImportantDateInput,
-  UpdateImportantDateInput,
-} from "@/types/important-dates";
+import type { ImportantDate, CreateImportantDateInput } from "@/types/important-dates";
 import { toISODatetime } from "@/lib/utils";
 
 interface ImportantDateModalProps {
   open: boolean;
   date?: ImportantDate | null;
   onClose: () => void;
-  onSave: (data: CreateImportantDateInput | UpdateImportantDateInput) => void;
+  onSave: (data: CreateImportantDateInput) => void;
   isPending?: boolean;
 }
 

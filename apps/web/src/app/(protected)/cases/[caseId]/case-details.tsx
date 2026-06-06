@@ -1,55 +1,82 @@
 "use client";
 
 import { useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { FormProvider, useForm, type UseFormReturn } from "react-hook-form";
 import { CaseTabs, CaseSubTabs } from "@/enums/case-tabs";
 import { DocumentsTab } from "@/components/cases/documents-tab/documents-tab";
 import { CaseTabs as CaseTabsNav } from "@/app/(protected)/cases/[caseId]/case-tabs";
 import { useCaseActiveTab, useCaseActiveSubTab } from "@/hooks/use-active-tab";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
-import { useUpdateClient } from "@/hooks/use-clients";
+import { useAddClientToCase, useUpdateClient } from "@/hooks/use-clients";
 import { CaseDetailsSection } from "@/components/cases/case-details/case-details";
 import { CaseDescriptionSection } from "@/components/cases/case-details/case-description";
 import { CourtDetailsSection } from "@/components/cases/case-details/court-details";
 import { JudgeDetailsSection } from "@/components/cases/case-details/judge-details";
 import { OppositePartySection } from "@/components/cases/case-details/opposite-parties";
-import { ClientTab } from "@/components/cases/client/client-details";
+import { ClientDetails } from "@/components/cases/client/client-details";
 import { HearingsTab } from "@/components/cases/hearings-tab/hearings-tab";
 import { ImportantDatesTab } from "@/components/cases/important-dates/important-dates-tab";
 import { PageFooter } from "@/components/layout/page-footer";
 import { PageContent } from "@/components/layout/page-content";
 import { Button } from "@/components/ui/button";
 import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
-import type { UpdateCaseInput } from "@/types/cases";
-import type { UpdateClientInput } from "@/types/clients";
-import { mapCaseToFormValues, mapClientToFormValues } from "@/mappers/case-form";
+import { UpdateCaseInput } from "@/types/cases";
+import { CreateClientInput, UpdateClientInput } from "@/types/clients";
+import {
+  mapCaseToFormValues,
+  mapClientToFormValues,
+} from "@/mappers/case-form";
 
 interface TabContentProps {
   tab: CaseTabs;
   subTab: string;
   caseId: string;
+  caseForm: UseFormReturn<UpdateCaseInput>;
+  clientForm: UseFormReturn<UpdateClientInput>;
 }
 
-function TabContent({ tab, subTab, caseId }: TabContentProps) {
+function CaseSubTabContent({ subTab }: { subTab: string }) {
+  switch (subTab) {
+    case CaseSubTabs.DETAILS:
+      return (
+        <>
+          <CaseDetailsSection />
+          <CourtDetailsSection />
+          <JudgeDetailsSection />
+        </>
+      );
+    case CaseSubTabs.DESCRIPTION:
+      return <CaseDescriptionSection />;
+    case CaseSubTabs.OPPOSITE_PARTIES:
+      return <OppositePartySection />;
+    default:
+      return null;
+  }
+}
+
+function TabContent({
+  tab,
+  subTab,
+  caseId,
+  caseForm,
+  clientForm,
+}: TabContentProps) {
   switch (tab) {
+    case CaseTabs.CLIENT:
+      return (
+        <FormProvider {...clientForm}>
+          <ClientDetails />
+        </FormProvider>
+      );
+
     case CaseTabs.CASE:
-      switch (subTab) {
-        case CaseSubTabs.DETAILS:
-          return (
-            <>
-              <CaseDetailsSection />
-              <CourtDetailsSection />
-              <JudgeDetailsSection />
-            </>
-          );
-        case CaseSubTabs.DESCRIPTION:
-          return <CaseDescriptionSection />;
-        case CaseSubTabs.OPPOSITE_PARTIES:
-          return <OppositePartySection />;
-        default:
-          return null;
-      }
+      return (
+        <FormProvider {...caseForm}>
+          <CaseSubTabContent subTab={subTab} />
+        </FormProvider>
+      );
 
     case CaseTabs.HEARINGS:
       return <HearingsTab caseId={caseId} />;
@@ -73,6 +100,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
   const { data: caseDetails, isLoading } = useCase(caseId);
   const updateCase = useUpdateCase(caseId);
   const updateClient = useUpdateClient();
+  const addClientToCase = useAddClientToCase(caseId);
   const deleteCase = useDeleteCase();
 
   usePageTitle({
@@ -96,17 +124,44 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
 
   const isSaving =
     activeTab === CaseTabs.CLIENT
-      ? updateClient.isPending
+      ? updateClient.isPending || addClientToCase.isPending
       : updateCase.isPending;
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (activeTab === CaseTabs.CLIENT) {
-      if (!caseDetails.clientId) return;
-      clientForm.handleSubmit((data) =>
-        updateClient.mutateAsync({ id: caseDetails.clientId!, caseId, data })
-      )();
+      const valid = await clientForm.trigger();
+      if (!valid) return;
+
+      const data = clientForm.getValues();
+
+      if (!caseDetails.clientId) {
+        if (!data.type) {
+          toast.error("Client type is required");
+          return;
+        }
+        const clientInput: CreateClientInput = {
+          fullName: data.fullName ?? "",
+          phone: data.phone ?? "",
+          type: data.type,
+          email: data.email,
+          address: data.address,
+          companyName: data.companyName,
+          notes: data.notes,
+        };
+        await addClientToCase.mutateAsync(clientInput);
+      } else {
+        await updateClient.mutateAsync({
+          id: caseDetails.clientId,
+          caseId,
+          data,
+        });
+      }
     } else {
-      caseForm.handleSubmit((data) => updateCase.mutateAsync(data))();
+      const valid = await caseForm.trigger();
+      if (!valid) return;
+
+      const data = caseForm.getValues();
+      await updateCase.mutateAsync(data);
     }
   };
 
@@ -114,27 +169,19 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
     await deleteCase.mutateAsync(caseId);
   };
 
-  const isClientTab = activeTab === CaseTabs.CLIENT;
-
   return (
     <div className="flex flex-col h-full overflow-hidden">
       <CaseTabsNav caseId={caseId} />
 
       <div className="flex-1 overflow-y-auto bg-page">
         <PageContent className="space-y-6">
-          {isClientTab ? (
-            <FormProvider {...clientForm}>
-              <ClientTab />
-            </FormProvider>
-          ) : (
-            <FormProvider {...caseForm}>
-              <TabContent
-                tab={activeTab}
-                subTab={activeSubTab}
-                caseId={caseId}
-              />
-            </FormProvider>
-          )}
+          <TabContent
+            tab={activeTab}
+            subTab={activeSubTab}
+            caseId={caseId}
+            caseForm={caseForm}
+            clientForm={clientForm}
+          />
         </PageContent>
       </div>
 

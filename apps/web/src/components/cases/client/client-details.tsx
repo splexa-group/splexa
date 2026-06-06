@@ -8,7 +8,7 @@ import { Section } from "@/components/ui/section";
 import { CLIENT_TYPE_OPTIONS } from "@/lib/options";
 import type { UpdateClientInput } from "@/types/clients";
 
-export function ClientTab() {
+export function ClientDetails() {
   const { register, control } = useFormContext<UpdateClientInput>();
 
   return (

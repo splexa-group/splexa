@@ -1,4 +1,3 @@
-import { ClientType } from "@splexa-group/shared/enums";
 import type { CaseDetail, UpdateCaseInput } from "@/types/cases";
 import type { UpdateClientInput } from "@/types/clients";
 
@@ -31,7 +30,7 @@ export function mapClientToFormValues(
     fullName: client.fullName ?? "",
     phone: client.phone ?? "",
     email: client.email ?? "",
-    type: (client.type as ClientType) ?? undefined,
+    type: client.type ?? undefined,
     address: client.address ?? "",
     companyName: client.companyName ?? "",
     notes: client.notes ?? "",

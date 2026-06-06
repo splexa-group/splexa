@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 
 import { casesController } from "./controller";
-import { caseParamsSchema, createCaseSchema, listCasesQuerySchema, updateCaseSchema } from "./schema";
+import { addClientToCaseSchema, caseParamsSchema, createCaseSchema, listCasesQuerySchema, updateCaseSchema } from "./schema";
 
 export function casesRoutes(router: FastifyInstance): void {
   router.post("/", {
@@ -26,6 +26,12 @@ export function casesRoutes(router: FastifyInstance): void {
     schema: { params: caseParamsSchema, body: updateCaseSchema },
     preHandler: [router.authenticate],
     handler: casesController.update,
+  });
+
+  router.post("/:id/client", {
+    schema: { params: caseParamsSchema, body: addClientToCaseSchema },
+    preHandler: [router.authenticate],
+    handler: casesController.addClient,
   });
 
   router.delete("/:id", {

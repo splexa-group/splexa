@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import { type Prisma, ClientType } from "@prisma/client";
 import { HearingStatus } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
@@ -86,6 +86,32 @@ export const casesRepository = {
     const { count } = await prisma.case.updateMany({ where: { id, orgId, deletedAt: null }, data });
     if (count === 0) return null;
     return prisma.case.findFirstOrThrow({ where: { id, orgId, deletedAt: null }, select: caseDetailSelect });
+  },
+
+  async createClientAndLink(
+    caseId: string,
+    orgId: string,
+    clientData: { fullName: string; phone: string; type: string; email?: string; address?: string; companyName?: string; notes?: string; orgId: string; createdBy: string },
+  ) {
+    return prisma.$transaction(async (tx) => {
+      const client = await tx.client.create({
+        data: {
+          orgId: clientData.orgId,
+          fullName: clientData.fullName,
+          phone: clientData.phone,
+          type: clientData.type as ClientType,
+          email: clientData.email,
+          address: clientData.address,
+          companyName: clientData.companyName,
+          notes: clientData.notes,
+          createdBy: clientData.createdBy,
+        },
+        select: { id: true },
+      });
+      const { count } = await tx.case.updateMany({ where: { id: caseId, orgId, deletedAt: null }, data: { clientId: client.id } });
+      if (count === 0) return null;
+      return tx.case.findFirstOrThrow({ where: { id: caseId, orgId, deletedAt: null }, select: caseDetailSelect });
+    });
   },
 
   async softDeleteCascade(id: string, orgId: string) {

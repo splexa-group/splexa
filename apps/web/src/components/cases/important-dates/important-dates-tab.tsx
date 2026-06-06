@@ -14,11 +14,7 @@ import { ImportantDateModal } from "./important-date-modal";
 import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import { PageFooter } from "@/components/layout/page-footer";
 import { Button } from "@/components/ui/button";
-import type {
-  ImportantDate,
-  CreateImportantDateInput,
-  UpdateImportantDateInput,
-} from "@/types/important-dates";
+import type { ImportantDate } from "@/types/important-dates";
 
 const CRITICAL_TYPES = [
   "Limitation",
@@ -134,12 +130,9 @@ export function ImportantDatesTab({ caseId }: ImportantDatesTabProps) {
         onClose={() => setModal(null)}
         onSave={async (data) => {
           if (modal === "new") {
-            await createDate.mutateAsync(data as CreateImportantDateInput);
+            await createDate.mutateAsync(data);
           } else if (modal) {
-            await updateDate.mutateAsync({
-              dateId: modal.id,
-              data: data as UpdateImportantDateInput,
-            });
+            await updateDate.mutateAsync({ dateId: modal.id, data });
           }
           setModal(null);
         }}

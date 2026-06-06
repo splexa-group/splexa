@@ -63,15 +63,17 @@ const TextareaField = React.forwardRef<HTMLTextAreaElement, TextareaFieldProps>(
 
 TextareaField.displayName = "TextareaField";
 
-export interface TextareaGroupProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface TextareaGroupProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   error?: string;
   hint?: string;
 }
 
 const TextareaGroup = React.forwardRef<HTMLTextAreaElement, TextareaGroupProps>(
-  ({ label, error, hint, className, id: explicitId, required, ...props }, ref) => {
+  (
+    { label, error, hint, className, id: explicitId, required, ...props },
+    ref,
+  ) => {
     const autoId = React.useId();
     const id = explicitId ?? autoId;
 
@@ -97,15 +99,21 @@ const TextareaGroup = React.forwardRef<HTMLTextAreaElement, TextareaGroupProps>(
           ref={ref}
           required={required}
           aria-invalid={error ? true : undefined}
-          aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
+          aria-describedby={
+            error ? `${id}-error` : hint ? `${id}-hint` : undefined
+          }
           className="w-full bg-transparent font-medium text-sm text-dark placeholder:text-placeholder focus:outline-none resize-none disabled:text-disabled disabled:cursor-not-allowed"
           {...props}
         />
         {!error && hint && (
-          <p id={`${id}-hint`} className="mt-1.5 text-xs text-secondary">{hint}</p>
+          <p id={`${id}-hint`} className="mt-1.5 text-xs text-secondary">
+            {hint}
+          </p>
         )}
         {error && (
-          <p id={`${id}-error`} className="mt-1.5 text-xs text-negative">{error}</p>
+          <p id={`${id}-error`} className="mt-1.5 text-xs text-negative">
+            {error}
+          </p>
         )}
       </div>
     );

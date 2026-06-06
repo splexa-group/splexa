@@ -2,6 +2,7 @@ import {
   CaseStage,
   CaseStatus,
   CaseType,
+  ClientType,
   CourtType,
   PartyRole,
   Priority,
@@ -63,7 +64,7 @@ export interface CaseDetail {
     id: string;
     fullName: string;
     phone: string;
-    type: string;
+    type: ClientType;
     email: string | null;
     address: string | null;
     companyName: string | null;
@@ -112,6 +113,7 @@ export interface CreateCaseInput {
 
 export interface UpdateCaseInput {
   title?: string;
+  clientId?: string;
   clientRole?: PartyRole;
   caseNumber?: string;
   caseType?: CaseType;

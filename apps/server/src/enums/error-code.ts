@@ -31,6 +31,7 @@ export enum ErrorCode {
 
   // cases
   CASE_NOT_FOUND = "CASE_NOT_FOUND",
+  CASE_CLIENT_EXISTS = "CASE_CLIENT_EXISTS",
 
   // hearings
   HEARING_NOT_FOUND = "HEARING_NOT_FOUND",

@@ -87,6 +87,8 @@ export const Errors = {
 
   caseNotFound: () =>
     new AppError(404, ErrorCode.CASE_NOT_FOUND, "Case not found."),
+  caseClientExists: () =>
+    new AppError(409, ErrorCode.CASE_CLIENT_EXISTS, "Case already has a client linked."),
 
   hearingNotFound: () =>
     new AppError(404, ErrorCode.HEARING_NOT_FOUND, "Hearing not found."),

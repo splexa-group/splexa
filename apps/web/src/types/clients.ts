@@ -19,4 +19,7 @@ export interface UpdateClientInput {
   phone?: string;
   type?: ClientType;
   email?: string;
+  address?: string;
+  companyName?: string;
+  notes?: string;
 }

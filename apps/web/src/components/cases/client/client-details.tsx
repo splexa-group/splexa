@@ -2,6 +2,7 @@
 
 import { Controller, useFormContext } from "react-hook-form";
 import { InputGroup } from "@/components/ui/form/input";
+import { TextareaGroup } from "@/components/ui/form/textarea";
 import { SelectGroup } from "@/components/ui/form/select";
 import { Section } from "@/components/ui/section";
 import { CLIENT_TYPE_OPTIONS } from "@/lib/options";
@@ -38,6 +39,23 @@ export function ClientTab() {
         label="Email"
         placeholder="Enter email address..."
         {...register("email")}
+      />
+      <InputGroup
+        label="Company Name"
+        placeholder="Enter company name..."
+        {...register("companyName")}
+      />
+      <InputGroup
+        label="Address"
+        placeholder="Enter address..."
+        {...register("address")}
+      />
+      <TextareaGroup
+        label="Notes"
+        placeholder="Enter notes..."
+        className="col-span-2"
+        rows={4}
+        {...register("notes")}
       />
     </Section>
   );

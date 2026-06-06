@@ -65,6 +65,9 @@ export interface CaseDetail {
     phone: string;
     type: string;
     email: string | null;
+    address: string | null;
+    companyName: string | null;
+    notes: string | null;
   } | null;
 }
 

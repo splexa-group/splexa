@@ -32,5 +32,8 @@ export function mapClientToFormValues(
     phone: client.phone ?? "",
     email: client.email ?? "",
     type: (client.type as ClientType) ?? undefined,
+    address: client.address ?? "",
+    companyName: client.companyName ?? "",
+    notes: client.notes ?? "",
   };
 }

@@ -152,8 +152,10 @@ function SelectDropdown({ options, showNone }: { options: SelectOption[]; showNo
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         position="popper"
+        sideOffset={15}
+        alignOffset={-14}
         className={cn(
-          "relative z-50 max-h-72 min-w-[var(--radix-select-trigger-width)] overflow-hidden",
+          "relative z-50 max-h-72 w-[calc(var(--radix-select-trigger-width)+1.75rem)] overflow-hidden",
           "rounded-sm border border-line bg-card shadow-md",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",

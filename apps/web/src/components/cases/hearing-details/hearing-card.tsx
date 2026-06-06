@@ -2,7 +2,6 @@
 
 import { Fragment } from "react";
 import {
-  Hammer,
   Clock,
   Check,
   CornerDownRight,
@@ -18,18 +17,18 @@ import { Menu } from "@/components/ui/menu";
 import { Hearing } from "@/types/hearings";
 import { HEARING_STATUS_PILL } from "./hearing-status";
 
-interface Props {
+function formatPurposeLabel(purpose: string | null): string {
+  return purpose ? purpose.replace(/([A-Z])/g, " $1").trim() : "Hearing";
+}
+
+interface HearingCardProps {
   hearing: Hearing;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-export function HearingCard({ hearing, onEdit, onDelete }: Props) {
+export function HearingCard({ hearing, onEdit, onDelete }: HearingCardProps) {
   const style = HEARING_STATUS_PILL[hearing.status];
-
-  const purposeLabel = hearing.purpose
-    ? hearing.purpose.replace(/([A-Z])/g, " $1").trim()
-    : "Hearing";
 
   const formattedDate = new Date(hearing.date).toLocaleDateString("en-IN", {
     weekday: "short",
@@ -42,7 +41,9 @@ export function HearingCard({ hearing, onEdit, onDelete }: Props) {
     <div className="bg-card border border-line rounded-lg">
       <div className="flex items-start justify-between gap-3 px-4 py-3">
         <div className="min-w-0 flex-1 space-y-1.5">
-          <p className="text-sm font-semibold text-dark">{purposeLabel}</p>
+          <p className="text-sm font-semibold text-dark">
+            {formatPurposeLabel(hearing.purpose)}
+          </p>
 
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-1.5">
@@ -134,10 +135,6 @@ export function NextHearingCard({
         ? "Tomorrow"
         : `In ${daysUntil} days`;
 
-  const purposeLabel = hearing.purpose
-    ? hearing.purpose.replace(/([A-Z])/g, " $1").trim()
-    : "Hearing";
-
   const formattedDate = date.toLocaleDateString("en-IN", {
     weekday: "short",
     day: "numeric",
@@ -145,17 +142,16 @@ export function NextHearingCard({
     year: "numeric",
   });
 
-  const courtParts = [
-    courtName,
-    benchNumber ? `Hall ${benchNumber}` : null,
-  ].filter(Boolean);
+  const courtParts = [courtName, benchNumber ? `Hall ${benchNumber}` : null].filter(
+    (p): p is string => p !== null && p !== undefined,
+  );
 
   const metaParts = [
     { icon: Clock, text: formattedDate },
     ...(hearing.judgePresent
       ? [{ icon: Scale, text: hearing.judgePresent }]
       : []),
-    ...(courtParts as string[]).map((part) => ({ icon: Landmark, text: part })),
+    ...courtParts.map((part) => ({ icon: Landmark, text: part })),
   ];
 
   return (
@@ -186,9 +182,11 @@ export function NextHearingCard({
 
         {/* Content */}
         <div className="flex-1 min-w-0 space-y-1.5 py-1">
-          <p className="text-base font-bold text-dark">{purposeLabel}</p>
+          <p className="text-base font-bold text-dark">
+            {formatPurposeLabel(hearing.purpose)}
+          </p>
 
-          {/* Single meta row */}
+          {/* Single meta row with dot separators */}
           <div className="flex items-center gap-2 flex-wrap">
             {metaParts.map(({ icon: Icon, text }, i) => (
               <Fragment key={i}>
@@ -209,7 +207,7 @@ export function NextHearingCard({
         </div>
       </div>
 
-      {/* Action buttons — same card bg, no separator color */}
+      {/* Action buttons */}
       <div className="flex items-center gap-2 px-4 py-3 border-t border-brand/10">
         <Button size="sm" variant="positive" onClick={onMarkHeard}>
           <Check className="size-3" /> Mark heard

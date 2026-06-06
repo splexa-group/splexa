@@ -27,7 +27,6 @@ export function CourtDetailsSection() {
             options={COURT_TYPE_OPTIONS}
             value={field.value ?? ""}
             onChange={field.onChange}
-            onClear={() => field.onChange("")}
             placeholder="Select court type..."
           />
         )}

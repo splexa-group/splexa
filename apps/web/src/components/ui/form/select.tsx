@@ -40,7 +40,7 @@ function Select({
       >
         <SelectPrimitive.Trigger
           className={cn(
-            "flex w-full items-center justify-between rounded-md border border-line bg-card px-3 py-[9px] text-sm text-dark transition-colors [&>span]:line-clamp-1",
+            "flex w-full items-center justify-between rounded-sm border border-line bg-card px-3.5 py-[9px] text-sm text-dark transition-colors [&>span]:line-clamp-1",
             "focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20",
             "data-[placeholder]:text-placeholder",
             "disabled:bg-subtle disabled:text-disabled disabled:cursor-not-allowed",
@@ -77,7 +77,6 @@ export interface SelectGroupProps {
   options: SelectOption[];
   value?: string;
   onChange?: (value: string) => void;
-  onClear?: () => void;
   placeholder?: string;
   disabled?: boolean;
   hint?: string;
@@ -91,7 +90,6 @@ function SelectGroup({
   options,
   value,
   onChange,
-  onClear,
   placeholder = "Select...",
   disabled,
   hint,
@@ -100,7 +98,6 @@ function SelectGroup({
   className,
 }: SelectGroupProps) {
   const id = useId();
-  const showClear = !!(value && onClear);
 
   return (
     <div
@@ -119,40 +116,22 @@ function SelectGroup({
         {label}
         {required && <span className="text-negative ml-0.5">*</span>}
       </p>
-      <div className="relative">
-        <SelectPrimitive.Root
-          value={value}
-          onValueChange={onChange}
-          disabled={disabled}
+      <SelectPrimitive.Root
+        value={!value ? "__none__" : value}
+        onValueChange={(v) => onChange?.(v === "__none__" ? "" : v)}
+        disabled={disabled}
+      >
+        <SelectPrimitive.Trigger
+          aria-labelledby={id}
+          className="flex w-full items-center justify-between bg-transparent font-medium text-sm focus:outline-none disabled:text-disabled disabled:cursor-not-allowed"
         >
-          <SelectPrimitive.Trigger
-            aria-labelledby={id}
-            className={cn(
-              "flex w-full items-center justify-between bg-transparent font-medium text-sm text-dark [&>span]:line-clamp-1 focus:outline-none data-[placeholder]:text-placeholder disabled:text-disabled disabled:cursor-not-allowed",
-              showClear && "pr-5",
-            )}
-          >
-            <SelectPrimitive.Value placeholder={placeholder} />
-            {!showClear && (
-              <SelectPrimitive.Icon asChild>
-                <ChevronDownIcon className="size-4 text-placeholder shrink-0" />
-              </SelectPrimitive.Icon>
-            )}
-          </SelectPrimitive.Trigger>
-          <SelectDropdown options={options} />
-        </SelectPrimitive.Root>
-        {showClear && (
-          <button
-            type="button"
-            onPointerDown={(e) => e.stopPropagation()}
-            onClick={onClear}
-            className="absolute right-0 top-1/2 -translate-y-1/2 text-placeholder hover:text-secondary transition-colors"
-            aria-label="Clear"
-          >
-            <XIcon className="size-4" />
-          </button>
-        )}
-      </div>
+          <span className={cn("flex-1 text-left truncate", value ? "text-dark" : "text-placeholder")}>
+            {value ? (options.find((o) => o.value === value)?.label ?? placeholder) : placeholder}
+          </span>
+          <ChevronDownIcon className="size-4 text-placeholder shrink-0" />
+        </SelectPrimitive.Trigger>
+        <SelectDropdown options={options} showNone />
+      </SelectPrimitive.Root>
       {!error && hint && (
         <p className="mt-1.5 text-xs text-secondary">{hint}</p>
       )}
@@ -161,33 +140,34 @@ function SelectGroup({
   );
 }
 
-function SelectDropdown({ options }: { options: SelectOption[] }) {
+function SelectDropdown({ options, showNone }: { options: SelectOption[]; showNone?: boolean }) {
+  const itemClass = cn(
+    "relative flex w-full cursor-default select-none items-center px-3 py-2.5 text-sm text-dark outline-none",
+    "data-[highlighted]:bg-subtle",
+    "data-[state=checked]:bg-brand-soft data-[state=checked]:text-brand",
+    "data-[disabled]:pointer-events-none data-[disabled]:text-disabled",
+  );
+
   return (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
         position="popper"
         className={cn(
           "relative z-50 max-h-72 min-w-[var(--radix-select-trigger-width)] overflow-hidden",
-          "rounded-md border border-line bg-card shadow-md",
+          "rounded-sm border border-line bg-card shadow-md",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",
           "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
           "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-          "data-[side=bottom]:translate-y-1 data-[side=top]:-translate-y-1",
         )}
       >
         <SelectPrimitive.Viewport>
+          {showNone && (
+            <SelectPrimitive.Item value="__none__" className={itemClass}>
+              <SelectPrimitive.ItemText>None</SelectPrimitive.ItemText>
+            </SelectPrimitive.Item>
+          )}
           {options.map((opt) => (
-            <SelectPrimitive.Item
-              key={opt.value}
-              value={opt.value}
-              className={cn(
-                "relative flex w-full font-medium cursor-default select-none items-center px-3 py-2.5 text-sm text-dark outline-none",
-                "border-b border-line last:border-b-0",
-                "data-[highlighted]:bg-subtle",
-                "data-[state=checked]:bg-brand-soft data-[state=checked]:text-brand data-[state=checked]:font-medium",
-                "data-[disabled]:pointer-events-none data-[disabled]:text-disabled",
-              )}
-            >
+            <SelectPrimitive.Item key={opt.value} value={opt.value} className={itemClass}>
               <SelectPrimitive.ItemText>{opt.label}</SelectPrimitive.ItemText>
             </SelectPrimitive.Item>
           ))}

@@ -96,7 +96,6 @@ export function HearingEditModal({
                 options={HEARING_PURPOSE_OPTIONS}
                 value={field.value ?? ""}
                 onChange={field.onChange}
-                onClear={() => field.onChange(undefined)}
                 placeholder="Select purpose"
               />
             )}

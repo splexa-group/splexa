@@ -43,7 +43,6 @@ export function CaseDetailsSection() {
             options={CASE_TYPE_OPTIONS}
             value={field.value ?? ""}
             onChange={field.onChange}
-            onClear={() => field.onChange("")}
             placeholder="Select type..."
           />
         )}
@@ -57,7 +56,6 @@ export function CaseDetailsSection() {
             options={CASE_STAGE_OPTIONS}
             value={field.value ?? ""}
             onChange={field.onChange}
-            onClear={() => field.onChange("")}
             placeholder="Select stage..."
           />
         )}
@@ -84,7 +82,6 @@ export function CaseDetailsSection() {
             options={PRIORITY_OPTIONS}
             value={field.value ?? ""}
             onChange={field.onChange}
-            onClear={() => field.onChange("")}
             placeholder="Select priority..."
           />
         )}

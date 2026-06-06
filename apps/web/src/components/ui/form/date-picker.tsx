@@ -176,7 +176,7 @@ export function DatePicker({
           setOpen((p) => !p);
         }}
         className={cn(
-          "rounded-sm border bg-card px-3.5 pt-4 pb-3 transition-colors",
+          "rounded-sm border bg-card px-3.5 pt-4.5 pb-3.5 transition-colors",
           error
             ? "border-negative focus-within:ring-1 focus-within:ring-negative/30"
             : open

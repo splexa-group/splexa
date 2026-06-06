@@ -46,6 +46,7 @@ function TabContent({ tab, subTab, caseId, caseDetails }: TabContentProps) {
               <CaseDetailsSection />
               <CourtDetailsSection />
               <JudgeDetailsSection />
+              <OppositePartySection />
             </>
           );
         case CaseSubTabs.DESCRIPTION:
@@ -53,9 +54,6 @@ function TabContent({ tab, subTab, caseId, caseDetails }: TabContentProps) {
         default:
           return null;
       }
-
-    case CaseTabs.OPPOSITE_PARTIES:
-      return <OppositePartySection />;
 
     case CaseTabs.HEARINGS:
       return <HearingsTab caseId={caseId} />;

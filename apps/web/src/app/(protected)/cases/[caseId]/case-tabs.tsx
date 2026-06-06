@@ -1,8 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
-import { CaseTabs as CaseTabsEnum } from "@/enums/case-tabs";
+import { TabsNav } from "@/components/layout/tabs-nav";
 import { useCaseActiveTab, useCaseActiveSubTab } from "@/hooks/use-active-tab";
 import { CASE_TAB_CONFIG } from "@/config/case-tabs";
 
@@ -10,61 +9,23 @@ interface Props {
   caseId: string;
 }
 
-const tabClass = "px-3 py-2 text-sm font-medium rounded transition-all";
-
 export function CaseTabs({ caseId }: Props) {
   const router = useRouter();
   const activeTab = useCaseActiveTab();
   const activeSubTab = useCaseActiveSubTab(activeTab);
 
-  const activeTabConfig = CASE_TAB_CONFIG.find((t) => t.id === activeTab);
-
-  function navigateTo(tab: CaseTabsEnum, subTab?: string) {
-    const params = new URLSearchParams({ tab });
-    if (subTab) params.set("subTab", subTab);
+  function navigateTo(tabId: string, subTabId?: string) {
+    const params = new URLSearchParams({ tab: tabId });
+    if (subTabId) params.set("subTab", subTabId);
     router.push(`/cases/${caseId}?${params.toString()}`);
   }
 
   return (
-    <div className="bg-card border-b border-line flex-shrink-0">
-      <div className="flex justify-center px-4 py-2 gap-1">
-        {CASE_TAB_CONFIG.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => navigateTo(tab.id, tab.subTabs?.[0]?.id)}
-            className={cn(
-              tabClass,
-              activeTab === tab.id
-                ? "bg-brand/8 font-medium text-brand"
-                : "text-body hover:text-dark",
-            )}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Sub-tab row — rendered automatically when the active tab has subTabs */}
-      {activeTabConfig?.subTabs?.length && (
-        <div className="flex justify-center border-t border-line bg-subtle/90 px-4 py-2 gap-2">
-          {activeTabConfig.subTabs.map((sub) => (
-            <button
-              key={sub.id}
-              type="button"
-              onClick={() => navigateTo(activeTab, sub.id)}
-              className={cn(
-                tabClass,
-                activeSubTab === sub.id
-                  ? "bg-brand/8 font-medium text-brand"
-                  : "text-body hover:text-dark",
-              )}
-            >
-              {sub.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <TabsNav
+      tabs={CASE_TAB_CONFIG}
+      activeTab={activeTab}
+      activeSubTab={activeSubTab}
+      onNavigate={navigateTo}
+    />
   );
 }

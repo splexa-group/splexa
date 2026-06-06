@@ -10,7 +10,7 @@ import {
 } from "@/hooks/use-hearings";
 import { HearingCard } from "./hearing-card";
 import { HearingEditModal } from "./hearing-edit-modal";
-import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import { PageFooter } from "@/components/layout/page-footer";
 import { Button } from "@/components/ui/button";
 import { HearingStatus } from "@splexa-group/shared/enums";

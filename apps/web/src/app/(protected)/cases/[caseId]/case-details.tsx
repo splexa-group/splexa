@@ -23,10 +23,6 @@ import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import type { UpdateCaseInput, CaseDetail } from "@/types/cases";
 import { mapCaseToFormValues } from "@/mappers/case-form";
 
-// ---------------------------------------------------------------------------
-// Tab content — add a new case here when adding a new tab to CASE_TAB_CONFIG
-// ---------------------------------------------------------------------------
-
 interface TabContentProps {
   tab: CaseTabs;
   subTab: string;
@@ -70,10 +66,6 @@ function TabContent({ tab, subTab, caseId, caseDetails }: TabContentProps) {
       return null;
   }
 }
-
-// ---------------------------------------------------------------------------
-// Page component
-// ---------------------------------------------------------------------------
 
 const CaseDetails = ({ caseId }: { caseId: string }) => {
   const activeTab = useCaseActiveTab();
@@ -124,11 +116,9 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
         <PageFooter
           right={
             <>
-              {activeTab === CaseTabs.CASE && (
-                <Button variant="negative" onClick={() => setShowDelete(true)}>
-                  Delete Case
-                </Button>
-              )}
+              <Button variant="negative" onClick={() => setShowDelete(true)}>
+                Delete Case
+              </Button>
               <Button
                 loading={updateCase.isPending}
                 onClick={methods.handleSubmit(handleSave)}

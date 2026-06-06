@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useCases, useDeleteCase } from "@/hooks/use-cases";
-import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import { Select } from "@/components/ui/form/select";
 import { Search } from "@/components/ui/form/search";
 import { FiltersBar } from "@/components/ui/filters-bar";

@@ -11,7 +11,7 @@ import {
   useDeleteImportantDate,
 } from "@/hooks/use-important-dates";
 import { ImportantDateModal } from "./important-date-modal";
-import { ConfirmDeleteModal } from "@/components/ui/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import { PageFooter } from "@/components/layout/page-footer";
 import { Button } from "@/components/ui/button";
 import type {

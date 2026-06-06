@@ -1,31 +1,32 @@
-import { CaseTabs, CaseSubTabs } from "@/enums/case-tabs";
+import {
+  CaseTabs,
+  CaseSubTabs,
+  CaseTabLabels,
+  CaseSubTabLabels,
+} from "@/enums/case-tabs";
+import type { TabConfig } from "@/components/layout/tabs-nav";
 
-export interface SubTabConfig {
-  id: string;
-  label: string;
-}
-
-export interface CaseTabConfig {
-  id: CaseTabs;
-  label: string;
-  subTabs?: SubTabConfig[];
-}
-
-// Add a new tab here — it will appear in the UI automatically.
-// If the tab has sub-tabs, add them in the subTabs array.
-// Then add a matching case in TabContent inside case-details.tsx.
-export const CASE_TAB_CONFIG: CaseTabConfig[] = [
-  { id: CaseTabs.CLIENT, label: "Client" },
+export const CASE_TAB_CONFIG: TabConfig[] = [
+  { id: CaseTabs.CLIENT, label: CaseTabLabels[CaseTabs.CLIENT] },
   {
     id: CaseTabs.CASE,
-    label: "Case",
+    label: CaseTabLabels[CaseTabs.CASE],
     subTabs: [
-      { id: CaseSubTabs.DETAILS, label: "Case Details" },
-      { id: CaseSubTabs.DESCRIPTION, label: "Case Description" },
-      { id: CaseSubTabs.OPPOSITE_PARTIES, label: "Opposite Parties" },
+      { id: CaseSubTabs.DETAILS, label: CaseSubTabLabels[CaseSubTabs.DETAILS] },
+      {
+        id: CaseSubTabs.DESCRIPTION,
+        label: CaseSubTabLabels[CaseSubTabs.DESCRIPTION],
+      },
+      {
+        id: CaseSubTabs.OPPOSITE_PARTIES,
+        label: CaseSubTabLabels[CaseSubTabs.OPPOSITE_PARTIES],
+      },
     ],
   },
-  { id: CaseTabs.HEARINGS, label: "Hearings" },
-  { id: CaseTabs.IMPORTANT_DATES, label: "Important Dates" },
-  { id: CaseTabs.DOCUMENTS, label: "Documents" },
+  { id: CaseTabs.HEARINGS, label: CaseTabLabels[CaseTabs.HEARINGS] },
+  {
+    id: CaseTabs.IMPORTANT_DATES,
+    label: CaseTabLabels[CaseTabs.IMPORTANT_DATES],
+  },
+  { id: CaseTabs.DOCUMENTS, label: CaseTabLabels[CaseTabs.DOCUMENTS] },
 ];

@@ -3,7 +3,6 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
-import { TextareaField } from "@/components/ui/form/textarea";
 import { Section } from "@/components/ui/section";
 import {
   CASE_STAGE_OPTIONS,
@@ -15,11 +14,7 @@ import type { UpdateCaseInput } from "@/types/cases";
 import { DatePicker } from "@/components/ui/form/date-picker";
 
 export function CaseDetailsSection() {
-  const {
-    register,
-    control,
-    formState: { errors },
-  } = useFormContext<UpdateCaseInput>();
+  const { register, control } = useFormContext<UpdateCaseInput>();
 
   return (
     <Section title="Case Details" cols={3}>
@@ -106,15 +101,6 @@ export function CaseDetailsSection() {
           />
         )}
       />
-      <div className="col-span-full">
-        <TextareaField
-          label="Description"
-          placeholder="Enter a detailed case description..."
-          rows={4}
-          error={errors.description?.message}
-          {...register("description")}
-        />
-      </div>
     </Section>
   );
 }

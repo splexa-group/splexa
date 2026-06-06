@@ -22,6 +22,7 @@ export const CASE_TAB_CONFIG: CaseTabConfig[] = [
     subTabs: [
       { id: CaseSubTabs.DETAILS, label: "Case Details" },
       { id: CaseSubTabs.DESCRIPTION, label: "Case Description" },
+      { id: CaseSubTabs.OPPOSITE_PARTIES, label: "Opposite Parties" },
     ],
   },
   { id: CaseTabs.HEARINGS, label: "Hearings" },

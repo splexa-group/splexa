@@ -8,4 +8,5 @@ export enum CaseTabs {
 export enum CaseSubTabs {
   DETAILS = "details",
   DESCRIPTION = "description",
+  OPPOSITE_PARTIES = "opposite-parties",
 }

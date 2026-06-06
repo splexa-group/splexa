@@ -4,32 +4,16 @@ import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { Trash2, Pencil, Scale } from "lucide-react";
 import { PartyRole } from "@splexa-group/shared/enums";
+import { CaseSubTabLabel } from "@/enums/case-tabs";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
+import { RoleDotBadge } from "@/components/cases/role-badge";
 import {
   OppositePartyModal,
   DEFAULT_PARTY_FORM,
   type PartyFormData,
 } from "@/components/modals/opposite-party";
 import type { UpdateCaseInput } from "@/types/cases";
-
-const ROLE_BADGE_STYLES: Record<PartyRole, string> = {
-  [PartyRole.Petitioner]: "bg-brand-soft text-brand",
-  [PartyRole.Respondent]: "bg-brand-soft text-brand",
-  [PartyRole.Accused]: "bg-negative-muted text-negative",
-  [PartyRole.Complainant]: "bg-positive-muted text-positive-dark",
-};
-
-function RoleDotBadge({ role }: { role: PartyRole }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0 ${ROLE_BADGE_STYLES[role] ?? "bg-subtle text-secondary"}`}
-    >
-      <span className="size-1.5 rounded-full bg-current" />
-      {role}
-    </span>
-  );
-}
 
 export function OppositePartySection() {
   const { control } = useFormContext<UpdateCaseInput>();
@@ -84,7 +68,7 @@ export function OppositePartySection() {
   return (
     <>
       <Section
-        title="Opposite Parties"
+        title={CaseSubTabLabel.OPPOSITE_PARTIES}
         isEmpty={fields.length === 0}
         emptyLabel="No opposite parties added yet."
         onAdd={openAdd}
@@ -143,6 +127,7 @@ export function OppositePartySection() {
         </div>
       </Section>
 
+      {/** Modals */}
       <OppositePartyModal
         open={open}
         onClose={() => setOpen(false)}

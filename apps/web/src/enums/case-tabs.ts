@@ -12,16 +12,16 @@ export enum CaseSubTabs {
   OPPOSITE_PARTIES = "opposite-parties",
 }
 
-export const CaseTabLabels: Record<CaseTabs, string> = {
-  [CaseTabs.CLIENT]: "Client",
-  [CaseTabs.CASE]: "Case",
-  [CaseTabs.HEARINGS]: "Hearings",
-  [CaseTabs.IMPORTANT_DATES]: "Important Dates",
-  [CaseTabs.DOCUMENTS]: "Documents",
-};
+export enum CaseTabLabel {
+  CLIENT = "Client",
+  CASE = "Case",
+  HEARINGS = "Hearings",
+  IMPORTANT_DATES = "Important Dates",
+  DOCUMENTS = "Documents",
+}
 
-export const CaseSubTabLabels: Record<CaseSubTabs, string> = {
-  [CaseSubTabs.DETAILS]: "Case Details",
-  [CaseSubTabs.DESCRIPTION]: "Case Description",
-  [CaseSubTabs.OPPOSITE_PARTIES]: "Opposite Parties",
-};
+export enum CaseSubTabLabel {
+  DETAILS = "Case Details",
+  DESCRIPTION = "Case Description",
+  OPPOSITE_PARTIES = "Opposite Parties",
+}

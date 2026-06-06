@@ -2,7 +2,6 @@ import { CaseTabs, CaseSubTabs, CaseTabLabel, CaseSubTabLabel } from "@/enums/ca
 import type { TabConfig } from "@/components/layout/tabs-nav";
 
 export const CASE_TAB_CONFIG: TabConfig[] = [
-  { id: CaseTabs.CLIENT, label: CaseTabLabel.CLIENT },
   {
     id: CaseTabs.CASE,
     label: CaseTabLabel.CASE,
@@ -13,6 +12,7 @@ export const CASE_TAB_CONFIG: TabConfig[] = [
     ],
   },
   { id: CaseTabs.HEARINGS, label: CaseTabLabel.HEARINGS },
+  { id: CaseTabs.CLIENT, label: CaseTabLabel.CLIENT },
   { id: CaseTabs.IMPORTANT_DATES, label: CaseTabLabel.IMPORTANT_DATES },
   { id: CaseTabs.DOCUMENTS, label: CaseTabLabel.DOCUMENTS },
 ];

@@ -15,7 +15,7 @@ export function CaseDescriptionSection() {
     <Section title="Description">
       <TextareaField
         placeholder="Enter a detailed case description..."
-        rows={4}
+        rows={15}
         error={errors.description?.message}
         {...register("description")}
       />

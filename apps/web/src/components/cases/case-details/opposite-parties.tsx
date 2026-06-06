@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Trash2, Pencil, Scale } from "lucide-react";
 import { PartyRole } from "@splexa-group/shared/enums";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
@@ -13,21 +13,22 @@ import { PARTY_ROLE_OPTIONS } from "@/lib/options";
 import type { UpdateCaseInput } from "@/types/cases";
 
 // ---------------------------------------------------------------------------
-// Role badge
+// Role dot badge
 // ---------------------------------------------------------------------------
 
-const ROLE_STYLES: Record<PartyRole, string> = {
+const ROLE_BADGE_STYLES: Record<PartyRole, string> = {
   [PartyRole.Petitioner]: "bg-brand-soft text-brand",
-  [PartyRole.Respondent]: "bg-amber-muted text-amber-dark",
+  [PartyRole.Respondent]: "bg-brand-soft text-brand",
   [PartyRole.Accused]: "bg-negative-muted text-negative",
   [PartyRole.Complainant]: "bg-positive-muted text-positive-dark",
 };
 
-function RoleBadge({ role }: { role: PartyRole }) {
+function RoleDotBadge({ role }: { role: PartyRole }) {
   return (
     <span
-      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ROLE_STYLES[role] ?? "bg-subtle text-secondary"}`}
+      className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full shrink-0 ${ROLE_BADGE_STYLES[role] ?? "bg-subtle text-secondary"}`}
     >
+      <span className="size-1.5 rounded-full bg-current" />
       {role}
     </span>
   );
@@ -115,57 +116,57 @@ export function OppositePartySection() {
         addLabel="Add Party"
         action={
           fields.length > 0 ? (
-            <Button
-              type="button"
-              size="default"
-              variant={"primary"}
-              onClick={openAdd}
-            >
-              <Plus className="size-3.5" /> Add Party
+            <Button type="button" onClick={openAdd}>
+              Add Party
             </Button>
           ) : undefined
         }
       >
-        <div className="space-y-2">
+        <div className="rounded border border-line bg-card overflow-hidden">
           {fields.map((field, index) => (
             <div
               key={field.id}
-              className="flex items-start justify-between gap-3 rounded border border-line bg-card px-4 py-3"
+              className="grid grid-cols-[1fr_auto_1fr_auto] items-center gap-4 px-4 py-3 border-b border-line last:border-b-0"
             >
-              {/* Left — name + role + advocate */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="text-sm font-semibold text-dark truncate">
-                    {field.name}
-                  </p>
-                  <RoleBadge role={field.role} />
-                </div>
-                {(field.advocateName || field.advocatePhone) && (
-                  <p className="text-xs text-secondary truncate">
-                    {field.advocateName}
-                    {field.advocateName && field.advocatePhone && " · "}
-                    {field.advocatePhone}
-                  </p>
-                )}
+              {/* Name */}
+              <span className="text-sm font-semibold text-dark truncate">
+                {field.name}
+              </span>
+
+              {/* Role badge */}
+              <div>
+                {field.role && <RoleDotBadge role={field.role} />}
               </div>
 
-              {/* Right — actions */}
-              <div className="flex items-center gap-1 shrink-0">
+              {/* Advocate */}
+              <span className="flex items-center gap-1.5 text-sm text-secondary truncate">
+                {field.advocateName ? (
+                  <>
+                    <Scale className="size-3.5 shrink-0" />
+                    {field.advocateName}
+                  </>
+                ) : (
+                  <span className="text-placeholder">—</span>
+                )}
+              </span>
+
+              {/* Actions */}
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => openEdit(index)}
-                  className="p-1.5 rounded text-placeholder hover:text-label hover:bg-subtle transition-colors"
+                  className="p-2 rounded bg-subtle text-secondary hover:text-dark transition-colors"
                   aria-label="Edit"
                 >
-                  <Pencil className="size-3.5" />
+                  <Pencil className="size-4" />
                 </button>
                 <button
                   type="button"
                   onClick={() => remove(index)}
-                  className="p-1.5 rounded text-placeholder hover:text-negative hover:bg-negative-muted transition-colors"
-                  aria-label="Delete"
+                  className="p-2 rounded bg-negative-muted text-negative hover:opacity-80 transition-opacity"
+                  aria-label="Remove"
                 >
-                  <Trash2 className="size-3.5" />
+                  <Trash2 className="size-4" />
                 </button>
               </div>
             </div>
@@ -177,9 +178,7 @@ export function OppositePartySection() {
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title={
-          editIndex !== null ? "Edit Opposite Party" : "Add Opposite Party"
-        }
+        title={editIndex !== null ? "Edit Opposite Party" : "Add Opposite Party"}
       >
         <div className="p-5 space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -213,15 +212,10 @@ export function OppositePartySection() {
           </div>
 
           <div className="flex justify-end gap-2 pt-1">
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={() => setOpen(false)}
-            >
+            <Button type="button" variant="secondary" onClick={() => setOpen(false)}>
               Cancel
             </Button>
-            <Button type="button" size="sm" onClick={handleSave}>
+            <Button type="button" onClick={handleSave}>
               {editIndex !== null ? "Save Changes" : "Add Party"}
             </Button>
           </div>

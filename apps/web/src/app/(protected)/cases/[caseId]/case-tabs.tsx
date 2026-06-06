@@ -36,7 +36,7 @@ export function CaseTabs({ caseId }: Props) {
             className={cn(
               tabClass,
               activeTab === tab.id
-                ? "bg-brand/10 text-brand"
+                ? "bg-brand/8 font-medium text-brand"
                 : "text-body hover:text-dark",
             )}
           >
@@ -56,7 +56,7 @@ export function CaseTabs({ caseId }: Props) {
               className={cn(
                 tabClass,
                 activeSubTab === sub.id
-                  ? "bg-brand/10 text-brand"
+                  ? "bg-brand/8 font-medium text-brand"
                   : "text-body hover:text-dark",
               )}
             >

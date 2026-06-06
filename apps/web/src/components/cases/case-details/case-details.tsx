@@ -100,6 +100,11 @@ export function CaseDetailsSection() {
           />
         )}
       />
+      <InputGroup
+        label="Filing Date"
+        type="date"
+        {...register("filingDate")}
+      />
     </Section>
   );
 }

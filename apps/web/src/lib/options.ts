@@ -10,6 +10,7 @@ import {
   ImportantDateType,
   PartyRole,
   PracticeType,
+  PreferredLanguage,
   Priority,
 } from "@splexa-group/shared/enums";
 
@@ -51,6 +52,7 @@ export const CLIENT_TYPE_OPTIONS = toPascalOptions(ClientType);
 export const HEARING_PURPOSE_OPTIONS = toPascalOptions(HearingPurpose);
 export const HEARING_STATUS_OPTIONS = toPascalOptions(HearingStatus);
 export const IMPORTANT_DATE_TYPE_OPTIONS = toPascalOptions(ImportantDateType);
+export const PREFERRED_LANGUAGE_OPTIONS = toOptions(PreferredLanguage);
 
 export const CASE_SORT_OPTIONS = [
   { value: "hearingDate", label: "Hearing date" },

@@ -2,11 +2,13 @@ import {
   CaseStage,
   CaseStatus,
   CaseType,
-  ClientType,
   CourtType,
   PartyRole,
   Priority,
 } from "@splexa-group/shared/enums";
+import type { Client } from "@/types/clients";
+import type { Hearing } from "@/types/hearings";
+import type { ImportantDate } from "@/types/important-dates";
 
 export interface OppositeParty {
   name: string;
@@ -60,16 +62,9 @@ export interface CaseDetail {
   assignedTo: string | null;
   createdAt: string;
   updatedAt: string;
-  client: {
-    id: string;
-    fullName: string;
-    phone: string;
-    type: ClientType;
-    email: string | null;
-    address: string | null;
-    companyName: string | null;
-    notes: string | null;
-  } | null;
+  client: Client | null;
+  hearings: Hearing[];
+  importantDates: ImportantDate[];
 }
 
 export interface CaseListResponse {

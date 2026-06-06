@@ -24,7 +24,7 @@ export function mapCaseToFormValues(caseDetail: CaseDetail): UpdateCaseInput {
 }
 
 export function mapClientToFormValues(
-  client: NonNullable<CaseDetail["client"]>
+  client: NonNullable<CaseDetail["client"]>,
 ): UpdateClientInput {
   return {
     fullName: client.fullName ?? "",
@@ -34,5 +34,6 @@ export function mapClientToFormValues(
     address: client.address ?? "",
     companyName: client.companyName ?? "",
     notes: client.notes ?? "",
+    preferredLanguage: client.preferredLanguage ?? undefined,
   };
 }

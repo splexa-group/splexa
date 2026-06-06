@@ -56,13 +56,7 @@ function CaseSubTabContent({ subTab }: { subTab: string }) {
   }
 }
 
-function TabContent({
-  tab,
-  subTab,
-  caseId,
-  caseForm,
-  clientForm,
-}: TabContentProps) {
+function TabContent({ tab, subTab, caseId, caseForm, clientForm }: TabContentProps) {
   switch (tab) {
     case CaseTabs.CLIENT:
       return (
@@ -122,6 +116,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
     return <div className="p-6 text-sm text-secondary">Loading…</div>;
   }
 
+  const isEditableTab = activeTab === CaseTabs.CASE || activeTab === CaseTabs.CLIENT;
   const isSaving =
     activeTab === CaseTabs.CLIENT
       ? updateClient.isPending || addClientToCase.isPending
@@ -191,9 +186,11 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
             <Button variant="negative" onClick={() => setShowDelete(true)}>
               Delete Case
             </Button>
-            <Button loading={isSaving} onClick={handleSave}>
-              Save Changes
-            </Button>
+            {isEditableTab && (
+              <Button loading={isSaving} onClick={handleSave}>
+                Save Changes
+              </Button>
+            )}
           </>
         }
       />

@@ -1,4 +1,16 @@
-import type { ClientType } from "@splexa-group/shared/enums";
+import type { ClientType, PreferredLanguage } from "@splexa-group/shared/enums";
+
+export interface Client {
+  id: string;
+  fullName: string;
+  phone: string;
+  type: ClientType;
+  email: string | null;
+  address: string | null;
+  companyName: string | null;
+  notes: string | null;
+  preferredLanguage: PreferredLanguage | null;
+}
 
 export interface CreateClientInput {
   fullName: string;
@@ -8,6 +20,7 @@ export interface CreateClientInput {
   address?: string;
   companyName?: string;
   notes?: string;
+  preferredLanguage?: PreferredLanguage;
 }
 
 export interface ClientSearchResult {
@@ -32,4 +45,5 @@ export interface UpdateClientInput {
   address?: string;
   companyName?: string;
   notes?: string;
+  preferredLanguage?: PreferredLanguage;
 }

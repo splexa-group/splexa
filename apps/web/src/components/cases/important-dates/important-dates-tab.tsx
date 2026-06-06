@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, MoreVertical, Pencil, Trash2 } from "lucide-react";
+import { Bell, Plus, MoreVertical, Pencil, Trash2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import {
@@ -68,9 +68,18 @@ export function ImportantDatesTab({ caseId }: ImportantDatesTabProps) {
         </div>
 
         {!isLoading && dates.length === 0 && (
-          <p className="text-sm text-secondary text-center py-8">
-            No important dates added yet.
-          </p>
+          <div className="flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-12 h-12 rounded-full bg-subtle flex items-center justify-center mb-4">
+              <Bell className="size-5 text-placeholder" />
+            </div>
+            <p className="text-sm font-semibold text-dark mb-1">No important dates yet</p>
+            <p className="text-xs text-secondary mb-5">
+              Track deadlines, bail expiry, limitation dates and more
+            </p>
+            <Button size="sm" onClick={() => setModal("new")}>
+              <Plus className="size-3.5" /> Add Date
+            </Button>
+          </div>
         )}
 
         {sorted.length > 0 && (

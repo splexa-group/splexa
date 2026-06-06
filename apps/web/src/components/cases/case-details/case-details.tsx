@@ -8,6 +8,7 @@ import {
   CASE_STAGE_OPTIONS,
   CASE_STATUS_OPTIONS,
   CASE_TYPE_OPTIONS,
+  PARTY_ROLE_OPTIONS,
   PRIORITY_OPTIONS,
 } from "@/lib/options";
 import type { UpdateCaseInput } from "@/types/cases";
@@ -83,6 +84,19 @@ export function CaseDetailsSection() {
             value={field.value ?? ""}
             onChange={field.onChange}
             placeholder="Select priority..."
+          />
+        )}
+      />
+      <Controller
+        name="clientRole"
+        control={control}
+        render={({ field }) => (
+          <SelectGroup
+            label="Client Role"
+            options={PARTY_ROLE_OPTIONS}
+            value={field.value ?? ""}
+            onChange={field.onChange}
+            placeholder="Select role..."
           />
         )}
       />

@@ -8,6 +8,7 @@ import { CaseTabs as CaseTabsNav } from "@/app/(protected)/cases/[caseId]/case-t
 import { useCaseActiveTab, useCaseActiveSubTab } from "@/hooks/use-active-tab";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
+import { useUpdateClient } from "@/hooks/use-clients";
 import { CaseDetailsSection } from "@/components/cases/case-details/case-details";
 import { CaseDescriptionSection } from "@/components/cases/case-details/case-description";
 import { CourtDetailsSection } from "@/components/cases/case-details/court-details";
@@ -21,7 +22,8 @@ import { PageContent } from "@/components/layout/page-content";
 import { Button } from "@/components/ui/button";
 import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import type { UpdateCaseInput } from "@/types/cases";
-import { mapCaseToFormValues } from "@/mappers/case-form";
+import type { UpdateClientInput } from "@/types/clients";
+import { mapCaseToFormValues, mapClientToFormValues } from "@/mappers/case-form";
 
 interface TabContentProps {
   tab: CaseTabs;
@@ -31,9 +33,6 @@ interface TabContentProps {
 
 function TabContent({ tab, subTab, caseId }: TabContentProps) {
   switch (tab) {
-    case CaseTabs.CLIENT:
-      return <ClientTab />;
-
     case CaseTabs.CASE:
       switch (subTab) {
         case CaseSubTabs.DETAILS:
@@ -73,6 +72,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
 
   const { data: caseDetails, isLoading } = useCase(caseId);
   const updateCase = useUpdateCase(caseId);
+  const updateClient = useUpdateClient();
   const deleteCase = useDeleteCase();
 
   usePageTitle({
@@ -80,53 +80,76 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
     resourceTitle: `${caseDetails?.title}${caseDetails?.caseNumber ? ` (${caseDetails.caseNumber})` : ""}`,
   });
 
-  const methods = useForm<UpdateCaseInput>({
+  const caseForm = useForm<UpdateCaseInput>({
     values: caseDetails ? mapCaseToFormValues(caseDetails) : undefined,
+  });
+
+  const clientForm = useForm<UpdateClientInput>({
+    values: caseDetails?.client
+      ? mapClientToFormValues(caseDetails.client)
+      : undefined,
   });
 
   if (isLoading || !caseDetails) {
     return <div className="p-6 text-sm text-secondary">Loading…</div>;
   }
 
-  const handleSave = async (data: UpdateCaseInput) => {
-    await updateCase.mutateAsync(data);
+  const isSaving =
+    activeTab === CaseTabs.CLIENT
+      ? updateClient.isPending
+      : updateCase.isPending;
+
+  const handleSave = () => {
+    if (activeTab === CaseTabs.CLIENT) {
+      if (!caseDetails.clientId) return;
+      clientForm.handleSubmit((data) =>
+        updateClient.mutateAsync({ id: caseDetails.clientId!, caseId, data })
+      )();
+    } else {
+      caseForm.handleSubmit((data) => updateCase.mutateAsync(data))();
+    }
   };
 
   const handleDelete = async () => {
     await deleteCase.mutateAsync(caseId);
   };
 
+  const isClientTab = activeTab === CaseTabs.CLIENT;
+
   return (
-    <FormProvider {...methods}>
-      <div className="flex flex-col h-full overflow-hidden">
-        <CaseTabsNav caseId={caseId} />
+    <div className="flex flex-col h-full overflow-hidden">
+      <CaseTabsNav caseId={caseId} />
 
-        <div className="flex-1 overflow-y-auto bg-page">
-          <PageContent className="space-y-6">
-            <TabContent
-              tab={activeTab}
-              subTab={activeSubTab}
-              caseId={caseId}
-            />
-          </PageContent>
-        </div>
-
-        <PageFooter
-          right={
-            <>
-              <Button variant="negative" onClick={() => setShowDelete(true)}>
-                Delete Case
-              </Button>
-              <Button
-                loading={updateCase.isPending}
-                onClick={methods.handleSubmit(handleSave)}
-              >
-                Save Changes
-              </Button>
-            </>
-          }
-        />
+      <div className="flex-1 overflow-y-auto bg-page">
+        <PageContent className="space-y-6">
+          {isClientTab ? (
+            <FormProvider {...clientForm}>
+              <ClientTab />
+            </FormProvider>
+          ) : (
+            <FormProvider {...caseForm}>
+              <TabContent
+                tab={activeTab}
+                subTab={activeSubTab}
+                caseId={caseId}
+              />
+            </FormProvider>
+          )}
+        </PageContent>
       </div>
+
+      <PageFooter
+        right={
+          <>
+            <Button variant="negative" onClick={() => setShowDelete(true)}>
+              Delete Case
+            </Button>
+            <Button loading={isSaving} onClick={handleSave}>
+              Save Changes
+            </Button>
+          </>
+        }
+      />
 
       <ConfirmDeleteModal
         open={showDelete}
@@ -136,7 +159,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
         onCancel={() => setShowDelete(false)}
         onConfirm={handleDelete}
       />
-    </FormProvider>
+    </div>
   );
 };
 

@@ -110,12 +110,6 @@ export interface CreateCaseInput {
 export interface UpdateCaseInput {
   title?: string;
   clientRole?: PartyRole;
-  client?: {
-    fullName?: string;
-    phone?: string;
-    email?: string;
-    type?: string;
-  };
   caseNumber?: string;
   caseType?: CaseType;
   filingDate?: string;

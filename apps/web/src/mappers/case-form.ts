@@ -1,4 +1,6 @@
+import { ClientType } from "@splexa-group/shared/enums";
 import type { CaseDetail, UpdateCaseInput } from "@/types/cases";
+import type { UpdateClientInput } from "@/types/clients";
 
 export function mapCaseToFormValues(caseDetail: CaseDetail): UpdateCaseInput {
   return {
@@ -19,11 +21,16 @@ export function mapCaseToFormValues(caseDetail: CaseDetail): UpdateCaseInput {
     priority: caseDetail.priority ?? undefined,
     description: caseDetail.description ?? "",
     oppositeParties: caseDetail.oppositeParties ?? [],
-    client: {
-      fullName: caseDetail.client?.fullName ?? "",
-      phone: caseDetail.client?.phone ?? "",
-      email: caseDetail.client?.email ?? "",
-      type: caseDetail.client?.type ?? "",
-    },
+  };
+}
+
+export function mapClientToFormValues(
+  client: NonNullable<CaseDetail["client"]>
+): UpdateClientInput {
+  return {
+    fullName: client.fullName ?? "",
+    phone: client.phone ?? "",
+    email: client.email ?? "",
+    type: (client.type as ClientType) ?? undefined,
   };
 }

@@ -13,3 +13,10 @@ export interface ClientListResponse {
   page: number;
   limit: number;
 }
+
+export interface UpdateClientInput {
+  fullName?: string;
+  phone?: string;
+  type?: ClientType;
+  email?: string;
+}

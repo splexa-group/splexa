@@ -10,7 +10,7 @@ interface Props {
   caseId: string;
 }
 
-const tabClass = "px-4 py-2 text-sm font-medium rounded-lg transition-all";
+const tabClass = "px-3 py-2 text-sm font-medium rounded transition-all";
 
 export function CaseTabs({ caseId }: Props) {
   const router = useRouter();
@@ -27,8 +27,7 @@ export function CaseTabs({ caseId }: Props) {
 
   return (
     <div className="bg-card border-b border-line flex-shrink-0">
-      {/* Main tab row */}
-      <div className="flex justify-center px-4 py-2 gap-2">
+      <div className="flex justify-center px-4 py-2 gap-1">
         {CASE_TAB_CONFIG.map((tab) => (
           <button
             key={tab.id}
@@ -38,7 +37,7 @@ export function CaseTabs({ caseId }: Props) {
               tabClass,
               activeTab === tab.id
                 ? "bg-brand/10 text-brand"
-                : "bg-subtle text-body hover:bg-line hover:text-dark",
+                : "text-body hover:text-dark",
             )}
           >
             {tab.label}
@@ -48,7 +47,7 @@ export function CaseTabs({ caseId }: Props) {
 
       {/* Sub-tab row — rendered automatically when the active tab has subTabs */}
       {activeTabConfig?.subTabs?.length && (
-        <div className="flex justify-center border-t border-line bg-subtle/30 px-4 py-2 gap-2">
+        <div className="flex justify-center border-t border-line bg-subtle/90 px-4 py-2 gap-2">
           {activeTabConfig.subTabs.map((sub) => (
             <button
               key={sub.id}
@@ -58,7 +57,7 @@ export function CaseTabs({ caseId }: Props) {
                 tabClass,
                 activeSubTab === sub.id
                   ? "bg-brand/10 text-brand"
-                  : "bg-subtle text-body hover:bg-line hover:text-dark",
+                  : "text-body hover:text-dark",
               )}
             >
               {sub.label}

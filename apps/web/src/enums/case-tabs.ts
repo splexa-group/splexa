@@ -3,6 +3,7 @@ export enum CaseTabs {
   CASE = "case",
   HEARINGS = "hearings",
   IMPORTANT_DATES = "important-dates",
+  DOCUMENTS = "documents",
 }
 
 export enum CaseSubTabs {

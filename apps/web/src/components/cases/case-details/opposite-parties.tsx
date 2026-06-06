@@ -25,7 +25,9 @@ const ROLE_STYLES: Record<PartyRole, string> = {
 
 function RoleBadge({ role }: { role: PartyRole }) {
   return (
-    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ROLE_STYLES[role] ?? "bg-subtle text-secondary"}`}>
+    <span
+      className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${ROLE_STYLES[role] ?? "bg-subtle text-secondary"}`}
+    >
       {role}
     </span>
   );
@@ -113,7 +115,12 @@ export function OppositePartySection() {
         addLabel="Add Party"
         action={
           fields.length > 0 ? (
-            <Button type="button" size="sm" variant="primarySoft" onClick={openAdd}>
+            <Button
+              type="button"
+              size="default"
+              variant={"primary"}
+              onClick={openAdd}
+            >
               <Plus className="size-3.5" /> Add Party
             </Button>
           ) : undefined
@@ -128,7 +135,9 @@ export function OppositePartySection() {
               {/* Left — name + role + advocate */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <p className="text-sm font-semibold text-dark truncate">{field.name}</p>
+                  <p className="text-sm font-semibold text-dark truncate">
+                    {field.name}
+                  </p>
                   <RoleBadge role={field.role} />
                 </div>
                 {(field.advocateName || field.advocatePhone) && (
@@ -168,7 +177,9 @@ export function OppositePartySection() {
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title={editIndex !== null ? "Edit Opposite Party" : "Add Opposite Party"}
+        title={
+          editIndex !== null ? "Edit Opposite Party" : "Add Opposite Party"
+        }
       >
         <div className="p-5 space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -202,7 +213,12 @@ export function OppositePartySection() {
           </div>
 
           <div className="flex justify-end gap-2 pt-1">
-            <Button type="button" variant="secondary" size="sm" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => setOpen(false)}
+            >
               Cancel
             </Button>
             <Button type="button" size="sm" onClick={handleSave}>

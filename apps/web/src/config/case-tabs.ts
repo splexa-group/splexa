@@ -27,4 +27,5 @@ export const CASE_TAB_CONFIG: CaseTabConfig[] = [
   },
   { id: CaseTabs.HEARINGS, label: "Hearings" },
   { id: CaseTabs.IMPORTANT_DATES, label: "Important Dates" },
+  { id: CaseTabs.DOCUMENTS, label: "Documents" },
 ];

@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Button } from "./button";
 
 interface EmptyStateProps {
   text: string;
@@ -16,13 +17,9 @@ export function EmptyState({ text, action, className }: EmptyStateProps) {
     >
       <p className="text-sm text-secondary mb-2">{text}</p>
       {action && (
-        <button
-          type="button"
-          onClick={action.onClick}
-          className="text-sm font-semibold rounded px-3 py-1.5 text-brand hover:bg-brand-soft/40 transition-colors"
-        >
+        <Button className="rounded-3xl" type="button" onClick={action.onClick}>
           {action.label}
-        </button>
+        </Button>
       )}
     </div>
   );

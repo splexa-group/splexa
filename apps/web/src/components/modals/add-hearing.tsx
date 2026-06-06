@@ -105,34 +105,22 @@ export function HearingModal({
               />
             )}
           />
-
-          {hearing && (
-            <Controller
-              name="status"
-              control={control}
-              render={({ field }) => (
-                <SelectGroup
-                  label="Status"
-                  options={HEARING_STATUS_OPTIONS}
-                  value={field.value ?? ""}
-                  onChange={field.onChange}
-                />
-              )}
-            />
-          )}
-
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <SelectGroup
+                label="Status"
+                options={HEARING_STATUS_OPTIONS}
+                value={field.value ?? ""}
+                onChange={field.onChange}
+              />
+            )}
+          />
           <InputGroup
             label="Judge Present"
             placeholder="Enter judge name..."
             {...register("judgePresent")}
-          />
-
-          <TextareaGroup
-            label="Notes"
-            placeholder="Enter notes..."
-            rows={3}
-            className="col-span-2"
-            {...register("notes")}
           />
 
           {status === HearingStatus.Adjourned && (
@@ -155,6 +143,14 @@ export function HearingModal({
               />
             </>
           )}
+
+          <TextareaGroup
+            label="Notes"
+            placeholder="Enter notes..."
+            rows={3}
+            className="col-span-2"
+            {...register("notes")}
+          />
         </div>
       </div>
     </Modal>

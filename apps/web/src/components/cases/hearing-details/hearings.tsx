@@ -9,7 +9,7 @@ import {
   useDeleteHearing,
 } from "@/hooks/use-hearings";
 import { useCase } from "@/hooks/use-cases";
-import { HearingCard, UpNextCard } from "./hearing-card";
+import { HearingCard, NextHearingCard } from "./hearing-card";
 import { HearingModal } from "@/components/modals/add-hearing";
 import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,8 @@ interface Props {
 }
 
 export function HearingsDetails({ caseId }: Props) {
-  const [editHearing, setEditHearing] = useState<Hearing | null | "new">(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [hearingToEdit, setHearingToEdit] = useState<Hearing | null>(null);
   const [toDelete, setToDelete] = useState<Hearing | null>(null);
 
   const { data: hearings = [], isLoading } = useHearings(caseId);
@@ -43,18 +44,37 @@ export function HearingsDetails({ caseId }: Props) {
     )
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
+  const openCreate = () => {
+    setHearingToEdit(null);
+    setModalOpen(true);
+  };
+  const openEdit = (h: Hearing) => {
+    setHearingToEdit(h);
+    setModalOpen(true);
+  };
+  const closeModal = () => {
+    setModalOpen(false);
+    setHearingToEdit(null);
+  };
+
   const handleSave = async (data: UpdateHearingInput) => {
-    if (editHearing === "new") {
-      const { date, purpose, notes, judgePresent } = data;
+    if (!hearingToEdit) {
+      const { date, purpose, status, notes, judgePresent } = data;
       if (!date) {
         toast.error("Hearing date is required");
         return;
       }
-      await createHearing.mutateAsync({ date, purpose, notes, judgePresent });
-    } else if (editHearing) {
-      await updateHearing.mutateAsync({ id: editHearing.id, data });
+      await createHearing.mutateAsync({
+        date,
+        purpose,
+        status,
+        notes,
+        judgePresent,
+      });
+    } else {
+      await updateHearing.mutateAsync({ id: hearingToEdit.id, data });
     }
-    setEditHearing(null);
+    closeModal();
   };
 
   const handleDelete = async () => {
@@ -68,11 +88,11 @@ export function HearingsDetails({ caseId }: Props) {
       <div className="space-y-4">
         {/* Featured up-next card */}
         {upNext && (
-          <UpNextCard
+          <NextHearingCard
             hearing={upNext}
             courtName={caseData?.courtName}
             benchNumber={caseData?.benchNumber}
-            onEdit={() => setEditHearing(upNext)}
+            onEdit={() => openEdit(upNext)}
             onMarkHeard={() =>
               void updateHearing.mutateAsync({
                 id: upNext.id,
@@ -85,41 +105,39 @@ export function HearingsDetails({ caseId }: Props) {
                 data: { status: HearingStatus.Cancelled },
               })
             }
-            onAdjourn={() => setEditHearing(upNext)}
+            onAdjourn={() => openEdit(upNext)}
           />
         )}
 
         <Section
           title={isLoading ? "Hearings" : `Hearings (${hearings.length})`}
-          action={
-            <Button size="sm" onClick={() => setEditHearing("new")}>
-              Add Hearing
-            </Button>
-          }
+          action={<Button onClick={openCreate}>Add Hearing</Button>}
           isEmpty={!isLoading && hearings.length === 0}
           emptyLabel="No hearings yet. Add your first hearing to start tracking court dates."
-          onAdd={() => setEditHearing("new")}
+          onAdd={openCreate}
           addLabel="Add Hearing"
         >
-          {hearings.map((h, i) => {
-            const date = new Date(h.date);
-            const day = date.toLocaleDateString("en-IN", { day: "2-digit" });
-            const month = date
+          {hearings.map((hearing, index) => {
+            const hearingDate = new Date(hearing.date);
+            const day = hearingDate.toLocaleDateString("en-IN", {
+              day: "2-digit",
+            });
+            const month = hearingDate
               .toLocaleDateString("en-IN", { month: "short" })
               .toUpperCase();
-            const year = date.getFullYear();
+            const year = hearingDate.getFullYear();
 
             const iconCfg =
-              upNext?.id === h.id
+              upNext?.id === hearing.id
                 ? { Icon: Hammer, bg: "bg-brand", color: "text-white" }
-                : HEARING_TIMELINE_STATUS_ICON[h.status];
+                : HEARING_TIMELINE_STATUS_ICON[hearing.status];
 
             const { Icon, bg, color } = iconCfg;
 
-            const isLast = i === hearings.length - 1;
+            const isLast = index === hearings.length - 1;
 
             return (
-              <Fragment key={h.id}>
+              <Fragment key={hearing.id}>
                 <div className="flex gap-4">
                   {/* Date: stretches full row height, content centered */}
                   <div className="w-24 flex flex-col items-end justify-center text-right shrink-0 py-3">
@@ -139,7 +157,10 @@ export function HearingsDetails({ caseId }: Props) {
                       First row top segment is transparent; last row bottom segment is transparent. */}
                   <div className="flex flex-col items-center self-stretch shrink-0">
                     <div
-                      className={cn("w-0.5 flex-1", i > 0 ? "bg-brand" : "")}
+                      className={cn(
+                        "w-0.5 flex-1",
+                        index > 0 ? "bg-brand" : "",
+                      )}
                     />
                     <div
                       className={cn(
@@ -156,11 +177,9 @@ export function HearingsDetails({ caseId }: Props) {
 
                   <div className="flex-1 min-w-0 py-3">
                     <HearingCard
-                      hearing={h}
-                      courtName={caseData?.courtName}
-                      benchNumber={caseData?.benchNumber}
-                      onEdit={() => setEditHearing(h)}
-                      onDelete={() => setToDelete(h)}
+                      hearing={hearing}
+                      onEdit={() => openEdit(hearing)}
+                      onDelete={() => setToDelete(hearing)}
                     />
                   </div>
                 </div>
@@ -171,10 +190,10 @@ export function HearingsDetails({ caseId }: Props) {
       </div>
 
       <HearingModal
-        open={editHearing !== null}
-        hearing={editHearing === "new" ? null : editHearing}
+        open={modalOpen}
+        hearing={hearingToEdit}
         isPending={createHearing.isPending || updateHearing.isPending}
-        onClose={() => setEditHearing(null)}
+        onClose={closeModal}
         onSave={handleSave}
       />
 

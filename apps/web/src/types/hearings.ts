@@ -17,6 +17,7 @@ export interface Hearing {
 export interface CreateHearingInput {
   date: string;
   purpose?: HearingPurpose;
+  status?: HearingStatus;
   notes?: string;
   judgePresent?: string;
 }

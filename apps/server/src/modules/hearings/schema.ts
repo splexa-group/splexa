@@ -5,6 +5,7 @@ export const createHearingSchema = z
   .object({
     date: z.iso.datetime({ offset: true }),
     purpose: z.enum(HearingPurpose).optional(),
+    status: z.enum(HearingStatus).optional(),
     notes: z.string().max(2000).optional(),
     judgePresent: z.string().max(200).optional(),
   })

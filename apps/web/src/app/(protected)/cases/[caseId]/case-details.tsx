@@ -16,7 +16,7 @@ import { CourtDetailsSection } from "@/components/cases/case-details/court-detai
 import { JudgeDetailsSection } from "@/components/cases/case-details/judge-details";
 import { OppositePartySection } from "@/components/cases/case-details/opposite-parties";
 import { ClientDetails } from "@/components/cases/client/client-details";
-import { HearingsTab } from "@/components/cases/hearing-details/hearings-tab";
+import { HearingsTab } from "@/components/cases/hearing-details/hearings";
 import { ImportantDatesTab } from "@/components/cases/important-dates/important-dates-tab";
 import { PageFooter } from "@/components/layout/page-footer";
 import { PageContent } from "@/components/layout/page-content";

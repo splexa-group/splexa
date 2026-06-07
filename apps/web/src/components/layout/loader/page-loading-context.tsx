@@ -10,28 +10,34 @@ import {
 
 interface PageLoadingContextType {
   isLoading: boolean;
-  setLoading: (v: boolean) => void;
+  message: string;
+  setLoadingState: (isLoading: boolean, message?: string) => void;
 }
 
-export const PageLoadingContext = createContext<PageLoadingContextType | null>(
-  null,
-);
+export const PageLoadingContext = createContext<PageLoadingContextType | null>(null);
 
 export function PageLoadingProvider({ children }: { children: ReactNode }) {
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("Loading...");
+
+  function setLoadingState(loading: boolean, msg?: string) {
+    setIsLoading(loading);
+    setMessage(msg ?? "Loading...");
+  }
+
   return (
-    <PageLoadingContext.Provider value={{ isLoading, setLoading }}>
+    <PageLoadingContext.Provider value={{ isLoading, message, setLoadingState }}>
       {children}
     </PageLoadingContext.Provider>
   );
 }
 
-export function usePageLoading(isLoading: boolean) {
+export function usePageLoading(isLoading: boolean, message?: string) {
   const ctx = useContext(PageLoadingContext);
   if (!ctx) throw new Error("usePageLoading used outside PageLoadingProvider");
-  const { setLoading } = ctx;
+  const { setLoadingState } = ctx;
   useEffect(() => {
-    setLoading(isLoading);
-    return () => setLoading(false);
-  }, [isLoading, setLoading]);
+    setLoadingState(isLoading, message);
+    return () => setLoadingState(false);
+  }, [isLoading, message, setLoadingState]);
 }

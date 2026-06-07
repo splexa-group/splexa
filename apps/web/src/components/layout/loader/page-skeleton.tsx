@@ -12,8 +12,10 @@ export function PageSkeleton() {
       <div
         className="h-11 w-11 rounded-full border-4 animate-spin"
         style={{ borderColor: "var(--line)", borderTopColor: "var(--brand)" }}
-      />{" "}
-      <p className="text-sm font-medium text-brand tracking-wide">Loading...</p>
+      />
+      <p className="text-sm font-medium text-brand tracking-wide">
+        {ctx.message}
+      </p>
     </div>
   );
 }

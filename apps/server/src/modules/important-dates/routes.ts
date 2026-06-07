@@ -5,13 +5,15 @@ import {
   caseParamsSchema,
   createImportantDateSchema,
   importantDateParamsSchema,
+  listImportantDatesQuerySchema,
   updateImportantDateSchema,
 } from "./schema";
 
 export function importantDatesRoutes(router: FastifyInstance): void {
   router.get("/", {
+    schema: { querystring: listImportantDatesQuerySchema },
     preHandler: [router.authenticate],
-    handler: importantDatesController.listForOrg,
+    handler: importantDatesController.listCrossCase,
   });
 }
 

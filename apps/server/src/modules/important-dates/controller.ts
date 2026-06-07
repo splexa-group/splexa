@@ -4,6 +4,7 @@ import type {
   CaseParams,
   CreateImportantDateInput,
   ImportantDateParams,
+  ListImportantDatesQuery,
   UpdateImportantDateInput,
 } from "./schema";
 import { importantDatesService } from "./service";
@@ -11,6 +12,12 @@ import { importantDatesService } from "./service";
 export const importantDatesController = {
   async listForOrg(req: FastifyRequest) {
     return importantDatesService.listForOrg(req.user.orgId);
+  },
+
+  async listCrossCase(
+    req: FastifyRequest<{ Querystring: ListImportantDatesQuery }>,
+  ) {
+    return importantDatesService.listCrossCase(req.user.orgId, req.query);
   },
 
   async listForCase(req: FastifyRequest<{ Params: CaseParams }>) {

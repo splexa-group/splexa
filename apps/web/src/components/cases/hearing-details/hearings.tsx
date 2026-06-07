@@ -59,13 +59,14 @@ export function HearingsDetails({ caseId }: Props) {
 
   const handleSave = async (data: UpdateHearingInput) => {
     if (!hearingToEdit) {
-      const { date, purpose, status, notes, judgePresent } = data;
+      const { date, time, purpose, status, notes, judgePresent } = data;
       if (!date) {
         toast.error("Hearing date is required");
         return;
       }
       await createHearing.mutateAsync({
         date,
+        time: time || undefined,
         purpose,
         status,
         notes,

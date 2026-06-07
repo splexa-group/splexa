@@ -59,6 +59,7 @@ export const hearingSelect = {
   id: true,
   caseId: true,
   date: true,
+  time: true,
   purpose: true,
   status: true,
   notes: true,
@@ -157,6 +158,7 @@ export const hearingDetailSelect = {
   caseId: true,
   orgId: true,
   date: true,
+  time: true,
   purpose: true,
   status: true,
   notes: true,
@@ -170,6 +172,7 @@ export const hearingDetailSelect = {
     select: {
       id: true,
       title: true,
+      courtName: true,
       client: { select: { id: true, fullName: true } },
     },
   },

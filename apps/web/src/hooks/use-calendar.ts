@@ -11,6 +11,7 @@ import { calendarApi } from "@/services/calendar";
 import type {
   CalendarEvent,
   CalendarEventMap,
+  CalendarFilter,
   CalendarHearing,
   CalendarImportantDate,
 } from "@/types/calendar";
@@ -31,8 +32,8 @@ export const calendarKeys = {
 export function getGridDays(year: number, month: number): Date[] {
   const monthStart = new Date(year, month, 1);
   const monthEnd = endOfMonth(monthStart);
-  const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 });
-  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+  const gridStart = startOfWeek(monthStart, { weekStartsOn: 0 });
+  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
   return eachDayOfInterval({ start: gridStart, end: gridEnd });
 }
 
@@ -42,8 +43,8 @@ export function getGridRange(
 ): { gridFrom: string; gridTo: string } {
   const monthStart = new Date(year, month, 1);
   const monthEnd = endOfMonth(monthStart);
-  const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 });
-  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 1 });
+  const gridStart = startOfWeek(monthStart, { weekStartsOn: 0 });
+  const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
 
   const start = new Date(gridStart);
   start.setHours(0, 0, 0, 0);
@@ -106,6 +107,8 @@ export function buildEventMap(
       date: h.date,
       label: h.purpose ? HEARING_PURPOSE_LABELS[h.purpose] : "Hearing",
       status: h.status,
+      time: h.time,
+      courtName: h.case.courtName,
     });
   }
 
@@ -117,10 +120,37 @@ export function buildEventMap(
       caseTitle: d.case.title,
       date: d.date,
       label: IMPORTANT_DATE_TYPE_LABELS[d.dateType],
+      description: d.description,
     });
   }
 
   return map;
+}
+
+// ─── Filter helper ────────────────────────────────────────────────────────────
+
+export function filterEventMap(
+  eventMap: CalendarEventMap,
+  filter: CalendarFilter,
+  search: string,
+): CalendarEventMap {
+  if (filter === "all" && !search.trim()) return eventMap;
+
+  const q = search.trim().toLowerCase();
+  const result: CalendarEventMap = new Map();
+
+  for (const [key, events] of eventMap) {
+    const matching = events.filter((event) => {
+      if (filter === "hearings" && event.kind !== "hearing") return false;
+      if (filter === "important-dates" && event.kind !== "important-date")
+        return false;
+      if (q && !event.caseTitle.toLowerCase().includes(q)) return false;
+      return true;
+    });
+    if (matching.length > 0) result.set(key, matching);
+  }
+
+  return result;
 }
 
 // ─── Hook ─────────────────────────────────────────────────────────────────────

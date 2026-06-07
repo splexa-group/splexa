@@ -1,21 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { useCalendarEvents } from "@/hooks/use-calendar";
+import {
+  useCalendarEvents,
+  filterEventMap,
+  toDateKey,
+} from "@/hooks/use-calendar";
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
-import { CalendarEventPopup } from "./calendar-event-popup";
+import { CalendarDayPanel } from "./calendar-day-panel";
+import type { CalendarFilter } from "@/types/calendar";
 
 export function CalendarView() {
   const today = new Date();
+  const todayKey = toDateKey(today);
+
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
-  const [selectedDateKey, setSelectedDateKey] = useState<string | null>(null);
+  const [selectedDateKey, setSelectedDateKey] = useState<string>(todayKey);
+  const [filter, setFilter] = useState<CalendarFilter>("all");
+  const [search, setSearch] = useState("");
 
   const { eventMap, isLoading, isError, refetch } = useCalendarEvents(
     year,
     month,
   );
+
+  const filteredMap = filterEventMap(eventMap, filter, search);
+  const panelEvents = filteredMap.get(selectedDateKey) ?? [];
 
   function handlePrev() {
     if (month === 0) {
@@ -35,16 +47,6 @@ export function CalendarView() {
     }
   }
 
-  function handleToday() {
-    const now = new Date();
-    setYear(now.getFullYear());
-    setMonth(now.getMonth());
-  }
-
-  const selectedEvents = selectedDateKey
-    ? (eventMap.get(selectedDateKey) ?? [])
-    : [];
-
   return (
     <div className="calendar-page">
       <CalendarHeader
@@ -52,23 +54,25 @@ export function CalendarView() {
         month={month}
         onPrev={handlePrev}
         onNext={handleNext}
-        onToday={handleToday}
+        filter={filter}
+        onFilterChange={setFilter}
+        search={search}
+        onSearchChange={setSearch}
       />
-      <CalendarGrid
-        year={year}
-        month={month}
-        eventMap={eventMap}
-        onSelectDate={setSelectedDateKey}
-        isLoading={isLoading}
-        isError={isError}
-        onRetry={refetch}
-      />
-      <CalendarEventPopup
-        dateKey={selectedDateKey ?? ""}
-        events={selectedEvents}
-        open={!!selectedDateKey}
-        onClose={() => setSelectedDateKey(null)}
-      />
+      <div className="flex flex-1 overflow-hidden">
+        <div className="flex-[7] min-w-0 overflow-hidden">
+          <CalendarGrid
+            year={year}
+            month={month}
+            eventMap={filteredMap}
+            onSelectDate={setSelectedDateKey}
+            isLoading={isLoading}
+            isError={isError}
+            onRetry={refetch}
+          />
+        </div>
+        <CalendarDayPanel dateKey={selectedDateKey} events={panelEvents} />
+      </div>
     </div>
   );
 }

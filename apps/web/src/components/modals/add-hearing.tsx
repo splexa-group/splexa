@@ -23,6 +23,7 @@ interface Props {
 
 const defaultValues: UpdateHearingInput = {
   date: "",
+  time: "",
   purpose: undefined,
   status: HearingStatus.Scheduled,
   judgePresent: "",
@@ -48,6 +49,7 @@ export function AddHearingModal({
       if (hearing) {
         reset({
           date: hearing.date ? hearing.date.substring(0, 10) : "",
+          time: hearing.time ?? "",
           purpose: hearing.purpose ?? undefined,
           status: hearing.status,
           judgePresent: hearing.judgePresent ?? "",
@@ -56,7 +58,7 @@ export function AddHearingModal({
           adjournmentReason: hearing.adjournmentReason ?? "",
         });
       } else {
-        reset({ date: "", status: HearingStatus.Scheduled });
+        reset({ date: "", time: "", status: HearingStatus.Scheduled });
       }
     }
   }, [hearing, open, reset]);
@@ -92,6 +94,11 @@ export function AddHearingModal({
                 onChange={field.onChange}
               />
             )}
+          />
+          <InputGroup
+            label="Hearing Time"
+            type="time"
+            {...register("time")}
           />
           <Controller
             name="purpose"

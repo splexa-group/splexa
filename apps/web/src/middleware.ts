@@ -15,16 +15,16 @@ export function middleware(req: NextRequest) {
   const token = req.cookies.get('access_token')?.value ?? null;
   const { pathname } = req.nextUrl;
 
-  const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
-  const isAuthRoute = AUTH_ROUTE_PREFIXES.some((p) => pathname.startsWith(p));
+  // const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));
+  // const isAuthRoute = AUTH_ROUTE_PREFIXES.some((p) => pathname.startsWith(p));
 
-  if (isProtected && !token) {
-    return NextResponse.redirect(new URL('/login', req.url));
-  }
+  // if (isProtected && !token) {
+  //   return NextResponse.redirect(new URL('/login', req.url));
+  // }
 
-  if (isAuthRoute && token) {
-    return NextResponse.redirect(new URL('/dashboard', req.url));
-  }
+  // if (isAuthRoute && token) {
+  //   return NextResponse.redirect(new URL('/dashboard', req.url));
+  // }
 
   if (pathname === '/' && token) {
     return NextResponse.redirect(new URL('/dashboard', req.url));

@@ -210,13 +210,17 @@ summary {
     @apply text-brand font-medium;
   }
 
-  /* ─── Calendar ─────────────────────────────────────────────── */
+  /*  Calendar  */
   .calendar-page {
     @apply flex flex-col h-full overflow-hidden bg-page;
   }
 
-  .calendar-header {
-    @apply flex items-center justify-between px-4 py-3 bg-card border-b border-line flex-shrink-0;
+  .calendar-toolbar {
+    @apply px-4 py-3 bg-card border-b border-line flex-shrink-0;
+  }
+
+  .calendar-toolbar-row {
+    @apply flex items-center gap-3 flex-wrap md:flex-nowrap;
   }
 
   .calendar-nav-btn {
@@ -228,10 +232,32 @@ summary {
     @apply text-base font-bold text-dark w-40 text-center;
   }
 
-  .calendar-today-btn {
-    @apply flex items-center justify-center px-3 h-[36px] min-w-[44px] rounded;
-    @apply border border-line text-sm font-medium text-brand;
-    @apply hover:bg-brand-soft transition-colors active:scale-95;
+  .calendar-day-panel {
+    @apply flex-[3] min-w-0 border-l border-line bg-card flex-col overflow-hidden hidden md:flex;
+  }
+
+  .calendar-day-panel-header {
+    @apply flex items-baseline justify-between gap-2 px-4 py-3 border-b border-line flex-shrink-0;
+  }
+
+  .calendar-day-panel-body {
+    @apply flex-1 overflow-y-auto p-4 space-y-3;
+  }
+
+  .calendar-panel-event {
+    @apply p-3 border border-line rounded-lg bg-page space-y-2;
+  }
+
+  .calendar-panel-badge--hearing {
+    @apply inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-brand-soft text-brand;
+  }
+
+  .calendar-panel-badge--date {
+    @apply inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full bg-amber-muted text-amber;
+  }
+
+  .calendar-panel-view-btn {
+    @apply flex items-center gap-1.5 text-xs font-semibold text-brand hover:text-brand-dark transition-colors;
   }
 
   .calendar-cell {

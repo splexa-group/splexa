@@ -3,6 +3,7 @@ model Hearing {
   caseId            String          @map("case_id")
   orgId             String          @map("org_id")
   date              DateTime
+  time              String?
   purpose           HearingPurpose?
   status            HearingStatus   @default(Scheduled)
   notes             String?

@@ -4,6 +4,7 @@ export interface Hearing {
   id: string;
   caseId: string;
   date: string;
+  time: string | null;
   purpose: HearingPurpose | null;
   status: HearingStatus;
   notes: string | null;
@@ -16,6 +17,7 @@ export interface Hearing {
 
 export interface CreateHearingInput {
   date: string;
+  time?: string;
   purpose?: HearingPurpose;
   status?: HearingStatus;
   notes?: string;
@@ -24,6 +26,7 @@ export interface CreateHearingInput {
 
 export interface UpdateHearingInput {
   date?: string;
+  time?: string;
   purpose?: HearingPurpose;
   status?: HearingStatus;
   notes?: string;

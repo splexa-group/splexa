@@ -1,49 +1,77 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, CalendarDays } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { format } from "date-fns";
+import { FiltersBar } from "@/components/ui/filters-bar";
+import { Search } from "@/components/ui/form/search";
+import { Select } from "@/components/ui/form/select";
+import { CALENDAR_FILTER_OPTIONS } from "@/lib/options";
+import { CalendarFilter } from "@/types/calendar";
 
 interface Props {
   year: number;
   month: number;
   onPrev: () => void;
   onNext: () => void;
-  onToday: () => void;
+  filter: CalendarFilter;
+  onFilterChange: (f: CalendarFilter) => void;
+  search: string;
+  onSearchChange: (s: string) => void;
 }
 
-export function CalendarHeader({ year, month, onPrev, onNext, onToday }: Props) {
+export function CalendarHeader({
+  year,
+  month,
+  onPrev,
+  onNext,
+  filter,
+  onFilterChange,
+  search,
+  onSearchChange,
+}: Props) {
   const label = format(new Date(year, month, 1), "MMMM yyyy");
 
   return (
-    <div className="calendar-header">
-      <div className="flex items-center gap-1">
-        <button
-          type="button"
-          onClick={onPrev}
-          className="calendar-nav-btn"
-          aria-label="Previous month"
-        >
-          <ChevronLeft className="size-4" />
-        </button>
-        <span className="calendar-month-label">{label}</span>
-        <button
-          type="button"
-          onClick={onNext}
-          className="calendar-nav-btn"
-          aria-label="Next month"
-        >
-          <ChevronRight className="size-4" />
-        </button>
+    <FiltersBar columns="auto 1fr 300px">
+      {/* Month navigation */}
+      <div className="flex items-center rounded border border-line bg-card h-10 transition-colors focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20">
+        <span className="px-3.5 text-sm text-dark whitespace-nowrap">
+          {label}
+        </span>
+        <div className="flex items-center m-1 rounded bg-subtle">
+          <button
+            type="button"
+            onClick={onPrev}
+            className="flex items-center justify-center w-8 h-8 rounded text-label hover:bg-line transition-colors focus:outline-none"
+            aria-label="Previous month"
+          >
+            <ChevronLeft className="size-4" />
+          </button>
+          <button
+            type="button"
+            onClick={onNext}
+            className="flex items-center justify-center w-8 h-8 rounded text-label hover:bg-line transition-colors focus:outline-none"
+            aria-label="Next month"
+          >
+            <ChevronRight className="size-4" />
+          </button>
+        </div>
       </div>
-      <button
-        type="button"
-        onClick={onToday}
-        className="calendar-today-btn"
-        aria-label="Go to today"
-      >
-        <span className="hidden sm:inline">Today</span>
-        <CalendarDays className="size-4 sm:hidden" aria-hidden="true" />
-      </button>
-    </div>
+
+      <Search
+        value={search}
+        onChange={(e) => onSearchChange(e.target.value)}
+        onClear={() => onSearchChange("")}
+        placeholder="Search cases..."
+      />
+
+      <Select
+        options={CALENDAR_FILTER_OPTIONS}
+        value={filter === "all" ? "" : filter}
+        onChange={(v) => onFilterChange(v as CalendarFilter)}
+        onClear={() => onFilterChange("all")}
+        placeholder="All"
+      />
+    </FiltersBar>
   );
 }

@@ -6,8 +6,8 @@ import { getGridDays, toDateKey } from "@/hooks/use-calendar";
 import type { CalendarEventMap } from "@/types/calendar";
 import { CalendarCell } from "./calendar-cell";
 
-const DAY_LABELS_DESKTOP = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const DAY_LABELS_MOBILE = ["M", "T", "W", "T", "F", "S", "S"];
+const DAY_LABELS_DESKTOP = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const DAY_LABELS_MOBILE = ["S", "M", "T", "W", "T", "F", "S"];
 
 interface Props {
   year: number;
@@ -51,7 +51,7 @@ export function CalendarGrid({
             key={label + i}
             className={cn(
               "py-2 text-center text-[10px] font-semibold border-r border-line last:border-r-0 md:text-xs",
-              i >= 5 ? "text-placeholder" : "text-secondary",
+              i === 0 || i === 6 ? "text-placeholder" : "text-secondary",
             )}
           >
             <span className="hidden md:inline">{DAY_LABELS_DESKTOP[i]}</span>

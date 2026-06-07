@@ -6,10 +6,6 @@ import { importantDatesRepository } from "./repository";
 import type { CreateImportantDateInput, ListImportantDatesQuery, UpdateImportantDateInput } from "./schema";
 
 export const importantDatesService = {
-  async listForOrg(orgId: string) {
-    return importantDatesRepository.listForOrg(orgId);
-  },
-
   async listForCase(caseId: string, orgId: string) {
     return importantDatesRepository.listForCase(caseId, orgId);
   },

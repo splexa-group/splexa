@@ -10,10 +10,6 @@ import type {
 import { importantDatesService } from "./service";
 
 export const importantDatesController = {
-  async listForOrg(req: FastifyRequest) {
-    return importantDatesService.listForOrg(req.user.orgId);
-  },
-
   async listCrossCase(
     req: FastifyRequest<{ Querystring: ListImportantDatesQuery }>,
   ) {

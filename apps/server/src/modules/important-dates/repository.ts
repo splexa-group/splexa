@@ -31,17 +31,6 @@ export const importantDatesRepository = {
     });
   },
 
-  async listForOrg(orgId: string) {
-    return prisma.importantDate.findMany({
-      where: {
-        orgId,
-        deletedAt: null,
-        dateType: { not: ImportantDateType.HearingDate },
-      },
-      orderBy: { date: "asc" },
-    });
-  },
-
   async listForCase(caseId: string, orgId: string) {
     return prisma.importantDate.findMany({
       where: {

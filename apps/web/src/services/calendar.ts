@@ -9,7 +9,7 @@ interface CalendarPageResult<T> {
 export const calendarApi = {
   hearings: (from: string, to: string) =>
     GET<CalendarPageResult<CalendarHearing>>("/hearings", {
-      params: { from, to, limit: 200 },
+      params: { from, to, limit: 100 },
     }),
 
   importantDates: (from: string, to: string) =>

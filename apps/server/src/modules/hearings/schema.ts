@@ -3,9 +3,8 @@ import { z } from "zod";
 
 export const createHearingSchema = z
   .object({
-    date: z.iso.datetime({ offset: true }),
+    date: z.string().datetime({ offset: true }),
     purpose: z.enum(HearingPurpose).optional(),
-    status: z.enum(HearingStatus).optional(),
     notes: z.string().max(2000).optional(),
     judgePresent: z.string().max(200).optional(),
   })
@@ -13,10 +12,10 @@ export const createHearingSchema = z
 
 export const updateHearingSchema = z
   .object({
-    date: z.iso.datetime({ offset: true }).optional(),
+    date: z.string().datetime({ offset: true }).optional(),
     status: z.enum(HearingStatus).optional(),
     notes: z.string().max(2000).optional(),
-    nextDate: z.iso.datetime({ offset: true }).optional(),
+    nextDate: z.string().datetime({ offset: true }).optional(),
     adjournmentReason: z.string().max(500).optional(),
     judgePresent: z.string().max(200).optional(),
     purpose: z.enum(HearingPurpose).optional(),
@@ -34,22 +33,22 @@ export const updateHearingSchema = z
 
 export const caseHearingParamsSchema = z
   .object({
-    caseId: z.uuid(),
+    caseId: z.string().uuid(),
   })
   .strict();
 
 export const hearingParamsSchema = z
   .object({
-    id: z.uuid(),
+    id: z.string().uuid(),
   })
   .strict();
 
 export const listHearingsQuerySchema = z
   .object({
-    from: z.iso.datetime({ offset: true }).optional(),
-    to: z.iso.datetime({ offset: true }).optional(),
+    from: z.string().datetime({ offset: true }).optional(),
+    to: z.string().datetime({ offset: true }).optional(),
     status: z.enum(HearingStatus).optional(),
-    caseId: z.uuid().optional(),
+    caseId: z.string().uuid().optional(),
     page: z.coerce.number().int().positive().default(1),
     limit: z.coerce.number().int().positive().max(100).default(20),
   })

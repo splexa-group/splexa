@@ -69,7 +69,7 @@ export function OtpInput({ value, onChange, hasError, disabled }: OtpInputProps)
           onPaste={handlePaste}
           disabled={disabled}
           className={cn(
-            "w-14 h-13 text-center text-lg font-semibold rounded border bg-card transition-colors",
+            "w-14 h-13 text-center text-lg font-semibold rounded-md border bg-card transition-colors",
             "focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20",
             "disabled:bg-subtle disabled:cursor-not-allowed",
             hasError

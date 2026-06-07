@@ -1,5 +1,5 @@
-export interface ServiceContext {
+export type ServiceContext = {
   orgId: string;
   userId: string;
   ipAddress: string;
-}
+};

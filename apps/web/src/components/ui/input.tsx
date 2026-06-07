@@ -34,7 +34,7 @@ const Field = React.forwardRef<HTMLInputElement, FieldProps>(
             error ? `${id}-error` : hint ? `${id}-hint` : undefined
           }
           className={cn(
-            "w-full rounded border border-line bg-card px-3 py-[9px] text-sm text-dark placeholder:text-placeholder transition-colors",
+            "w-full rounded-md border border-line bg-card px-3 py-[9px] text-sm text-dark placeholder:text-placeholder transition-colors",
             "focus-visible:outline-none focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/20",
             error &&
               "border-negative focus-visible:border-negative focus-visible:ring-negative/20",
@@ -77,7 +77,7 @@ const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
     return (
       <div
         className={cn(
-          "rounded border bg-card px-3.5 pt-4.5 pb-3.5 transition-colors",
+          "rounded-md border bg-card px-3 pt-3 pb-2.5 transition-colors",
           error
             ? "border-negative focus-within:ring-1 focus-within:ring-negative/30"
             : "border-line focus-within:border-brand focus-within:ring-1 focus-within:ring-brand/30",
@@ -86,7 +86,7 @@ const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
       >
         <label
           htmlFor={id}
-          className="block text-[13px] font-medium text-label/70 leading-none mb-1.5"
+          className="block text-[13.5px] font-medium text-label leading-none mb-1.5"
         >
           {label}
           {required && <span className="text-negative ml-0.5">*</span>}

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { Icon } from '@/components/ui/icon';
-import { NAV_ITEMS } from './sidebar/nav-items';
+import { NAV_ITEMS } from './nav-items';
 
 const TABS = NAV_ITEMS
   .filter((item) => item.href !== '/settings')

@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { InputGroup } from "@/components/ui/form/input";
+import { InputGroup } from "@/components/ui/input";
 import { useRequestOtp } from "@/hooks/use-auth";
 
 interface EmailFormValues {

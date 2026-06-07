@@ -55,9 +55,10 @@ export const caseSummarySelect = {
   },
 } satisfies Prisma.CaseSelect;
 
-export const hearingSelect = {
+export const hearingSummarySelect = {
   id: true,
   caseId: true,
+  orgId: true,
   date: true,
   purpose: true,
   status: true,
@@ -65,24 +66,10 @@ export const hearingSelect = {
   nextDate: true,
   adjournmentReason: true,
   judgePresent: true,
+  addedBy: true,
   createdAt: true,
   updatedAt: true,
 } satisfies Prisma.HearingSelect;
-
-export const hearingSummarySelect = {
-  ...hearingSelect,
-  orgId: true,
-  addedBy: true,
-} satisfies Prisma.HearingSelect;
-
-export const importantDateSelect = {
-  id: true,
-  caseId: true,
-  dateType: true,
-  date: true,
-  description: true,
-  createdAt: true,
-} satisfies Prisma.ImportantDateSelect;
 
 export const caseDetailSelect = {
   id: true,
@@ -113,16 +100,6 @@ export const caseDetailSelect = {
   createdAt: true,
   updatedAt: true,
   client: { select: clientSelect },
-  hearings: {
-    where: { deletedAt: null },
-    orderBy: { date: "desc" as const },
-    select: hearingSelect,
-  },
-  importantDates: {
-    where: { deletedAt: null },
-    orderBy: { date: "asc" as const },
-    select: importantDateSelect,
-  },
 } satisfies Prisma.CaseSelect;
 
 export const documentSelect = {

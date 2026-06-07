@@ -4,7 +4,7 @@ import { z } from "zod";
 export const createImportantDateSchema = z
   .object({
     dateType: z.enum(ImportantDateType),
-    date: z.iso.datetime({ offset: true }),
+    date: z.string().datetime({ offset: true }),
     description: z.string().max(500).optional(),
   })
   .strict();
@@ -12,21 +12,21 @@ export const createImportantDateSchema = z
 export const updateImportantDateSchema = z
   .object({
     dateType: z.enum(ImportantDateType).optional(),
-    date: z.iso.datetime({ offset: true }).optional(),
+    date: z.string().datetime({ offset: true }).optional(),
     description: z.string().max(500).optional(),
   })
   .strict();
 
 export const importantDateParamsSchema = z
   .object({
-    caseId: z.uuid(),
-    dateId: z.uuid(),
+    caseId: z.string().uuid(),
+    dateId: z.string().uuid(),
   })
   .strict();
 
 export const caseParamsSchema = z
   .object({
-    caseId: z.uuid(),
+    caseId: z.string().uuid(),
   })
   .strict();
 

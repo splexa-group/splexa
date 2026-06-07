@@ -13,9 +13,9 @@ export interface CreateCaseData {
   orgId: string;
   createdBy: string;
   title: string;
-  description?: string;
-  clientId?: string;
-  clientRole?: PartyRole;
+  description: string;
+  clientId: string;
+  clientRole: PartyRole;
   caseNumber?: string;
   caseType?: CaseType;
   filingDate?: Date;

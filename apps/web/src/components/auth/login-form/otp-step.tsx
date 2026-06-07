@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { OtpInput } from "@/components/ui/form/otp-input";
+import { OtpInput } from "@/components/ui/otp-input";
 import { useVerifyOtp, useRequestOtp } from "@/hooks/use-auth";
 import { maskEmail } from "@/lib/utils";
 

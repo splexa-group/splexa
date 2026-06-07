@@ -1,28 +1,19 @@
-"use client";
+'use client';
 
-import { useEffect } from "react";
-import { useAuthStore } from "@/store/auth-store";
-import { authApi } from "@/services/auth";
+import { useEffect } from 'react';
+import { useAuthStore } from '@/store/auth-store';
+import { authApi } from '@/services/auth';
 
 export function AuthRehydrator() {
   const user = useAuthStore((s) => s.user);
   const setAuth = useAuthStore((s) => s.setAuth);
-  const setReady = useAuthStore((s) => s.setReady);
 
   useEffect(() => {
-    if (user) {
-      setReady();
-      return;
-    }
-
-    authApi
-      .me()
-      .then(setAuth)
-      .catch(() => {
-        /* 401 interceptor handles redirect to /login */
-      })
-      .finally(setReady);
-  }, [user, setAuth, setReady]);
+    if (user) return;
+    authApi.me().then(setAuth).catch(() => {
+      // 401 interceptor in api/client.ts handles redirect to /login
+    });
+  }, [user, setAuth]);
 
   return null;
 }

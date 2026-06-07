@@ -16,13 +16,13 @@ export const signupSchema = z
 
 export const otpRequestSchema = z
   .object({
-    email: z.email(),
+    email: z.string().email(),
   })
   .strict();
 
 export const otpVerifySchema = z
   .object({
-    email: z.email(),
+    email: z.string().email(),
     otp: z
       .string()
       .length(6)

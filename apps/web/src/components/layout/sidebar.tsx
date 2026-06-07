@@ -14,7 +14,7 @@ function NavLink({ href, icon, label, active }: NavItem & { active: boolean }) {
   return (
     <Link href={href} className={cn("nav-item", active && "nav-item-active")}>
       <Icon icon={icon} size="sm" />
-      <span className="hidden text-[13.5px] lg:block truncate">{label}</span>
+      <span className="hidden lg:block truncate">{label}</span>
       <Icon
         icon={ChevronRight}
         size="sm"
@@ -51,7 +51,7 @@ export function Sidebar() {
     <aside className="hidden md:flex flex-col md:w-16 lg:w-[250px] bg-surface-dark shrink-0 h-screen overflow-hidden">
       {/* Header — identity */}
       <div className="flex items-center gap-3 px-3 py-5 shrink-0">
-        <div className="w-8 h-8 rounded bg-brand-soft flex items-center justify-center text-brand text-[14.5px] font-bold shrink-0">
+        <div className="w-8 h-8 rounded-md bg-brand-soft flex items-center justify-center text-brand text-[14.5px] font-bold shrink-0">
           {initial}
         </div>
         <div className="hidden lg:flex flex-col min-w-0">
@@ -86,7 +86,7 @@ export function Sidebar() {
             type="button"
             title="Log out"
             onClick={handleLogout}
-            className="p-2 rounded text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
+            className="p-2 rounded-lg text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
           >
             <Icon icon={LogOut} size="md" />
           </button>
@@ -94,14 +94,14 @@ export function Sidebar() {
             type="button"
             title="Support"
             onClick={() => window.open("mailto:support@splexa.in")}
-            className="p-2 rounded text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
+            className="p-2 rounded-lg text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
           >
             <Icon icon={HelpCircle} size="md" />
           </button>
           <button
             type="button"
             title="Book a demo"
-            className="p-2 rounded text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
+            className="p-2 rounded-lg text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
           >
             <Icon icon={CalendarPlus} size="md" />
           </button>

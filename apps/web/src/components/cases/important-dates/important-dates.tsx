@@ -29,19 +29,30 @@ interface Props {
   caseId: string;
 }
 
-function urgencyColor(isoDate: string) {
-  const date = new Date(isoDate);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  if (date < today) return "text-negative";
-  if (date.toDateString() === today.toDateString()) return "text-amber-dark";
-  return "text-dark";
-}
-
-function typeBadge(type: string) {
+function typeBadgeClass(type: string) {
   return CRITICAL_TYPES.includes(type)
     ? "bg-negative-muted text-negative"
     : "bg-brand-soft text-brand";
+}
+
+function getUrgency(isoDate: string): { label: string; pill: string } | null {
+  const date = new Date(isoDate);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  date.setHours(0, 0, 0, 0);
+  const diff = Math.round((date.getTime() - today.getTime()) / 86_400_000);
+  if (diff < 0)
+    return {
+      label: `${Math.abs(diff)} day${Math.abs(diff) === 1 ? "" : "s"} ago`,
+      pill: "bg-negative-muted text-negative",
+    };
+  if (diff === 0)
+    return { label: "Today", pill: "bg-amber-muted text-amber-dark" };
+  if (diff === 1)
+    return { label: "Tomorrow", pill: "bg-amber-muted text-amber-dark" };
+  if (diff <= 7)
+    return { label: `In ${diff} days`, pill: "bg-amber-muted text-amber-dark" };
+  return null;
 }
 
 export function ImportantDatesDetails({ caseId }: Props) {
@@ -54,7 +65,7 @@ export function ImportantDatesDetails({ caseId }: Props) {
   const updateDate = useUpdateImportantDate(caseId);
   const deleteDate = useDeleteImportantDate(caseId);
 
-  const sorted = [...dates].sort(
+  const sortedDates = [...dates].sort(
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 
@@ -100,60 +111,88 @@ export function ImportantDatesDetails({ caseId }: Props) {
         addLabel="Add Date"
       >
         <div className="rounded border border-line bg-card overflow-hidden">
-          {sorted.map((importantDate, i) => (
-            <div
-              key={importantDate.id}
-              className={cn(
-                "grid grid-cols-[auto_auto_1fr_auto] items-center gap-4 px-4 py-3",
-                i < sorted.length - 1 && "border-b border-line",
-              )}
-            >
-              <span
+          {sortedDates.map((importantDate, i) => {
+            const urgency = getUrgency(importantDate.date);
+            const d = new Date(importantDate.date);
+            const day = d.toLocaleDateString("en-IN", { day: "2-digit" });
+            const month = d
+              .toLocaleDateString("en-IN", { month: "short" })
+              .toUpperCase();
+            const year = d.getFullYear();
+
+            return (
+              <div
+                key={importantDate.id}
                 className={cn(
-                  "text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0",
-                  typeBadge(importantDate.dateType),
+                  "flex items-center gap-4 px-4 py-3",
+                  i < sortedDates.length - 1 && "border-b border-line",
                 )}
               >
-                {importantDate.dateType.replace(/([A-Z])/g, " $1").trim()}
-              </span>
+                {/* Date block */}
+                <div className="flex flex-col items-center text-center shrink-0 w-10">
+                  <span className="text-2xl font-black text-dark leading-none">
+                    {day}
+                  </span>
+                  <span className="text-[9px] font-bold text-label uppercase tracking-widest mt-0.5">
+                    {month}
+                  </span>
+                  <span className="text-[10px] font-medium text-secondary mt-0.5">
+                    {year}
+                  </span>
+                </div>
 
-              <span
-                className={cn(
-                  "text-sm font-semibold whitespace-nowrap",
-                  urgencyColor(importantDate.date),
-                )}
-              >
-                {new Date(importantDate.date).toLocaleDateString("en-IN", {
-                  day: "numeric",
-                  month: "short",
-                  year: "numeric",
-                })}
-              </span>
+                {/* Content */}
+                <div className="flex-1 min-w-0 space-y-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span
+                      className={cn(
+                        "text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap",
+                        typeBadgeClass(importantDate.dateType),
+                      )}
+                    >
+                      {importantDate.dateType.replace(/([A-Z])/g, " $1").trim()}
+                    </span>
+                    {urgency && (
+                      <span
+                        className={cn(
+                          "inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full",
+                          urgency.pill,
+                        )}
+                      >
+                        <span className="size-1.5 rounded-full bg-current shrink-0" />
+                        {urgency.label}
+                      </span>
+                    )}
+                  </div>
+                  {importantDate.description && (
+                    <p className="text-sm font-medium text-dark truncate">
+                      {importantDate.description}
+                    </p>
+                  )}
+                </div>
 
-              <span className="text-xs text-secondary truncate">
-                {importantDate.description ?? <span className="text-placeholder">—</span>}
-              </span>
-
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handleOpenModal(importantDate)}
-                  className="p-1.5 rounded bg-subtle text-secondary hover:text-dark transition-colors"
-                  aria-label="Edit"
-                >
-                  <Pencil className="size-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setToDelete(importantDate)}
-                  className="p-1.5 rounded bg-negative-muted text-negative hover:opacity-80 transition-opacity"
-                  aria-label="Delete"
-                >
-                  <Trash2 className="size-3.5" />
-                </button>
+                {/* Actions */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenModal(importantDate)}
+                    className="p-1.5 rounded bg-subtle text-secondary hover:text-dark transition-colors"
+                    aria-label="Edit"
+                  >
+                    <Pencil className="size-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setToDelete(importantDate)}
+                    className="p-1.5 rounded bg-negative-muted text-negative hover:opacity-80 transition-opacity"
+                    aria-label="Delete"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </Section>
 

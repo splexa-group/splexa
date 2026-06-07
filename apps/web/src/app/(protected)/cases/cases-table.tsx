@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useCases, useDeleteCase } from "@/hooks/use-cases";
+import { usePageLoading } from "@/components/layout/loader";
 import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import { Select } from "@/components/ui/form/select";
 import { Search } from "@/components/ui/form/search";
@@ -66,6 +67,8 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
   const { data, isLoading } = useCases(filters);
   const deleteCase = useDeleteCase();
   const cases = data?.data ?? [];
+
+  usePageLoading(isLoading);
 
   const handleDelete = async () => {
     if (!toDelete) return;
@@ -172,7 +175,6 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
         columns={COLUMNS}
         columnWidths={COLUMN_WIDTHS}
         rows={rows}
-        isLoading={isLoading}
         emptyStateText="No cases found."
         emptyStateAction={
           onAdd ? { label: "Add new case", onClick: onAdd } : undefined

@@ -9,6 +9,7 @@ import { CaseTabs as CaseTabsNav } from "@/app/(protected)/cases/[caseId]/case-t
 import { useCaseActiveTab, useCaseActiveSubTab } from "@/hooks/use-active-tab";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
+import { usePageLoading } from "@/components/layout/loader";
 import { useAddClientToCase, useUpdateClient } from "@/hooks/use-clients";
 import { CaseDetailsSection } from "@/components/cases/case-details/case-details";
 import { CaseDescriptionSection } from "@/components/cases/case-details/case-description";
@@ -118,9 +119,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
       : undefined,
   });
 
-  if (isLoading || !caseDetails) {
-    return <div className="p-6 text-sm text-secondary">Loading…</div>;
-  }
+  usePageLoading(isLoading);
 
   const isEditableTab =
     activeTab === CaseTabs.CASE || activeTab === CaseTabs.CLIENT;
@@ -136,7 +135,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
 
       const data = clientForm.getValues();
 
-      if (!caseDetails.clientId) {
+      if (!caseDetails?.clientId) {
         if (!data.type) {
           toast.error("Client type is required");
           return;
@@ -153,7 +152,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
         await addClientToCase.mutateAsync(clientInput);
       } else {
         await updateClient.mutateAsync({
-          id: caseDetails.clientId,
+          id: caseDetails?.clientId ?? "",
           caseId,
           data,
         });
@@ -205,7 +204,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
       <ConfirmDeleteModal
         open={showDelete}
         title="case"
-        entityName={caseDetails.title}
+        entityName={caseDetails?.title ?? ""}
         isPending={deleteCase.isPending}
         onCancel={() => setShowDelete(false)}
         onConfirm={handleDelete}

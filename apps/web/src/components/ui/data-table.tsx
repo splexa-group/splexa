@@ -16,7 +16,6 @@ export interface DataTableProps {
   columns: ReactNode[];
   columnWidths: string;
   rows: DataTableRow[];
-  isLoading?: boolean;
   emptyStateText?: string;
   emptyStateAction?: { label: string; onClick: () => void };
   page?: number;
@@ -29,7 +28,6 @@ export function DataTable({
   columns,
   columnWidths,
   rows,
-  isLoading,
   emptyStateText = "No results found",
   emptyStateAction,
   page = 1,
@@ -37,7 +35,7 @@ export function DataTable({
   totalRows = 0,
   onPageChange,
 }: DataTableProps) {
-  const isEmpty = !isLoading && rows.length === 0;
+  const isEmpty = rows.length === 0;
   const totalPages = Math.max(1, Math.ceil(totalRows / pageSize));
   const from = totalRows === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, totalRows);
@@ -65,23 +63,7 @@ export function DataTable({
               ))}
             </div>
 
-            {/* Loading skeletons */}
-            {isLoading &&
-              Array.from({ length: pageSize }).map((_, i) => (
-                <div
-                  key={i}
-                  className="grid px-4 py-[17px] border-b border-line last:border-b-0 animate-pulse gap-4"
-                  style={{ gridTemplateColumns: columnWidths }}
-                >
-                  {columns.map((_, j) => (
-                    <div key={j} className="h-3.5 bg-subtle rounded-full" />
-                  ))}
-                </div>
-              ))}
-
-            {/* Rows */}
-            {!isLoading &&
-              rows.map((row) => (
+            {rows.map((row) => (
                 <div
                   key={row.key}
                   role={row.onClick ? "button" : "row"}

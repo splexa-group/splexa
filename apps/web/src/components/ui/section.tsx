@@ -42,7 +42,7 @@ export function Section({
         <div className="flex-1 bg-brand/5 px-4 py-2.5">
           <h3 className="text-sm font-medium text-brand">{title}</h3>
         </div>
-        {action && (
+        {action && !isEmpty && (
           <div className=" border-brand/15 px-3 flex items-center justify-center shrink-0">
             {action}
           </div>

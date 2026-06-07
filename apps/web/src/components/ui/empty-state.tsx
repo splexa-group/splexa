@@ -15,7 +15,7 @@ export function EmptyState({ text, action, className }: EmptyStateProps) {
         className,
       )}
     >
-      <p className="text-sm text-secondary mb-2">{text}</p>
+      <p className="text-[13.5px] text-secondary mb-2">{text}</p>
       {action && (
         <Button className="rounded-3xl" type="button" onClick={action.onClick}>
           {action.label}

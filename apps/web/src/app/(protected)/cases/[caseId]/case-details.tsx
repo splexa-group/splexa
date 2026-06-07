@@ -17,7 +17,7 @@ import { JudgeDetailsSection } from "@/components/cases/case-details/judge-detai
 import { OppositePartySection } from "@/components/cases/case-details/opposite-parties";
 import { ClientDetails } from "@/components/cases/client/client-details";
 import { HearingsDetails } from "@/components/cases/hearing-details/hearings";
-import { ImportantDatesTab } from "@/components/cases/important-dates/important-dates-tab";
+import { ImportantDatesDetails } from "@/components/cases/important-dates/important-dates";
 import { PageFooter } from "@/components/layout/page-footer";
 import { PageContent } from "@/components/layout/page-content";
 import { Button } from "@/components/ui/button";
@@ -82,7 +82,7 @@ function TabContent({
       return <HearingsDetails caseId={caseId} />;
 
     case CaseTabs.IMPORTANT_DATES:
-      return <ImportantDatesTab caseId={caseId} />;
+      return <ImportantDatesDetails caseId={caseId} />;
 
     case CaseTabs.DOCUMENTS:
       return <DocumentsTab caseId={caseId} />;

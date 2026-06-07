@@ -22,7 +22,7 @@ export function PageContent({
   className,
 }: PageContentProps) {
   return (
-    <div className={cn("mx-auto w-full px-6 py-6", widthClass[width], className)}>
+    <div className={cn("mx-auto w-full py-6", widthClass[width], className)}>
       {children}
     </div>
   );

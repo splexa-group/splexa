@@ -48,19 +48,17 @@ export function CalendarView() {
   }
 
   return (
-    <div className="calendar-page">
+    <div>
       <CalendarHeader
         year={year}
         month={month}
         onPrev={handlePrev}
         onNext={handleNext}
-        filter={filter}
-        onFilterChange={setFilter}
         search={search}
         onSearchChange={setSearch}
       />
-      <div className="flex flex-1 overflow-hidden">
-        <div className="flex-[7] min-w-0 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden pb-4 gap-4 pt-2">
+        <div className="flex-[7] min-w-0 overflow-hidden rounded-lg border border-line flex flex-col">
           <CalendarGrid
             year={year}
             month={month}

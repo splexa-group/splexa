@@ -16,7 +16,7 @@ export default function ProtectedLayout({ children }: { children: ReactNode }) {
           <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
             <TopBar />
             <PageLoadingProvider>
-              <main className="flex-1 overflow-y-auto bg-page pb-[58px] md:pb-0 relative">
+              <main className="flex-1 overflow-y-auto bg-page pb-[58px] md:pb-0 relative page-shell">
                 <PageSkeleton />
                 {children}
               </main>

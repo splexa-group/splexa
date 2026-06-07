@@ -12,7 +12,7 @@ interface FiltersBarProps {
 export function FiltersBar({ columns, children, className }: FiltersBarProps) {
   return (
     <div
-      className={cn("px-4 md:px-6 pt-5 pb-6 grid gap-2 items-center", className)}
+      className={cn("pt-5 pb-6 grid gap-2 items-center", className)}
       style={{ gridTemplateColumns: columns }}
     >
       {children}

@@ -191,6 +191,11 @@ summary {
 }
 
 @layer components {
+  /*  Page shell — applied to <main>; owns the horizontal gutter for all pages  */
+  .page-shell {
+    @apply px-4 md:px-6;
+  }
+
   /*  Sidebar nav item  */
   .nav-item {
     @apply flex items-center gap-3 rounded-md px-3 py-[9px] min-h-[36px];
@@ -233,7 +238,7 @@ summary {
   }
 
   .calendar-day-panel {
-    @apply flex-[3] min-w-0 border-l border-line bg-card flex-col overflow-hidden hidden md:flex;
+    @apply flex-[3] min-w-0 rounded-lg border border-line bg-card flex-col overflow-hidden hidden md:flex;
   }
 
   .calendar-day-panel-header {
@@ -266,7 +271,7 @@ summary {
   }
 
   .calendar-cell--today {
-    @apply bg-brand-soft/30 border-l-[3px] border-l-brand;
+    @apply bg-brand-soft/50 border-l-brand;
   }
 
   .calendar-cell--outside {
@@ -274,7 +279,7 @@ summary {
   }
 
   .calendar-date-num {
-    @apply block text-right text-[11px] font-semibold text-dark;
+    @apply block text-right text-xs font-semibold text-dark;
     @apply md:text-xs;
   }
 

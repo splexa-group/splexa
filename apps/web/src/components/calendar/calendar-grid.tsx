@@ -50,8 +50,7 @@ export function CalendarGrid({
           <div
             key={label + i}
             className={cn(
-              "py-2 text-center text-[10px] font-semibold border-r border-line last:border-r-0 md:text-xs",
-              i === 0 || i === 6 ? "text-placeholder" : "text-secondary",
+              "py-2.5 text-center text-xs font-semibold border-r border-line last:border-r-0 md:text-xs text-body",
             )}
           >
             <span className="hidden md:inline">{DAY_LABELS_DESKTOP[i]}</span>

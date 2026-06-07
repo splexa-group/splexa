@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -78,7 +78,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         aria-busy={loading}
         {...props}
       >
-        {loading ? <Loader2 className="size-5 animate-spin" /> : children}
+        {loading && <Loader2 className="absolute size-4 animate-spin" />}
+        <span
+          className={cn(
+            "inline-flex items-center gap-2",
+            loading && "opacity-0",
+          )}
+        >
+          {children}
+        </span>
       </Comp>
     );
   },

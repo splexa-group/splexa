@@ -3,6 +3,7 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
+import { DatePicker } from "@/components/ui/form/date-picker";
 import { Section } from "@/components/ui/section";
 import {
   CASE_STAGE_OPTIONS,
@@ -100,10 +101,16 @@ export function CaseDetailsSection() {
           />
         )}
       />
-      <InputGroup
-        label="Filing Date"
-        type="date"
-        {...register("filingDate")}
+      <Controller
+        name="filingDate"
+        control={control}
+        render={({ field }) => (
+          <DatePicker
+            label="Filing Date"
+            value={field.value ?? ""}
+            onChange={field.onChange}
+          />
+        )}
       />
     </Section>
   );

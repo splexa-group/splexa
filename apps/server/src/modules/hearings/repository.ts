@@ -22,6 +22,8 @@ export const hearingsRepository = {
     },
   ) {
     return prisma.$transaction(async (tx) => {
+      const status = data.status ?? HearingStatus.Scheduled;
+
       const hearing = await tx.hearing.create({
         data: {
           caseId: data.caseId,
@@ -31,23 +33,25 @@ export const hearingsRepository = {
           notes: data.notes,
           judgePresent: data.judgePresent,
           addedBy: data.addedBy,
-          status: HearingStatus.Scheduled,
+          status,
         },
         select: hearingSummarySelect,
       });
 
       await casesRepository.updateNextHearingDate(data.caseId, data.orgId, tx);
 
-      await tx.importantDate.create({
-        data: {
-          caseId: data.caseId,
-          orgId: data.orgId,
-          dateType: ImportantDateType.HearingDate,
-          date: parseDate(data.date),
-          sourceId: hearing.id,
-          notifyUserId: data.notifyUserId,
-        },
-      });
+      if (status === HearingStatus.Scheduled) {
+        await tx.importantDate.create({
+          data: {
+            caseId: data.caseId,
+            orgId: data.orgId,
+            dateType: ImportantDateType.HearingDate,
+            date: parseDate(data.date),
+            sourceId: hearing.id,
+            notifyUserId: data.notifyUserId,
+          },
+        });
+      }
 
       return hearing;
     });

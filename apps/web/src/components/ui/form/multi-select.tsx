@@ -55,7 +55,7 @@ export function MultiSelectGroup({
   return (
     <div
       className={cn(
-        "rounded-md border bg-card px-3 pt-3 pb-2.5 transition-colors",
+        "rounded border bg-card px-3 pt-3 pb-2.5 transition-colors",
         error
           ? "border-negative focus-within:ring-1 focus-within:ring-negative/30"
           : "border-line focus-within:border-brand focus-within:ring-1 focus-within:ring-brand/30",
@@ -109,7 +109,7 @@ export function MultiSelectGroup({
             position="popper"
             className={cn(
               "relative z-50 max-h-72 min-w-[var(--radix-select-trigger-width)] overflow-hidden",
-              "rounded-md border border-line bg-card shadow-md",
+              "rounded border border-line bg-card shadow-md",
               "data-[state=open]:animate-in data-[state=closed]:animate-out",
               "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
               "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",

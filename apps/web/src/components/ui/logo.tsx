@@ -2,8 +2,8 @@ import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface LogoProps {
-  size?: "sm" | "md" | "lg";
-  variant?: "white" | "brand" | "brandLight";
+  size?: "sm" | "md" | "lg" | "xl";
+  variant?: "white" | "brand" | "brandLight" | "brandDark";
   showName?: boolean;
   className?: string;
 }
@@ -12,20 +12,28 @@ const SIZE_MAP = {
   sm: { width: 18, height: 18 },
   md: { width: 24, height: 24 },
   lg: { width: 36, height: 36 },
+  xl: { width: 48, height: 48 },
 };
 
 const VARIANT_SRC: Record<NonNullable<LogoProps["variant"]>, string> = {
   white: "/white-dark.svg",
   brand: "/brand.svg",
+  brandDark: "/brand-dark.svg",
   brandLight: "/white-brand.svg",
 };
 
-const NAME_SIZE = { sm: "text-sm", md: "text-lg", lg: "text-2xl" };
+const NAME_SIZE = {
+  sm: "text-sm",
+  md: "text-lg",
+  lg: "text-2xl",
+  xl: "text-3xl",
+};
 
 const NAME_COLOR = {
   white: "text-white",
   brand: "text-brand",
   brandLight: "text-brand-light",
+  brandDark: "text-brand-dark",
 };
 
 export function Logo({

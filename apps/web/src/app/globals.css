@@ -15,12 +15,14 @@
   --color-surface-dark: var(--surface-dark);
 
   /*  Page surfaces  */
-  --color-page: var(--page);
   --color-card: var(--card);
+  --color-page: var(--page);
+  --color-surface: var(--surface);
   --color-subtle: var(--subtle);
 
-  /*  Text — slate 900 → 700 → 600 → 400 → 300  */
+  /*  Text — slate 900 → 800 → 700 → 600 → 400 → 300  */
   --color-dark: var(--text-dark);
+  --color-body: var(--text-body);
   --color-label: var(--text-label);
   --color-secondary: var(--text-secondary);
   --color-placeholder: var(--text-placeholder);
@@ -49,6 +51,12 @@
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
+
+  /*  Priority  */
+  --color-priority-high: var(--priority-high);
+  --color-priority-high-muted: var(--priority-high-muted);
+  --color-priority-medium: var(--priority-medium);
+  --color-priority-medium-muted: var(--priority-medium-muted);
 }
 
 :root {
@@ -64,11 +72,13 @@
   --ring: var(--brand);
 
   /* NEUTRAL — stable across themes  */
-  --page: #f8fafc;
-  --card: #ffffff;
-  --subtle: #f1f5f9;
+  --card: #ffffff; /* pure white — cards, modals, inputs */
+  --page: #f8fafc; /* slate-50   — page background */
+  --surface: #f5f7fa; /* slate-75   — sections inside cards, table row hover */
+  --subtle: #f1f5f9; /* slate-100  — column headers, sidebar active */
 
   --text-dark: #0f172a; /* slate-900 — headings, strong text */
+  --text-body: #1e293b; /* slate-800 — table rows, primary data */
   --text-label: #334155; /* slate-700 — form labels, body copy */
   --text-secondary: #475569; /* slate-600 — captions, descriptions */
   --text-placeholder: #94a3b8; /* slate-400 — input placeholders */
@@ -88,6 +98,11 @@
   --positive: #16a34a;
   --positive-dark: #15803d;
   --positive-muted: #dcfce7;
+
+  --priority-high: #ef4444;
+  --priority-high-muted: #fee2e2;
+  --priority-medium: #f97316;
+  --priority-medium-muted: #ffedd5;
 }
 
 *,
@@ -179,11 +194,11 @@ summary {
   /*  Sidebar nav item  */
   .nav-item {
     @apply flex items-center gap-3 rounded-md px-3 py-[9px] min-h-[36px];
-    @apply text-[13.5px] text-white/95 transition-colors cursor-pointer;
+    @apply text-[13.5px] text-white transition-colors cursor-pointer;
     @apply hover:bg-white/5 hover:text-white/90;
   }
   .nav-item-active {
-    @apply bg-white/12 text-white/95;
+    @apply bg-white/12 text-white;
   }
 
   /*  Mobile bottom tab  */
@@ -193,5 +208,26 @@ summary {
   }
   .bottom-tab-active {
     @apply text-brand font-medium;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
   }
 }

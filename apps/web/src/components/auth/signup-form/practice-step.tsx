@@ -3,8 +3,8 @@
 import { ChevronLeft } from "lucide-react";
 import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { InputGroup } from "@/components/ui/input";
-import { MultiSelectGroup } from "@/components/ui/multi-select";
+import { InputGroup } from "@/components/ui/form/input";
+import { MultiSelectGroup } from "@/components/ui/form/multi-select";
 import { useSignup } from "@/hooks/use-auth";
 import { PRACTICE_TYPE_OPTIONS } from "@/lib/options";
 import type { PersonalFormValues } from "./personal-step";

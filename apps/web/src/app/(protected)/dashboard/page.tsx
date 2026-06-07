@@ -1,13 +1,25 @@
-'use client';
+"use client";
 
-import { usePageTitle } from '@/components/layout/top-bar-context';
+import { useState, useCallback } from "react";
+import { usePageTitle } from "@/components/layout/top/top-bar-context";
+import { CreateCaseModal } from "@/components/modals/create-case";
 
 export default function DashboardPage() {
-  usePageTitle({ title: 'Dashboard', action: { label: 'Add New Case', href: '/cases/new' } });
+  const [modalOpen, setModalOpen] = useState(false);
+  const openModal = useCallback(() => setModalOpen(true), []);
+  const closeModal = useCallback(() => setModalOpen(false), []);
+
+  usePageTitle({
+    title: "Dashboard",
+    action: { label: "Add New Case", onClick: openModal },
+  });
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <p className="text-secondary text-sm">Dashboard — coming soon.</p>
-    </div>
+    <>
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-secondary text-sm">Dashboard — coming soon.</p>
+      </div>
+      <CreateCaseModal open={modalOpen} onClose={closeModal} />
+    </>
   );
 }

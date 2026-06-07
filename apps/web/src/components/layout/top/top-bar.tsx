@@ -3,7 +3,7 @@
 import { useContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { ChevronLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
@@ -29,21 +29,21 @@ export function TopBar() {
         onClick={() => isChild && router.back()}
         aria-label="Go back"
         className={cn(
-          "w-[30px] h-[30px] flex items-center justify-center rounded-md transition-colors shrink-0",
+          "w-[30px] h-[30px] flex items-center justify-center rounded transition-colors shrink-0",
           isChild
             ? "bg-subtle text-label hover:bg-line cursor-pointer"
             : "text-placeholder opacity-40 cursor-default",
         )}
       >
-        <Icon icon={ChevronLeft} size="sm" />
+        <Icon icon={ArrowLeft} size="sm" />
       </button>
 
       <h1 className="text-[15px] font-semibold text-dark flex-1 truncate">
         {displayTitle}
       </h1>
 
-      {config?.action && (
-        config.action.href ? (
+      {config?.action &&
+        (config.action.href ? (
           <Button asChild variant="primary" size="sm">
             <Link href={config.action.href}>
               <Icon icon={Plus} size="xs" />
@@ -55,8 +55,7 @@ export function TopBar() {
             <Icon icon={Plus} size="xs" />
             {config.action.label}
           </Button>
-        )
-      )}
+        ))}
     </header>
   );
 }

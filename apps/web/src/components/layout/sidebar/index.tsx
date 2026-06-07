@@ -14,7 +14,7 @@ function NavLink({ href, icon, label, active }: NavItem & { active: boolean }) {
   return (
     <Link href={href} className={cn("nav-item", active && "nav-item-active")}>
       <Icon icon={icon} size="sm" />
-      <span className="hidden lg:block truncate">{label}</span>
+      <span className="hidden text-[13.5px] lg:block truncate">{label}</span>
       <Icon
         icon={ChevronRight}
         size="sm"

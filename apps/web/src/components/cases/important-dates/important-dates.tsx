@@ -30,11 +30,11 @@ interface Props {
 }
 
 function urgencyColor(isoDate: string) {
-  const d = new Date(isoDate);
+  const date = new Date(isoDate);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  if (d < today) return "text-negative";
-  if (d.toDateString() === today.toDateString()) return "text-amber-dark";
+  if (date < today) return "text-negative";
+  if (date.toDateString() === today.toDateString()) return "text-amber-dark";
   return "text-dark";
 }
 
@@ -45,7 +45,8 @@ function typeBadge(type: string) {
 }
 
 export function ImportantDatesDetails({ caseId }: Props) {
-  const [modal, setModal] = useState<ImportantDate | null | "new">(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [editDate, setEditDate] = useState<ImportantDate | null>(null);
   const [toDelete, setToDelete] = useState<ImportantDate | null>(null);
 
   const { data: dates = [], isLoading } = useImportantDates(caseId);
@@ -57,13 +58,23 @@ export function ImportantDatesDetails({ caseId }: Props) {
     (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
   );
 
+  function handleOpenModal(date?: ImportantDate) {
+    setEditDate(date ?? null);
+    setIsOpen(true);
+  }
+
+  function handleCloseModal() {
+    setIsOpen(false);
+    setEditDate(null);
+  }
+
   const handleSave = async (data: CreateImportantDateInput) => {
-    if (modal === "new") {
+    if (editDate) {
+      await updateDate.mutateAsync({ dateId: editDate.id, data });
+    } else {
       await createDate.mutateAsync(data);
-    } else if (modal) {
-      await updateDate.mutateAsync({ dateId: modal.id, data });
     }
-    setModal(null);
+    handleCloseModal();
   };
 
   const handleDelete = async () => {
@@ -76,63 +87,57 @@ export function ImportantDatesDetails({ caseId }: Props) {
     <>
       <Section
         title={
-          isLoading && dates.length === 0
-            ? "Important Dates"
-            : `Important Dates (${dates.length})`
+          isLoading ? "Important Dates" : `Important Dates (${dates.length})`
         }
         action={
-          <Button size="sm" onClick={() => setModal("new")}>
-            Add New Date
+          <Button size="sm" onClick={() => handleOpenModal()}>
+            <Plus className="size-3.5" /> Add Date
           </Button>
         }
         isEmpty={!isLoading && dates.length === 0}
         emptyLabel="No important dates yet. Track deadlines, bail expiry, limitation dates and more."
-        onAdd={() => setModal("new")}
+        onAdd={() => handleOpenModal()}
         addLabel="Add Date"
       >
         <div className="rounded border border-line bg-card overflow-hidden">
-          {sorted.map((d, i) => (
+          {sorted.map((importantDate, i) => (
             <div
-              key={d.id}
+              key={importantDate.id}
               className={cn(
                 "grid grid-cols-[auto_auto_1fr_auto] items-center gap-4 px-4 py-3",
                 i < sorted.length - 1 && "border-b border-line",
               )}
             >
-              {/* Type badge */}
               <span
                 className={cn(
                   "text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap shrink-0",
-                  typeBadge(d.dateType),
+                  typeBadge(importantDate.dateType),
                 )}
               >
-                {d.dateType.replace(/([A-Z])/g, " $1").trim()}
+                {importantDate.dateType.replace(/([A-Z])/g, " $1").trim()}
               </span>
 
-              {/* Date */}
               <span
                 className={cn(
                   "text-sm font-semibold whitespace-nowrap",
-                  urgencyColor(d.date),
+                  urgencyColor(importantDate.date),
                 )}
               >
-                {new Date(d.date).toLocaleDateString("en-IN", {
+                {new Date(importantDate.date).toLocaleDateString("en-IN", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
                 })}
               </span>
 
-              {/* Description */}
               <span className="text-xs text-secondary truncate">
-                {d.description ?? <span className="text-placeholder">—</span>}
+                {importantDate.description ?? <span className="text-placeholder">—</span>}
               </span>
 
-              {/* Actions */}
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
-                  onClick={() => setModal(d)}
+                  onClick={() => handleOpenModal(importantDate)}
                   className="p-1.5 rounded bg-subtle text-secondary hover:text-dark transition-colors"
                   aria-label="Edit"
                 >
@@ -140,7 +145,7 @@ export function ImportantDatesDetails({ caseId }: Props) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setToDelete(d)}
+                  onClick={() => setToDelete(importantDate)}
                   className="p-1.5 rounded bg-negative-muted text-negative hover:opacity-80 transition-opacity"
                   aria-label="Delete"
                 >
@@ -153,10 +158,10 @@ export function ImportantDatesDetails({ caseId }: Props) {
       </Section>
 
       <AddImportantDateModal
-        open={modal !== null}
-        date={modal === "new" ? null : modal}
+        open={isOpen}
+        date={editDate}
         isPending={createDate.isPending || updateDate.isPending}
-        onClose={() => setModal(null)}
+        onClose={handleCloseModal}
         onSave={handleSave}
       />
 

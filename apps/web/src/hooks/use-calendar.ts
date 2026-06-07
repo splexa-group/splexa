@@ -6,7 +6,6 @@ import {
   startOfWeek,
   endOfWeek,
   eachDayOfInterval,
-  format,
 } from "date-fns";
 
 import { calendarApi } from "@/services/calendar";

@@ -209,6 +209,70 @@ summary {
   .bottom-tab-active {
     @apply text-brand font-medium;
   }
+
+  /* ─── Calendar ─────────────────────────────────────────────── */
+  .calendar-page {
+    @apply flex flex-col h-full overflow-hidden bg-page;
+  }
+
+  .calendar-header {
+    @apply flex items-center justify-between px-4 py-3 bg-card border-b border-line flex-shrink-0;
+  }
+
+  .calendar-nav-btn {
+    @apply flex items-center justify-center size-[44px] rounded text-secondary;
+    @apply hover:bg-subtle hover:text-dark transition-colors active:bg-line;
+  }
+
+  .calendar-month-label {
+    @apply text-base font-bold text-dark w-40 text-center;
+  }
+
+  .calendar-today-btn {
+    @apply flex items-center justify-center px-3 h-[36px] min-w-[44px] rounded;
+    @apply border border-line text-sm font-medium text-brand;
+    @apply hover:bg-brand-soft transition-colors active:scale-95;
+  }
+
+  .calendar-cell {
+    @apply border-r border-b border-line p-1.5 min-h-[60px] bg-card overflow-hidden;
+    @apply md:min-h-[80px] md:p-2;
+  }
+
+  .calendar-cell--today {
+    @apply bg-brand-soft/30 border-l-[3px] border-l-brand;
+  }
+
+  .calendar-cell--outside {
+    @apply bg-page;
+  }
+
+  .calendar-date-num {
+    @apply block text-right text-[11px] font-semibold text-dark;
+    @apply md:text-xs;
+  }
+
+  .calendar-chip {
+    @apply block text-[9px] font-medium px-1 py-px rounded truncate w-full leading-tight;
+    @apply md:text-[10px];
+  }
+
+  .calendar-chip--hearing {
+    @apply bg-brand-soft text-brand;
+  }
+
+  .calendar-chip--date {
+    @apply bg-amber-muted text-amber;
+  }
+
+  .calendar-popup-event {
+    @apply flex items-center gap-3 p-3 border border-line rounded-lg;
+  }
+
+  .calendar-popup-view-btn {
+    @apply shrink-0 px-3 h-[36px] min-w-[44px] rounded bg-brand text-white;
+    @apply text-xs font-semibold hover:bg-brand-dark transition-colors active:scale-95;
+  }
 }
 
 @keyframes shimmer {

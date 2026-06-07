@@ -46,7 +46,7 @@ function formatBytes(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function DocumentsTab({ caseId }: DocumentsTabProps) {
+export function Documents({ caseId }: DocumentsTabProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [toDelete, setToDelete] = useState<Document | null>(null);
   const [openingId, setOpeningId] = useState<string | null>(null);

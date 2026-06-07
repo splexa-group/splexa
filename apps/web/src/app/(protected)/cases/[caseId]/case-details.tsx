@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { FormProvider, useForm, type UseFormReturn } from "react-hook-form";
 import { CaseTabs, CaseSubTabs } from "@/enums/case-tabs";
-import { DocumentsTab } from "@/components/cases/documents-tab/documents-tab";
+import { Documents } from "@/components/cases/documents/documents";
 import { CaseTabs as CaseTabsNav } from "@/app/(protected)/cases/[caseId]/case-tabs";
 import { useCaseActiveTab, useCaseActiveSubTab } from "@/hooks/use-active-tab";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
@@ -86,7 +86,7 @@ function TabContent({
       return <ImportantDatesDetails caseId={caseId} />;
 
     case CaseTabs.DOCUMENTS:
-      return <DocumentsTab caseId={caseId} />;
+      return <Documents caseId={caseId} />;
 
     default:
       return null;

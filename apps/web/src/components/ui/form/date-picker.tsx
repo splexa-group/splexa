@@ -77,12 +77,6 @@ export function DatePicker({
   const [viewMonth, setViewMonth] = useState(
     value ? parseInt(value.split("-")[1]) - 1 : today.getMonth(),
   );
-  useEffect(() => {
-    if (value) {
-      setViewYear(parseInt(value.split("-")[0]));
-      setViewMonth(parseInt(value.split("-")[1]) - 1);
-    }
-  }, [value]);
 
   // Close on outside click
   useEffect(() => {
@@ -162,6 +156,10 @@ export function DatePicker({
       <div
         onClick={() => {
           if (disabled) return;
+          if (!open && value) {
+            setViewYear(parseInt(value.split("-")[0]));
+            setViewMonth(parseInt(value.split("-")[1]) - 1);
+          }
           if (!open && wrapperRef.current) {
             const rect = wrapperRef.current.getBoundingClientRect();
             const POPUP_HEIGHT = 360;

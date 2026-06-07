@@ -8,4 +8,4 @@ export const OTP_RATE_WINDOW_MS = 60 * 60 * 1000;
 export const ACCESS_TOKEN_COOKIE = "access_token";
 export const REFRESH_TOKEN_COOKIE = "refresh_token";
 export const REFRESH_TOKEN_MAX_AGE = REFRESH_TOKEN_EXPIRY_DAYS * 24 * 60 * 60;
-export const ACCESS_TOKEN_MAX_AGE = REFRESH_TOKEN_MAX_AGE;
+export const ACCESS_TOKEN_MAX_AGE = 15 * 60; // 15 minutes

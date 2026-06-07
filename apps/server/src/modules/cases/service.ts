@@ -120,6 +120,7 @@ export const casesService = {
         createdBy: ctx.userId,
       },
     );
+    if (!updated) throw Errors.caseNotFound();
 
     if (existingWithPhone) {
       return {

@@ -77,16 +77,12 @@ export function DatePicker({
   const [viewMonth, setViewMonth] = useState(
     value ? parseInt(value.split("-")[1]) - 1 : today.getMonth(),
   );
-  const [prevValue, setPrevValue] = useState(value);
-
-  // Sync view when value changes — synchronous during render, not in useEffect
-  if (value !== prevValue) {
-    setPrevValue(value);
+  useEffect(() => {
     if (value) {
       setViewYear(parseInt(value.split("-")[0]));
       setViewMonth(parseInt(value.split("-")[1]) - 1);
     }
-  }
+  }, [value]);
 
   // Close on outside click
   useEffect(() => {

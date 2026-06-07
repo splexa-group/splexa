@@ -180,6 +180,7 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
           onAdd ? { label: "Add new case", onClick: onAdd } : undefined
         }
         page={page}
+        pageSize={PAGE_SIZE}
         totalRows={data?.total ?? 0}
         onPageChange={setPage}
       />

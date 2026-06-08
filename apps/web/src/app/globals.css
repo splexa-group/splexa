@@ -238,7 +238,7 @@ summary {
   }
 
   .calendar-day-panel {
-    @apply flex-[3] min-w-0 rounded-lg border border-line bg-card flex-col overflow-hidden hidden md:flex;
+    @apply flex-[3] min-w-0 self-stretch rounded-lg border border-line bg-card flex-col overflow-hidden hidden md:flex;
   }
 
   .calendar-day-panel-header {
@@ -246,7 +246,7 @@ summary {
   }
 
   .calendar-day-panel-body {
-    @apply flex-1 overflow-y-auto p-4 space-y-3;
+    @apply flex-1 min-h-0 overflow-y-auto p-4 space-y-3;
   }
 
   .calendar-panel-event {
@@ -266,8 +266,8 @@ summary {
   }
 
   .calendar-cell {
-    @apply border-r border-b border-line p-1.5 min-h-[60px] bg-card overflow-hidden;
-    @apply md:min-h-[80px] md:p-2;
+    @apply border-r border-b border-line p-1.5 min-h-[80px] bg-card overflow-hidden;
+    @apply md:min-h-[90px] md:p-2;
   }
 
   .calendar-cell--today {

@@ -55,7 +55,7 @@ export function CalendarView() {
         search={search}
         onSearchChange={setSearch}
       />
-      <div className="flex flex-1 overflow-hidden pb-4 gap-4 pt-2 items-start">
+      <div className="flex flex-1 overflow-hidden pb-4 gap-4 pt-2 px-4 md:px-6 items-start">
         <div className="flex-[7] min-w-0 overflow-hidden rounded-lg border border-line flex flex-col">
           <CalendarGrid
             year={year}

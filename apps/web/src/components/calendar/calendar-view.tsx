@@ -9,7 +9,6 @@ import {
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
 import { CalendarDayPanel } from "./calendar-day-panel";
-import type { CalendarFilter } from "@/types/calendar";
 
 export function CalendarView() {
   const today = new Date();
@@ -18,7 +17,6 @@ export function CalendarView() {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [selectedDateKey, setSelectedDateKey] = useState<string>(todayKey);
-  const [filter, setFilter] = useState<CalendarFilter>("all");
   const [search, setSearch] = useState("");
 
   const { eventMap, isLoading, isError, refetch } = useCalendarEvents(
@@ -26,7 +24,7 @@ export function CalendarView() {
     month,
   );
 
-  const filteredMap = filterEventMap(eventMap, filter, search);
+  const filteredMap = filterEventMap(eventMap, search);
   const panelEvents = filteredMap.get(selectedDateKey) ?? [];
 
   function handlePrev() {

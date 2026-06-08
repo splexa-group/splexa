@@ -36,9 +36,7 @@ export function CalendarCell({
       onClick={hasEvents ? onClick : undefined}
       role={hasEvents ? "button" : undefined}
       tabIndex={hasEvents ? 0 : undefined}
-      onKeyDown={
-        hasEvents ? (e) => e.key === "Enter" && onClick() : undefined
-      }
+      onKeyDown={hasEvents ? (e) => e.key === "Enter" && onClick() : undefined}
     >
       <span
         className={cn(

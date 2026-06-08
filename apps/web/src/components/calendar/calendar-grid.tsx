@@ -44,7 +44,6 @@ export function CalendarGrid({
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Day-of-week headers */}
       <div className="grid grid-cols-7 bg-subtle border-b border-line flex-shrink-0">
         {DAY_LABELS_DESKTOP.map((label, i) => (
           <div
@@ -59,7 +58,6 @@ export function CalendarGrid({
         ))}
       </div>
 
-      {/* Grid */}
       <div className="grid grid-cols-7 flex-1 overflow-hidden content-start">
         {gridDays.map((day) => {
           const key = toDateKey(day);

@@ -131,19 +131,15 @@ export function buildEventMap(
 
 export function filterEventMap(
   eventMap: CalendarEventMap,
-  filter: CalendarFilter,
   search: string,
 ): CalendarEventMap {
-  if (filter === "all" && !search.trim()) return eventMap;
+  if (!search.trim()) return eventMap;
 
   const q = search.trim().toLowerCase();
   const result: CalendarEventMap = new Map();
 
   for (const [key, events] of eventMap) {
     const matching = events.filter((event) => {
-      if (filter === "hearings" && event.kind !== "hearing") return false;
-      if (filter === "important-dates" && event.kind !== "important-date")
-        return false;
       if (q && !event.caseTitle.toLowerCase().includes(q)) return false;
       return true;
     });

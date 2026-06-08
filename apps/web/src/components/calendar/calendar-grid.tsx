@@ -2,7 +2,8 @@
 
 import { cn } from "@/lib/utils";
 import { EmptyState } from "@/components/ui/empty-state";
-import { getGridDays, toDateKey } from "@/hooks/use-calendar";
+import { format } from "date-fns";
+import { getMonthGridDays } from "@/lib/calendar";
 import type { CalendarEventMap } from "@/types/calendar";
 import { CalendarCell } from "./calendar-cell";
 
@@ -28,8 +29,8 @@ export function CalendarGrid({
   isError,
   onRetry,
 }: Props) {
-  const gridDays = getGridDays(year, month);
-  const todayKey = toDateKey(new Date());
+  const gridDays = getMonthGridDays(year, month);
+  const todayKey = format(new Date(), "yyyy-MM-dd");
 
   if (isError) {
     return (
@@ -60,7 +61,7 @@ export function CalendarGrid({
 
       <div className="grid grid-cols-7 content-start -mr-px -mb-px">
         {gridDays.map((day) => {
-          const key = toDateKey(day);
+          const key = format(day, "yyyy-MM-dd");
           return (
             <CalendarCell
               key={key}

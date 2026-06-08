@@ -21,22 +21,20 @@ export function CalendarCell({
   isLoading,
   onClick,
 }: Props) {
-  const hasEvents = isCurrentMonth && events.length > 0;
   const visibleEvents = events.slice(0, 2);
   const overflowCount = events.length - visibleEvents.length;
 
   return (
     <div
       className={cn(
-        "calendar-cell",
+        "calendar-cell cursor-pointer hover:bg-surface transition-colors",
         isToday && "calendar-cell--today",
         !isCurrentMonth && "calendar-cell--outside",
-        hasEvents && "cursor-pointer active:bg-subtle",
       )}
-      onClick={hasEvents ? onClick : undefined}
-      role={hasEvents ? "button" : undefined}
-      tabIndex={hasEvents ? 0 : undefined}
-      onKeyDown={hasEvents ? (e) => e.key === "Enter" && onClick() : undefined}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => e.key === "Enter" && onClick()}
     >
       <span
         className={cn(
@@ -54,7 +52,7 @@ export function CalendarCell({
         </div>
       )}
 
-      {!isLoading && hasEvents && (
+      {!isLoading && events.length > 0 && (
         <div className="space-y-0.5 mt-1">
           {visibleEvents.map((event) => (
             <CalendarEventChip key={event.id} event={event} />

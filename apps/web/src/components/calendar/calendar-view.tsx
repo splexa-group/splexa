@@ -1,18 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import {
-  useCalendarEvents,
-  filterEventMap,
-  toDateKey,
-} from "@/hooks/use-calendar";
+import { useCalendarEvents } from "@/hooks/use-calendar";
+import { format } from "date-fns";
+import { filterEventMap } from "@/lib/calendar";
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
 import { CalendarDayPanel } from "./calendar-day-panel";
 
 export function CalendarView() {
   const today = new Date();
-  const todayKey = toDateKey(today);
+  const todayKey = format(today, "yyyy-MM-dd");
 
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());

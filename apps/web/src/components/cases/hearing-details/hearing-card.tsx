@@ -152,9 +152,12 @@ export function NextHearingCard({
     benchNumber ? `Hall ${benchNumber}` : null,
   ].filter(Boolean);
 
+  const dateText = hearing.time
+    ? `${formattedDate} · ${hearing.time}`
+    : formattedDate;
+
   const metaParts = [
-    { icon: Clock, text: formattedDate },
-    ...(hearing.time ? [{ icon: Clock, text: hearing.time }] : []),
+    { icon: Clock, text: dateText },
     ...(hearing.judgePresent
       ? [{ icon: Scale, text: hearing.judgePresent }]
       : []),

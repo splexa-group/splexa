@@ -59,7 +59,3 @@ export const CASE_SORT_OPTIONS = [
   { value: "createdAt", label: "Date created" },
 ];
 
-export const CALENDAR_FILTER_OPTIONS = [
-  { label: "Hearings", value: "hearings" },
-  { label: "Important Dates", value: "important-dates" },
-];

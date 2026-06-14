@@ -1,5 +1,6 @@
 "use client";
 
+import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { CalendarEvent } from "@/types/calendar";
 import { CalendarEventChip } from "./calendar-event-chip";
@@ -34,6 +35,7 @@ export function CalendarCell({
       onClick={onClick}
       role="button"
       tabIndex={0}
+      aria-label={format(date, "MMMM d, yyyy")}
       onKeyDown={(e) => e.key === "Enter" && onClick()}
     >
       <span

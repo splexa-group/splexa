@@ -6,6 +6,12 @@ import {
   eachDayOfInterval,
 } from "date-fns";
 import { HearingPurpose, ImportantDateType } from "@splexa-group/shared/enums";
+import type {
+  CalendarEvent,
+  CalendarEventMap,
+  CalendarHearing,
+  CalendarImportantDate,
+} from "@/types/calendar";
 
 export function getMonthGridDays(year: number, month: number): Date[] {
   const monthStart = new Date(year, month, 1);
@@ -31,12 +37,6 @@ export function getMonthGridRange(
 
   return { gridFrom: start.toISOString(), gridTo: end.toISOString() };
 }
-import type {
-  CalendarEvent,
-  CalendarEventMap,
-  CalendarHearing,
-  CalendarImportantDate,
-} from "@/types/calendar";
 
 const HEARING_PURPOSE_LABELS: Record<HearingPurpose, string> = {
   [HearingPurpose.Arguments]: "Arguments",

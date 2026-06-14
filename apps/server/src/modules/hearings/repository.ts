@@ -6,7 +6,7 @@ import {
 } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
-import { hearingDetailSelect, hearingSummarySelect } from "@/db/selects";
+import { hearingCalendarSelect, hearingDetailSelect, hearingSummarySelect } from "@/db/selects";
 import { casesRepository } from "@/modules/cases/repository";
 import { parseDate } from "@/utils/date";
 
@@ -93,7 +93,7 @@ export const hearingsRepository = {
     const [data, total] = await Promise.all([
       prisma.hearing.findMany({
         where,
-        select: hearingDetailSelect,
+        select: hearingCalendarSelect,
         orderBy: { date: "asc" },
         skip: (page - 1) * limit,
         take: limit,

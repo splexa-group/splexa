@@ -34,7 +34,7 @@ export function CalendarHeader({
           <button
             type="button"
             onClick={onPrev}
-            className="flex items-center justify-center w-8 h-8 rounded text-label hover:bg-line transition-colors focus:outline-none"
+            className="calendar-nav-btn"
             aria-label="Previous month"
           >
             <ChevronLeft className="size-4" />
@@ -42,7 +42,7 @@ export function CalendarHeader({
           <button
             type="button"
             onClick={onNext}
-            className="flex items-center justify-center w-8 h-8 rounded text-label hover:bg-line transition-colors focus:outline-none"
+            className="calendar-nav-btn"
             aria-label="Next month"
           >
             <ChevronRight className="size-4" />

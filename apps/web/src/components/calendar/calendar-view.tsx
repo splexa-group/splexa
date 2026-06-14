@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { useCalendarEvents } from "@/hooks/use-calendar";
+import { useState, useCallback } from "react";
 import { format } from "date-fns";
+import { useCalendarEvents } from "@/hooks/use-calendar";
 import { filterEventMap } from "@/lib/calendar";
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
 import { CalendarDayPanel } from "./calendar-day-panel";
+import { CalendarEventPopup } from "./calendar-event-popup";
 
 export function CalendarView() {
   const today = new Date();
@@ -15,6 +16,7 @@ export function CalendarView() {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [selectedDateKey, setSelectedDateKey] = useState<string>(todayKey);
+  const [popupOpen, setPopupOpen] = useState(false);
   const [search, setSearch] = useState("");
 
   const { eventMap, isLoading, isError, refetch } = useCalendarEvents(
@@ -24,6 +26,11 @@ export function CalendarView() {
 
   const filteredMap = filterEventMap(eventMap, search);
   const panelEvents = filteredMap.get(selectedDateKey) ?? [];
+
+  const handleSelectDate = useCallback((dateKey: string) => {
+    setSelectedDateKey(dateKey);
+    setPopupOpen(true);
+  }, []);
 
   function handlePrev() {
     if (month === 0) {
@@ -59,7 +66,7 @@ export function CalendarView() {
             year={year}
             month={month}
             eventMap={filteredMap}
-            onSelectDate={setSelectedDateKey}
+            onSelectDate={handleSelectDate}
             isLoading={isLoading}
             isError={isError}
             onRetry={refetch}
@@ -67,6 +74,14 @@ export function CalendarView() {
         </div>
         <CalendarDayPanel dateKey={selectedDateKey} events={panelEvents} />
       </div>
+
+      {/* Mobile popup — hidden on md+ where the day panel is shown instead */}
+      <CalendarEventPopup
+        dateKey={selectedDateKey}
+        events={panelEvents}
+        open={popupOpen}
+        onClose={() => setPopupOpen(false)}
+      />
     </div>
   );
 }

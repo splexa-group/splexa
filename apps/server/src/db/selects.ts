@@ -153,6 +153,22 @@ export const documentSelect = {
   createdAt: true,
 } satisfies Prisma.DocumentSelect;
 
+export const hearingCalendarSelect = {
+  id: true,
+  caseId: true,
+  date: true,
+  time: true,
+  purpose: true,
+  status: true,
+  case: {
+    select: {
+      id: true,
+      title: true,
+      courtName: true,
+    },
+  },
+} satisfies Prisma.HearingSelect;
+
 export const hearingDetailSelect = {
   id: true,
   caseId: true,

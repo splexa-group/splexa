@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { calendarApi } from "@/services/calendar";
 import { getMonthGridRange, buildEventMap } from "@/lib/calendar";
@@ -42,9 +42,9 @@ export function useCalendarEvents(
     eventMap,
     isLoading: hearingsQuery.isLoading || datesQuery.isLoading,
     isError: hearingsQuery.isError || datesQuery.isError,
-    refetch: () => {
+    refetch: useCallback(() => {
       hearingsQuery.refetch();
       datesQuery.refetch();
-    },
+    }, [hearingsQuery, datesQuery]),
   };
 }

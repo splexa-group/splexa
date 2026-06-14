@@ -301,7 +301,7 @@ summary {
   }
 
   .calendar-popup-view-btn {
-    @apply shrink-0 px-3 h-[36px] min-w-[44px] rounded bg-brand text-white;
+    @apply shrink-0 px-3 h-[44px] min-w-[44px] rounded bg-brand text-white;
     @apply text-xs font-semibold hover:bg-brand-dark transition-colors active:scale-95;
   }
 }

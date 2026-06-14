@@ -59,6 +59,7 @@ export const hearingSelect = {
   id: true,
   caseId: true,
   date: true,
+  time: true,
   purpose: true,
   status: true,
   notes: true,
@@ -82,6 +83,21 @@ export const importantDateSelect = {
   date: true,
   description: true,
   createdAt: true,
+} satisfies Prisma.ImportantDateSelect;
+
+export const importantDateCalendarSelect = {
+  id: true,
+  caseId: true,
+  dateType: true,
+  date: true,
+  description: true,
+  createdAt: true,
+  case: {
+    select: {
+      id: true,
+      title: true,
+    },
+  },
 } satisfies Prisma.ImportantDateSelect;
 
 export const caseDetailSelect = {
@@ -137,11 +153,28 @@ export const documentSelect = {
   createdAt: true,
 } satisfies Prisma.DocumentSelect;
 
+export const hearingCalendarSelect = {
+  id: true,
+  caseId: true,
+  date: true,
+  time: true,
+  purpose: true,
+  status: true,
+  case: {
+    select: {
+      id: true,
+      title: true,
+      courtName: true,
+    },
+  },
+} satisfies Prisma.HearingSelect;
+
 export const hearingDetailSelect = {
   id: true,
   caseId: true,
   orgId: true,
   date: true,
+  time: true,
   purpose: true,
   status: true,
   notes: true,
@@ -155,6 +188,7 @@ export const hearingDetailSelect = {
     select: {
       id: true,
       title: true,
+      courtName: true,
       client: { select: { id: true, fullName: true } },
     },
   },

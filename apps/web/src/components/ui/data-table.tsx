@@ -43,7 +43,7 @@ export function DataTable({
 
   return (
     <div className="flex flex-col flex-1 overflow-hidden">
-      <div className="flex-1 overflow-auto px-6">
+      <div className="flex-1 overflow-auto px-4 md:px-6">
         {isEmpty ? (
           <EmptyState text={emptyStateText} action={emptyStateAction} />
         ) : (
@@ -92,7 +92,7 @@ export function DataTable({
 
       {/* Pagination */}
       {showPagination && (
-        <div className="flex items-center justify-between px-6 py-3 border-t border-line bg-card shrink-0">
+        <div className="flex items-center justify-between py-3 px-4 md:px-6 border-t border-line bg-card shrink-0">
           <p className="text-xs text-secondary tabular-nums">
             Showing {from}–{to} of {totalRows}
           </p>

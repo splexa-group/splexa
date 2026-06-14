@@ -58,3 +58,4 @@ export const CASE_SORT_OPTIONS = [
   { value: "hearingDate", label: "Hearing date" },
   { value: "createdAt", label: "Date created" },
 ];
+

@@ -39,7 +39,7 @@ export const createCaseSchema = z
     newClient: newClientSchema.optional(),
     caseNumber: z.string().max(100).optional(),
     caseType: z.enum(CaseType).optional(),
-    filingDate: z.iso.datetime({ offset: true }).optional(),
+    filingDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD").optional(),
     courtName: z.string().max(200).optional(),
     courtType: z.enum(CourtType).optional(),
     courtState: z.string().max(100).optional(),
@@ -76,7 +76,7 @@ export const updateCaseSchema = z
     clientRole: z.enum(PartyRole).optional(),
     caseNumber: emptyToUndefined(z.string().max(100).optional()),
     caseType: z.enum(CaseType).optional(),
-    filingDate: emptyToUndefined(z.iso.datetime({ offset: true }).optional()),
+    filingDate: emptyToUndefined(z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD").optional()),
     courtName: emptyToUndefined(z.string().max(200).optional()),
     courtType: z.enum(CourtType).optional(),
     courtState: emptyToUndefined(z.string().max(100).optional()),
@@ -102,7 +102,10 @@ export const listCasesQuerySchema = z
     priority: z.enum(Priority).optional(),
     courtType: z.enum(CourtType).optional(),
     clientId: z.uuid().optional(),
-    sortBy: z.enum(["hearingDate", "createdAt"]).default("hearingDate").optional(),
+    sortBy: z
+      .enum(["hearingDate", "createdAt"])
+      .default("hearingDate")
+      .optional(),
     page: z.coerce.number().int().positive().default(1),
     limit: z.coerce.number().int().positive().max(100).default(20),
   })

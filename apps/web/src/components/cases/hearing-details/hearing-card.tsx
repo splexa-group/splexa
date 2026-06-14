@@ -47,6 +47,9 @@ export function HearingCard({ hearing, onEdit, onDelete }: Props) {
             <div className="flex items-center gap-1.5">
               <Clock className="size-3.5 text-body shrink-0" />
               <span className="text-[13.5px] text-body">{formattedDate}</span>
+              {hearing.time && (
+                <span className="text-[13.5px] text-body">· {hearing.time}</span>
+              )}
             </div>
             {hearing.judgePresent && (
               <div className="flex items-center gap-1.5">
@@ -149,8 +152,12 @@ export function NextHearingCard({
     benchNumber ? `Hall ${benchNumber}` : null,
   ].filter(Boolean);
 
+  const dateText = hearing.time
+    ? `${formattedDate} · ${hearing.time}`
+    : formattedDate;
+
   const metaParts = [
-    { icon: Clock, text: formattedDate },
+    { icon: Clock, text: dateText },
     ...(hearing.judgePresent
       ? [{ icon: Scale, text: hearing.judgePresent }]
       : []),

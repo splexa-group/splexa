@@ -6,7 +6,7 @@ import {
 } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
-import { hearingDetailSelect, hearingSummarySelect } from "@/db/selects";
+import { hearingCalendarSelect, hearingDetailSelect, hearingSummarySelect } from "@/db/selects";
 import { casesRepository } from "@/modules/cases/repository";
 import { parseDate } from "@/utils/date";
 
@@ -29,6 +29,7 @@ export const hearingsRepository = {
           caseId: data.caseId,
           orgId: data.orgId,
           date: parseDate(data.date),
+          time: data.time,
           purpose: data.purpose,
           notes: data.notes,
           judgePresent: data.judgePresent,
@@ -92,7 +93,7 @@ export const hearingsRepository = {
     const [data, total] = await Promise.all([
       prisma.hearing.findMany({
         where,
-        select: hearingDetailSelect,
+        select: hearingCalendarSelect,
         orderBy: { date: "asc" },
         skip: (page - 1) * limit,
         take: limit,
@@ -111,6 +112,7 @@ export const hearingsRepository = {
       status?: HearingStatus;
       notes?: string;
       date?: string;
+      time?: string;
       nextDate?: string;
       adjournmentReason?: string;
       judgePresent?: string;
@@ -124,6 +126,7 @@ export const hearingsRepository = {
           ...(data.status !== undefined ? { status: data.status } : {}),
           ...(data.notes !== undefined ? { notes: data.notes } : {}),
           ...(data.date ? { date: parseDate(data.date) } : {}),
+          ...(data.time !== undefined ? { time: data.time || null } : {}),
           ...(data.nextDate ? { nextDate: parseDate(data.nextDate) } : {}),
           ...(data.adjournmentReason !== undefined
             ? { adjournmentReason: data.adjournmentReason }

@@ -3,15 +3,15 @@ import type { ServiceContext } from "@/types/service-context";
 import { Errors } from "@/utils/errors";
 
 import { importantDatesRepository } from "./repository";
-import type { CreateImportantDateInput, UpdateImportantDateInput } from "./schema";
+import type { CreateImportantDateInput, ListImportantDatesQuery, UpdateImportantDateInput } from "./schema";
 
 export const importantDatesService = {
-  async listForOrg(orgId: string) {
-    return importantDatesRepository.listForOrg(orgId);
-  },
-
   async listForCase(caseId: string, orgId: string) {
     return importantDatesRepository.listForCase(caseId, orgId);
+  },
+
+  async listCrossCase(orgId: string, query: ListImportantDatesQuery) {
+    return importantDatesRepository.listCrossCase(orgId, query);
   },
 
   async create(caseId: string, input: CreateImportantDateInput, ctx: ServiceContext) {

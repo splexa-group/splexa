@@ -7,7 +7,6 @@ import { filterEventMap } from "@/lib/calendar";
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
 import { CalendarDayPanel } from "./calendar-day-panel";
-import { CalendarEventPopup } from "./calendar-event-popup";
 
 export function CalendarView() {
   const today = new Date();
@@ -16,7 +15,6 @@ export function CalendarView() {
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth());
   const [selectedDateKey, setSelectedDateKey] = useState<string>(todayKey);
-  const [popupOpen, setPopupOpen] = useState(false);
   const [search, setSearch] = useState("");
 
   const { eventMap, isLoading, isError, refetch } = useCalendarEvents(
@@ -29,7 +27,6 @@ export function CalendarView() {
 
   const handleSelectDate = useCallback((dateKey: string) => {
     setSelectedDateKey(dateKey);
-    setPopupOpen(true);
   }, []);
 
   function handlePrev() {
@@ -75,13 +72,6 @@ export function CalendarView() {
         <CalendarDayPanel dateKey={selectedDateKey} events={panelEvents} />
       </div>
 
-      {/* Mobile popup — hidden on md+ where the day panel is shown instead */}
-      <CalendarEventPopup
-        dateKey={selectedDateKey}
-        events={panelEvents}
-        open={popupOpen}
-        onClose={() => setPopupOpen(false)}
-      />
     </div>
   );
 }

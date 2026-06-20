@@ -75,6 +75,7 @@ export const documentsController = {
   },
 
   async listFolders(req: FastifyRequest) {
-    return documentsService.listFolders(req.user.orgId);
+    const data = await documentsService.listFolders(req.user.orgId);
+    return { data };
   },
 };

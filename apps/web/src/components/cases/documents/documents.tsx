@@ -154,6 +154,7 @@ export function Documents({ caseId }: DocumentsTabProps) {
                 {renamingId === doc.id ? (
                   <input
                     autoFocus
+                    maxLength={255}
                     className="text-sm font-medium text-dark w-full border border-brand rounded px-2 py-0.5 outline-none"
                     value={renameValue}
                     onChange={(e) => setRenameValue(e.target.value)}

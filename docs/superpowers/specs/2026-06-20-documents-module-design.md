@@ -11,9 +11,14 @@ Build a standalone `/documents` page that acts as a document manager for the org
 
 **By Client grouping is deferred to Phase 2.**
 
+### What is changing in the existing case detail Documents tab
+The Documents tab at `/cases/[caseId]` currently supports upload and delete. **Rename** is being added:
+- Each file row gets an inline rename action (pencil icon → editable input → save)
+- New backend endpoint: `PATCH /cases/:caseId/documents/:documentId` — updates the `name` field only
+- No file content or storageKey is changed — rename is a DB-only operation
+
 ### What is NOT changing
-- The existing Documents tab inside the case detail page (`/cases/[caseId]`) stays exactly as-is
-- All existing backend endpoints remain untouched
+- All existing upload, delete, and presigned-URL endpoints remain untouched
 - Storage (Cloudflare R2) behaviour and the `storageProvider` abstraction are unchanged
 
 ---
@@ -46,11 +51,57 @@ Delete a file
   → DELETE /cases/:caseId/documents/:documentId
   → Backend soft-deletes DB record first, then best-effort deletes from R2
   → File list refreshes on success
+
+Rename a file (case detail tab + documents module file list view)
+  → Click pencil icon on a file row → name becomes an editable input
+  → Save → PATCH /cases/:caseId/documents/:documentId { name: "new name" }
+  → DB name field updated only — storageKey and R2 object unchanged
+  → File list refreshes on success
 ```
 
 ---
 
+## R2 Storage Structure
+
+All uploaded documents are stored under a deterministic key path:
+
+```
+orgs/{orgId}/cases/{caseId}/documents/{uuid}.{ext}
+
+Example:
+orgs/org-abc123/cases/case-xyz789/documents/f47ac10b-58cc-4372-a567-0e02b2c3d479.pdf
+```
+
+- `orgId` scopes all files to the tenant — no cross-tenant access possible
+- `caseId` scopes files to the case — mirrors the DB relationship
+- `uuid` prevents collisions even if two files share the same original name
+- `ext` preserved from the original filename for MIME-type hints in the browser
+
+**Rename does not move the object in R2.** Only the `name` column in the DB changes. The presigned URL still resolves to the same `storageKey`.
+
+---
+
 ## Backend
+
+### New endpoint: `PATCH /cases/:caseId/documents/:documentId` (rename)
+
+**Route:** `PATCH /api/v1/cases/:caseId/documents/:documentId`  
+**Auth:** `authenticate` preHandler  
+**Body:** `{ name: string }` (Zod: non-empty string, max 255 chars)
+
+**Layer changes:**
+
+| Layer | Change |
+|---|---|
+| `schema.ts` | Add `renameDocumentBodySchema = z.object({ name: z.string().min(1).max(255) }).strict()` |
+| `repository.ts` | Add `rename(id, caseId, orgId, name)` — `prisma.document.updateMany({ where: { id, caseId, orgId, deletedAt: null }, data: { name } })` |
+| `service.ts` | Add `rename(documentId, caseId, name, ctx)` — verifies document exists, calls repository, logs `ActivityAction.DOCUMENT_RENAMED` |
+| `controller.ts` | Add `rename` handler |
+| `routes.ts` | Add `PATCH /:caseId/documents/:documentId` to `documentsCaseScopedRoutes` |
+
+**Note:** Uses `updateMany` (not `update`) so the `orgId` scope is enforced at the DB level — consistent with the soft-delete pattern.
+
+---
 
 ### New endpoint: `GET /documents/folders`
 
@@ -125,8 +176,8 @@ Single page, two render states — no new Next.js routes needed:
 | `components/documents/folder-grid.tsx` | Grid of `FolderCard` components, empty state if no cases |
 | `components/documents/folder-card.tsx` | Single case folder card — title + count badge, click navigates |
 | `components/documents/document-file-list.tsx` | File list for a case — header, upload button, per-file rows |
-| `hooks/use-documents.ts` | Add `useFolders()` hook (new). Existing hooks unchanged. |
-| `services/documents.ts` | Add `listFolders()` → `GET /documents/folders` |
+| `hooks/use-documents.ts` | Add `useFolders()` and `useRenameDocument(caseId)` hooks |
+| `services/documents.ts` | Add `listFolders()` → `GET /documents/folders` and `rename()` → `PATCH /cases/:caseId/documents/:documentId` |
 | `types/documents.ts` | Add `DocumentFolder` interface |
 
 ### Data flow
@@ -136,9 +187,10 @@ FolderGrid
   useFolders() → GET /documents/folders → renders folder cards
   click card   → router.push('/documents?caseId=xxx')
 
-DocumentFileList
+DocumentFileList (and case detail Documents tab)
   useDocuments(caseId)       → GET /cases/:caseId/documents
   useUploadDocument(caseId)  → POST /cases/:caseId/documents
+  useRenameDocument(caseId)  → PATCH /cases/:caseId/documents/:documentId
   useDeleteDocument(caseId)  → DELETE /cases/:caseId/documents/:documentId
   documentsApi.getUrl(...)   → GET /cases/:caseId/documents/:documentId/url
   "← Documents"             → router.push('/documents')

@@ -3,7 +3,7 @@ import type { Prisma } from "@prisma/client";
 import { prisma } from "@/db/client";
 import { documentSelect } from "@/db/selects";
 
-import type { ListDocumentsOrgQuery, ListDocumentsQuery } from "./schema";
+import type { DocumentFolderItem, ListDocumentsOrgQuery, ListDocumentsQuery } from "./schema";
 
 export const documentsRepository = {
   async create(data: {
@@ -75,5 +75,22 @@ export const documentsRepository = {
       where: { id, orgId, deletedAt: null },
       select: documentSelect,
     });
+  },
+
+  async listFolders(orgId: string): Promise<DocumentFolderItem[]> {
+    const cases = await prisma.case.findMany({
+      where: { orgId, deletedAt: null },
+      select: {
+        id: true,
+        title: true,
+        _count: { select: { documents: { where: { deletedAt: null } } } },
+      },
+      orderBy: { title: "asc" },
+    });
+    return cases.map((c) => ({
+      caseId: c.id,
+      title: c.title,
+      documentCount: c._count.documents,
+    }));
   },
 };

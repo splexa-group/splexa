@@ -33,3 +33,9 @@ export const renameDocumentBodySchema = z
   .strict();
 
 export type RenameDocumentBody = z.infer<typeof renameDocumentBodySchema>;
+
+export interface DocumentFolderItem {
+  caseId: string;
+  title: string;
+  documentCount: number;
+}

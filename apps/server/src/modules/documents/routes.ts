@@ -15,6 +15,11 @@ export function documentsRoutes(router: FastifyInstance): void {
     preHandler: [router.authenticate],
     handler: documentsController.listForOrg,
   });
+
+  router.get("/folders", {
+    preHandler: [router.authenticate],
+    handler: documentsController.listFolders,
+  });
 }
 
 // Case-scoped: registered under /api/v1/cases in the plugin

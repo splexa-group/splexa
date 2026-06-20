@@ -73,4 +73,8 @@ export const documentsController = {
       { orgId: req.user.orgId, userId: req.user.userId, ipAddress: req.ip },
     );
   },
+
+  async listFolders(req: FastifyRequest) {
+    return documentsService.listFolders(req.user.orgId);
+  },
 };

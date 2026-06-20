@@ -69,4 +69,8 @@ export const documentsService = {
     if (!doc) throw Errors.documentNotFound();
     return documentsRepository.rename(documentId, caseId, ctx.orgId, name);
   },
+
+  async listFolders(orgId: string) {
+    return documentsRepository.listFolders(orgId);
+  },
 };

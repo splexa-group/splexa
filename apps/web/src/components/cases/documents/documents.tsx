@@ -6,8 +6,11 @@ import {
   File,
   FileImage,
   FileText,
+  Pencil,
   Plus,
   Trash2,
+  X,
+  Check,
 } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -15,6 +18,7 @@ import {
   useDocuments,
   useUploadDocument,
   useDeleteDocument,
+  useRenameDocument,
 } from "@/hooks/use-documents";
 import { documentsApi } from "@/services/documents";
 import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
@@ -50,10 +54,13 @@ export function Documents({ caseId }: DocumentsTabProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [toDelete, setToDelete] = useState<Document | null>(null);
   const [openingId, setOpeningId] = useState<string | null>(null);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
 
   const { data: documents = [], isLoading } = useDocuments(caseId);
   const upload = useUploadDocument(caseId);
   const deleteDoc = useDeleteDocument(caseId);
+  const renameDoc = useRenameDocument(caseId);
 
   function handleUploadClick() {
     fileInputRef.current?.click();
@@ -76,6 +83,27 @@ export function Documents({ caseId }: DocumentsTabProps) {
     } finally {
       setOpeningId(null);
     }
+  }
+
+  function startRename(doc: Document) {
+    setRenamingId(doc.id);
+    setRenameValue(doc.name);
+  }
+
+  function cancelRename() {
+    setRenamingId(null);
+    setRenameValue("");
+  }
+
+  async function commitRename(doc: Document) {
+    const trimmed = renameValue.trim();
+    if (!trimmed || trimmed === doc.name) {
+      cancelRename();
+      return;
+    }
+    await renameDoc.mutateAsync({ documentId: doc.id, name: trimmed });
+    setRenamingId(null);
+    setRenameValue("");
   }
 
   async function handleDelete() {
@@ -123,7 +151,20 @@ export function Documents({ caseId }: DocumentsTabProps) {
               {fileIcon(doc.mimeType)}
 
               <div className="flex-1 min-w-0 space-y-0.5">
-                <p className="text-sm font-medium text-dark truncate">{doc.name}</p>
+                {renamingId === doc.id ? (
+                  <input
+                    autoFocus
+                    className="text-sm font-medium text-dark w-full border border-brand rounded px-2 py-0.5 outline-none"
+                    value={renameValue}
+                    onChange={(e) => setRenameValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") void commitRename(doc);
+                      if (e.key === "Escape") cancelRename();
+                    }}
+                  />
+                ) : (
+                  <p className="text-sm font-medium text-dark truncate">{doc.name}</p>
+                )}
                 <p className="text-xs text-secondary">
                   {formatBytes(doc.size)} ·{" "}
                   {new Date(doc.createdAt).toLocaleDateString("en-IN", {
@@ -135,23 +176,55 @@ export function Documents({ caseId }: DocumentsTabProps) {
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => void handleOpen(doc)}
-                  disabled={openingId === doc.id}
-                  className="p-1.5 rounded bg-subtle text-secondary hover:text-dark transition-colors disabled:opacity-50"
-                  aria-label="Download"
-                >
-                  <Download className="size-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setToDelete(doc)}
-                  className="p-1.5 rounded bg-negative-muted text-negative hover:opacity-80 transition-opacity"
-                  aria-label="Delete"
-                >
-                  <Trash2 className="size-3.5" />
-                </button>
+                {renamingId === doc.id ? (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => void commitRename(doc)}
+                      disabled={renameDoc.isPending}
+                      className="p-1.5 rounded bg-positive-muted text-positive hover:opacity-80 transition-opacity disabled:opacity-50"
+                      aria-label="Save rename"
+                    >
+                      <Check className="size-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={cancelRename}
+                      className="p-1.5 rounded bg-subtle text-secondary hover:text-dark transition-colors"
+                      aria-label="Cancel rename"
+                    >
+                      <X className="size-3.5" />
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => startRename(doc)}
+                      className="p-1.5 rounded bg-subtle text-secondary hover:text-dark transition-colors"
+                      aria-label="Rename"
+                    >
+                      <Pencil className="size-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => void handleOpen(doc)}
+                      disabled={openingId === doc.id}
+                      className="p-1.5 rounded bg-subtle text-secondary hover:text-dark transition-colors disabled:opacity-50"
+                      aria-label="Download"
+                    >
+                      <Download className="size-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setToDelete(doc)}
+                      className="p-1.5 rounded bg-negative-muted text-negative hover:opacity-80 transition-opacity"
+                      aria-label="Delete"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           ))}

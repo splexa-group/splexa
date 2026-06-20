@@ -27,3 +27,9 @@ export type DocumentCaseParams = z.infer<typeof documentCaseParamsSchema>;
 export type DocumentParams = z.infer<typeof documentParamsSchema>;
 export type ListDocumentsQuery = z.infer<typeof listDocumentsQuerySchema>;
 export type ListDocumentsOrgQuery = z.infer<typeof listDocumentsOrgQuerySchema>;
+
+export const renameDocumentBodySchema = z
+  .object({ name: z.string().min(1).max(255) })
+  .strict();
+
+export type RenameDocumentBody = z.infer<typeof renameDocumentBodySchema>;

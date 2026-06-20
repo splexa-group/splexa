@@ -65,4 +65,15 @@ export const documentsRepository = {
       data: { deletedAt: new Date() },
     });
   },
+
+  async rename(id: string, caseId: string, orgId: string, name: string) {
+    await prisma.document.updateMany({
+      where: { id, caseId, orgId, deletedAt: null },
+      data: { name },
+    });
+    return prisma.document.findFirst({
+      where: { id, orgId, deletedAt: null },
+      select: documentSelect,
+    });
+  },
 };

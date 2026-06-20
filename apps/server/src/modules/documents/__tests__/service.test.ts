@@ -13,6 +13,7 @@ vi.mock("../repository", () => ({
     listForCase: vi.fn(),
     listForOrg: vi.fn(),
     softDelete: vi.fn(),
+    rename: vi.fn(),
   },
 }));
 
@@ -143,5 +144,25 @@ describe("documentsService.delete", () => {
 
     expect(deleteOrder[0]).toBe("db");
     expect(documentsRepository.softDelete).toHaveBeenCalledWith("doc-1", "org-1");
+  });
+});
+
+describe("documentsService.rename", () => {
+  it("throws documentNotFound when doc does not exist", async () => {
+    vi.mocked(documentsRepository.findById).mockResolvedValue(null);
+    await expect(
+      documentsService.rename("bad-doc", "case-1", "new name.pdf", ctx),
+    ).rejects.toThrow(Errors.documentNotFound());
+  });
+
+  it("renames the document and returns updated record", async () => {
+    const renamed = { ...mockDoc, name: "new name.pdf" };
+    vi.mocked(documentsRepository.findById).mockResolvedValue(mockDoc);
+    vi.mocked(documentsRepository.rename).mockResolvedValue(renamed);
+
+    const result = await documentsService.rename("doc-1", "case-1", "new name.pdf", ctx);
+
+    expect(documentsRepository.rename).toHaveBeenCalledWith("doc-1", "case-1", "org-1", "new name.pdf");
+    expect(result).toEqual(renamed);
   });
 });

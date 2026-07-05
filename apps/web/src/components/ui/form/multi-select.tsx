@@ -27,7 +27,7 @@ export function MultiSelectGroup({
   options,
   value,
   onChange,
-  placeholder = "Add...",
+  placeholder = "Select...",
   disabled,
   required,
   error,

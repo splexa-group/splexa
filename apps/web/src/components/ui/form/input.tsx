@@ -77,7 +77,8 @@ const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
     return (
       <div
         className={cn(
-          "rounded border bg-card px-3.5 pt-4.5 pb-3.5 transition-colors",
+          "rounded border px-3.5 pt-4.5 pb-3.5 transition-colors",
+          inputProps.disabled || inputProps.readOnly ? "bg-subtle" : "bg-card",
           error
             ? "border-negative focus-within:ring-1 focus-within:ring-negative/30"
             : "border-line focus-within:border-brand focus-within:ring-1 focus-within:ring-brand/30",

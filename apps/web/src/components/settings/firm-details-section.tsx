@@ -8,40 +8,41 @@ import { PRACTICE_TYPE_OPTIONS } from "@/lib/options";
 import type { SettingsFormValues } from "@/components/settings/profile-tab";
 
 export function FirmDetailsSection() {
-  const { register, control, formState: { errors } } = useFormContext<SettingsFormValues>();
+  const {
+    register,
+    control,
+    formState: { errors },
+  } = useFormContext<SettingsFormValues>();
 
   return (
     <Section title="Firm Details" cols={2}>
-      <div className="md:col-span-2">
-        <InputGroup
-          label="Firm Name"
-          required
-          error={errors.orgName?.message}
-          {...register("orgName")}
-        />
-      </div>
+      <InputGroup
+        label="Firm Name"
+        required
+        error={errors.orgName?.message}
+        {...register("orgName")}
+      />
+
       <InputGroup
         label="City"
         required
         error={errors.city?.message}
         {...register("city")}
       />
-      <div className="md:col-span-2">
-        <Controller
-          name="practiceTypes"
-          control={control}
-          render={({ field }) => (
-            <MultiSelectGroup
-              label="Practice Types"
-              required
-              options={PRACTICE_TYPE_OPTIONS}
-              value={field.value}
-              onChange={field.onChange}
-              error={errors.practiceTypes?.message}
-            />
-          )}
-        />
-      </div>
+      <Controller
+        name="practiceTypes"
+        control={control}
+        render={({ field }) => (
+          <MultiSelectGroup
+            label="Practice Types"
+            required
+            options={PRACTICE_TYPE_OPTIONS}
+            value={field.value}
+            onChange={field.onChange}
+            error={errors.practiceTypes?.message}
+          />
+        )}
+      />
     </Section>
   );
 }

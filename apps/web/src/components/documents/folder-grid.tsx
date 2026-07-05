@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FolderCard } from "@/components/documents/folder-card";
 import { EmptyState } from "@/components/ui/empty-state";
+import { FiltersBar } from "@/components/ui/filters-bar";
 import { Search } from "@/components/ui/form/search";
 import { useFolders } from "@/hooks/use-documents";
 import type { DocumentFolder } from "@/types/documents";
@@ -23,15 +24,15 @@ export function FolderGrid() {
 
   return (
     <div className="space-y-4">
-      <div className="flex">
+      <FiltersBar columns="1fr" className="px-0 pt-0 pb-0">
         <Search
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onClear={() => setSearch("")}
-          placeholder="Search cases…"
+          placeholder="Search cases..."
           className="w-[65%]"
         />
-      </div>
+      </FiltersBar>
 
       {isLoading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -41,7 +42,7 @@ export function FolderGrid() {
         </div>
       ) : visible.length === 0 ? (
         <EmptyState
-          text={search || filter !== "all" ? "No folders match your search." : "No cases yet. Create a case to start uploading documents."}
+          text={search ? "No folders match your search." : "No cases yet. Create a case to start uploading documents."}
           className="py-16"
         />
       ) : (

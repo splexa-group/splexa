@@ -17,13 +17,14 @@ export class R2Adapter implements StorageProvider {
   private bucket: string;
 
   constructor() {
-    this.bucket = env.R2_BUCKET;
+    // Guard is enforced by the factory in storage/index.ts before R2Adapter is instantiated
+    this.bucket = env.R2_BUCKET as string;
     this.client = new S3Client({
       region: "auto",
-      endpoint: env.R2_ENDPOINT,
+      endpoint: env.R2_ENDPOINT as string,
       credentials: {
-        accessKeyId: env.R2_ACCESS_KEY_ID,
-        secretAccessKey: env.R2_SECRET_ACCESS_KEY,
+        accessKeyId: env.R2_ACCESS_KEY_ID as string,
+        secretAccessKey: env.R2_SECRET_ACCESS_KEY as string,
       },
     });
   }

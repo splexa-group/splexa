@@ -58,23 +58,27 @@ export function ProfileTab() {
   const isSaving = updateProfile.isPending || updateOrganization.isPending;
 
   async function onSubmit(values: SettingsFormValues) {
-    await updateProfile.mutateAsync({
-      firstName:   values.firstName,
-      lastName:    values.lastName,
-      phoneNumber: values.phoneNumber,
-      designation: values.designation,
-    });
-    const updatedOrg = await updateOrganization.mutateAsync({
-      name:          values.orgName,
-      city:          values.city,
-      practiceTypes: values.practiceTypes,
-    });
-    // Keep the auth store's orgName in sync
-    const currentUser = useAuthStore.getState().user;
-    if (currentUser) {
-      useAuthStore.getState().setAuth({ ...currentUser, orgName: updatedOrg.data.name });
+    try {
+      await updateProfile.mutateAsync({
+        firstName:   values.firstName,
+        lastName:    values.lastName,
+        phoneNumber: values.phoneNumber,
+        designation: values.designation,
+      });
+      const updatedOrg = await updateOrganization.mutateAsync({
+        name:          values.orgName,
+        city:          values.city,
+        practiceTypes: values.practiceTypes,
+      });
+      // Keep the auth store's orgName in sync
+      const currentUser = useAuthStore.getState().user;
+      if (currentUser) {
+        useAuthStore.getState().setAuth({ ...currentUser, orgName: updatedOrg.data.name });
+      }
+      toast.success("Settings saved");
+    } catch {
+      // onError handlers in mutations show the toast
     }
-    toast.success("Settings saved");
   }
 
   return (

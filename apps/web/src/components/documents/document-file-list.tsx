@@ -1,16 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import {
-  ArrowLeft,
   Check,
   Download,
   File,
   FileImage,
   FileText,
   Pencil,
-  Plus,
   Trash2,
   X,
 } from "lucide-react";
@@ -24,13 +21,15 @@ import {
 } from "@/hooks/use-documents";
 import { documentsApi } from "@/services/documents";
 import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
-import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Document } from "@/types/documents";
 
 interface Props {
   caseId: string;
-  caseTitle: string;
+}
+
+export interface DocumentFileListHandle {
+  triggerUpload: () => void;
 }
 
 function fileIcon(mimeType: string) {
@@ -53,22 +52,22 @@ function formatBytes(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export function DocumentFileList({ caseId, caseTitle }: Props) {
-  const router = useRouter();
+export const DocumentFileList = forwardRef<DocumentFileListHandle, Props>(
+function DocumentFileList({ caseId }, ref) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [toDelete, setToDelete] = useState<Document | null>(null);
   const [openingId, setOpeningId] = useState<string | null>(null);
   const [renamingId, setRenamingId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
 
+  useImperativeHandle(ref, () => ({
+    triggerUpload: () => fileInputRef.current?.click(),
+  }));
+
   const { data: documents = [], isLoading } = useDocuments(caseId);
   const upload = useUploadDocument(caseId);
   const deleteDoc = useDeleteDocument(caseId);
   const renameDoc = useRenameDocument(caseId);
-
-  function handleUploadClick() {
-    fileInputRef.current?.click();
-  }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -116,14 +115,6 @@ export function DocumentFileList({ caseId, caseTitle }: Props) {
     setToDelete(null);
   }
 
-  const subtitle = isLoading
-    ? ""
-    : documents.length === 0
-      ? "No documents"
-      : documents.length === 1
-        ? "1 document"
-        : `${documents.length} documents`;
-
   return (
     <>
       <input
@@ -135,35 +126,11 @@ export function DocumentFileList({ caseId, caseTitle }: Props) {
       />
 
       <div className="space-y-4">
-        {/* Back nav */}
-        <button
-          type="button"
-          onClick={() => router.push("/documents")}
-          className="flex items-center gap-1.5 text-sm text-brand font-medium hover:opacity-80 transition-opacity"
-        >
-          <ArrowLeft className="size-4" />
-          Documents
-        </button>
-
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h2 className="text-base font-semibold text-dark">{caseTitle}</h2>
-            {!isLoading && (
-              <p className="text-xs text-secondary mt-0.5">{subtitle}</p>
-            )}
-          </div>
-          <Button size="sm" onClick={handleUploadClick} disabled={upload.isPending}>
-            <Plus className="size-3.5" />
-            {upload.isPending ? "Uploading…" : "Upload"}
-          </Button>
-        </div>
-
         {/* File list */}
         {!isLoading && documents.length === 0 ? (
           <EmptyState
             text="No documents yet. Upload petitions, orders, affidavits, or any case file."
-            action={{ label: "Upload Document", onClick: handleUploadClick }}
+            action={{ label: "Upload Document", onClick: () => fileInputRef.current?.click() }}
             className="py-12"
           />
         ) : (
@@ -271,4 +238,4 @@ export function DocumentFileList({ caseId, caseTitle }: Props) {
       />
     </>
   );
-}
+});

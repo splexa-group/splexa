@@ -1,6 +1,6 @@
 "use client";
 
-import { Folder } from "lucide-react";
+import { FolderOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { DocumentFolder } from "@/types/documents";
 
@@ -20,7 +20,7 @@ export function FolderCard({ folder, onClick }: Props) {
         "flex flex-col gap-2",
       )}
     >
-      <Folder className="size-8 text-brand/70" />
+      <FolderOpen className="size-7 text-brand" />
       <div className="min-w-0">
         <p className="text-sm font-medium text-dark truncate">{folder.title}</p>
         <p className="text-xs text-secondary mt-0.5">

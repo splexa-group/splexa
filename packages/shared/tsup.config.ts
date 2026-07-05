@@ -4,6 +4,7 @@ export default defineConfig({
   entry: {
     "enums/index": "src/enums/index.ts",
     "models/index": "src/models/index.ts",
+    "utils/index": "src/utils/index.ts",
   },
   format: ["esm"],
   target: "node20",

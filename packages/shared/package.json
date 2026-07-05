@@ -16,7 +16,14 @@
     "./models": {
       "types": "./src/models/index.ts",
       "default": "./dist/models/index.js"
+    },
+    "./utils": {
+      "types": "./src/utils/index.ts",
+      "default": "./dist/utils/index.js"
     }
+  },
+  "dependencies": {
+    "date-fns": "^4.4.0"
   },
   "devDependencies": {
     "tsup": "^8.5.1",

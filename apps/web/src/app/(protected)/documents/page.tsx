@@ -18,11 +18,15 @@ function DocumentsPageInner({ caseId }: { caseId: string | undefined }) {
     title: activeFolder ? activeFolder.title : "Documents",
   });
 
-  if (caseId) {
-    return <DocumentFileList caseId={caseId} caseTitle={activeFolder?.title ?? "Documents"} />;
-  }
-
-  return <FolderGrid />;
+  return (
+    <div className="h-full overflow-y-auto px-4 md:px-6 py-6">
+      {caseId ? (
+        <DocumentFileList caseId={caseId} caseTitle={activeFolder?.title ?? "Documents"} />
+      ) : (
+        <FolderGrid />
+      )}
+    </div>
+  );
 }
 
 export default function Page({ searchParams }: Props) {

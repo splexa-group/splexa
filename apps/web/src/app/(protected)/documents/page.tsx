@@ -23,7 +23,7 @@ function DocumentsPageInner({ caseId }: { caseId: string | undefined }) {
   });
 
   return (
-    <div className="h-full overflow-y-auto px-4 md:px-6 py-6">
+    <div className="h-full overflow-y-auto">
       {caseId ? (
         <DocumentFileList ref={uploadRef} caseId={caseId} />
       ) : (

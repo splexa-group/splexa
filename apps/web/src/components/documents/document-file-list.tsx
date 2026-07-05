@@ -125,7 +125,7 @@ function DocumentFileList({ caseId }, ref) {
         accept="*/*"
       />
 
-      <div className="space-y-4">
+      <div className="space-y-4 px-4 md:px-6 py-6">
         {/* File list */}
         {!isLoading && documents.length === 0 ? (
           <EmptyState

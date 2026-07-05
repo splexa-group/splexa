@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { Designation, PracticeType } from "@splexa-group/shared/enums";
+
 import { Errors } from "@/utils/errors";
 
 import { settingsRepository } from "../repository";
@@ -20,7 +22,7 @@ const mockProfile = {
   lastName:    "Sharma",
   email:       "rajesh@example.com",
   phoneNumber: "9876543210",
-  designation: "ADVOCATE",
+  designation: Designation.ADVOCATE,
   role:        "OWNER",
 };
 
@@ -28,7 +30,7 @@ const mockOrg = {
   id:            "org-1",
   name:          "Sharma & Associates",
   city:          "Hyderabad",
-  practiceTypes: ["CRIMINAL", "CIVIL"],
+  practiceTypes: [PracticeType.CRIMINAL, PracticeType.CIVIL],
 };
 
 beforeEach(() => vi.clearAllMocks());
@@ -50,10 +52,20 @@ describe("settingsService.getProfile", () => {
 });
 
 describe("settingsService.updateProfile", () => {
+  it("throws userNotFound when user does not exist", async () => {
+    vi.mocked(settingsRepository.getProfile).mockResolvedValue(null);
+    const body = { firstName: "Ravi", lastName: "Sharma", phoneNumber: "9876543210", designation: Designation.ADVOCATE };
+    await expect(
+      settingsService.updateProfile("bad-user", "org-1", body),
+    ).rejects.toThrow(Errors.userNotFound());
+    expect(settingsRepository.updateProfile).not.toHaveBeenCalled();
+  });
+
   it("updates and returns the profile", async () => {
     const updated = { ...mockProfile, firstName: "Ravi" };
+    vi.mocked(settingsRepository.getProfile).mockResolvedValue(mockProfile as never);
     vi.mocked(settingsRepository.updateProfile).mockResolvedValue(updated as never);
-    const body = { firstName: "Ravi", lastName: "Sharma", phoneNumber: "9876543210", designation: "ADVOCATE" as never };
+    const body = { firstName: "Ravi", lastName: "Sharma", phoneNumber: "9876543210", designation: Designation.ADVOCATE };
     const result = await settingsService.updateProfile("user-1", "org-1", body);
     expect(result).toEqual(updated);
     expect(settingsRepository.updateProfile).toHaveBeenCalledWith("user-1", "org-1", body);
@@ -77,10 +89,20 @@ describe("settingsService.getOrganization", () => {
 });
 
 describe("settingsService.updateOrganization", () => {
+  it("throws organizationNotFound when org does not exist", async () => {
+    vi.mocked(settingsRepository.getOrganization).mockResolvedValue(null);
+    const body = { name: "New Firm Name", city: "Hyderabad", practiceTypes: [PracticeType.CRIMINAL] };
+    await expect(
+      settingsService.updateOrganization("bad-org", body),
+    ).rejects.toThrow(Errors.organizationNotFound());
+    expect(settingsRepository.updateOrganization).not.toHaveBeenCalled();
+  });
+
   it("updates and returns the organization", async () => {
     const updated = { ...mockOrg, name: "New Firm Name" };
+    vi.mocked(settingsRepository.getOrganization).mockResolvedValue(mockOrg as never);
     vi.mocked(settingsRepository.updateOrganization).mockResolvedValue(updated as never);
-    const body = { name: "New Firm Name", city: "Hyderabad", practiceTypes: ["CRIMINAL"] as never };
+    const body = { name: "New Firm Name", city: "Hyderabad", practiceTypes: [PracticeType.CRIMINAL] };
     const result = await settingsService.updateOrganization("org-1", body);
     expect(result).toEqual(updated);
     expect(settingsRepository.updateOrganization).toHaveBeenCalledWith("org-1", body);

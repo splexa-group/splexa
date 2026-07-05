@@ -30,12 +30,13 @@ export const settingsRepository = {
   },
 
   async updateProfile(userId: string, orgId: string, data: UpdateProfileBody) {
-    return prisma.user.update({
-      where: { id: userId },
-      data: {
-        ...data,
-        updatedAt: new Date(),
-      },
+    const { count } = await prisma.user.updateMany({
+      where: { id: userId, orgId, deletedAt: null },
+      data: { ...data },
+    });
+    if (count === 0) return null;
+    return prisma.user.findFirst({
+      where: { id: userId, orgId, deletedAt: null },
       select: profileSelect,
     });
   },
@@ -48,14 +49,17 @@ export const settingsRepository = {
   },
 
   async updateOrganization(orgId: string, data: UpdateOrganizationBody) {
-    return prisma.organization.update({
-      where: { id: orgId },
+    const { count } = await prisma.organization.updateMany({
+      where: { id: orgId, deletedAt: null },
       data: {
         name:          data.name,
         city:          data.city,
         practiceTypes: data.practiceTypes,
-        updatedAt:     new Date(),
       },
+    });
+    if (count === 0) return null;
+    return prisma.organization.findFirst({
+      where: { id: orgId, deletedAt: null },
       select: orgSelect,
     });
   },

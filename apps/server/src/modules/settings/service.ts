@@ -11,7 +11,11 @@ export const settingsService = {
   },
 
   async updateProfile(userId: string, orgId: string, data: UpdateProfileBody) {
-    return settingsRepository.updateProfile(userId, orgId, data);
+    const existing = await settingsRepository.getProfile(userId, orgId);
+    if (!existing) throw Errors.userNotFound();
+    const updated = await settingsRepository.updateProfile(userId, orgId, data);
+    if (!updated) throw Errors.userNotFound();
+    return updated;
   },
 
   async getOrganization(orgId: string) {
@@ -21,6 +25,10 @@ export const settingsService = {
   },
 
   async updateOrganization(orgId: string, data: UpdateOrganizationBody) {
-    return settingsRepository.updateOrganization(orgId, data);
+    const existing = await settingsRepository.getOrganization(orgId);
+    if (!existing) throw Errors.organizationNotFound();
+    const updated = await settingsRepository.updateOrganization(orgId, data);
+    if (!updated) throw Errors.organizationNotFound();
+    return updated;
   },
 };

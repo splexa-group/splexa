@@ -1,4 +1,4 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
+import type { FastifyRequest } from "fastify";
 
 import { settingsService } from "./service";
 import type { UpdateOrganizationBody, UpdateProfileBody } from "./schema";

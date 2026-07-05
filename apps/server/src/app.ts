@@ -10,6 +10,7 @@ import { fastifyLogger } from "@/config/logger";
 import { authModule } from "@/modules/auth/plugin";
 import { casesModule } from "@/modules/cases/plugin";
 import { clientsModule } from "@/modules/clients/plugin";
+import { dashboardModule } from "@/modules/dashboard/plugin";
 import { documentsModule } from "@/modules/documents/plugin";
 import { hearingsModule } from "@/modules/hearings/plugin";
 import { importantDatesModule } from "@/modules/important-dates/plugin";
@@ -35,6 +36,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(importantDatesModule);
   await app.register(documentsModule);
   await app.register(settingsModule);
+  await app.register(dashboardModule);
 
   return app;
 }

@@ -16,7 +16,7 @@ export function FolderCard({ folder, onClick }: Props) {
       onClick={() => onClick(folder)}
       className={cn(
         "w-full text-left p-4 rounded-lg border border-line bg-card",
-        "hover:border-brand/40 hover:bg-brand/5 transition-colors",
+        "hover:bg-surface transition-colors cursor-pointer",
         "flex flex-col gap-2",
       )}
     >

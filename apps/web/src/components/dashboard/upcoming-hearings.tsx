@@ -1,21 +1,14 @@
 "use client";
 
-import { format, isToday, isTomorrow } from "date-fns";
 import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
+import { formatDateLabel } from "@/lib/format-date-label";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { UpcomingHearing } from "@/types/dashboard";
 
 interface Props {
-  hearings: UpcomingHearing[];
-}
-
-function formatDateLabel(dateStr: string): string {
-  const d = new Date(dateStr);
-  if (isToday(d))    return "Today";
-  if (isTomorrow(d)) return "Tomorrow";
-  return format(d, "EEE d MMM");
+  hearings: UpcomingHearing[] | undefined;
 }
 
 const PURPOSE_LABELS: Record<string, string> = {
@@ -38,7 +31,13 @@ export function UpcomingHearings({ hearings }: Props) {
         <p className="text-xs text-secondary mt-0.5">Next 14 days</p>
       </div>
 
-      {hearings.length === 0 ? (
+      {hearings === undefined ? (
+        <div className="p-4 space-y-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-14 rounded border border-line bg-card animate-pulse" />
+          ))}
+        </div>
+      ) : hearings.length === 0 ? (
         <EmptyState text="No hearings in the next 14 days." className="py-10" />
       ) : (
         <ul>

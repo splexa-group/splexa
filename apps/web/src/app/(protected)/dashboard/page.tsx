@@ -13,7 +13,7 @@ export default function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const openModal = useCallback(() => setModalOpen(true), []);
   const closeModal = useCallback(() => setModalOpen(false), []);
-  const { data } = useDashboard();
+  const { data, isError } = useDashboard();
 
   usePageTitle({
     title: "Dashboard",
@@ -30,13 +30,21 @@ export default function DashboardPage() {
           <StatCard label="Upcoming Deadlines" value={data?.stats.upcomingDeadlines} icon={AlertCircle} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <UpcomingHearings hearings={data?.upcomingHearings ?? []} />
-          <AttentionNeeded
-            deadlines={data?.upcomingDeadlines ?? []}
-            highPriorityCases={data?.highPriorityCases ?? []}
-          />
-        </div>
+        {isError && (
+          <p className="text-sm text-negative text-center py-8">
+            Failed to load dashboard. Please refresh the page.
+          </p>
+        )}
+
+        {!isError && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <UpcomingHearings hearings={data?.upcomingHearings} />
+            <AttentionNeeded
+              deadlines={data?.upcomingDeadlines}
+              highPriorityCases={data?.highPriorityCases}
+            />
+          </div>
+        )}
       </div>
 
       <CreateCaseModal open={modalOpen} onClose={closeModal} />

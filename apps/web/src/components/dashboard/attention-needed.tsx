@@ -1,22 +1,16 @@
 "use client";
 
-import { differenceInCalendarDays, format, isToday, isTomorrow } from "date-fns";
+import { differenceInCalendarDays } from "date-fns";
 import { useRouter } from "next/navigation";
 
 import { cn } from "@/lib/utils";
+import { formatDateLabel } from "@/lib/format-date-label";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { HighPriorityCase, UpcomingDeadline } from "@/types/dashboard";
 
 interface Props {
-  deadlines:         UpcomingDeadline[];
-  highPriorityCases: HighPriorityCase[];
-}
-
-function formatDateLabel(dateStr: string): string {
-  const d = new Date(dateStr);
-  if (isToday(d))    return "Today";
-  if (isTomorrow(d)) return "Tomorrow";
-  return format(d, "EEE d MMM");
+  deadlines:         UpcomingDeadline[] | undefined;
+  highPriorityCases: HighPriorityCase[] | undefined;
 }
 
 function isUrgent(dateStr: string): boolean {
@@ -32,8 +26,10 @@ const DATE_TYPE_LABELS: Record<string, string> = {
 };
 
 export function AttentionNeeded({ deadlines, highPriorityCases }: Props) {
-  const router  = useRouter();
-  const isEmpty = deadlines.length === 0 && highPriorityCases.length === 0;
+  const router    = useRouter();
+  const isLoading = deadlines === undefined || highPriorityCases === undefined;
+  const isEmpty   = deadlines !== undefined && highPriorityCases !== undefined
+    && deadlines.length === 0 && highPriorityCases.length === 0;
 
   return (
     <div className="rounded-lg border border-line bg-card overflow-hidden">
@@ -42,7 +38,13 @@ export function AttentionNeeded({ deadlines, highPriorityCases }: Props) {
         <p className="text-xs text-secondary mt-0.5">Deadlines & high-priority cases</p>
       </div>
 
-      {isEmpty ? (
+      {isLoading ? (
+        <div className="p-4 space-y-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="h-14 rounded border border-line bg-card animate-pulse" />
+          ))}
+        </div>
+      ) : isEmpty ? (
         <EmptyState text="Nothing needs immediate attention." className="py-10" />
       ) : (
         <div>

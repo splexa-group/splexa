@@ -63,4 +63,14 @@ export const documentsService = {
       logger.error({ documentId, storageKey: doc.storageKey, err }, "documents: failed to delete object from storage");
     });
   },
+
+  async rename(documentId: string, caseId: string, name: string, ctx: ServiceContext) {
+    const doc = await documentsRepository.findById(documentId, caseId, ctx.orgId);
+    if (!doc) throw Errors.documentNotFound();
+    return documentsRepository.rename(documentId, caseId, ctx.orgId, name);
+  },
+
+  async listFolders(orgId: string) {
+    return documentsRepository.listFolders(orgId);
+  },
 };

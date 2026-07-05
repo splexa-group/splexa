@@ -8,6 +8,7 @@ import type {
   DocumentParams,
   ListDocumentsOrgQuery,
   ListDocumentsQuery,
+  RenameDocumentBody,
 } from "./schema";
 import { documentsService } from "./service";
 
@@ -60,5 +61,21 @@ export const documentsController = {
       ipAddress: req.ip,
     });
     reply.code(204);
+  },
+
+  async rename(
+    req: FastifyRequest<{ Params: DocumentParams; Body: RenameDocumentBody }>,
+  ) {
+    return documentsService.rename(
+      req.params.documentId,
+      req.params.caseId,
+      req.body.name,
+      { orgId: req.user.orgId, userId: req.user.userId, ipAddress: req.ip },
+    );
+  },
+
+  async listFolders(req: FastifyRequest) {
+    const data = await documentsService.listFolders(req.user.orgId);
+    return { data };
   },
 };

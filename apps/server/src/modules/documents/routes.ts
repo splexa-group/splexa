@@ -6,6 +6,7 @@ import {
   documentParamsSchema,
   listDocumentsOrgQuerySchema,
   listDocumentsQuerySchema,
+  renameDocumentBodySchema,
 } from "./schema";
 
 export function documentsRoutes(router: FastifyInstance): void {
@@ -13,6 +14,11 @@ export function documentsRoutes(router: FastifyInstance): void {
     schema: { querystring: listDocumentsOrgQuerySchema },
     preHandler: [router.authenticate],
     handler: documentsController.listForOrg,
+  });
+
+  router.get("/folders", {
+    preHandler: [router.authenticate],
+    handler: documentsController.listFolders,
   });
 }
 
@@ -40,5 +46,11 @@ export function documentsCaseScopedRoutes(router: FastifyInstance): void {
     schema: { params: documentParamsSchema },
     preHandler: [router.authenticate],
     handler: documentsController.delete,
+  });
+
+  router.patch("/:caseId/documents/:documentId", {
+    schema: { params: documentParamsSchema, body: renameDocumentBodySchema },
+    preHandler: [router.authenticate],
+    handler: documentsController.rename,
   });
 }

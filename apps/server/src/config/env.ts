@@ -20,6 +20,10 @@ function getEnvVariable(name: string): string {
   return value.trim();
 }
 
+function getOptionalEnvVariable(name: string): string | undefined {
+  return process.env[name]?.trim() || undefined;
+}
+
 export const env = {
   NODE_ENV,
   PORT: Number(getEnvVariable("PORT")),
@@ -35,10 +39,15 @@ export const env = {
   EMAIL_FROM: getEnvVariable("EMAIL_FROM"),
   EMAIL_PROVIDER: getEnvVariable("EMAIL_PROVIDER"),
   STORAGE_PROVIDER: getEnvVariable("STORAGE_PROVIDER"),
-  R2_ENDPOINT: getEnvVariable("R2_ENDPOINT"),
-  R2_ACCESS_KEY_ID: getEnvVariable("R2_ACCESS_KEY_ID"),
-  R2_SECRET_ACCESS_KEY: getEnvVariable("R2_SECRET_ACCESS_KEY"),
-  R2_BUCKET: getEnvVariable("R2_BUCKET"),
+  // R2 — optional, required only when STORAGE_PROVIDER=r2
+  R2_ENDPOINT: getOptionalEnvVariable("R2_ENDPOINT"),
+  R2_ACCESS_KEY_ID: getOptionalEnvVariable("R2_ACCESS_KEY_ID"),
+  R2_SECRET_ACCESS_KEY: getOptionalEnvVariable("R2_SECRET_ACCESS_KEY"),
+  R2_BUCKET: getOptionalEnvVariable("R2_BUCKET"),
+  // Supabase Storage — optional, required only when STORAGE_PROVIDER=supabase
+  SUPABASE_URL: getOptionalEnvVariable("SUPABASE_URL"),
+  SUPABASE_SERVICE_ROLE_KEY: getOptionalEnvVariable("SUPABASE_SERVICE_ROLE_KEY"),
+  SUPABASE_STORAGE_BUCKET: getOptionalEnvVariable("SUPABASE_STORAGE_BUCKET"),
 
   WHATSAPP_PROVIDER: getEnvVariable("WHATSAPP_PROVIDER"),
   INTERAKT_API_KEY: getEnvVariable("INTERAKT_API_KEY"),

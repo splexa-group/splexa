@@ -229,7 +229,7 @@ summary {
   }
 
   .calendar-nav-btn {
-    @apply flex items-center justify-center size-[44px] rounded text-secondary;
+    @apply flex items-center justify-center size-[32px] rounded text-secondary;
     @apply hover:bg-subtle hover:text-dark transition-colors active:bg-line;
   }
 

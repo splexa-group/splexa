@@ -16,3 +16,13 @@ export interface DocumentListResponse {
   page: number;
   limit: number;
 }
+
+export interface DocumentFolder {
+  caseId: string;
+  title: string;
+  documentCount: number;
+}
+
+export interface DocumentFolderListResponse {
+  data: DocumentFolder[];
+}

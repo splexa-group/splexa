@@ -237,7 +237,7 @@ export type CaseParams = z.infer<typeof caseParamsSchema>;
 **Rules:**
 - No raw JSON Schema — Zod only. `@fastify/type-provider-zod` converts Zod to ajv internally.
 - Types always come from `z.infer<typeof schema>` — never write a separate interface that duplicates a schema.
-- Import schemas for form-validated inputs from `@splexa/shared`. Server-only schemas (query params, route params) stay in the module schema file.
+- Import schemas for form-validated inputs from `@splexa-group/shared/schemas`. Server-only schemas (query params, route params) stay in the module schema file.
 - Response schemas are not needed in Phase 1 — explicit `select` in the repository controls what is returned.
 
 ---

@@ -73,8 +73,11 @@ export default function SettingsPage() {
         practiceTypes: values.practiceTypes,
       });
       const currentUser = useAuthStore.getState().user;
-      if (currentUser) {
-        useAuthStore.getState().setAuth({ ...currentUser, orgName: updatedOrg.data.name });
+      if (currentUser && "org" in currentUser) {
+        useAuthStore.getState().setAuth({
+          ...currentUser,
+          org: { ...currentUser.org, name: updatedOrg.data.name },
+        });
       }
     } catch {
       // onError handlers in mutations show the toast

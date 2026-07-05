@@ -1,10 +1,10 @@
 import type { ImportantDateType } from "../enums";
 
-export interface ImportantDateSummary {
+export interface ImportantDate {
   id: string;
+  caseId: string;
   dateType: ImportantDateType;
   date: string;
-  description?: string | null;
-  sourceId?: string | null;
+  description: string | null;
   createdAt: string;
 }

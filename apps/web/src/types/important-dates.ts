@@ -1,13 +1,7 @@
 import type { ImportantDateType } from "@splexa-group/shared/enums";
+import type { ImportantDate } from "@splexa-group/shared/models";
 
-export interface ImportantDate {
-  id: string;
-  caseId: string;
-  dateType: ImportantDateType;
-  date: string;
-  description: string | null;
-  createdAt: string;
-}
+export type { ImportantDate };
 
 export interface CreateImportantDateInput {
   dateType: ImportantDateType;

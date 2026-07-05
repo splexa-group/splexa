@@ -1,19 +1,7 @@
 import type { HearingPurpose, HearingStatus } from "@splexa-group/shared/enums";
+import type { Hearing } from "@splexa-group/shared/models";
 
-export interface Hearing {
-  id: string;
-  caseId: string;
-  date: string;
-  time: string | null;
-  purpose: HearingPurpose | null;
-  status: HearingStatus;
-  notes: string | null;
-  nextDate: string | null;
-  adjournmentReason: string | null;
-  judgePresent: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
+export type { Hearing };
 
 export interface CreateHearingInput {
   date: string;

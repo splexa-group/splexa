@@ -6,73 +6,17 @@ import {
   PartyRole,
   Priority,
 } from "@splexa-group/shared/enums";
-import type { Client } from "@/types/clients";
-import type { Hearing } from "@/types/hearings";
-import type { ImportantDate } from "@/types/important-dates";
+import type {
+  CaseDetail,
+  CaseSummary,
+  ClientSummary,
+  OppositeParty,
+  PaginatedResult,
+} from "@splexa-group/shared/models";
 
-export interface OppositeParty {
-  name: string;
-  role: PartyRole;
-  advocateName?: string;
-  advocatePhone?: string;
-  address?: string;
-}
+export type { CaseDetail, CaseSummary, ClientSummary, OppositeParty };
 
-export interface ClientSummary {
-  id: string;
-  fullName: string;
-  phone: string;
-}
-
-export interface CaseSummary {
-  id: string;
-  title: string;
-  caseNumber: string | null;
-  status: CaseStatus;
-  priority: Priority | null;
-  courtName: string | null;
-  nextHearingDate: string | null;
-  clientRole: PartyRole | null;
-  client: ClientSummary | null;
-}
-
-export interface CaseDetail {
-  id: string;
-  orgId: string;
-  title: string;
-  clientId: string | null;
-  clientRole: PartyRole | null;
-  caseNumber: string | null;
-  caseType: CaseType | null;
-  filingDate: string | null;
-  courtName: string | null;
-  courtType: CourtType | null;
-  courtState: string | null;
-  courtCity: string | null;
-  benchNumber: string | null;
-  judgeName: string | null;
-  judgeDesignation: string | null;
-  status: CaseStatus;
-  stage: CaseStage | null;
-  priority: Priority | null;
-  description: string | null;
-  oppositeParties: OppositeParty[] | null;
-  tags: string[] | null;
-  nextHearingDate: string | null;
-  assignedTo: string | null;
-  createdAt: string;
-  updatedAt: string;
-  client: Client | null;
-  hearings: Hearing[];
-  importantDates: ImportantDate[];
-}
-
-export interface CaseListResponse {
-  data: CaseSummary[];
-  total: number;
-  page: number;
-  limit: number;
-}
+export type CaseListResponse = PaginatedResult<CaseSummary>;
 
 export interface CaseFilters {
   search?: string;

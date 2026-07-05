@@ -217,8 +217,8 @@ Any value that has a business meaning, appears in more than one place, or is a t
 const active = cases.filter(c => c.status === 'ACTIVE');
 
 // ✅ Constant — a typo is a TypeScript error; renaming is a one-file change
-import { CASE_STATUS } from '@splexa/shared';
-const active = cases.filter(c => c.status === CASE_STATUS.ACTIVE);
+import { CaseStatus } from '@splexa-group/shared/enums';
+const active = cases.filter(c => c.status === CaseStatus.ACTIVE);
 ```
 
 ### Activity Action Names — Never Freeform Strings

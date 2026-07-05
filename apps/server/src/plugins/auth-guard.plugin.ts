@@ -1,5 +1,5 @@
 import type { UserRole } from "@splexa-group/shared/enums";
-import type { AuthUser } from "@splexa-group/shared/types";
+import type { AuthUser } from "@splexa-group/shared/models";
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 

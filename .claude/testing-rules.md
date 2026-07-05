@@ -224,7 +224,8 @@ Do not repeat raw object literals across test files. Use typed factory functions
 
 ```ts
 // modules/cases/__tests__/factories.ts
-import type { AuthUser, CreateCaseInput } from '@splexa/shared';
+import type { AuthUser } from '@splexa-group/shared/models';
+import type { CreateCaseInput } from '@splexa-group/shared/schemas';
 
 export function makeUser(overrides: Partial<AuthUser> = {}): AuthUser {
   return {

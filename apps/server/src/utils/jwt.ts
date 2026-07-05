@@ -1,7 +1,7 @@
 import { TextEncoder } from "node:util";
 
 import type { UserRole } from "@splexa-group/shared/enums";
-import type { AuthUser } from "@splexa-group/shared/types";
+import type { AuthUser } from "@splexa-group/shared/models";
 import { jwtVerify, SignJWT } from "jose";
 
 import { env } from "@/config/env";

@@ -223,4 +223,4 @@ export async function emailFactory(): Promise<EmailProvider> {
 - All changes via `pnpm` — never `npm` or `yarn`
 - Before adding: check publish date, check CVEs via `pnpm audit`, check weekly downloads
 - After removing a feature: remove its dependencies immediately
-- Internal package imports use workspace aliases (`@splexa/shared`) not relative paths
+- Internal package imports use workspace aliases (`@splexa-group/shared/enums`, `@splexa-group/shared/models`) not relative paths

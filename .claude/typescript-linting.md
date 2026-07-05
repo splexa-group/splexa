@@ -145,7 +145,7 @@ Any unused import is a build error in CI.
 // ✅ Use aliases
 import { prisma } from "@/lib/db";
 import { AuthError } from "@/lib/errors";
-import { CaseStatus } from "@splexa/shared";
+import { CaseStatus } from "@splexa-group/shared/enums";
 
 // ❌ Never relative paths across folders
 import { prisma } from "../../../lib/db";
@@ -166,7 +166,7 @@ import { FastifyInstance, FastifyRequest } from "fastify";
 import { z } from "zod";
 
 // Group 3: Internal workspace packages
-import type { Case, AuthUser } from "@splexa/shared";
+import type { Case, AuthUser } from "@splexa-group/shared/models";
 
 // Group 4: Internal via alias
 import { prisma } from "@/lib/db";
@@ -185,7 +185,7 @@ When importing only a TypeScript type, use `import type`:
 ```ts
 // ✅
 import type { FastifyRequest, FastifyReply } from "fastify";
-import type { Case } from "@splexa/shared";
+import type { Case } from "@splexa-group/shared/models";
 
 // ❌ Imports a value when only the type is needed (bloats the bundle)
 import { FastifyRequest } from "fastify";
@@ -393,7 +393,7 @@ Before declaring work done:
 - [ ] Type-only imports use `import type { X }` not `import { X }`
 - [ ] Import groups separated by blank lines in correct order (builtin → external → internal → alias → relative)
 - [ ] No unused imports remain
-- [ ] Path aliases used (`@/*`, `@splexa/shared`) — no relative paths crossing folders
+- [ ] Path aliases used (`@/*`, `@splexa-group/shared/*`) — no relative paths crossing folders
 
 **Style**
 - [ ] All new files are kebab-case

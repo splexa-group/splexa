@@ -147,7 +147,7 @@ Feature components compose `ui/` components and know about the Splexa domain.
 
 ```tsx
 // components/cases/case-card.tsx
-import type { Case, Hearing } from "@splexa/shared";
+import type { Case, Hearing } from "@splexa-group/shared/models";
 import { Badge } from "@/components/ui/badge";
 import { CountdownBadge } from "@/components/ui/countdown-badge";
 
@@ -408,7 +408,7 @@ Each component file follows this order:
 
 // Imports (grouped, blank lines between groups)
 import { useState } from 'react';
-import type { Case } from '@splexa/shared';
+import type { Case } from '@splexa-group/shared/models';
 import { Button } from '@/components/ui/button';
 
 // Types/interfaces (local to this file)
@@ -458,7 +458,7 @@ function CaseCardMenu({ ... }) { ... }
 | Raw hex colors (`#1A1A2E`) in className | Use design token classes (`text-primary`, `bg-cta`) |
 | Interactive element without `min-h-[44px]` | Touch target too small — fails mobile UX standard |
 | Rendering `null` or `undefined` silently on error | Always show loading skeleton, error state, or empty state |
-| `any` type in component props | Fix the prop type — use the domain type from `@splexa/shared` |
+| `any` type in component props | Fix the prop type — use the domain type from `@splexa-group/shared/models` |
 | Importing from another feature's components | Features are independent — share only through `ui/` or `shared/` |
 
 ---

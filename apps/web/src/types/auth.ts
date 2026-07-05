@@ -1,7 +1,7 @@
-import { AuthUser } from "./user";
+import type { LoginUser } from "@splexa-group/shared/models";
 
 export interface VerifyOtpResponse {
-  user: AuthUser;
+  user: LoginUser;
 }
 
 export interface SignupPayload {

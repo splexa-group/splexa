@@ -121,7 +121,7 @@ Read this before writing anything. These are the most frequent mistakes.
 | Magic number `3` for OTP attempts | `MAX_OTP_ATTEMPTS` from `@/constants` |
 | `new NotFoundError('...')` in a service | `throw Errors.userNotFound()` from `@/utils/errors` |
 | `reply.code(201).send(data)` in a controller | `reply.code(201); return data;` — never call `send()` |
-| `import from '@splexa/shared'` | `import from '@splexa-group/shared/enums'` or `/types` |
+| `import from '@splexa/shared'` | `import from '@splexa-group/shared/enums'` or `/models` |
 
 ---
 

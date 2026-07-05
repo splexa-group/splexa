@@ -34,7 +34,7 @@ export function Sidebar() {
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
   const displayName = user
-    ? (user.orgName ?? `${user.firstName} ${user.lastName}`)
+    ? ("org" in user ? user.org.name : `${user.firstName} ${user.lastName}`)
     : "";
   const initial = displayName.charAt(0).toUpperCase();
 

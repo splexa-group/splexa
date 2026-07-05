@@ -42,6 +42,7 @@ export function useUpdateOrganization() {
     mutationFn: (data: UpdateOrganizationInput) => settingsApi.updateOrganization(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: settingsKeys.organization() });
+      toast.success("Settings saved");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to update firm details"),
   });

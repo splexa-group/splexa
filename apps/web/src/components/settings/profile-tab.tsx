@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { toast } from "sonner";
-import type { Designation, PracticeType } from "@splexa-group/shared/enums";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Designation, PracticeType } from "@splexa-group/shared/enums";
 import { PageContent } from "@/components/layout/page-content";
 import { PageFooter } from "@/components/layout/page-footer";
 import { Button } from "@/components/ui/button";
@@ -12,23 +13,26 @@ import { useOrganization, useProfile, useUpdateOrganization, useUpdateProfile } 
 import { FirmDetailsSection } from "@/components/settings/firm-details-section";
 import { MyDetailsSection } from "@/components/settings/my-details-section";
 
-export interface SettingsFormValues {
-  firstName:     string;
-  lastName:      string;
-  phoneNumber:   string;
-  designation:   Designation;
-  orgName:       string;
-  city:          string;
-  practiceTypes: PracticeType[];
-}
+const settingsFormSchema = z.object({
+  firstName:     z.string().min(1, "Required"),
+  lastName:      z.string().min(1, "Required"),
+  phoneNumber:   z.string().min(1, "Required").max(20),
+  designation:   z.nativeEnum(Designation),
+  orgName:       z.string().min(1, "Required").max(200),
+  city:          z.string().min(1, "Required").max(100),
+  practiceTypes: z.array(z.nativeEnum(PracticeType)).min(1, "Select at least one"),
+});
+
+export type SettingsFormValues = z.infer<typeof settingsFormSchema>;
 
 export function ProfileTab() {
-  const { data: profile }      = useProfile();
-  const { data: organization } = useOrganization();
+  const { data: profile, isLoading: profileLoading }      = useProfile();
+  const { data: organization, isLoading: orgLoading }     = useOrganization();
   const updateProfile      = useUpdateProfile();
   const updateOrganization = useUpdateOrganization();
 
   const form = useForm<SettingsFormValues>({
+    resolver: zodResolver(settingsFormSchema),
     defaultValues: {
       firstName:     "",
       lastName:      "",
@@ -55,7 +59,20 @@ export function ProfileTab() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile, organization]);
 
-  const isSaving = updateProfile.isPending || updateOrganization.isPending;
+  const isSaving   = updateProfile.isPending || updateOrganization.isPending;
+  const isDisabled = isSaving || profileLoading || orgLoading;
+
+  if (profileLoading || orgLoading) {
+    return (
+      <PageContent width="md" className="space-y-6">
+        <div className="space-y-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-12 rounded border border-line bg-card animate-pulse" />
+          ))}
+        </div>
+      </PageContent>
+    );
+  }
 
   async function onSubmit(values: SettingsFormValues) {
     try {
@@ -75,7 +92,6 @@ export function ProfileTab() {
       if (currentUser) {
         useAuthStore.getState().setAuth({ ...currentUser, orgName: updatedOrg.data.name });
       }
-      toast.success("Settings saved");
     } catch {
       // onError handlers in mutations show the toast
     }
@@ -85,9 +101,7 @@ export function ProfileTab() {
     <>
       <FormProvider {...form}>
         <PageContent width="md" className="space-y-6">
-          {profile && (
-            <MyDetailsSection email={profile.email} role={profile.role} />
-          )}
+          <MyDetailsSection email={profile?.email ?? ""} role={profile?.role ?? ""} />
           <FirmDetailsSection />
         </PageContent>
       </FormProvider>
@@ -96,7 +110,7 @@ export function ProfileTab() {
           <Button
             variant="primary"
             size="sm"
-            disabled={isSaving}
+            disabled={isDisabled}
             onClick={form.handleSubmit(onSubmit)}
           >
             {isSaving ? "Saving…" : "Save Changes"}

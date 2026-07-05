@@ -1,4 +1,4 @@
-import { CaseStatus, HearingStatus, ImportantDateType, Priority } from "@splexa-group/shared/enums";
+import { CaseStatus, HearingPurpose, HearingStatus, ImportantDateType, Priority } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
 
@@ -125,13 +125,13 @@ export const dashboardRepository = {
         courtName: h.case.courtName,
         date:      h.date,
         time:      h.time,
-        purpose:   h.purpose,
+        purpose:   h.purpose as HearingPurpose | null,
       })),
       upcomingDeadlines: upcomingDeadlines.map((d) => ({
         id:          d.id,
         caseId:      d.caseId,
         caseTitle:   d.case.title,
-        dateType:    d.dateType,
+        dateType:    d.dateType as ImportantDateType,
         date:        d.date,
         description: d.description,
       })),

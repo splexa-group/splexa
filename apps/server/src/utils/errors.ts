@@ -109,4 +109,7 @@ export const Errors = {
 
   documentNotFound: () =>
     new AppError(404, ErrorCode.DOCUMENT_NOT_FOUND, "Document not found."),
+
+  organizationNotFound: () =>
+    new AppError(404, ErrorCode.ORGANIZATION_NOT_FOUND, "Organization not found."),
 } as const;

@@ -5,6 +5,7 @@ import { AlertCircle, Briefcase, Calendar, CalendarCheck } from "lucide-react";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { CreateCaseModal } from "@/components/modals/create-case";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { UpcomingHearings } from "@/components/dashboard/upcoming-hearings";
 import { useDashboard } from "@/hooks/use-dashboard";
 
 export default function DashboardPage() {
@@ -29,7 +30,8 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* UpcomingHearings and AttentionNeeded added in Tasks 4 and 5 */}
+          <UpcomingHearings hearings={data?.upcomingHearings ?? []} />
+          {/* AttentionNeeded — Task 5 */}
         </div>
       </div>
 

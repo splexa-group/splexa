@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { formatDateLabel } from "@/lib/format-date-label";
 import { EmptyState } from "@/components/ui/empty-state";
+import { ImportantDateType } from "@splexa-group/shared/enums";
 import type { HighPriorityCase, UpcomingDeadline } from "@/types/dashboard";
 
 interface Props {
@@ -17,12 +18,12 @@ function isUrgent(dateStr: string): boolean {
   return differenceInCalendarDays(new Date(dateStr), new Date()) <= 7;
 }
 
-const DATE_TYPE_LABELS: Record<string, string> = {
-  Limitation:         "Limitation",
-  BailExpiry:         "Bail Expiry",
-  StayExpiry:         "Stay Expiry",
-  AppealDeadline:     "Appeal Deadline",
-  InjunctionValidity: "Injunction",
+const DATE_TYPE_LABELS: Partial<Record<ImportantDateType, string>> = {
+  [ImportantDateType.LIMITATION]:          "Limitation",
+  [ImportantDateType.BAIL_EXPIRY]:         "Bail Expiry",
+  [ImportantDateType.STAY_EXPIRY]:         "Stay Expiry",
+  [ImportantDateType.APPEAL_DEADLINE]:     "Appeal Deadline",
+  [ImportantDateType.INJUNCTION_VALIDITY]: "Injunction",
 };
 
 export function AttentionNeeded({ deadlines, highPriorityCases }: Props) {

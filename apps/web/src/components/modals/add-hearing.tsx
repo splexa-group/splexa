@@ -25,7 +25,7 @@ const defaultValues: UpdateHearingInput = {
   date: "",
   time: "",
   purpose: undefined,
-  status: HearingStatus.Scheduled,
+  status: HearingStatus.SCHEDULED,
   judgePresent: "",
   notes: "",
   nextDate: "",
@@ -58,7 +58,7 @@ export function AddHearingModal({
           adjournmentReason: hearing.adjournmentReason ?? "",
         });
       } else {
-        reset({ date: "", time: "", status: HearingStatus.Scheduled });
+        reset({ date: "", time: "", status: HearingStatus.SCHEDULED });
       }
     }
   }, [hearing, open, reset]);
@@ -131,7 +131,7 @@ export function AddHearingModal({
             {...register("judgePresent")}
           />
 
-          {status === HearingStatus.Adjourned && (
+          {status === HearingStatus.ADJOURNED && (
             <>
               <Controller
                 name="nextDate"

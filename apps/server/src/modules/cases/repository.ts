@@ -126,7 +126,7 @@ export const casesRepository = {
 
   async updateNextHearingDate(caseId: string, orgId: string, tx: Prisma.TransactionClient) {
     const nextHearing = await tx.hearing.findFirst({
-      where: { caseId, orgId, status: HearingStatus.Scheduled, date: { gte: new Date() }, deletedAt: null },
+      where: { caseId, orgId, status: HearingStatus.SCHEDULED, date: { gte: new Date() }, deletedAt: null },
       orderBy: { date: "asc" },
       select: { date: true },
     });

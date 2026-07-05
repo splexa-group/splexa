@@ -12,6 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { formatEnumLabel } from "@/lib/options";
 import { Button } from "@/components/ui/button";
 import { Menu } from "@/components/ui/menu";
 import { Hearing } from "@/types/hearings";
@@ -27,7 +28,7 @@ export function HearingCard({ hearing, onEdit, onDelete }: Props) {
   const style = HEARING_STATUS_PILL[hearing.status];
 
   const purposeLabel = hearing.purpose
-    ? hearing.purpose.replace(/([A-Z])/g, " $1").trim()
+    ? formatEnumLabel(hearing.purpose)
     : "Hearing";
 
   const formattedDate = new Date(hearing.date).toLocaleDateString("en-IN", {
@@ -137,7 +138,7 @@ export function NextHearingCard({
         : `In ${daysUntil} days`;
 
   const purposeLabel = hearing.purpose
-    ? hearing.purpose.replace(/([A-Z])/g, " $1").trim()
+    ? formatEnumLabel(hearing.purpose)
     : "Hearing";
 
   const formattedDate = date.toLocaleDateString("en-IN", {

@@ -48,7 +48,7 @@ export const createCaseSchema = z
     judgeName: z.string().max(200).optional(),
     judgeDesignation: z.string().max(200).optional(),
     description: z.string().optional(),
-    status: z.enum(CaseStatus).default(CaseStatus.Active),
+    status: z.enum(CaseStatus).default(CaseStatus.ACTIVE),
     stage: z.enum(CaseStage).optional(),
     priority: z.enum(Priority).optional(),
     oppositeParties: z.array(oppositePartySchema).optional(),

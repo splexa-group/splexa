@@ -1,7 +1,7 @@
 export enum CaseStage {
-  PreTrial = "PreTrial",
-  Trial = "Trial",
-  Arguments = "Arguments",
-  Judgment = "Judgment",
-  Execution = "Execution",
+  PRE_TRIAL = "PRE_TRIAL",
+  TRIAL = "TRIAL",
+  ARGUMENTS = "ARGUMENTS",
+  JUDGMENT = "JUDGMENT",
+  EXECUTION = "EXECUTION",
 }

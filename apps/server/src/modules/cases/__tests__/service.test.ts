@@ -26,7 +26,7 @@ const mockCase = {
   id: "case-1",
   orgId: "org-1",
   title: "Test Case",
-  status: "Active",
+  status: "ACTIVE",
   clientId: "client-1",
   assignedTo: null,
   createdBy: "user-1",
@@ -44,9 +44,9 @@ describe("casesService.create with clientId", () => {
         {
           title: "Test",
           description: "Test description",
-          clientRole: "Petitioner" as never,
+          clientRole: "PETITIONER" as never,
           clientId: "bad-id",
-          status: "Active" as never,
+          status: "ACTIVE" as never,
         },
         ctx,
       ),
@@ -61,9 +61,9 @@ describe("casesService.create with clientId", () => {
       {
         title: "Test",
         description: "Test description",
-        clientRole: "Petitioner" as never,
+        clientRole: "PETITIONER" as never,
         clientId: "client-1",
-        status: "Active" as never,
+        status: "ACTIVE" as never,
       },
       ctx,
     );
@@ -83,9 +83,9 @@ describe("casesService.create with newClient", () => {
       {
         title: "Test",
         description: "Test description",
-        clientRole: "Petitioner" as never,
-        newClient: { fullName: "Suresh Nair", phone: "9999999999", type: "Individual" as never },
-        status: "Active" as never,
+        clientRole: "PETITIONER" as never,
+        newClient: { fullName: "Suresh Nair", phone: "9999999999", type: "INDIVIDUAL" as never },
+        status: "ACTIVE" as never,
       },
       ctx,
     );
@@ -105,9 +105,9 @@ describe("casesService.create with newClient", () => {
       {
         title: "Test",
         description: "Test description",
-        clientRole: "Petitioner" as never,
-        newClient: { fullName: "Suresh Nair", phone: "9999999999", type: "Individual" as never },
-        status: "Active" as never,
+        clientRole: "PETITIONER" as never,
+        newClient: { fullName: "Suresh Nair", phone: "9999999999", type: "INDIVIDUAL" as never },
+        status: "ACTIVE" as never,
       },
       ctx,
     );

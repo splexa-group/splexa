@@ -22,7 +22,7 @@ vi.mock("@/modules/cases/repository", () => ({
 
 const ctx = { orgId: "org-1", userId: "user-1", ipAddress: "127.0.0.1" };
 const mockCase = { id: "case-1", orgId: "org-1", assignedTo: null, createdBy: "user-1" };
-const mockDate = { id: "date-1", caseId: "case-1", orgId: "org-1", dateType: "Limitation", date: new Date() };
+const mockDate = { id: "date-1", caseId: "case-1", orgId: "org-1", dateType: "LIMITATION", date: new Date() };
 
 beforeEach(() => vi.clearAllMocks());
 
@@ -30,7 +30,7 @@ describe("importantDatesService.create", () => {
   it("throws caseNotFound when case does not exist", async () => {
     vi.mocked(casesRepository.findById).mockResolvedValue(null);
     await expect(
-      importantDatesService.create("bad-id", { dateType: "Limitation" as never, date: new Date().toISOString() }, ctx),
+      importantDatesService.create("bad-id", { dateType: "LIMITATION" as never, date: new Date().toISOString() }, ctx),
     ).rejects.toThrow(Errors.caseNotFound());
   });
 
@@ -40,7 +40,7 @@ describe("importantDatesService.create", () => {
 
     const result = await importantDatesService.create(
       "case-1",
-      { dateType: "Limitation" as never, date: new Date().toISOString() },
+      { dateType: "LIMITATION" as never, date: new Date().toISOString() },
       ctx,
     );
 

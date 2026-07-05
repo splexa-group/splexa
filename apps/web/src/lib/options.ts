@@ -14,23 +14,17 @@ import {
   Priority,
 } from "@splexa-group/shared/enums";
 
+export function formatEnumLabel(value: string): string {
+  return value
+    .split("_")
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+    .join(" ");
+}
+
 function toOptions<T extends Record<string, string>>(enumObj: T) {
   return Object.values(enumObj).map((value) => ({
     value,
-    label: value
-      .split("_")
-      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
-      .join(" "),
-  }));
-}
-
-function toPascalOptions<T extends Record<string, string>>(enumObj: T) {
-  return Object.values(enumObj).map((value) => ({
-    value,
-    label: value
-      .replace(/([A-Z])/g, " $1")
-      .replace(/^_/, "")
-      .trim(),
+    label: formatEnumLabel(value),
   }));
 }
 
@@ -42,16 +36,16 @@ export function withNone<T extends { value: string; label: string }>(
 
 export const DESIGNATION_OPTIONS = toOptions(Designation);
 export const PRACTICE_TYPE_OPTIONS = toOptions(PracticeType);
-export const CASE_TYPE_OPTIONS = toPascalOptions(CaseType);
-export const CASE_STATUS_OPTIONS = toPascalOptions(CaseStatus);
-export const CASE_STAGE_OPTIONS = toPascalOptions(CaseStage);
-export const COURT_TYPE_OPTIONS = toPascalOptions(CourtType);
-export const PRIORITY_OPTIONS = toPascalOptions(Priority);
-export const PARTY_ROLE_OPTIONS = toPascalOptions(PartyRole);
-export const CLIENT_TYPE_OPTIONS = toPascalOptions(ClientType);
-export const HEARING_PURPOSE_OPTIONS = toPascalOptions(HearingPurpose);
-export const HEARING_STATUS_OPTIONS = toPascalOptions(HearingStatus);
-export const IMPORTANT_DATE_TYPE_OPTIONS = toPascalOptions(ImportantDateType);
+export const CASE_TYPE_OPTIONS = toOptions(CaseType);
+export const CASE_STATUS_OPTIONS = toOptions(CaseStatus);
+export const CASE_STAGE_OPTIONS = toOptions(CaseStage);
+export const COURT_TYPE_OPTIONS = toOptions(CourtType);
+export const PRIORITY_OPTIONS = toOptions(Priority);
+export const PARTY_ROLE_OPTIONS = toOptions(PartyRole);
+export const CLIENT_TYPE_OPTIONS = toOptions(ClientType);
+export const HEARING_PURPOSE_OPTIONS = toOptions(HearingPurpose);
+export const HEARING_STATUS_OPTIONS = toOptions(HearingStatus);
+export const IMPORTANT_DATE_TYPE_OPTIONS = toOptions(ImportantDateType);
 export const PREFERRED_LANGUAGE_OPTIONS = toOptions(PreferredLanguage);
 
 export const CASE_SORT_OPTIONS = [

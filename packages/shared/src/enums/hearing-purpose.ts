@@ -1,9 +1,9 @@
 export enum HearingPurpose {
-  Arguments = "Arguments",
-  Evidence = "Evidence",
-  CrossExamination = "CrossExamination",
-  Order = "Order",
-  Mention = "Mention",
-  Settlement = "Settlement",
-  Miscellaneous = "Miscellaneous",
+  ARGUMENTS = "ARGUMENTS",
+  EVIDENCE = "EVIDENCE",
+  CROSS_EXAMINATION = "CROSS_EXAMINATION",
+  ORDER = "ORDER",
+  MENTION = "MENTION",
+  SETTLEMENT = "SETTLEMENT",
+  MISCELLANEOUS = "MISCELLANEOUS",
 }

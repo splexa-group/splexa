@@ -6,22 +6,22 @@ export const HEARING_TIMELINE_STATUS_ICON: Record<
   HearingStatus,
   { Icon: LucideIcon; bg: string; color: string }
 > = {
-  [HearingStatus.Scheduled]: {
+  [HearingStatus.SCHEDULED]: {
     Icon: Clock,
     bg: "bg-amber-muted",
     color: "text-amber-dark",
   },
-  [HearingStatus.Completed]: {
+  [HearingStatus.COMPLETED]: {
     Icon: Check,
     bg: "bg-positive",
     color: "text-white",
   },
-  [HearingStatus.Adjourned]: {
+  [HearingStatus.ADJOURNED]: {
     Icon: CornerDownRight,
     bg: "bg-brand-soft",
     color: "text-brand",
   },
-  [HearingStatus.Cancelled]: {
+  [HearingStatus.CANCELLED]: {
     Icon: X,
     bg: "bg-negative-muted",
     color: "text-negative",
@@ -32,19 +32,19 @@ export const HEARING_STATUS_PILL: Record<
   HearingStatus,
   { pill: string; dot: string }
 > = {
-  [HearingStatus.Scheduled]: {
+  [HearingStatus.SCHEDULED]: {
     pill: "bg-amber-muted text-amber-dark",
     dot: "bg-amber",
   },
-  [HearingStatus.Completed]: {
+  [HearingStatus.COMPLETED]: {
     pill: "bg-positive-muted text-positive",
     dot: "bg-positive",
   },
-  [HearingStatus.Adjourned]: {
+  [HearingStatus.ADJOURNED]: {
     pill: "bg-brand-soft text-brand",
     dot: "bg-brand",
   },
-  [HearingStatus.Cancelled]: {
+  [HearingStatus.CANCELLED]: {
     pill: "bg-negative-muted text-negative",
     dot: "bg-negative",
   },

@@ -25,7 +25,7 @@ const mockClient = {
   orgId: "org-1",
   fullName: "Ravi Kumar",
   phone: "+91 99999 00000",
-  type: ClientType.Individual,
+  type: ClientType.INDIVIDUAL,
   email: null,
   address: null,
   companyName: null,
@@ -44,7 +44,7 @@ describe("clientsService.create", () => {
     vi.mocked(clientsRepository.create).mockResolvedValue(mockClient);
 
     const result = await clientsService.create(
-      { fullName: "Ravi Kumar", phone: "+91 99999 00000", type: ClientType.Individual },
+      { fullName: "Ravi Kumar", phone: "+91 99999 00000", type: ClientType.INDIVIDUAL },
       ctx,
     );
 
@@ -60,7 +60,7 @@ describe("clientsService.create", () => {
     vi.mocked(clientsRepository.create).mockResolvedValue(mockClient);
 
     const result = await clientsService.create(
-      { fullName: "Ravi Kumar", phone: "+91 99999 00000", type: ClientType.Individual },
+      { fullName: "Ravi Kumar", phone: "+91 99999 00000", type: ClientType.INDIVIDUAL },
       ctx,
     );
 

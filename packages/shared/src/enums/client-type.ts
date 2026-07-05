@@ -1,6 +1,6 @@
 export enum ClientType {
-  Individual = "Individual",
-  Company = "Company",
+  INDIVIDUAL = "INDIVIDUAL",
+  COMPANY = "COMPANY",
   NGO = "NGO",
-  Government = "Government",
+  GOVERNMENT = "GOVERNMENT",
 }

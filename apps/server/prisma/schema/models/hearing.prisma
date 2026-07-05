@@ -5,7 +5,7 @@ model Hearing {
   date              DateTime
   time              String?
   purpose           HearingPurpose?
-  status            HearingStatus   @default(Scheduled)
+  status            HearingStatus   @default(SCHEDULED)
   notes             String?
   nextDate          DateTime?       @map("next_date")
   adjournmentReason String?         @map("adjournment_reason")

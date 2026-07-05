@@ -22,7 +22,7 @@ export const hearingsRepository = {
     },
   ) {
     return prisma.$transaction(async (tx) => {
-      const status = data.status ?? HearingStatus.Scheduled;
+      const status = data.status ?? HearingStatus.SCHEDULED;
 
       const hearing = await tx.hearing.create({
         data: {
@@ -41,12 +41,12 @@ export const hearingsRepository = {
 
       await casesRepository.updateNextHearingDate(data.caseId, data.orgId, tx);
 
-      if (status === HearingStatus.Scheduled) {
+      if (status === HearingStatus.SCHEDULED) {
         await tx.importantDate.create({
           data: {
             caseId: data.caseId,
             orgId: data.orgId,
-            dateType: ImportantDateType.HearingDate,
+            dateType: ImportantDateType.HEARING_DATE,
             date: parseDate(data.date),
             sourceId: hearing.id,
             notifyUserId: data.notifyUserId,
@@ -148,8 +148,8 @@ export const hearingsRepository = {
       await casesRepository.updateNextHearingDate(caseId, orgId, tx);
 
       if (
-        data.status === HearingStatus.Cancelled ||
-        data.status === HearingStatus.Completed
+        data.status === HearingStatus.CANCELLED ||
+        data.status === HearingStatus.COMPLETED
       ) {
         // Terminal status — no more reminders needed for this hearing
         await tx.importantDate.updateMany({
@@ -162,7 +162,7 @@ export const hearingsRepository = {
             where: {
               sourceId: id,
               orgId,
-              dateType: ImportantDateType.HearingDate,
+              dateType: ImportantDateType.HEARING_DATE,
               deletedAt: null,
             },
             data: { date: parseDate(data.date) },
@@ -173,7 +173,7 @@ export const hearingsRepository = {
             where: {
               sourceId: id,
               orgId,
-              dateType: ImportantDateType.HearingDate,
+              dateType: ImportantDateType.HEARING_DATE,
               deletedAt: null,
             },
             data: { date: parseDate(data.nextDate) },

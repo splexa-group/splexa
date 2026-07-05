@@ -37,7 +37,7 @@ export const importantDatesRepository = {
         caseId,
         orgId,
         deletedAt: null,
-        dateType: { not: ImportantDateType.HearingDate },
+        dateType: { not: ImportantDateType.HEARING_DATE },
       },
       orderBy: { date: "asc" },
     });
@@ -48,7 +48,7 @@ export const importantDatesRepository = {
     const where: Prisma.ImportantDateWhereInput = {
       orgId,
       deletedAt: null,
-      dateType: { not: ImportantDateType.HearingDate },
+      dateType: { not: ImportantDateType.HEARING_DATE },
       ...(from || to
         ? {
             date: {

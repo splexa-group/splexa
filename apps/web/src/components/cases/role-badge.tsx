@@ -1,10 +1,10 @@
 import { PartyRole } from "@splexa-group/shared/enums";
 
 const ROLE_BADGE_STYLES: Record<PartyRole, string> = {
-  [PartyRole.Petitioner]: "bg-brand-soft text-brand",
-  [PartyRole.Respondent]: "bg-brand-soft text-brand",
-  [PartyRole.Accused]: "bg-negative-muted text-negative",
-  [PartyRole.Complainant]: "bg-positive-muted text-positive-dark",
+  [PartyRole.PETITIONER]: "bg-brand-soft text-brand",
+  [PartyRole.RESPONDENT]: "bg-brand-soft text-brand",
+  [PartyRole.ACCUSED]: "bg-negative-muted text-negative",
+  [PartyRole.COMPLAINANT]: "bg-positive-muted text-positive-dark",
 };
 
 export function RoleDotBadge({ role }: { role: PartyRole }) {

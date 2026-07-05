@@ -5,11 +5,11 @@ import { prisma } from "@/db/client";
 import type { DashboardData } from "./schema";
 
 const CRITICAL_DATE_TYPES = [
-  ImportantDateType.Limitation,
-  ImportantDateType.BailExpiry,
-  ImportantDateType.StayExpiry,
-  ImportantDateType.AppealDeadline,
-  ImportantDateType.InjunctionValidity,
+  ImportantDateType.LIMITATION,
+  ImportantDateType.BAIL_EXPIRY,
+  ImportantDateType.STAY_EXPIRY,
+  ImportantDateType.APPEAL_DEADLINE,
+  ImportantDateType.INJUNCTION_VALIDITY,
 ] as const;
 
 function startOfDay(d: Date): Date {
@@ -49,13 +49,13 @@ export const dashboardRepository = {
       highPriorityCases,
     ] = await Promise.all([
       prisma.case.count({
-        where: { orgId, status: CaseStatus.Active, deletedAt: null },
+        where: { orgId, status: CaseStatus.ACTIVE, deletedAt: null },
       }),
 
       prisma.hearing.count({
         where: {
           orgId,
-          status: HearingStatus.Scheduled,
+          status: HearingStatus.SCHEDULED,
           date: { gte: todayStart, lte: todayEnd },
           deletedAt: null,
         },
@@ -64,7 +64,7 @@ export const dashboardRepository = {
       prisma.hearing.count({
         where: {
           orgId,
-          status: HearingStatus.Scheduled,
+          status: HearingStatus.SCHEDULED,
           date: { gte: todayStart, lte: week7End },
           deletedAt: null,
         },
@@ -82,7 +82,7 @@ export const dashboardRepository = {
       prisma.hearing.findMany({
         where: {
           orgId,
-          status: HearingStatus.Scheduled,
+          status: HearingStatus.SCHEDULED,
           date: { gte: todayStart, lte: week14End },
           deletedAt: null,
         },
@@ -104,7 +104,7 @@ export const dashboardRepository = {
       }),
 
       prisma.case.findMany({
-        where: { orgId, status: CaseStatus.Active, priority: Priority.High, deletedAt: null },
+        where: { orgId, status: CaseStatus.ACTIVE, priority: Priority.HIGH, deletedAt: null },
         orderBy: [{ nextHearingDate: { sort: "asc", nulls: "last" } }],
         take: 5,
         select: { id: true, title: true, caseNumber: true, courtName: true, nextHearingDate: true },

@@ -1,27 +1,27 @@
 import { cn } from "@/lib/utils";
-import type { CaseStatus, Priority } from "@splexa-group/shared/enums";
+import { CaseStatus, Priority } from "@splexa-group/shared/enums";
 
 export function priorityStripeClass(priority: Priority | null | undefined): string {
-  if (priority === "High") return "bg-priority-high";
-  if (priority === "Medium") return "bg-priority-medium";
+  if (priority === Priority.HIGH) return "bg-priority-high";
+  if (priority === Priority.MEDIUM) return "bg-priority-medium";
   return "bg-transparent";
 }
 
 export function priorityBorderClass(priority: Priority | null | undefined): string {
-  if (priority === "High") return "border-l-2 border-l-priority-high";
-  if (priority === "Medium") return "border-l-2 border-l-priority-medium";
+  if (priority === Priority.HIGH) return "border-l-2 border-l-priority-high";
+  if (priority === Priority.MEDIUM) return "border-l-2 border-l-priority-medium";
   return "border-l-1 border-l-transparent";
 }
 
 export function statusDotClass(status: CaseStatus): string {
-  if (status === "Active") return "bg-positive";
-  if (status === "Stayed") return "bg-brand-light";
+  if (status === CaseStatus.ACTIVE) return "bg-positive";
+  if (status === CaseStatus.STAYED) return "bg-brand-light";
   return "bg-placeholder";
 }
 
 export function statusBadgeClass(status: CaseStatus): string {
-  if (status === "Active") return "bg-positive-muted text-positive";
-  if (status === "Stayed") return "bg-brand-soft text-brand";
+  if (status === CaseStatus.ACTIVE) return "bg-positive-muted text-positive";
+  if (status === CaseStatus.STAYED) return "bg-brand-soft text-brand";
   return "bg-subtle text-secondary";
 }
 

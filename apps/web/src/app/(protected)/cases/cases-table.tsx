@@ -82,7 +82,7 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
       onClick: () => router.push(`/cases/${c.id}`),
       className: cn(
         priorityBorderClass(c.priority),
-        (c.status === CaseStatus.Stayed || c.status === CaseStatus.Disposed) &&
+        (c.status === CaseStatus.STAYED || c.status === CaseStatus.DISPOSED) &&
           "opacity-40",
       ),
       cells: [

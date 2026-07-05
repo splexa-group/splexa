@@ -39,23 +39,23 @@ export function getMonthGridRange(
 }
 
 const HEARING_PURPOSE_LABELS: Record<HearingPurpose, string> = {
-  [HearingPurpose.Arguments]: "Arguments",
-  [HearingPurpose.Evidence]: "Evidence",
-  [HearingPurpose.CrossExamination]: "Cross Examination",
-  [HearingPurpose.Order]: "Order",
-  [HearingPurpose.Mention]: "Mention",
-  [HearingPurpose.Settlement]: "Settlement",
-  [HearingPurpose.Miscellaneous]: "Miscellaneous",
+  [HearingPurpose.ARGUMENTS]: "Arguments",
+  [HearingPurpose.EVIDENCE]: "Evidence",
+  [HearingPurpose.CROSS_EXAMINATION]: "Cross Examination",
+  [HearingPurpose.ORDER]: "Order",
+  [HearingPurpose.MENTION]: "Mention",
+  [HearingPurpose.SETTLEMENT]: "Settlement",
+  [HearingPurpose.MISCELLANEOUS]: "Miscellaneous",
 };
 
 const IMPORTANT_DATE_TYPE_LABELS: Record<ImportantDateType, string> = {
-  [ImportantDateType.HearingDate]: "Hearing Date",
-  [ImportantDateType.Limitation]: "Limitation",
-  [ImportantDateType.BailExpiry]: "Bail Expiry",
-  [ImportantDateType.StayExpiry]: "Stay Expiry",
-  [ImportantDateType.AppealDeadline]: "Appeal Deadline",
-  [ImportantDateType.InjunctionValidity]: "Injunction Validity",
-  [ImportantDateType.Other]: "Other",
+  [ImportantDateType.HEARING_DATE]: "Hearing Date",
+  [ImportantDateType.LIMITATION]: "Limitation",
+  [ImportantDateType.BAIL_EXPIRY]: "Bail Expiry",
+  [ImportantDateType.STAY_EXPIRY]: "Stay Expiry",
+  [ImportantDateType.APPEAL_DEADLINE]: "Appeal Deadline",
+  [ImportantDateType.INJUNCTION_VALIDITY]: "Injunction Validity",
+  [ImportantDateType.OTHER]: "Other",
 };
 
 function toLocalDateKey(isoString: string): string {

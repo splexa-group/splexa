@@ -1,7 +1,7 @@
 enum CaseStage {
-  PreTrial
-  Trial
-  Arguments
-  Judgment
-  Execution
+  PRE_TRIAL
+  TRIAL
+  ARGUMENTS
+  JUDGMENT
+  EXECUTION
 }

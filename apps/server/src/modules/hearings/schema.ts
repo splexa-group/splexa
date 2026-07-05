@@ -25,7 +25,7 @@ export const updateHearingSchema = z
   })
   .strict()
   .superRefine((data, ctx) => {
-    if (data.status === HearingStatus.Adjourned && !data.nextDate) {
+    if (data.status === HearingStatus.ADJOURNED && !data.nextDate) {
       ctx.addIssue({
         code: "custom",
         message: "nextDate is required when status is Adjourned",

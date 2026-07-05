@@ -32,7 +32,7 @@ const mockHearing = {
   id: "hearing-1",
   caseId: "case-1",
   orgId: "org-1",
-  status: "Scheduled",
+  status: "SCHEDULED",
 };
 
 beforeEach(() => vi.clearAllMocks());
@@ -68,7 +68,7 @@ describe("hearingsService.update", () => {
     vi.mocked(hearingsRepository.findById).mockResolvedValue(null);
 
     await expect(
-      hearingsService.update("bad-id", { status: "Completed" as never }, ctx),
+      hearingsService.update("bad-id", { status: "COMPLETED" as never }, ctx),
     ).rejects.toThrow(Errors.hearingNotFound());
   });
 
@@ -76,21 +76,21 @@ describe("hearingsService.update", () => {
     vi.mocked(hearingsRepository.findById).mockResolvedValue(mockHearing as never);
     vi.mocked(hearingsRepository.update).mockResolvedValue({
       ...mockHearing,
-      status: "Completed",
+      status: "COMPLETED",
     } as never);
 
     const result = await hearingsService.update(
       "hearing-1",
-      { status: "Completed" as never },
+      { status: "COMPLETED" as never },
       ctx,
     );
 
-    expect(result).toHaveProperty("status", "Completed");
+    expect(result).toHaveProperty("status", "COMPLETED");
     expect(hearingsRepository.update).toHaveBeenCalledWith(
       "hearing-1",
       "case-1",
       "org-1",
-      expect.objectContaining({ status: "Completed" }),
+      expect.objectContaining({ status: "COMPLETED" }),
     );
   });
 });

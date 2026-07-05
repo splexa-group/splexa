@@ -6,6 +6,7 @@ import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { CreateCaseModal } from "@/components/modals/create-case";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { UpcomingHearings } from "@/components/dashboard/upcoming-hearings";
+import { AttentionNeeded } from "@/components/dashboard/attention-needed";
 import { useDashboard } from "@/hooks/use-dashboard";
 
 export default function DashboardPage() {
@@ -31,7 +32,10 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <UpcomingHearings hearings={data?.upcomingHearings ?? []} />
-          {/* AttentionNeeded — Task 5 */}
+          <AttentionNeeded
+            deadlines={data?.upcomingDeadlines ?? []}
+            highPriorityCases={data?.highPriorityCases ?? []}
+          />
         </div>
       </div>
 

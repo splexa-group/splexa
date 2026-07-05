@@ -7,11 +7,7 @@ import { SETTINGS_TAB_CONFIG } from "@/config/settings-tabs";
 import { SettingsTabs } from "@/enums/settings-tabs";
 import { useActiveTab } from "@/hooks/use-active-tab";
 import { ProfileTab } from "@/components/settings/profile-tab";
-
-// Placeholder components — replaced in Tasks 4 and 5
-function SubscriptionTabPlaceholder() {
-  return <div className="p-6 text-sm text-secondary">Subscription tab — coming in next task</div>;
-}
+import { SubscriptionTab } from "@/components/settings/subscription-tab";
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -33,7 +29,7 @@ export default function SettingsPage() {
       />
       <div className="flex-1 overflow-y-auto bg-page">
         {activeTab === SettingsTabs.PROFILE      && <ProfileTab />}
-        {activeTab === SettingsTabs.SUBSCRIPTION && <SubscriptionTabPlaceholder />}
+        {activeTab === SettingsTabs.SUBSCRIPTION && <SubscriptionTab />}
       </div>
     </div>
   );

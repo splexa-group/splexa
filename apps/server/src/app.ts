@@ -11,6 +11,7 @@ import { authModule } from "@/modules/auth/plugin";
 import { casesModule } from "@/modules/cases/plugin";
 import { clientsModule } from "@/modules/clients/plugin";
 import { documentsModule } from "@/modules/documents/plugin";
+import { settingsModule } from "@/modules/settings/plugin";
 import { hearingsModule } from "@/modules/hearings/plugin";
 import { importantDatesModule } from "@/modules/important-dates/plugin";
 import { authGuardPlugin } from "@/plugins/auth-guard.plugin";
@@ -33,6 +34,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(hearingsModule);
   await app.register(importantDatesModule);
   await app.register(documentsModule);
+  await app.register(settingsModule);
 
   return app;
 }

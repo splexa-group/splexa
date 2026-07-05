@@ -42,4 +42,7 @@ export enum ErrorCode {
 
   // documents
   DOCUMENT_NOT_FOUND = "DOCUMENT_NOT_FOUND",
+
+  // settings
+  ORGANIZATION_NOT_FOUND = "ORGANIZATION_NOT_FOUND",
 }

@@ -18,7 +18,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Cases', href: '/cases', icon: FileText },
-  { label: 'Clients', href: '/clients', icon: User },
+  // { label: 'Clients', href: '/clients', icon: User },
   { label: 'Calendar', href: '/calendar', icon: CalendarDays },
   { label: 'Documents', shortLabel: 'Docs', href: '/documents', icon: File },
   { label: 'Settings', href: '/settings', icon: Settings },

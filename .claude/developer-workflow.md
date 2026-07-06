@@ -226,7 +226,6 @@ All checklists must pass. Do not mark a task complete if any item is unresolved.
 | `findUnique({ where: { id } })` on tenant tables | `findFirst({ where: { id, orgId } })` |
 | Forgetting `deletedAt: null` on case queries | Archived cases would appear as active |
 | `softDelete` without orgId scope | Use `updateMany({ where: { id, orgId } })` |
-| No `logActivity` call after a mutation | Every meaningful action must be logged |
 | `useEffect` + `fetch` for server data on frontend | Use React Query `useQuery` |
 | Raw `fetch` in a React component | Use the typed client in `lib/api/` |
 | Missing `additionalProperties: false` on schema | Unknown fields pass validation silently |
@@ -247,5 +246,6 @@ Do not build Phase 2 features in Phase 1. Specifically, do NOT add:
 - Email notifications (WhatsApp + SMS only for Phase 1)
 - Advanced role permissions beyond ADMIN / MEMBER
 - Multi-language UI (English only until Hindi translation is reviewed)
+- Activity/audit logging (`logActivity`, `ActivityAction`, an `AuditLog` table) — not built. It's not part of the core hearing-reminder value prop; revisit in Phase 2.
 
 When you find yourself wanting to add something beyond Phase 1 scope: write it in a `BACKLOG.md` note and continue.

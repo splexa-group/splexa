@@ -1,6 +1,6 @@
 import { GET } from "@/api/http";
-import type { DashboardResponse } from "@/types/dashboard";
+import type { DashboardData } from "@/types/dashboard";
 
 export const dashboardApi = {
-  get: () => GET<DashboardResponse>("/dashboard"),
+  get: () => GET<DashboardData>("/dashboard"),
 };

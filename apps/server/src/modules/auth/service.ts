@@ -107,7 +107,7 @@ export const authService = {
     }
 
     await authRepository.markOtpVerified(otpRow.id);
-    await authRepository.markEmailVerified(user.id);
+    await authRepository.markEmailVerified(user.id, user.orgId);
 
     const accessToken = await signAccessToken({
       userId: user.id,
@@ -160,7 +160,7 @@ export const authService = {
       role: user.role,
     });
 
-    await authRepository.updateSessionLastUsed(session.id);
+    await authRepository.updateSessionLastUsed(session.id, session.userId);
 
     return { accessToken };
   },
@@ -173,7 +173,7 @@ export const authService = {
       await authRepository.findActiveSessionByTokenHash(tokenHash);
 
     if (session) {
-      await authRepository.revokeSession(session.id);
+      await authRepository.revokeSession(session.id, session.userId);
     }
   },
 
@@ -197,7 +197,7 @@ export const authService = {
     const session = await authRepository.findSessionById(sessionId, userId);
     if (!session) throw Errors.sessionNotFound();
 
-    await authRepository.revokeSession(sessionId);
+    await authRepository.revokeSession(sessionId, userId);
   },
 
   async revokeAllSessions(userId: string): Promise<void> {

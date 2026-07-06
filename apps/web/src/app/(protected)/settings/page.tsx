@@ -76,7 +76,7 @@ export default function SettingsPage() {
       if (currentUser && "org" in currentUser) {
         useAuthStore.getState().setAuth({
           ...currentUser,
-          org: { ...currentUser.org, name: updatedOrg.data.name },
+          org: { ...currentUser.org, name: updatedOrg.name },
         });
       }
     } catch {

@@ -142,7 +142,7 @@ describe("casesService.delete", () => {
 
   it("cascade-deletes when case exists", async () => {
     vi.mocked(casesRepository.findById).mockResolvedValue(mockCase as never);
-    vi.mocked(casesRepository.softDeleteCascade).mockResolvedValue(undefined as never);
+    vi.mocked(casesRepository.softDeleteCascade).mockResolvedValue({ count: 1 });
 
     await casesService.delete("case-1", ctx);
     expect(casesRepository.softDeleteCascade).toHaveBeenCalledWith("case-1", "org-1");

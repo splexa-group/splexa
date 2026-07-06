@@ -109,6 +109,10 @@ export const Errors = {
 
   documentNotFound: () =>
     new AppError(404, ErrorCode.DOCUMENT_NOT_FOUND, "Document not found."),
+  noFileUploaded: () =>
+    new AppError(400, ErrorCode.NO_FILE_UPLOADED, "No file uploaded."),
+  fileTooLarge: () =>
+    new AppError(413, ErrorCode.FILE_TOO_LARGE, "File must be 50 MB or smaller."),
 
   organizationNotFound: () =>
     new AppError(404, ErrorCode.ORGANIZATION_NOT_FOUND, "Organization not found."),

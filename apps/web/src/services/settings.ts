@@ -1,14 +1,14 @@
 import { GET, PATCH } from "@/api/http";
 import type {
-  OrganizationResponse,
-  ProfileResponse,
+  OrganizationData,
+  ProfileData,
   UpdateOrganizationInput,
   UpdateProfileInput,
 } from "@/types/settings";
 
 export const settingsApi = {
-  getProfile:         () => GET<ProfileResponse>("/settings/profile"),
-  updateProfile:      (data: UpdateProfileInput) => PATCH<ProfileResponse>("/settings/profile", data),
-  getOrganization:    () => GET<OrganizationResponse>("/settings/organization"),
-  updateOrganization: (data: UpdateOrganizationInput) => PATCH<OrganizationResponse>("/settings/organization", data),
+  getProfile:         () => GET<ProfileData>("/settings/profile"),
+  updateProfile:      (data: UpdateProfileInput) => PATCH<ProfileData>("/settings/profile", data),
+  getOrganization:    () => GET<OrganizationData>("/settings/organization"),
+  updateOrganization: (data: UpdateOrganizationInput) => PATCH<OrganizationData>("/settings/organization", data),
 };

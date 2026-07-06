@@ -34,6 +34,7 @@ export const importantDatesService = {
   async delete(caseId: string, dateId: string, ctx: ServiceContext) {
     const date = await importantDatesRepository.findById(dateId, caseId, ctx.orgId);
     if (!date) throw Errors.importantDateNotFound();
-    await importantDatesRepository.softDelete(dateId, ctx.orgId);
+    const { count } = await importantDatesRepository.softDelete(dateId, ctx.orgId);
+    if (count === 0) throw Errors.importantDateNotFound();
   },
 };

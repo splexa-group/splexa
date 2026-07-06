@@ -50,6 +50,7 @@ export const hearingsService = {
     const hearing = await hearingsRepository.findById(id, ctx.orgId);
     if (!hearing) throw Errors.hearingNotFound();
 
-    await hearingsRepository.softDelete(id, hearing.caseId, ctx.orgId);
+    const { count } = await hearingsRepository.softDelete(id, hearing.caseId, ctx.orgId);
+    if (count === 0) throw Errors.hearingNotFound();
   },
 };

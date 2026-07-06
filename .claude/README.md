@@ -77,19 +77,20 @@ These are never negotiable. No exceptions without an architecture decision.
 
 1. **`orgId` comes from `req.user.orgId` (JWT) only** — never body, params, or query string
 2. **Every query on a tenant-scoped table filters by `orgId`** — missing this is a critical security bug
-3. **Every successful mutation calls `logActivity()`** — use `ActivityAction.*` constants, never raw strings
-4. **Five backend layers, always** — plugin → route → controller → service → repository. No merging.
-5. **Zod everywhere on the server** — no raw JSON Schema. Types from `z.infer<>` only.
-6. **No magic values** — use `CASE_STATUS.ACTIVE`, `USER_ROLES.ADMIN`, `ActivityAction.CASE_CREATED`, `redisKeys.otp(email)` — never hardcode strings or numbers with business meaning
-7. **No `any`, no `!`, no `@ts-ignore`** — fix the type, don't suppress it
-8. **No `prisma.*` outside `*-repository.ts`** — ever
-9. **No business logic in routes or controllers** — service layer owns this
-10. **`softDelete` uses `updateMany({ where: { id, orgId } })`** — never `update({ where: { id } })` alone
-11. **Repositories return `null` — services throw `NotFoundError`** — not the other way
-12. **No raw `fetch` in frontend components** — use `lib/api/` typed client
-13. **No `useEffect` for server data** — React Query only
-14. **Access tokens in Zustand (memory) only** — never `localStorage` or `sessionStorage`
-15. **kebab-case for all file names** — everywhere, always
+3. **Five backend layers, always** — plugin → route → controller → service → repository. No merging.
+4. **Zod everywhere on the server** — no raw JSON Schema. Types from `z.infer<>` only.
+5. **No magic values** — use `CASE_STATUS.ACTIVE`, `USER_ROLES.ADMIN`, `redisKeys.otp(email)` — never hardcode strings or numbers with business meaning
+6. **No `any`, no `!`, no `@ts-ignore`** — fix the type, don't suppress it
+7. **No `prisma.*` outside `*-repository.ts`** — ever
+8. **No business logic in routes or controllers** — service layer owns this
+9. **`softDelete` uses `updateMany({ where: { id, orgId } })`** — never `update({ where: { id } })` alone
+10. **Repositories return `null` — services throw `NotFoundError`** — not the other way
+11. **No raw `fetch` in frontend components** — use `lib/api/` typed client
+12. **No `useEffect` for server data** — React Query only
+13. **Access tokens in Zustand (memory) only** — never `localStorage` or `sessionStorage`
+14. **kebab-case for all file names** — everywhere, always
+
+Activity/audit logging (`logActivity()`, `ActivityAction`) is **Phase 2 scope** — not built. Do not add it; it is not a violation of these rules to omit it.
 
 ---
 
@@ -104,8 +105,6 @@ Read this before writing anything. These are the most frequent mistakes.
 | `prisma.cases.findUnique({ where: { id } })` | `prisma.cases.findFirst({ where: { id, orgId } })` |
 | Missing `deletedAt: null` on case/document queries | Archived records appear as active |
 | `softDelete(id)` without orgId | `softDelete(id, orgId)` using `updateMany` |
-| No `logActivity()` after a mutation | Every state change must be logged |
-| `action: 'case.created'` raw string | `action: ActivityAction.CASE_CREATED` |
 | `redis.get(\`otp:${email}\`)` inline | `redis.get(redisKeys.otp(email))` |
 | `where: { status: 'ACTIVE' }` | `where: { status: CASE_STATUS.ACTIVE }` |
 | Writing a TypeScript type alongside a Zod schema | `type X = z.infer<typeof xSchema>` — one source |
@@ -141,12 +140,6 @@ softDelete(id: string, orgId: string): Promise<void>
 import { Errors } from '@/utils/errors';
 if (!user) throw Errors.userNotFound();
 if (!session) throw Errors.sessionExpired();
-```
-
-### Activity logging (every mutation in service layer)
-```ts
-import { ActivityAction } from '@/constants';
-await logActivity({ orgId: user.orgId, userId: user.userId, action: ActivityAction.CASE_CREATED, resourceType: 'case', resourceId: case_.id, ipAddress: req.ip });
 ```
 
 ### Pagination (all list queries)

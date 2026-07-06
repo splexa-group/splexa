@@ -13,7 +13,6 @@ export function useFolders() {
   return useQuery({
     queryKey: documentKeys.folders(),
     queryFn: () => documentsApi.listFolders(),
-    select: (res) => res.data,
   });
 }
 

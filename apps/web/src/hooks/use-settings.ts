@@ -13,7 +13,6 @@ export function useProfile() {
   return useQuery({
     queryKey: settingsKeys.profile(),
     queryFn:  () => settingsApi.getProfile(),
-    select:   (res) => res.data,
   });
 }
 
@@ -21,7 +20,6 @@ export function useOrganization() {
   return useQuery({
     queryKey: settingsKeys.organization(),
     queryFn:  () => settingsApi.getOrganization(),
-    select:   (res) => res.data,
   });
 }
 

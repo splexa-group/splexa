@@ -114,13 +114,16 @@ export const casesRepository = {
     });
   },
 
-  async softDeleteCascade(id: string, orgId: string) {
+  async softDeleteCascade(id: string, orgId: string): Promise<{ count: number }> {
     return prisma.$transaction(async (tx) => {
       const now = new Date();
-      await tx.case.updateMany({ where: { id, orgId, deletedAt: null }, data: { deletedAt: now } });
+      const { count } = await tx.case.updateMany({ where: { id, orgId, deletedAt: null }, data: { deletedAt: now } });
+      if (count === 0) return { count };
+
       await tx.hearing.updateMany({ where: { caseId: id, orgId, deletedAt: null }, data: { deletedAt: now } });
       await tx.importantDate.updateMany({ where: { caseId: id, orgId, deletedAt: null }, data: { deletedAt: now } });
       await tx.document.updateMany({ where: { caseId: id, orgId, deletedAt: null }, data: { deletedAt: now } });
+      return { count };
     });
   },
 

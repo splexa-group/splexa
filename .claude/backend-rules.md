@@ -128,7 +128,7 @@ import { FastifyRequest } from 'fastify';
 import { casesRepository } from './repository';
 import { logActivity } from '@/utils/activity-logger';
 import { Errors } from '@/utils/errors';
-import { ActivityAction } from '@/constants';
+import { ActivityAction } from '@/enums/activity-action';
 import type { AuthUser, CreateCaseInput, CaseFilters } from '@splexa-group/shared';
 
 export const caseService = {
@@ -314,93 +314,97 @@ fastify.decorate('requireRole', (role: UserRole) => async (req, reply) => {
 
 ---
 
-## Activity Logging — Every Action in DB
+## Activity Logging — Phase 2 Scope, Not Built
 
-Every meaningful user action is recorded in `activity_logs`. This is mandatory from day one. Monitor and optimize performance later — never lose the audit trail.
+**Not a Phase 1 requirement** — see `developer-workflow.md`'s Phase 1 Scope Discipline. Do not implement `logActivity`, `ActivityAction`, or an `AuditLog` table in Phase 1. The blueprint below is kept for when Phase 2 picks this up — do not treat its presence here as evidence it exists in the codebase.
 
 ### Activity Log Table
 
 ```prisma
-model ActivityLog {
-  id           String   @id @default(cuid())
-  orgId        String   @map("org_id")
-  userId       String   @map("user_id")
-  action       String   // 'case.created', 'hearing.added', 'member.invited' etc.
-  resourceType String   @map("resource_type")
-  resourceId   String?  @map("resource_id")
-  metadata     Json?    // { caseNumber, oldStatus, newStatus, ... }
-  ipAddress    String?  @map("ip_address")
-  createdAt    DateTime @default(now()) @map("created_at")
+model AuditLog {
+  id           String    @id @default(uuid())
+  orgId        String?   @map("org_id")
+  userId       String?   @map("user_id")
+  action       String    // 'case.created', 'hearing.added', etc. — see ActivityAction enum
+  resourceType String?   @map("resource_type")
+  resourceId   String?   @map("resource_id")
+  ipAddress    String    @map("ip_address")
+  metadata     Json      // { caseNumber, oldStatus, newStatus, ... }
+  createdAt    DateTime  @default(now()) @map("created_at")
 
-  @@map("activity_logs")
+  @@map("audit_logs")
   @@index([orgId, createdAt])
-  @@index([orgId, userId])
-  @@index([orgId, resourceType, resourceId])
+  @@index([userId])
 }
 ```
 
 ### Activity Logger
 
 ```ts
-// lib/activity-logger.ts
-import { prisma } from '@/lib/db';
+// src/utils/activity-logger.ts
+import { logger } from '@/config/logger';
+import { prisma } from '@/db/client';
+import type { ActivityAction } from '@/enums/activity-action';
 
 export interface LogActivityInput {
-  orgId: string;
-  userId: string;
-  action: ActivityActionValue;  // typed — no freeform strings
-  resourceType: string;
+  orgId?: string;
+  userId?: string;
+  action: ActivityAction;  // typed — no freeform strings
+  resourceType?: string;
   resourceId?: string;
   metadata?: Record<string, unknown>;
-  ipAddress?: string;
+  ipAddress: string;
 }
 
 export async function logActivity(input: LogActivityInput): Promise<void> {
-  await prisma.activityLogs.create({ data: input }).catch((err) => {
+  await prisma.auditLog.create({ data: { ...input, metadata: input.metadata ?? {} } }).catch((err) => {
     // Never let logging failure break the main operation — log and continue
-    console.error('Activity log write failed', { err, action: input.action });
+    logger.error({ err, action: input.action }, 'activity-logger: failed to write audit log');
   });
 }
 ```
 
-### Action Names — Use `ActivityAction` Constants
+### Action Names — Use the `ActivityAction` Enum
 
-Never pass a raw string to `logActivity`. Define all action names in `lib/constants.ts` and import from there. This makes actions consistent, searchable, and refactorable.
+Never pass a raw string to `logActivity`. Action names are a TS `enum` in `src/enums/activity-action.ts` — the same pattern as `ErrorCode` (`src/enums/error-code.ts`), not a `const` object. This makes actions consistent, searchable, and refactorable.
 
 ```ts
-// lib/constants.ts
-export const ActivityAction = {
-  AUTH_OTP_SENT:       'auth.otp_sent',
-  AUTH_OTP_VERIFIED:   'auth.otp_verified',
-  AUTH_LOGIN_FAILED:   'auth.login_failed',
-  AUTH_LOGOUT:         'auth.logout',
-  AUTH_ACCOUNT_LOCKED: 'auth.account_locked',
-  AUTH_REFRESH:        'auth.refresh',
-  CASE_CREATED:        'case.created',
-  CASE_UPDATED:        'case.updated',
-  CASE_ARCHIVED:       'case.archived',
-  HEARING_ADDED:       'hearing.added',
-  HEARING_UPDATED:     'hearing.updated',
-  HEARING_ADJOURNED:   'hearing.adjourned',
-  DOCUMENT_UPLOADED:   'document.uploaded',
-  DOCUMENT_DELETED:    'document.deleted',
-  CLIENT_CREATED:      'client.created',
-  CLIENT_UPDATED:      'client.updated',
-  MEMBER_INVITED:      'member.invited',
-  MEMBER_REMOVED:      'member.removed',
-  PORTAL_ENABLED:      'portal.enabled',
-  PORTAL_LINK_SHARED:  'portal.link_shared',
-  REMINDER_SENT:       'reminder.sent',
-  REMINDER_FAILED:     'reminder.failed',
-  SETTINGS_UPDATED:    'settings.updated',
-} as const;
-
-export type ActivityActionValue = typeof ActivityAction[keyof typeof ActivityAction];
+// src/enums/activity-action.ts
+export enum ActivityAction {
+  AUTH_SIGNUP = 'auth.signup',
+  AUTH_OTP_SENT = 'auth.otp_sent',
+  AUTH_OTP_VERIFIED = 'auth.otp_verified',
+  AUTH_LOGIN_FAILED = 'auth.login_failed',
+  AUTH_ACCOUNT_LOCKED = 'auth.account_locked',
+  AUTH_REFRESH = 'auth.refresh',
+  AUTH_LOGOUT = 'auth.logout',
+  AUTH_SESSION_REVOKED = 'auth.session_revoked',
+  CASE_CREATED = 'case.created',
+  CASE_UPDATED = 'case.updated',
+  CASE_ARCHIVED = 'case.archived',
+  CASE_CLIENT_ADDED = 'case.client_added',
+  CLIENT_CREATED = 'client.created',
+  CLIENT_UPDATED = 'client.updated',
+  CLIENT_ARCHIVED = 'client.archived',
+  HEARING_ADDED = 'hearing.added',
+  HEARING_UPDATED = 'hearing.updated',
+  HEARING_DELETED = 'hearing.deleted',
+  IMPORTANT_DATE_CREATED = 'important_date.created',
+  IMPORTANT_DATE_UPDATED = 'important_date.updated',
+  IMPORTANT_DATE_DELETED = 'important_date.deleted',
+  DOCUMENT_UPLOADED = 'document.uploaded',
+  DOCUMENT_RENAMED = 'document.renamed',
+  DOCUMENT_DELETED = 'document.deleted',
+  PROFILE_UPDATED = 'settings.profile_updated',
+  ORGANIZATION_UPDATED = 'settings.organization_updated',
+  // Add new members here as features that need audit logging are built
+  // (e.g. member invites, portal sharing, reminder delivery).
+}
 ```
 
 Usage:
 ```ts
-import { ActivityAction } from '@/lib/constants';
+import { ActivityAction } from '@/enums/activity-action';
 await logActivity({ action: ActivityAction.CASE_CREATED, ... });
 ```
 
@@ -413,9 +417,10 @@ All server-side compile-time values live here. Split by domain:
 ```
 src/constants/
 ├── auth.ts    # OTP thresholds, token TTLs, cookie names
-├── misc.ts    # Pagination defaults
-└── index.ts   # Re-exports all
+└── misc.ts    # Pagination defaults, upload limits
 ```
+
+No `index.ts` barrel — import from the concrete file (`@/constants/auth`, `@/constants/misc`). Categorical string identifiers (like `ActivityAction`, `ErrorCode`) belong in `src/enums/` as TS `enum`, not here — `constants/` is for primitive config values.
 
 ```ts
 // src/constants/auth.ts
@@ -432,12 +437,12 @@ export const DEFAULT_PAGE_SIZE = 20;
 export const MAX_PAGE_SIZE = 100;
 ```
 
-Import in services and repositories:
+Import in services and repositories — there is no root `@/constants` barrel, import from the concrete file:
 ```ts
-import { MAX_OTP_ATTEMPTS, OTP_TTL_MINUTES } from '@/constants';
+import { MAX_OTP_ATTEMPTS, OTP_TTL_MINUTES } from '@/constants/auth';
 ```
 
-**Note:** `ActivityAction` constants and `redisKeys` builders are not yet implemented — add them to `src/constants/` when activity logging is built.
+**Note:** `redisKeys` builders are not implemented — Redis is not used in Phase 1 (see OTP storage note above). `ActivityAction` and `logActivity` are also not implemented — Phase 2 scope, see the "Activity Logging" section above.
 
 ---
 
@@ -685,7 +690,6 @@ Before declaring backend work done:
 - [ ] Every mutation route has the correct `requireRole` preHandler where spec requires it
 - [ ] Every tenant-scoped DB query has `orgId` from `req.user.orgId`
 - [ ] `softDelete` / `update` use `updateMany` with `{ id, orgId }` — not `update` by id alone
-- [ ] New action is logged via `logActivity` with correct `action` name from the standard list
 
 **Types**
 - [ ] Fastify request is typed: `FastifyRequest<{ Body: X }>` / `{ Params: X }` / `{ Querystring: X }`

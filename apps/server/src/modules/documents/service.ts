@@ -6,19 +6,21 @@ import { storageProvider } from "@/integrations/storage";
 import { casesRepository } from "@/modules/cases/repository";
 import type { ServiceContext } from "@/types/service-context";
 import { generateUUID } from "@/utils/crypto";
-import { AppError, Errors } from "@/utils/errors";
+import { Errors } from "@/utils/errors";
 
 import { documentsRepository } from "./repository";
 import type { ListDocumentsOrgQuery, ListDocumentsQuery } from "./schema";
 
 export const documentsService = {
-  async upload(caseId: string, file: MultipartFile, ctx: ServiceContext) {
+  async upload(caseId: string, file: MultipartFile | undefined, ctx: ServiceContext) {
+    if (!file) throw Errors.noFileUploaded();
+
     const parentCase = await casesRepository.findById(caseId, ctx.orgId);
     if (!parentCase) throw Errors.caseNotFound();
 
     const buffer = await file.toBuffer();
     if (buffer.byteLength > MAX_UPLOAD_BYTES) {
-      throw new AppError(413, "FILE_TOO_LARGE", "File must be 50 MB or smaller");
+      throw Errors.fileTooLarge();
     }
 
     const ext = file.filename.includes(".") ? file.filename.split(".").pop() : "";
@@ -57,7 +59,8 @@ export const documentsService = {
     const doc = await documentsRepository.findById(documentId, caseId, ctx.orgId);
     if (!doc) throw Errors.documentNotFound();
     // Soft-delete DB record first so the document is immediately inaccessible
-    await documentsRepository.softDelete(documentId, ctx.orgId);
+    const { count } = await documentsRepository.softDelete(documentId, ctx.orgId);
+    if (count === 0) throw Errors.documentNotFound();
     // Storage cleanup is best-effort — a failed delete leaves an orphaned object but keeps DB consistent
     storageProvider.delete(doc.storageKey).catch((err: unknown) => {
       logger.error({ documentId, storageKey: doc.storageKey, err }, "documents: failed to delete object from storage");

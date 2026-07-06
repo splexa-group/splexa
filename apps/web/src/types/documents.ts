@@ -23,6 +23,3 @@ export interface DocumentFolder {
   documentCount: number;
 }
 
-export interface DocumentFolderListResponse {
-  data: DocumentFolder[];
-}

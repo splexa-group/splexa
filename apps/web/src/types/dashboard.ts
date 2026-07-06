@@ -41,6 +41,3 @@ export interface DashboardData {
   highPriorityCases: HighPriorityCase[];
 }
 
-export interface DashboardResponse {
-  data: DashboardData;
-}

@@ -106,7 +106,7 @@ describe("hearingsService.delete", () => {
 
   it("soft-deletes when hearing exists", async () => {
     vi.mocked(hearingsRepository.findById).mockResolvedValue(mockHearing as never);
-    vi.mocked(hearingsRepository.softDelete).mockResolvedValue(undefined as never);
+    vi.mocked(hearingsRepository.softDelete).mockResolvedValue({ count: 1 });
 
     await hearingsService.delete("hearing-1", ctx);
 

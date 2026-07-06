@@ -136,6 +136,7 @@ export const casesService = {
   async delete(id: string, ctx: ServiceContext) {
     const existing = await casesRepository.findById(id, ctx.orgId);
     if (!existing) throw Errors.caseNotFound();
-    await casesRepository.softDeleteCascade(id, ctx.orgId);
+    const { count } = await casesRepository.softDeleteCascade(id, ctx.orgId);
+    if (count === 0) throw Errors.caseNotFound();
   },
 };

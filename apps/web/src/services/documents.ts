@@ -1,12 +1,12 @@
 import { DELETE, GET, PATCH, POST } from "@/api/http";
-import type { Document, DocumentFolder, DocumentFolderListResponse, DocumentListResponse } from "@/types/documents";
+import type { Document, DocumentFolder, DocumentListResponse } from "@/types/documents";
 
 export const documentsApi = {
   listByCaseId: (caseId: string) =>
     GET<DocumentListResponse>(`/cases/${caseId}/documents`),
 
   listFolders: () =>
-    GET<DocumentFolderListResponse>("/documents/folders"),
+    GET<DocumentFolder[]>("/documents/folders"),
 
   upload: (caseId: string, file: File) => {
     const form = new FormData();

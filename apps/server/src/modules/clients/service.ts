@@ -45,6 +45,7 @@ export const clientsService = {
   async delete(id: string, ctx: ServiceContext) {
     const existing = await clientsRepository.findById(id, ctx.orgId);
     if (!existing) throw Errors.clientNotFound();
-    await clientsRepository.softDelete(id, ctx.orgId);
+    const { count } = await clientsRepository.softDelete(id, ctx.orgId);
+    if (count === 0) throw Errors.clientNotFound();
   },
 };

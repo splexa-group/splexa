@@ -118,9 +118,9 @@ export const authRepository = {
     });
   },
 
-  async markEmailVerified(userId: string): Promise<void> {
-    await prisma.user.update({
-      where: { id: userId },
+  async markEmailVerified(userId: string, orgId: string): Promise<void> {
+    await prisma.user.updateMany({
+      where: { id: userId, orgId },
       data: { emailVerified: true },
     });
   },
@@ -142,16 +142,16 @@ export const authRepository = {
     });
   },
 
-  async updateSessionLastUsed(id: string): Promise<void> {
-    await prisma.session.update({
-      where: { id },
+  async updateSessionLastUsed(id: string, userId: string): Promise<void> {
+    await prisma.session.updateMany({
+      where: { id, userId },
       data: { lastUsedAt: new Date() },
     });
   },
 
-  async revokeSession(id: string): Promise<void> {
-    await prisma.session.update({
-      where: { id },
+  async revokeSession(id: string, userId: string): Promise<void> {
+    await prisma.session.updateMany({
+      where: { id, userId },
       data: { revokedAt: new Date() },
     });
   },

@@ -205,9 +205,10 @@ Any value that has a business meaning, appears in more than one place, or is a t
 
 | Scope | Location |
 |---|---|
-| Used by both apps (statuses, roles, plan limits) | `packages/shared/src/constants.ts` |
-| Backend only (TTLs, expiry durations, activity actions, Redis key builders) | `apps/server/src/lib/constants.ts` |
-| Frontend only (animation durations, z-index ladder) | `apps/web/src/lib/constants.ts` |
+| Used by both apps (statuses, roles, plan limits) | `packages/shared/src/enums/` (categorical) or a future `packages/shared/src/constants.ts` |
+| Backend only, primitive config values (TTLs, expiry durations, Redis key builders) | `apps/server/src/constants/{auth,misc}.ts` |
+| Backend only, categorical string identifiers (error codes) | `apps/server/src/enums/` as a TS `enum` — see `ErrorCode` |
+| Frontend only (animation durations, z-index ladder) | `apps/web/src/lib/` (colocate with the file that uses it until reused elsewhere) |
 | Single module only | Top of the relevant service or schema file — not dumped in a global constants file |
 
 ### Status Strings — Always Use the Constant
@@ -221,14 +222,16 @@ import { CaseStatus } from '@splexa-group/shared/enums';
 const active = cases.filter(c => c.status === CaseStatus.ACTIVE);
 ```
 
-### Activity Action Names — Never Freeform Strings
+### Activity Action Names — Never Freeform Strings (Phase 2, Not Built)
+
+Activity logging (`logActivity`, `ActivityAction`) is not implemented in Phase 1 — see `developer-workflow.md`. If it's built in Phase 2, action names must be a typed enum, not a raw string:
 
 ```ts
 // ❌ Freeform — 'case_created', 'case.created', 'Case Created' are all different
 await logActivity({ action: 'case.created' });
 
-// ✅ Typed constant — consistent, searchable, impossible to typo
-import { ActivityAction } from '@/lib/constants';
+// ✅ Typed enum member — consistent, searchable, impossible to typo
+import { ActivityAction } from '@/enums/activity-action';
 await logActivity({ action: ActivityAction.CASE_CREATED });
 ```
 
@@ -388,7 +391,6 @@ Before saying a task is complete, verify each item:
 - [ ] No magic number for a threshold, limit, or timeout — use a named constant
 - [ ] No hardcoded status string (`'ACTIVE'`) — use `CASE_STATUS.ACTIVE`
 - [ ] No hardcoded role string (`'ADMIN'`) — use `USER_ROLES.ADMIN`
-- [ ] No freeform activity action string — use `ActivityAction.*`
 - [ ] No raw Redis key string — use `redisKeys.*`
 
 **Tests**

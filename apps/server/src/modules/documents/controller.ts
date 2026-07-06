@@ -1,8 +1,6 @@
 import "@fastify/multipart";
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-import { AppError } from "@/utils/errors";
-
 import type {
   DocumentCaseParams,
   DocumentParams,
@@ -18,7 +16,6 @@ export const documentsController = {
     reply: FastifyReply,
   ) {
     const file = await req.file();
-    if (!file) throw new AppError(400, "NO_FILE", "No file uploaded");
 
     const result = await documentsService.upload(req.params.caseId, file, {
       orgId: req.user.orgId,
@@ -75,7 +72,6 @@ export const documentsController = {
   },
 
   async listFolders(req: FastifyRequest) {
-    const data = await documentsService.listFolders(req.user.orgId);
-    return { data };
+    return documentsService.listFolders(req.user.orgId);
   },
 };

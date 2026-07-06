@@ -185,12 +185,13 @@ export const hearingsRepository = {
     });
   },
 
-  async softDelete(id: string, caseId: string, orgId: string) {
+  async softDelete(id: string, caseId: string, orgId: string): Promise<{ count: number }> {
     return prisma.$transaction(async (tx) => {
-      await tx.hearing.updateMany({
+      const { count } = await tx.hearing.updateMany({
         where: { id, orgId, deletedAt: null },
         data: { deletedAt: new Date() },
       });
+      if (count === 0) return { count };
 
       await casesRepository.updateNextHearingDate(caseId, orgId, tx);
 
@@ -198,6 +199,7 @@ export const hearingsRepository = {
         where: { sourceId: id, orgId, deletedAt: null },
         data: { deletedAt: new Date() },
       });
+      return { count };
     });
   },
 };

@@ -17,9 +17,6 @@ export interface OrganizationData {
   practiceTypes: PracticeType[];
 }
 
-export interface ProfileResponse       { data: ProfileData }
-export interface OrganizationResponse  { data: OrganizationData }
-
 export interface UpdateProfileInput {
   firstName:   string;
   lastName:    string;

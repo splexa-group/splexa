@@ -1,6 +1,7 @@
 import { type Prisma } from "@prisma/client";
 
 import { prisma } from "@/db/client";
+import { orgSelect } from "@/db/selects";
 
 import type { UpdateOrganizationBody, UpdateProfileBody } from "./schema";
 
@@ -13,13 +14,6 @@ const profileSelect = {
   designation: true,
   role:        true,
 } satisfies Prisma.UserSelect;
-
-const orgSelect = {
-  id:            true,
-  name:          true,
-  city:          true,
-  practiceTypes: true,
-} satisfies Prisma.OrganizationSelect;
 
 export const settingsRepository = {
   async getProfile(userId: string, orgId: string) {

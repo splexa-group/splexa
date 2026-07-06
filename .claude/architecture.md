@@ -50,13 +50,17 @@ modules/[name]/
 ├── plugin.ts          # Fastify plugin registration
 ├── routes.ts          # Route declarations + preHandlers
 ├── controller.ts      # Request/response handling
-├── service.ts         # Business logic + activity logging
+├── service.ts         # Business logic
 ├── repository.ts      # All Prisma queries
+├── selects.ts          # Prisma `select` projections owned by this module — optional
 ├── schema.ts          # Zod schemas for validation (no raw JSON Schema)
+├── types.ts           # Module-internal types not derived from a Zod schema — optional
 ├── helper.ts          # Pure helpers (date builders, token expiry, etc.) — optional
 └── __tests__/
     └── [name].test.ts
 ```
+
+A `select` shape belongs in the module that owns the entity, not in a shared `db/` grab-bag. `db/selects.ts` is the one exception — it holds only `userSelect`/`orgSelect`, since `User`/`Organization` have no owning module (created by `auth`, viewed/edited by `settings`). If a module's select nests a related entity's shape (e.g. `cases`' select embeds `clients`'/`hearings`'/`important-dates`' selects), import it from that module's `selects.ts` — this is a data-shape dependency, not the repository-bypassing kind forbidden below.
 
 See `backend-rules.md` for full examples of each layer.
 

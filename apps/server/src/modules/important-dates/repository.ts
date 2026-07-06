@@ -2,9 +2,9 @@ import type { Prisma } from "@prisma/client";
 import { ImportantDateType } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
-import { importantDateCalendarSelect } from "@/db/selects";
 import { parseDate } from "@/utils/date";
 
+import { importantDateCalendarSelect } from "./selects";
 import type {
   CreateImportantDateInput,
   ListImportantDatesQuery,

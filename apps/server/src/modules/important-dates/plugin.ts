@@ -1,14 +1,14 @@
 import type { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
 
-import { importantDatesRoutes, importantDatesCaseScopeRoutes } from "./routes";
+import { importantDatesRoutes, importantDatesCaseScopedRoutes } from "./routes";
 
 export const importantDatesModule = fp(
   async (fastify: FastifyInstance) => {
     fastify.register(importantDatesRoutes, {
       prefix: "/api/v1/important-dates",
     });
-    fastify.register(importantDatesCaseScopeRoutes, {
+    fastify.register(importantDatesCaseScopedRoutes, {
       prefix: "/api/v1/cases",
     });
   },

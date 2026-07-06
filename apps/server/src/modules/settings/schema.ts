@@ -6,7 +6,7 @@ export const updateProfileBodySchema = z
     firstName:   z.string().min(1).max(100),
     lastName:    z.string().min(1).max(100),
     phoneNumber: z.string().min(1).max(20),
-    designation: z.nativeEnum(Designation),
+    designation: z.enum(Designation),
   })
   .strict();
 
@@ -14,7 +14,7 @@ export const updateOrganizationBodySchema = z
   .object({
     name:          z.string().min(1).max(200),
     city:          z.string().min(1).max(100),
-    practiceTypes: z.array(z.nativeEnum(PracticeType)).min(1),
+    practiceTypes: z.array(z.enum(PracticeType)).min(1),
   })
   .strict();
 

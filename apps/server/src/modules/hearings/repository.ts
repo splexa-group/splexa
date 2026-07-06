@@ -6,9 +6,10 @@ import {
 } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
-import { hearingCalendarSelect, hearingDetailSelect, hearingSummarySelect } from "@/db/selects";
 import { casesRepository } from "@/modules/cases/repository";
 import { parseDate } from "@/utils/date";
+
+import { hearingCalendarSelect, hearingDetailSelect, hearingSummarySelect } from "./selects";
 
 import type { CreateHearingInput, ListHearingsQuery } from "./schema";
 

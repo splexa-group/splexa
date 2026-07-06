@@ -17,7 +17,7 @@ export function importantDatesRoutes(router: FastifyInstance): void {
   });
 }
 
-export function importantDatesCaseScopeRoutes(router: FastifyInstance): void {
+export function importantDatesCaseScopedRoutes(router: FastifyInstance): void {
   router.get("/:caseId/important-dates", {
     schema: { params: caseParamsSchema },
     preHandler: [router.authenticate],

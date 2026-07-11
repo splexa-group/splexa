@@ -4,7 +4,9 @@ import { OTP_LOCKOUT_MINUTES, OTP_RATE_WINDOW_MS } from "@/constants/auth";
 import { prisma } from "@/db/client";
 import { orgSelect } from "@/db/selects/org.select";
 import { userSelect } from "@/db/selects/user.select";
+import { UUID } from "@/utils/crypto";
 
+import { otpExpiry } from "./auth.helper";
 import { SignupInput } from "./auth.schema";
 
 export const authRepository = {
@@ -24,14 +26,14 @@ export const authRepository = {
 
   // Creates org, user, and initial OTP request atomically so partial failures
   // cannot leave a user with no verifiable OTP or an OTP with no user.
-  async createOrgAndUser(
-    orgId: string,
-    userId: string,
-    input: SignupInput,
-    otpHash: string,
-    otpExpiresAt: Date,
-  ) {
+  async createOrgAndUser(input: SignupInput, otpHash: string) {
     return prisma.$transaction(async (tx) => {
+      const orgId = UUID();
+      const userId = UUID();
+
+      // Organization.createdBy and User.orgId are circular foreign keys — each
+      // row needs the other's id before either exists, so ids are generated
+      // up front and constraint checks are deferred to transaction commit.
       await tx.$executeRaw`SET CONSTRAINTS ALL DEFERRED`;
 
       await tx.organization.create({
@@ -61,7 +63,7 @@ export const authRepository = {
       });
 
       await tx.otpRequest.create({
-        data: { email: input.email, otpHash, expiresAt: otpExpiresAt },
+        data: { email: input.email, otpHash, expiresAt: otpExpiry() },
       });
     });
   },
@@ -75,9 +77,9 @@ export const authRepository = {
     });
   },
 
-  async createOtpRequest(email: string, otpHash: string, expiresAt: Date) {
+  async createOtpRequest(email: string, otpHash: string) {
     return prisma.otpRequest.create({
-      data: { email, otpHash, expiresAt },
+      data: { email, otpHash, expiresAt: otpExpiry() },
     });
   },
 

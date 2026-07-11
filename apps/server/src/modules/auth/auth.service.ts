@@ -5,16 +5,11 @@ import { logger } from "@/config/logger";
 import { MAX_OTP_ATTEMPTS, MAX_OTP_REQUESTS_PER_HOUR } from "@/constants/auth";
 import { emailProvider } from "@/integrations/email";
 import { VerifyOtpCtx, VerifyOtpResult } from "@/models/auth";
-import {
-  generateOtp,
-  generateRefreshToken,
-  UUID,
-  hashToken,
-} from "@/utils/crypto";
+import { generateOtp, generateRefreshToken, hashToken } from "@/utils/crypto";
 import { Errors } from "@/utils/errors";
 import { signAccessToken } from "@/utils/jwt";
 
-import { otpExpiry, refreshTokenExpiry } from "./auth.helper";
+import { refreshTokenExpiry } from "./auth.helper";
 import { authRepository } from "./auth.repository";
 import { SignupInput, OtpRequestInput, OtpVerifyInput } from "./auth.schema";
 
@@ -22,14 +17,12 @@ export type { VerifyOtpResult };
 
 export const authService = {
   async signup(input: SignupInput): Promise<void> {
-    const existing = await authRepository.findUserByEmail(input.email);
-    if (existing) throw Errors.emailTaken();
+    const existingUser = await authRepository.findUserByEmail(input.email);
+    if (existingUser) throw Errors.emailTaken();
 
     const count = await authRepository.countRecentOtpRequests(input.email);
     if (count >= MAX_OTP_REQUESTS_PER_HOUR) throw Errors.otpRateLimited();
 
-    const orgId = UUID();
-    const userId = UUID();
     const otp = generateOtp();
     const otpHash = await bcrypt.hash(otp, 10);
 
@@ -38,23 +31,19 @@ export const authService = {
       await emailProvider.sendOtp(input.email, otp);
     } catch (err) {
       logger.error(
-        { err, email: input.email },
+        { email: input.email, error: err },
         "auth: failed to send signup OTP",
       );
       throw Errors.emailSendFailed();
     }
 
-    // Org, user, and OTP request are created atomically so there is never a
-    // user with no verifiable OTP or an OTP with no owning user.
     try {
-      await authRepository.createOrgAndUser(
-        orgId,
-        userId,
-        input,
-        otpHash,
-        otpExpiry(),
-      );
+      await authRepository.createOrgAndUser(input, otpHash);
     } catch (err) {
+      logger.error(
+        { email: input.email, error: err },
+        "auth: failed to create org and user",
+      );
       // Two concurrent signups for the same email can both pass the `existing`
       // check above — the DB's unique constraint is the real guard, so translate
       // its violation into the same clean error the check above would have thrown.
@@ -64,6 +53,7 @@ export const authService = {
       ) {
         throw Errors.emailTaken();
       }
+
       throw err;
     }
   },
@@ -94,7 +84,7 @@ export const authService = {
     // Invalidate all previous pending OTPs before issuing the new one so a
     // stale intercepted code cannot be replayed after a newer one is verified.
     await authRepository.invalidateActiveOtps(input.email);
-    await authRepository.createOtpRequest(input.email, otpHash, otpExpiry());
+    await authRepository.createOtpRequest(input.email, otpHash);
   },
 
   async verifyOtp(

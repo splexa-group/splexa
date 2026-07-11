@@ -9,7 +9,6 @@ import { casesService } from "../cases.service";
 vi.mock("../cases.repository", () => ({
   casesRepository: {
     create: vi.fn(),
-    createWithNewClient: vi.fn(),
     createClientAndLink: vi.fn(),
     findById: vi.fn(),
     list: vi.fn(),
@@ -33,129 +32,38 @@ const mockCase = {
   assignedTo: null,
   createdBy: "user-1",
 };
-const mockClient = { id: "client-1", orgId: "org-1", fullName: "Ravi Kumar" };
 
 beforeEach(() => vi.clearAllMocks());
 
-describe("casesService.create with clientId", () => {
-  it("throws clientNotFound when clientId does not belong to org", async () => {
-    vi.mocked(clientsRepository.findById).mockResolvedValue(null);
-
-    await expect(
-      casesService.create(
-        {
-          title: "Test",
-          description: "Test description",
-          clientRole: "PETITIONER" as never,
-          clientId: "bad-id",
-          status: "ACTIVE" as never,
-        },
-        ctx,
-      ),
-    ).rejects.toThrow(Errors.clientNotFound());
-  });
-
-  it("creates case when clientId is valid", async () => {
-    vi.mocked(clientsRepository.findById).mockResolvedValue(mockClient as never);
+describe("casesService.create", () => {
+  it("creates a case with only the required title", async () => {
     vi.mocked(casesRepository.create).mockResolvedValue(mockCase as never);
 
-    const result = await casesService.create(
-      {
-        title: "Test",
-        description: "Test description",
-        clientRole: "PETITIONER" as never,
-        clientId: "client-1",
-        status: "ACTIVE" as never,
-      },
-      ctx,
-    );
+    const result = await casesService.create({ title: "Test" }, ctx);
 
-    expect(result.data).toEqual(mockCase);
-    expect(result.warnings).toBeUndefined();
-    expect(casesRepository.create).toHaveBeenCalled();
-  });
-});
-
-describe("casesService.create with newClient", () => {
-  it("creates client and case atomically, no warning when phone is unique", async () => {
-    vi.mocked(clientsRepository.findByPhone).mockResolvedValue(null);
-    vi.mocked(casesRepository.createWithNewClient).mockResolvedValue(mockCase as never);
-
-    const result = await casesService.create(
-      {
-        title: "Test",
-        description: "Test description",
-        clientRole: "PETITIONER" as never,
-        newClient: { fullName: "Suresh Nair", phone: "9999999999", type: "INDIVIDUAL" as never },
-        status: "ACTIVE" as never,
-      },
-      ctx,
-    );
-
-    expect(result.data).toEqual(mockCase);
-    expect(result.warnings).toBeUndefined();
-  });
-
-  it("returns warnings when new client phone belongs to an existing client", async () => {
-    vi.mocked(clientsRepository.findByPhone).mockResolvedValue({
-      id: "other-client",
-      fullName: "Anita Desai",
+    expect(result).toEqual(mockCase);
+    expect(casesRepository.create).toHaveBeenCalledWith({
+      title: "Test",
+      orgId: "org-1",
+      createdBy: "user-1",
     });
-    vi.mocked(casesRepository.createWithNewClient).mockResolvedValue(mockCase as never);
-
-    const result = await casesService.create(
-      {
-        title: "Test",
-        description: "Test description",
-        clientRole: "PETITIONER" as never,
-        newClient: { fullName: "Suresh Nair", phone: "9999999999", type: "INDIVIDUAL" as never },
-        status: "ACTIVE" as never,
-      },
-      ctx,
-    );
-
-    expect(result.data).toEqual(mockCase);
-    expect(result.warnings).toEqual(["Anita Desai already has this phone number"]);
-  });
-});
-
-describe("casesService.create with assignedTo", () => {
-  it("throws assignedUserNotFound when assignedTo does not belong to org", async () => {
-    vi.mocked(casesRepository.userExistsInOrg).mockResolvedValue(false);
-
-    await expect(
-      casesService.create(
-        {
-          title: "Test",
-          description: "Test description",
-          clientRole: "PETITIONER" as never,
-          assignedTo: "other-org-user",
-          status: "ACTIVE" as never,
-        },
-        ctx,
-      ),
-    ).rejects.toThrow(Errors.assignedUserNotFound());
-
-    expect(casesRepository.create).not.toHaveBeenCalled();
   });
 
-  it("creates case when assignedTo belongs to org", async () => {
-    vi.mocked(casesRepository.userExistsInOrg).mockResolvedValue(true);
+  it("creates a case with title, caseNumber, and caseType", async () => {
     vi.mocked(casesRepository.create).mockResolvedValue(mockCase as never);
 
-    const result = await casesService.create(
-      {
-        title: "Test",
-        description: "Test description",
-        clientRole: "PETITIONER" as never,
-        assignedTo: "user-1",
-        status: "ACTIVE" as never,
-      },
+    await casesService.create(
+      { title: "Test", caseNumber: "CS/123/2026", caseType: "CIVIL" as never },
       ctx,
     );
 
-    expect(result.data).toEqual(mockCase);
-    expect(casesRepository.userExistsInOrg).toHaveBeenCalledWith("user-1", "org-1");
+    expect(casesRepository.create).toHaveBeenCalledWith({
+      title: "Test",
+      caseNumber: "CS/123/2026",
+      caseType: "CIVIL",
+      orgId: "org-1",
+      createdBy: "user-1",
+    });
   });
 });
 

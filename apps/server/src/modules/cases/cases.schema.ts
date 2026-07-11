@@ -34,40 +34,10 @@ const newClientSchema = z
 export const createCaseSchema = z
   .object({
     title: z.string().min(1).max(300),
-    clientRole: z.enum(PartyRole).optional(),
-    clientId: z.uuid().optional(),
-    newClient: newClientSchema.optional(),
     caseNumber: z.string().max(100).optional(),
     caseType: z.enum(CaseType).optional(),
-    filingDate: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD")
-      .optional(),
-    courtName: z.string().max(200).optional(),
-    courtType: z.enum(CourtType).optional(),
-    courtState: z.string().max(100).optional(),
-    courtCity: z.string().max(100).optional(),
-    benchNumber: z.string().max(50).optional(),
-    judgeName: z.string().max(200).optional(),
-    judgeDesignation: z.string().max(200).optional(),
-    description: z.string().optional(),
-    status: z.enum(CaseStatus).default(CaseStatus.ACTIVE),
-    stage: z.enum(CaseStage).optional(),
-    priority: z.enum(Priority).optional(),
-    oppositeParties: z.array(oppositePartySchema).optional(),
-    tags: z.array(z.string().max(50)).optional(),
-    assignedTo: z.uuid().optional(),
   })
-  .strict()
-  .superRefine((data, ctx) => {
-    if (data.clientId && data.newClient) {
-      ctx.addIssue({
-        code: "custom",
-        message: "Provide either clientId or newClient, not both",
-        path: ["clientId"],
-      });
-    }
-  });
+  .strict();
 
 const emptyToUndefined = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess((v) => (v === "" ? undefined : v), schema);

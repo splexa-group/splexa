@@ -15,55 +15,11 @@ import {
 
 export const casesService = {
   async create(input: CreateCaseInput, ctx: ServiceContext) {
-    const { newClient, clientId, filingDate, oppositeParties, ...rest } = input;
-
-    const caseFields = {
-      ...rest,
+    return casesRepository.create({
+      ...input,
       orgId: ctx.orgId,
       createdBy: ctx.userId,
-      oppositeParties: oppositeParties as Prisma.InputJsonValue,
-      filingDate: filingDate ? parseDate(filingDate) : undefined,
-    };
-
-    if (caseFields.assignedTo) {
-      const assignedUserExists = await casesRepository.userExistsInOrg(
-        caseFields.assignedTo,
-        ctx.orgId,
-      );
-      if (!assignedUserExists) throw Errors.assignedUserNotFound();
-    }
-
-    if (clientId) {
-      const client = await clientsRepository.findById(clientId, ctx.orgId);
-      if (!client) throw Errors.clientNotFound();
-      return {
-        data: await casesRepository.create({ ...caseFields, clientId }),
-      };
-    }
-
-    if (!newClient) {
-      return { data: await casesRepository.create(caseFields) };
-    }
-
-    const existingWithPhone = await clientsRepository.findByPhone(
-      newClient.phone,
-      ctx.orgId,
-    );
-    const data = await casesRepository.createWithNewClient({
-      ...caseFields,
-      newClient,
     });
-
-    if (existingWithPhone) {
-      return {
-        data,
-        warnings: [
-          `${existingWithPhone.fullName} already has this phone number`,
-        ],
-      };
-    }
-
-    return { data };
   },
 
   async list(orgId: string, query: ListCasesQuery) {

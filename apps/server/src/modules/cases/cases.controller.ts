@@ -14,13 +14,13 @@ export const casesController = {
     req: FastifyRequest<{ Body: CreateCaseInput }>,
     reply: FastifyReply,
   ) {
-    const { data, warnings } = await casesService.create(req.body, {
+    const data = await casesService.create(req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
       ipAddress: req.ip,
     });
     reply.code(201);
-    return warnings ? { ...data, warnings } : data;
+    return data;
   },
 
   async list(req: FastifyRequest<{ Querystring: ListCasesQuery }>) {

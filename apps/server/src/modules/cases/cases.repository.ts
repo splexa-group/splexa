@@ -4,37 +4,12 @@ import { HearingStatus } from "@splexa-group/shared/enums";
 import { prisma } from "@/db/client";
 import { caseDetailSelect, caseSummarySelect } from "@/db/selects/case.select";
 
-import { CreateCaseData, CreateCaseWithNewClientData } from "./cases.models";
+import { CreateCaseData } from "./cases.models";
 import { ListCasesQuery } from "./cases.schema";
 
 export const casesRepository = {
   async create(data: CreateCaseData) {
     return prisma.case.create({ data, select: caseDetailSelect });
-  },
-
-  async createInTx(tx: Prisma.TransactionClient, data: CreateCaseData) {
-    return tx.case.create({ data, select: caseDetailSelect });
-  },
-
-  async createWithNewClient(data: CreateCaseWithNewClientData) {
-    return prisma.$transaction(async (tx) => {
-      const client = await tx.client.create({
-        data: {
-          orgId: data.orgId,
-          fullName: data.newClient.fullName,
-          phone: data.newClient.phone,
-          type: data.newClient.type,
-          createdBy: data.createdBy,
-        },
-        select: { id: true },
-      });
-
-      const { newClient: _, ...caseData } = data;
-      return tx.case.create({
-        data: { ...caseData, clientId: client.id },
-        select: caseDetailSelect,
-      });
-    });
   },
 
   async findById(id: string, orgId: string) {

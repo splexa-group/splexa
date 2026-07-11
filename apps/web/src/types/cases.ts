@@ -30,24 +30,8 @@ export interface CaseFilters {
 
 export interface CreateCaseInput {
   title: string;
-  clientRole?: PartyRole;
-  clientId?: string;
-  newClient?: { fullName: string; phone: string; type: string };
   caseNumber?: string;
   caseType?: CaseType;
-  filingDate?: string;
-  courtName?: string;
-  courtType?: CourtType;
-  courtState?: string;
-  courtCity?: string;
-  benchNumber?: string;
-  judgeName?: string;
-  judgeDesignation?: string;
-  description?: string;
-  status?: CaseStatus;
-  stage?: CaseStage;
-  priority?: Priority;
-  oppositeParties?: OppositeParty[];
 }
 
 export interface UpdateCaseInput {

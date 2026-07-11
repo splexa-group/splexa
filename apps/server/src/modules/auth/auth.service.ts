@@ -4,12 +4,16 @@ import bcrypt from "bcryptjs";
 import { logger } from "@/config/logger";
 import { MAX_OTP_ATTEMPTS, MAX_OTP_REQUESTS_PER_HOUR } from "@/constants/auth";
 import { emailProvider } from "@/integrations/email";
-import { VerifyOtpCtx, VerifyOtpResult } from "@/models/auth";
-import { generateOtp, generateRefreshToken, hashToken } from "@/utils/crypto";
 import { Errors } from "@/utils/errors";
 import { signAccessToken } from "@/utils/jwt";
 
-import { refreshTokenExpiry } from "./auth.helper";
+import {
+  generateOtp,
+  generateRefreshToken,
+  hashToken,
+  refreshTokenExpiry,
+} from "./auth.helper";
+import { VerifyOtpCtx, VerifyOtpResult } from "./auth.models";
 import { authRepository } from "./auth.repository";
 import { SignupInput, OtpRequestInput, OtpVerifyInput } from "./auth.schema";
 
@@ -65,11 +69,11 @@ export const authService = {
     const count = await authRepository.countRecentOtpRequests(input.email);
     if (count >= MAX_OTP_REQUESTS_PER_HOUR) throw Errors.otpRateLimited();
 
-    const locked = await authRepository.findLockedEmail(
+    const lockedEmail = await authRepository.findLockedEmail(
       input.email,
       MAX_OTP_ATTEMPTS,
     );
-    if (locked) throw Errors.otpLocked();
+    if (lockedEmail) throw Errors.otpLocked();
 
     const otp = generateOtp();
     const otpHash = await bcrypt.hash(otp, 10);
@@ -77,7 +81,10 @@ export const authService = {
     try {
       await emailProvider.sendOtp(input.email, otp);
     } catch (err) {
-      logger.error({ err, email: input.email }, "auth: failed to send OTP");
+      logger.error(
+        { email: input.email, error: err },
+        "auth: failed to send OTP",
+      );
       throw Errors.emailSendFailed();
     }
 
@@ -94,16 +101,17 @@ export const authService = {
     const user = await authRepository.findUserByEmail(input.email);
     if (!user) throw Errors.userNotFound();
 
-    const otpRow = await authRepository.findLatestActiveOtp(input.email);
-    if (!otpRow) throw Errors.otpNotFound();
+    const otpRequest = await authRepository.findLatestOtpRequest(input.email);
 
-    if (otpRow.attempts >= MAX_OTP_ATTEMPTS) throw Errors.otpLocked();
+    if (!otpRequest) throw Errors.otpNotFound();
+    if (otpRequest.expiresAt <= new Date()) throw Errors.otpExpired();
+    if (otpRequest.attempts >= MAX_OTP_ATTEMPTS) throw Errors.otpLocked();
 
-    const isValid = await bcrypt.compare(input.otp, otpRow.otpHash);
+    const isValid = await bcrypt.compare(input.otp, otpRequest.otpHash);
 
     if (!isValid) {
-      await authRepository.incrementOtpAttempts(otpRow.id);
-      const remainingAttempts = MAX_OTP_ATTEMPTS - (otpRow.attempts + 1);
+      await authRepository.incrementOtpAttempts(otpRequest.id);
+      const remainingAttempts = MAX_OTP_ATTEMPTS - (otpRequest.attempts + 1);
 
       //TODO: send email to user warning about too many failed attempts - so if he is not the one trying to login, he can take action to secure his account before lockout occurs. This is especially important if we decide to increase MAX_OTP_ATTEMPTS in the future.
 
@@ -116,7 +124,7 @@ export const authService = {
       );
     }
 
-    await authRepository.markOtpVerified(otpRow.id);
+    await authRepository.markOtpVerified(otpRequest.id);
     await authRepository.markEmailVerified(user.id, user.orgId);
 
     const accessToken = await signAccessToken({
@@ -126,28 +134,30 @@ export const authService = {
     });
 
     const refreshToken = generateRefreshToken();
-    const tokenHash = hashToken(refreshToken);
+    const refreshTokenHash = hashToken(refreshToken);
 
     await authRepository.createSession({
       userId: user.id,
       orgId: user.orgId,
-      tokenHash,
+      refreshTokenHash,
       ipAddress: ctx.ipAddress,
       userAgent: ctx.userAgent,
       expiresAt: refreshTokenExpiry(),
     });
 
+    const interimUser = {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      orgId: user.orgId,
+    };
+
     return {
       accessToken,
       refreshToken,
-      user: {
-        id: user.id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.role,
-        orgId: user.orgId,
-      },
+      user: interimUser,
     };
   },
 
@@ -156,9 +166,9 @@ export const authService = {
   ): Promise<{ accessToken: string }> {
     if (!refreshToken) throw Errors.missingRefreshToken();
 
-    const tokenHash = hashToken(refreshToken);
+    const refreshTokenHash = hashToken(refreshToken);
     const session =
-      await authRepository.findActiveSessionByTokenHash(tokenHash);
+      await authRepository.findActiveSessionByRefreshToken(refreshTokenHash);
     if (!session) throw Errors.sessionExpired();
 
     const user = await authRepository.findUserById(session.userId);
@@ -170,17 +180,19 @@ export const authService = {
       role: user.role,
     });
 
-    await authRepository.updateSessionLastUsed(session.id, session.userId);
+    await authRepository.updateSessionLastUsedAt(session.id, session.userId);
 
     return { accessToken };
   },
 
-  async logout(refreshToken: string | undefined): Promise<void> {
-    if (!refreshToken) throw Errors.missingRefreshToken();
+  async logout(refreshToken?: string): Promise<void> {
+    // No token means there's nothing to revoke — logout should always succeed
+    // from the client's perspective, not error out for an already-gone session.
+    if (!refreshToken) return;
 
-    const tokenHash = hashToken(refreshToken);
+    const refreshTokenHash = hashToken(refreshToken);
     const session =
-      await authRepository.findActiveSessionByTokenHash(tokenHash);
+      await authRepository.findActiveSessionByRefreshToken(refreshTokenHash);
 
     if (session) {
       await authRepository.revokeSession(session.id, session.userId);
@@ -203,11 +215,25 @@ export const authService = {
     return session;
   },
 
-  async revokeSession(sessionId: string, userId: string): Promise<void> {
+  async revokeSession(
+    sessionId: string,
+    userId: string,
+    refreshTokenHash: string | undefined,
+  ): Promise<{ isCurrentSession: boolean }> {
     const session = await authRepository.findSessionById(sessionId, userId);
     if (!session) throw Errors.sessionNotFound();
 
+    const sessionWithRefreshToken = refreshTokenHash
+      ? await authRepository.findActiveSessionByRefreshToken(refreshTokenHash)
+      : null;
+
+    const isCurrentSession = refreshTokenHash
+      ? sessionWithRefreshToken?.id === sessionId
+      : false;
+
     await authRepository.revokeSession(sessionId, userId);
+
+    return { isCurrentSession };
   },
 
   async revokeAllSessions(userId: string): Promise<void> {

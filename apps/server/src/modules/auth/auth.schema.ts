@@ -1,4 +1,9 @@
-import { Designation, FirmType, PracticeType, States } from "@splexa-group/shared/enums";
+import {
+  Designation,
+  FirmType,
+  PracticeType,
+  States,
+} from "@splexa-group/shared/enums";
 import { z } from "zod";
 
 export const signupSchema = z

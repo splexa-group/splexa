@@ -4,6 +4,7 @@ import { REFRESH_TOKEN_COOKIE } from "@/constants/auth";
 
 import {
   clearAuthCookies,
+  hashToken,
   setAccessTokenCookie,
   setRefreshTokenCookie,
 } from "./auth.helper";
@@ -55,7 +56,8 @@ export const authController = {
   },
 
   async getMe(req: FastifyRequest) {
-    return authService.getMe(req.user.userId);
+    const user = await authService.getMe(req.user.userId);
+    return { user };
   },
 
   async listSessions(req: FastifyRequest) {
@@ -64,11 +66,25 @@ export const authController = {
   },
 
   async getSession(req: FastifyRequest<{ Params: SessionParams }>) {
-    return authService.getSession(req.params.id, req.user.userId);
+    const session = await authService.getSession(
+      req.params.id,
+      req.user.userId,
+    );
+    return { session };
   },
 
-  async revokeSession(req: FastifyRequest<{ Params: SessionParams }>) {
-    await authService.revokeSession(req.params.id, req.user.userId);
+  async revokeSession(
+    req: FastifyRequest<{ Params: SessionParams }>,
+    reply: FastifyReply,
+  ) {
+    const currentToken = req.cookies[REFRESH_TOKEN_COOKIE];
+    const refreshTokenHash = currentToken ? hashToken(currentToken) : undefined;
+    const { isCurrentSession } = await authService.revokeSession(
+      req.params.id,
+      req.user.userId,
+      refreshTokenHash,
+    );
+    if (isCurrentSession) clearAuthCookies(reply);
     return { message: "Session revoked" };
   },
 

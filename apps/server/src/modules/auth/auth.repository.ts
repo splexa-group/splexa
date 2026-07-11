@@ -1,12 +1,14 @@
 import { UserRole } from "@splexa-group/shared/enums";
 
-import { OTP_LOCKOUT_MINUTES, OTP_RATE_WINDOW_MS } from "@/constants/auth";
+import { OTP_LOCKOUT_MS, OTP_RATE_WINDOW_MS } from "@/constants/auth";
 import { prisma } from "@/db/client";
 import { orgSelect } from "@/db/selects/org.select";
 import { userSelect } from "@/db/selects/user.select";
-import { UUID } from "@/utils/crypto";
+import { msAgo } from "@/utils/date-time";
+import { UUID } from "@/utils/misc";
 
 import { otpExpiry } from "./auth.helper";
+import { CreateSessionData } from "./auth.models";
 import { SignupInput } from "./auth.schema";
 
 export const authRepository = {
@@ -26,7 +28,7 @@ export const authRepository = {
 
   // Creates org, user, and initial OTP request atomically so partial failures
   // cannot leave a user with no verifiable OTP or an OTP with no user.
-  async createOrgAndUser(input: SignupInput, otpHash: string) {
+  async createOrgAndUser(data: SignupInput, otpHash: string) {
     return prisma.$transaction(async (tx) => {
       const orgId = UUID();
       const userId = UUID();
@@ -39,11 +41,11 @@ export const authRepository = {
       await tx.organization.create({
         data: {
           id: orgId,
-          name: input.orgName,
-          practiceTypes: input.practiceTypes,
-          firmType: input.firmType,
-          city: input.city,
-          state: input.state,
+          name: data.orgName,
+          practiceTypes: data.practiceTypes,
+          firmType: data.firmType,
+          city: data.city,
+          state: data.state,
           createdBy: userId,
         },
       });
@@ -52,28 +54,26 @@ export const authRepository = {
         data: {
           id: userId,
           orgId,
-          firstName: input.firstName,
-          lastName: input.lastName,
-          email: input.email,
-          phoneNumber: input.phoneNumber,
-          designation: input.designation,
+          firstName: data.firstName,
+          lastName: data.lastName,
+          email: data.email,
+          phoneNumber: data.phoneNumber,
+          designation: data.designation,
           role: UserRole.OWNER,
         },
         select: userSelect,
       });
 
       await tx.otpRequest.create({
-        data: { email: input.email, otpHash, expiresAt: otpExpiry() },
+        data: { email: data.email, otpHash, expiresAt: otpExpiry() },
       });
     });
   },
 
-  // Invalidates all pending OTPs for an email before issuing a new one,
-  // preventing replay of a stale code after a newer one has been verified.
-  async invalidateActiveOtps(email: string): Promise<void> {
-    await prisma.otpRequest.updateMany({
-      where: { email, verifiedAt: null },
-      data: { verifiedAt: new Date() },
+  async invalidateActiveOtps(email: string) {
+    return prisma.otpRequest.updateMany({
+      where: { email, verifiedAt: null, invalidatedAt: null },
+      data: { invalidatedAt: new Date() },
     });
   },
 
@@ -84,21 +84,24 @@ export const authRepository = {
   },
 
   async countRecentOtpRequests(email: string): Promise<number> {
-    const since = new Date(Date.now() - OTP_RATE_WINDOW_MS);
+    const since = msAgo(OTP_RATE_WINDOW_MS);
     return prisma.otpRequest.count({
       where: { email, createdAt: { gt: since } },
     });
   },
 
-  async findLatestActiveOtp(email: string) {
+  // Deliberately not filtered by expiresAt — the caller needs to tell "no OTP
+  // was ever requested" apart from "one was requested but it expired," which
+  // requires seeing the expired row rather than having it filtered out here.
+  async findLatestOtpRequest(email: string) {
     return prisma.otpRequest.findFirst({
-      where: { email, verifiedAt: null, expiresAt: { gt: new Date() } },
+      where: { email, verifiedAt: null, invalidatedAt: null },
       orderBy: { createdAt: "desc" },
     });
   },
 
   async findLockedEmail(email: string, maxAttempts: number) {
-    const since = new Date(Date.now() - OTP_LOCKOUT_MINUTES * 60 * 1000);
+    const since = msAgo(OTP_LOCKOUT_MS);
     return prisma.otpRequest.findFirst({
       where: {
         email,
@@ -109,60 +112,57 @@ export const authRepository = {
     });
   },
 
-  async incrementOtpAttempts(id: string): Promise<void> {
-    await prisma.otpRequest.update({
+  async incrementOtpAttempts(id: string) {
+    return prisma.otpRequest.update({
       where: { id },
       data: { attempts: { increment: 1 } },
     });
   },
 
-  async markOtpVerified(id: string): Promise<void> {
-    await prisma.otpRequest.update({
+  async markOtpVerified(id: string) {
+    return prisma.otpRequest.update({
       where: { id },
       data: { verifiedAt: new Date() },
     });
   },
 
-  async markEmailVerified(userId: string, orgId: string): Promise<void> {
-    await prisma.user.updateMany({
+  async markEmailVerified(userId: string, orgId: string) {
+    return prisma.user.updateMany({
       where: { id: userId, orgId },
       data: { emailVerified: true },
     });
   },
 
-  async createSession(data: {
-    userId: string;
-    orgId: string;
-    tokenHash: string;
-    ipAddress: string;
-    userAgent: string;
-    expiresAt: Date;
-  }) {
+  async createSession(data: CreateSessionData) {
     return prisma.session.create({ data });
   },
 
-  async findActiveSessionByTokenHash(tokenHash: string) {
+  async findActiveSessionByRefreshToken(refreshTokenHash: string) {
     return prisma.session.findFirst({
-      where: { tokenHash, revokedAt: null, expiresAt: { gt: new Date() } },
+      where: {
+        refreshTokenHash,
+        revokedAt: null,
+        expiresAt: { gt: new Date() },
+      },
     });
   },
 
-  async updateSessionLastUsed(id: string, userId: string): Promise<void> {
-    await prisma.session.updateMany({
+  async updateSessionLastUsedAt(id: string, userId: string) {
+    return prisma.session.updateMany({
       where: { id, userId },
       data: { lastUsedAt: new Date() },
     });
   },
 
-  async revokeSession(id: string, userId: string): Promise<void> {
-    await prisma.session.updateMany({
+  async revokeSession(id: string, userId: string) {
+    return prisma.session.updateMany({
       where: { id, userId },
       data: { revokedAt: new Date() },
     });
   },
 
-  async revokeAllUserSessions(userId: string): Promise<void> {
-    await prisma.session.updateMany({
+  async revokeAllUserSessions(userId: string) {
+    return prisma.session.updateMany({
       where: { userId, revokedAt: null },
       data: { revokedAt: new Date() },
     });

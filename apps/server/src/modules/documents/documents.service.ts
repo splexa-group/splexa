@@ -5,8 +5,8 @@ import { MAX_UPLOAD_BYTES, PRESIGNED_URL_TTL_SECONDS } from "@/constants/misc";
 import { storageProvider } from "@/integrations/storage";
 import { ServiceContext } from "@/models/service-context";
 import { casesRepository } from "@/modules/cases/cases.repository";
-import { UUID } from "@/utils/crypto";
 import { Errors } from "@/utils/errors";
+import { UUID } from "@/utils/misc";
 
 import { documentsRepository } from "./documents.repository";
 import { ListDocumentsOrgQuery, ListDocumentsQuery } from "./documents.schema";

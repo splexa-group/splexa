@@ -1,25 +1,35 @@
+import crypto from "crypto";
+
 import { FastifyReply } from "fastify";
 
 import { env } from "@/config/env";
 import {
   ACCESS_TOKEN_COOKIE,
-  ACCESS_TOKEN_MAX_AGE,
-  OTP_TTL_MINUTES,
+  ACCESS_TOKEN_TTL_MS,
+  OTP_TTL_MS,
   REFRESH_TOKEN_COOKIE,
-  REFRESH_TOKEN_EXPIRY_DAYS,
-  REFRESH_TOKEN_MAX_AGE,
+  REFRESH_TOKEN_EXPIRY_MS,
 } from "@/constants/auth";
+import { msFromNow, msToSeconds } from "@/utils/date-time";
+
+export function generateOtp(): string {
+  return crypto.randomInt(100000, 1_000_000).toString();
+}
+
+export function hashToken(token: string): string {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+export function generateRefreshToken(): string {
+  return crypto.randomBytes(64).toString("hex");
+}
 
 export function otpExpiry(): Date {
-  const d = new Date();
-  d.setMinutes(d.getMinutes() + OTP_TTL_MINUTES);
-  return d;
+  return msFromNow(OTP_TTL_MS);
 }
 
 export function refreshTokenExpiry(): Date {
-  const d = new Date();
-  d.setDate(d.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
-  return d;
+  return msFromNow(REFRESH_TOKEN_EXPIRY_MS);
 }
 
 export function setAccessTokenCookie(reply: FastifyReply, token: string): void {
@@ -28,7 +38,7 @@ export function setAccessTokenCookie(reply: FastifyReply, token: string): void {
     secure: env.IS_PRODUCTION,
     sameSite: "strict",
     path: "/",
-    maxAge: ACCESS_TOKEN_MAX_AGE,
+    maxAge: msToSeconds(ACCESS_TOKEN_TTL_MS),
   });
 }
 
@@ -41,7 +51,7 @@ export function setRefreshTokenCookie(
     secure: env.IS_PRODUCTION,
     sameSite: "strict",
     path: "/api/v1/auth",
-    maxAge: REFRESH_TOKEN_MAX_AGE,
+    maxAge: msToSeconds(REFRESH_TOKEN_EXPIRY_MS),
   });
 }
 

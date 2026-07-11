@@ -2,10 +2,10 @@ import { type Prisma, ClientType } from "@prisma/client";
 import { HearingStatus } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
+import { caseDetailSelect, caseSummarySelect } from "@/db/selects/case.select";
 
 import type { CreateCaseData, CreateCaseWithNewClientData } from "./cases.models";
 import type { ListCasesQuery } from "./cases.schema";
-import { caseDetailSelect, caseSummarySelect } from "./cases.select-model";
 
 export const casesRepository = {
   async create(data: CreateCaseData) {

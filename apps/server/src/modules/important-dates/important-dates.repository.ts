@@ -2,6 +2,7 @@ import type { Prisma } from "@prisma/client";
 import { ImportantDateType } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
+import { importantDateCalendarSelect } from "@/db/selects/important-date.select";
 import { parseDate } from "@/utils/date";
 
 import type {
@@ -9,7 +10,6 @@ import type {
   ListImportantDatesQuery,
   UpdateImportantDateInput,
 } from "./important-dates.schema";
-import { importantDateCalendarSelect } from "./important-dates.select-model";
 
 export const importantDatesRepository = {
   async create(

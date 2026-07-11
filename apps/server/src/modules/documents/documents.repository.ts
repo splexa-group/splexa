@@ -1,9 +1,9 @@
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/db/client";
+import { documentSelect } from "@/db/selects/document.select";
 
 import type { DocumentFolderItem, ListDocumentsOrgQuery, ListDocumentsQuery } from "./documents.schema";
-import { documentSelect } from "./documents.select-model";
 
 export const documentsRepository = {
   async create(data: {

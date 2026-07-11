@@ -2,7 +2,8 @@ import { UserRole } from "@splexa-group/shared/enums";
 
 import { OTP_LOCKOUT_MINUTES, OTP_RATE_WINDOW_MS } from "@/constants/auth";
 import { prisma } from "@/db/client";
-import { orgSelect, userSelect } from "@/db/select-model";
+import { orgSelect } from "@/db/selects/org.select";
+import { userSelect } from "@/db/selects/user.select";
 
 import type { SignupInput } from "./auth.schema";
 

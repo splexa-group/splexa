@@ -1,8 +1,8 @@
 import type { Prisma } from "@prisma/client";
 
-import { clientSelect } from "@/modules/clients/clients.select-model";
-import { hearingSelect } from "@/modules/hearings/hearings.select-model";
-import { importantDateSelect } from "@/modules/important-dates/important-dates.select-model";
+import { clientSelect } from "./client.select";
+import { hearingSelect } from "./hearing.select";
+import { importantDateSelect } from "./important-date.select";
 
 export const caseSummarySelect = {
   id: true,

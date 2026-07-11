@@ -6,11 +6,11 @@ import {
 } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
+import { hearingCalendarSelect, hearingDetailSelect, hearingSummarySelect } from "@/db/selects/hearing.select";
 import { casesRepository } from "@/modules/cases/cases.repository";
 import { parseDate } from "@/utils/date";
 
 import type { CreateHearingInput, ListHearingsQuery } from "./hearings.schema";
-import { hearingCalendarSelect, hearingDetailSelect, hearingSummarySelect } from "./hearings.select-model";
 
 export const hearingsRepository = {
   async create(

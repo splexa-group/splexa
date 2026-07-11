@@ -1,7 +1,7 @@
 import { prisma } from "@/db/client";
+import { clientSelect } from "@/db/selects/client.select";
 
 import type { CreateClientInput, ListClientsQuery, UpdateClientInput } from "./clients.schema";
-import { clientSelect } from "./clients.select-model";
 
 export const clientsRepository = {
   async create(

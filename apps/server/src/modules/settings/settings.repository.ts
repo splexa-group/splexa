@@ -1,7 +1,7 @@
 import { type Prisma } from "@prisma/client";
 
 import { prisma } from "@/db/client";
-import { orgSelect } from "@/db/select-model";
+import { orgSelect } from "@/db/selects/org.select";
 
 import type { UpdateOrganizationBody, UpdateProfileBody } from "./settings.schema";
 

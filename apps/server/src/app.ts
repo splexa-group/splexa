@@ -7,14 +7,14 @@ import Fastify, { type FastifyInstance } from "fastify";
 
 import { env } from "@/config/env";
 import { fastifyLogger } from "@/config/logger";
-import { authModule } from "@/modules/auth/plugin";
-import { casesModule } from "@/modules/cases/plugin";
-import { clientsModule } from "@/modules/clients/plugin";
-import { dashboardModule } from "@/modules/dashboard/plugin";
-import { documentsModule } from "@/modules/documents/plugin";
-import { hearingsModule } from "@/modules/hearings/plugin";
-import { importantDatesModule } from "@/modules/important-dates/plugin";
-import { settingsModule } from "@/modules/settings/plugin";
+import { authRoutes } from "@/modules/auth/auth.routes";
+import { casesRoutes } from "@/modules/cases/cases.routes";
+import { clientsRoutes } from "@/modules/clients/clients.routes";
+import { dashboardRoutes } from "@/modules/dashboard/dashboard.routes";
+import { documentsRoutes } from "@/modules/documents/documents.routes";
+import { hearingsRoutes } from "@/modules/hearings/hearings.routes";
+import { importantDatesRoutes } from "@/modules/important-dates/important-dates.routes";
+import { settingsRoutes } from "@/modules/settings/settings.routes";
 import { authGuardPlugin } from "@/plugins/auth-guard.plugin";
 import { errorHandlerPlugin } from "@/plugins/error-handler.plugin";
 import { responsePlugin } from "@/plugins/response.plugin";
@@ -29,14 +29,15 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(responsePlugin);
   await app.register(cookie, { secret: env.COOKIE_SECRET });
   await app.register(authGuardPlugin);
-  await app.register(authModule);
-  await app.register(clientsModule);
-  await app.register(casesModule);
-  await app.register(hearingsModule);
-  await app.register(importantDatesModule);
-  await app.register(documentsModule);
-  await app.register(settingsModule);
-  await app.register(dashboardModule);
+
+  await app.register(authRoutes, { prefix: "/api/v1" });
+  await app.register(clientsRoutes, { prefix: "/api/v1" });
+  await app.register(casesRoutes, { prefix: "/api/v1" });
+  await app.register(hearingsRoutes, { prefix: "/api/v1" });
+  await app.register(importantDatesRoutes, { prefix: "/api/v1" });
+  await app.register(documentsRoutes, { prefix: "/api/v1" });
+  await app.register(settingsRoutes, { prefix: "/api/v1" });
+  await app.register(dashboardRoutes, { prefix: "/api/v1" });
 
   return app;
 }

@@ -15,22 +15,43 @@ Tests exist to catch regressions in logic that would cost you — broken auth, d
 
 ## Test Location
 
-Tests live inside the module they test, inside a `__tests__` folder:
+Tests live inside the module they test, inside a `__tests__` folder — **one test file per source
+file that has real logic to test**, not one grab-bag file per module:
 
 ```
 modules/auth/
-├── auth-service.ts
-├── auth-repository.ts
-├── auth-routes.ts
+├── auth.service.ts
+├── auth.helper.ts
+├── auth.repository.ts
+├── auth.routes.ts
 └── __tests__/
-    └── auth.test.ts       # All auth tests in one file (or split by feature if file grows large)
+    ├── auth.service.test.ts   # Every business-logic branch in authService — mocks authRepository,
+    │                          # emailProvider, signAccessToken, bcryptjs, and this module's own
+    │                          # auth.helper.ts (control exact OTP/hash/token values for assertions)
+    └── auth.helper.test.ts    # The pure crypto/date/cookie helpers — run for REAL (no mocking),
+                                # since they're deterministic and have no I/O. Cookie functions get
+                                # a fake FastifyReply ({ setCookie: vi.fn(), clearCookie: vi.fn() }).
 
 modules/cases/
 └── __tests__/
-    └── cases.test.ts
+    └── cases.service.test.ts
 ```
 
-Do not create one test file per source file. Group by feature/scenario, not by file. If `cases.test.ts` grows beyond 400 lines, split into `cases-service.test.ts` and `cases-repository.test.ts`.
+Most modules only have a `[name].service.test.ts`, because most modules only have business logic
+worth testing in the service — `[name].helper.ts` doesn't exist for them, or is trivial. `auth` has
+both files because `auth.helper.ts` holds real, non-trivial logic (crypto generation, expiry math,
+cookie construction) that's cheap and valuable to test directly rather than only indirectly through
+the mocked service tests.
+
+**One gotcha specific to this repo**: `apps/server` has no `.env.test` file. Vitest sets
+`NODE_ENV=test` by default, which makes `@/config/env` try to load `.env.test` and crash on missing
+required vars — but only if the real `@/config/env` (or something that imports it, like
+`@/config/logger`) actually gets loaded. Any test file must mock away whatever it imports that
+would pull in the real env/logger — e.g. `vi.mock("@/config/logger", () => ({ logger: { error:
+vi.fn() } }))` if the module under test imports `logger` directly, or `vi.mock("@/config/env", ()
+=> ({ env: { IS_PRODUCTION: false } }))` if the test genuinely needs a controlled `env` value (like
+asserting a cookie's `secure` flag). Every existing test file already does one of these — copy the
+pattern rather than reaching for the real env.
 
 ---
 
@@ -86,32 +107,47 @@ For a function returning 4–5 values, write **one test** checking the full obje
 
 ## Auth Module Tests — What to Cover
 
-Located at `modules/auth/__tests__/auth.test.ts`.
+Located at `modules/auth/__tests__/auth.service.test.ts` (business logic) and
+`auth.helper.test.ts` (pure crypto/date/cookie helpers) — see "Test Location" above for why it's
+two files, not one.
 
-These are critical — they protect the most sensitive paths in the app.
+These are critical — they protect the most sensitive paths in the app. Real coverage includes the
+non-obvious branches, each added because it was a real bug found and fixed, not a hypothetical:
 
 ```ts
-describe("OTP flow", () => {
-  it("generates a 6-digit OTP and stores it in Redis with 10-minute TTL");
-  it("returns the channel used (whatsapp or sms) after sending OTP");
-  it("locks the mobile for 15 minutes after 3 failed OTP attempts");
-  it("deletes OTP from Redis after successful verification");
-  it("rejects an expired OTP");
+describe("authService.signup", () => {
+  it("throws emailTaken when the email is already registered");
+  it("throws otpRateLimited when too many recent OTP requests exist");
+  it("throws emailSendFailed when the OTP email fails to send");
+  it("creates the org and user when everything succeeds");
+  it("converts a concurrent-signup unique-constraint violation into emailTaken"); // P2002 race
+  it("rethrows non-unique-constraint errors from createOrgAndUser");
 });
 
-describe("JWT", () => {
-  it("issues an access token with correct orgId and role in payload");
-  it("rejects a request with an expired access token");
-  it("issues a new access token given a valid refresh token cookie");
-  it("rejects a refresh token that has been blacklisted (after logout)");
+describe("authService.verifyOtp", () => {
+  it("throws otpNotFound when no OTP request was ever made");
+  it("throws otpExpired when the OTP request has expired"); // distinct from otpNotFound
+  it("throws otpLocked when attempts are already at the max");
+  it("increments attempts and throws invalidOtp on a wrong code");
+  it("verifies, creates a session, and returns tokens on a correct code");
 });
 
-describe("multi-tenancy guard", () => {
-  it(
-    "does not return cases from a different firm when using a valid JWT from another firm",
-  );
+describe("authService.logout", () => {
+  it("does nothing when no refresh token is provided"); // no throw — see backend-rules.md
+  it("does nothing when the token doesn't match an active session");
+  it("revokes the matching session");
+});
+
+describe("authService.revokeSession", () => {
+  it("reports isCurrentSession: true when the token belongs to the session being revoked");
+  it("reports isCurrentSession: false when the token belongs to a different session");
 });
 ```
+
+`auth.helper.test.ts` covers `generateOtp` (6-digit range), `hashToken` (deterministic, 64-hex
+SHA-256), `generateRefreshToken` (128-hex, unique per call), `otpExpiry`/`refreshTokenExpiry`
+(Date roughly N ms in the future), and the three cookie functions (correct name/path/maxAge per
+cookie, against a fake `FastifyReply`).
 
 ---
 

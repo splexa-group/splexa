@@ -21,13 +21,16 @@ The single most important feature is hearing date reminders. Everything else is 
 
 1. **`orgId` from `req.user.orgId` (JWT) only** — never body, params, or query string
 2. **Every tenant-scoped DB query filters by `orgId`** — missing this is a critical security bug
-3. **Five backend layers always**: plugin → route → controller → service → repository
+3. **Backend layers always**: route → controller → service → repository. `route.ts` is itself the
+   Fastify plugin (no separate `plugin.ts`); every module registers under the same `/api/v1`
+   prefix in `app.ts`, not a per-module one.
 4. **Zod everywhere** — no raw JSON Schema; types always from `z.infer<>`
-5. **No magic values** — use `CASE_STATUS.*`, `USER_ROLES.*`, `redisKeys.*`
+5. **No magic values** — use `CASE_STATUS.*`, `USER_ROLES.*`
 6. **No `any`, no `!`, no `@ts-ignore`**
-7. **No `prisma.*` outside `*-repository.ts`**
-8. **Repositories return `null` — services throw `NotFoundError`**
-9. **kebab-case for all file names**, everywhere
+7. **No `prisma.*` outside `*.repository.ts`** — select shapes live in `db/selects/[entity].select.ts`, never inline and never in a module folder
+8. **Repositories return `null` — services throw** via `Errors.xxx()` (`@/utils/errors`)
+9. **File naming**: kebab-case everywhere except inside a backend module, where it's
+   `[module-name].[role].ts` (e.g. `cases.service.ts`) — see `.claude/architecture.md`
 
 Activity/audit logging (`logActivity()`, `ActivityAction`) is Phase 2 scope — not built, do not add it. See `developer-workflow.md`.
 

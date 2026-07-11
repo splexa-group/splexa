@@ -258,21 +258,26 @@ interface CaseCardProps {
 
 ## File Naming — All Files in Repo
 
-**kebab-case everywhere**:
+**kebab-case for standalone/top-level files** (config, plugins, frontend components/hooks):
 
 ```
-cases-service.ts      ✅
-casesService.ts       ❌
-CasesService.ts       ❌
+use-cases-query.ts       ✅
+useCasesQuery.ts         ❌
 
-use-cases-query.ts    ✅
-useCasesQuery.ts      ❌
+case-card.tsx            ✅
+CaseCard.tsx              ❌ (even React components)
 
-case-card.tsx         ✅
-CaseCard.tsx          ❌ (even React components)
+error-handler.plugin.ts  ✅
+```
 
-auth-plugin.ts        ✅
-authPlugin.ts         ❌
+**Inside a backend module**, it's `[module-name].[role].ts` instead — the module name is repeated,
+dot-separated from the role (see `architecture.md`):
+
+```
+cases.service.ts          ✅
+casesService.ts            ❌
+CasesService.ts            ❌
+cases-service.ts           ❌ (hyphen, not dot, is wrong here)
 ```
 
 Framework exceptions (these must match what the framework expects):

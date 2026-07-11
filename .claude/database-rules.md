@@ -4,8 +4,8 @@
 
 Every table that holds firm-specific data has a `org_id` column. Every query on those tables filters by `org_id`. This is the most important data correctness rule in Splexa.
 
-Tables WITHOUT `org_id` (global): `organizations`, `users`, `refresh_tokens`, `otp_codes`
-Tables WITH `org_id` (all others): `clients`, `cases`, `hearings`, `reminders`, `documents`, `case_updates`, `user_org_roles`
+Tables WITHOUT `org_id` (global): `organizations`, `users`, `sessions` (has `org_id` denormalized for convenience, but a session is fundamentally scoped by `user_id`), `otp_requests` (scoped by `email`, pre-auth)
+Tables WITH `org_id` (all others): `clients`, `cases`, `hearings`, `important_dates`, `documents`
 
 ---
 
@@ -471,39 +471,64 @@ async getCase(user: AuthUser, caseId: string) {
 
 ---
 
-## Select Constants
+## Select Constants — `db/selects/`
 
-Define reusable select shapes as typed constants in the repository file. Never repeat the same field list across multiple query calls.
+Select shapes do **not** live in the repository file, and they do not live inside any module
+folder. Every Prisma `select` shape lives in `apps/server/src/db/selects/[entity].select.ts`, one
+file per entity, regardless of which module (or modules) query that entity. The repository imports
+it from there.
 
 ```ts
-// modules/cases/repository.ts
-import { Prisma } from '@prisma/client';
+// db/selects/case.select.ts
+import type { Prisma } from '@prisma/client';
 
-const casePublicSelect = {
+import { clientSelect } from './client.select';
+import { hearingSelect } from './hearing.select';
+import { importantDateSelect } from './important-date.select';
+
+export const caseSummarySelect = {
   id: true,
   caseNumber: true,
   status: true,
   courtName: true,
   nextHearingDate: true,
   createdAt: true,
-  client: {
-    select: { id: true, name: true, mobile: true },
-  },
-  assignedTo: {
-    select: { id: true, name: true },
-  },
+  client: { select: { id: true, fullName: true, phone: true } },
 } satisfies Prisma.CaseSelect;
+
+export const caseDetailSelect = {
+  // ...case's own scalar fields...
+  client: { select: clientSelect },
+  hearings: { where: { deletedAt: null }, select: hearingSelect },
+  importantDates: { where: { deletedAt: null }, select: importantDateSelect },
+} satisfies Prisma.CaseSelect;
+```
+
+```ts
+// modules/cases/cases.repository.ts
+import { caseDetailSelect, caseSummarySelect } from '@/db/selects/case.select';
 
 // Use in every query that returns cases to the API
 async findById(id: string, orgId: string) {
-  return prisma.cases.findFirst({
+  return prisma.case.findFirst({
     where: { id, orgId, deletedAt: null },
-    select: casePublicSelect,
+    select: caseDetailSelect,
   });
 }
 ```
 
+**Why centralized, not per-module**: an entity like Case is an aggregate that embeds its
+children's shapes (hearings, important dates, a client) — that composition is a data-shape
+concern, not a module-privacy one. Centralizing it means every repository reaches into the same
+neutral layer for a select shape instead of reaching into a sibling module's internal files, and it
+means the file whose name says "this is Case's shape" doesn't secretly spend most of its content
+assembling three other entities' shapes.
+
 Using `satisfies Prisma.CaseSelect` gives compile-time checking that every selected field exists on the model.
+
+`db/selects/user.select.ts` and `db/selects/org.select.ts` follow the same pattern even though
+`User`/`Organization` have no single owning module (created by `auth`, viewed/edited by `settings`)
+— they're not a special case anymore, every entity's select lives here the same way.
 
 ---
 

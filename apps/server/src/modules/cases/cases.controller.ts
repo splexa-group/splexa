@@ -14,13 +14,11 @@ export const casesController = {
     req: FastifyRequest<{ Body: CreateCaseInput }>,
     reply: FastifyReply,
   ) {
-    const data = await casesService.create(req.body, {
+    reply.code(201);
+    return casesService.create(req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
-    reply.code(201);
-    return data;
   },
 
   async list(req: FastifyRequest<{ Querystring: ListCasesQuery }>) {
@@ -38,7 +36,6 @@ export const casesController = {
     return casesService.update(req.params.id, req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
   },
 
@@ -52,7 +49,6 @@ export const casesController = {
       {
         orgId: req.user.orgId,
         userId: req.user.userId,
-        ipAddress: req.ip,
       },
     );
     reply.code(201);
@@ -66,7 +62,6 @@ export const casesController = {
     await casesService.delete(req.params.id, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
     reply.code(204);
   },

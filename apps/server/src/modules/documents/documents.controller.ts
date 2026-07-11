@@ -20,7 +20,6 @@ export const documentsController = {
     const result = await documentsService.upload(req.params.caseId, file, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
     reply.code(201);
     return result;
@@ -30,7 +29,7 @@ export const documentsController = {
     const { data, total } = await documentsService.listForCase(
       req.params.caseId,
       req.query,
-      { orgId: req.user.orgId, userId: req.user.userId, ipAddress: req.ip },
+      { orgId: req.user.orgId, userId: req.user.userId },
     );
     return { data, total, page: req.query.page, limit: req.query.limit };
   },
@@ -55,7 +54,6 @@ export const documentsController = {
     await documentsService.delete(req.params.documentId, req.params.caseId, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
     reply.code(204);
   },
@@ -67,7 +65,7 @@ export const documentsController = {
       req.params.documentId,
       req.params.caseId,
       req.body.name,
-      { orgId: req.user.orgId, userId: req.user.userId, ipAddress: req.ip },
+      { orgId: req.user.orgId, userId: req.user.userId },
     );
   },
 

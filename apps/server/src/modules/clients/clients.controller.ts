@@ -13,7 +13,6 @@ export const clientsController = {
     const { data, warnings } = await clientsService.create(req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
     reply.code(201);
     return warnings ? { ...data, warnings } : data;
@@ -37,7 +36,6 @@ export const clientsController = {
     return clientsService.update(req.params.id, req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
   },
 
@@ -48,7 +46,6 @@ export const clientsController = {
     await clientsService.delete(req.params.id, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
     reply.code(204);
   },

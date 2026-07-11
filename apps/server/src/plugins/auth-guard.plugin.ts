@@ -3,6 +3,7 @@ import { AuthUser } from "@splexa-group/shared/models";
 import { FastifyInstance, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 
+import { ACCESS_TOKEN_COOKIE } from "@/constants/auth";
 import { Errors } from "@/utils/errors";
 import { verifyAccessToken } from "@/utils/jwt";
 
@@ -11,7 +12,7 @@ export const authGuardPlugin = fp(
     fastify.decorateRequest("user", null as unknown as AuthUser);
 
     fastify.decorate("authenticate", async (req: FastifyRequest) => {
-      const token = req.cookies["access_token"];
+      const token = req.cookies[ACCESS_TOKEN_COOKIE];
       if (!token) throw Errors.missingToken();
       try {
         req.user = await verifyAccessToken(token);
@@ -23,8 +24,9 @@ export const authGuardPlugin = fp(
     fastify.decorate(
       "requireRole",
       (role: UserRole) => async (req: FastifyRequest) => {
-        if (req.user.role !== role)
+        if (req.user.role !== role) {
           throw Errors.forbidden(`Requires ${role} role`);
+        }
       },
     );
   },

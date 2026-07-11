@@ -17,7 +17,6 @@ export const hearingsController = {
     const result = await hearingsService.create(req.params.caseId, req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
     reply.code(201);
     return result;
@@ -45,7 +44,6 @@ export const hearingsController = {
     return hearingsService.update(req.params.id, req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
   },
 
@@ -56,7 +54,6 @@ export const hearingsController = {
     await hearingsService.delete(req.params.id, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
     reply.code(204);
   },

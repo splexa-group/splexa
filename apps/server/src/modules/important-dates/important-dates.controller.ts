@@ -27,7 +27,6 @@ export const importantDatesController = {
     const result = await importantDatesService.create(req.params.caseId, req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
     reply.code(201);
     return result;
@@ -39,7 +38,6 @@ export const importantDatesController = {
     return importantDatesService.update(req.params.caseId, req.params.dateId, req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
   },
 
@@ -50,7 +48,6 @@ export const importantDatesController = {
     await importantDatesService.delete(req.params.caseId, req.params.dateId, {
       orgId: req.user.orgId,
       userId: req.user.userId,
-      ipAddress: req.ip,
     });
     reply.code(204);
   },

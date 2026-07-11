@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 
 import { MAX_OTP_ATTEMPTS, MAX_OTP_REQUESTS_PER_HOUR } from "@/constants/auth";
 import { emailProvider } from "@/integrations/email";
-import type { VerifyOtpCtx, VerifyOtpResult } from "@/types/auth";
+import { VerifyOtpCtx, VerifyOtpResult } from "@/models/auth";
 import {
   generateOtp,
   generateRefreshToken,
@@ -14,7 +14,7 @@ import { signAccessToken } from "@/utils/jwt";
 
 import { otpExpiry, refreshTokenExpiry } from "./auth.helper";
 import { authRepository } from "./auth.repository";
-import type { SignupInput, OtpRequestInput, OtpVerifyInput } from "./auth.schema";
+import { SignupInput, OtpRequestInput, OtpVerifyInput } from "./auth.schema";
 
 export type { VerifyOtpResult };
 

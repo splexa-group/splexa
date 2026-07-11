@@ -1,7 +1,7 @@
 import "@fastify/multipart";
-import type { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 
-import type {
+import {
   DocumentCaseParams,
   DocumentParams,
   ListDocumentsOrgQuery,

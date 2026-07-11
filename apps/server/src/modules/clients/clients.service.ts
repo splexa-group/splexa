@@ -1,8 +1,8 @@
-import type { ServiceContext } from "@/types/service-context";
+import { ServiceContext } from "@/models/service-context";
 import { Errors } from "@/utils/errors";
 
 import { clientsRepository } from "./clients.repository";
-import type { CreateClientInput, ListClientsQuery, UpdateClientInput } from "./clients.schema";
+import { CreateClientInput, ListClientsQuery, UpdateClientInput } from "./clients.schema";
 
 export const clientsService = {
   async create(input: CreateClientInput, ctx: ServiceContext) {

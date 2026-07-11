@@ -2,7 +2,7 @@ import { CaseStatus, HearingPurpose, HearingStatus, ImportantDateType, Priority 
 
 import { prisma } from "@/db/client";
 
-import type { DashboardData } from "./dashboard.schema";
+import { DashboardData } from "./dashboard.schema";
 
 const CRITICAL_DATE_TYPES = [
   ImportantDateType.LIMITATION,

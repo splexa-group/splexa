@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import {
   HearingPurpose,
   HearingStatus,
@@ -10,7 +10,7 @@ import { hearingCalendarSelect, hearingDetailSelect, hearingSummarySelect } from
 import { casesRepository } from "@/modules/cases/cases.repository";
 import { parseDate } from "@/utils/date";
 
-import type { CreateHearingInput, ListHearingsQuery } from "./hearings.schema";
+import { CreateHearingInput, ListHearingsQuery } from "./hearings.schema";
 
 export const hearingsRepository = {
   async create(

@@ -1,4 +1,4 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 
 import { REFRESH_TOKEN_COOKIE } from "@/constants/auth";
 
@@ -7,7 +7,7 @@ import {
   setAccessTokenCookie,
   setRefreshTokenCookie,
 } from "./auth.helper";
-import type {
+import {
   OtpRequestInput,
   OtpVerifyInput,
   SessionParams,

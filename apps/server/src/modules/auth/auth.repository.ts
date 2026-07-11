@@ -5,7 +5,7 @@ import { prisma } from "@/db/client";
 import { orgSelect } from "@/db/selects/org.select";
 import { userSelect } from "@/db/selects/user.select";
 
-import type { SignupInput } from "./auth.schema";
+import { SignupInput } from "./auth.schema";
 
 export const authRepository = {
   async findUserByEmail(email: string) {

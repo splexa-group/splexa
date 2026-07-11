@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 
+import { ServiceContext } from "@/models/service-context";
 import { clientsRepository } from "@/modules/clients/clients.repository";
-import { ServiceContext } from "@/types/service-context";
 import { parseDate } from "@/utils/date";
 import { Errors } from "@/utils/errors";
 

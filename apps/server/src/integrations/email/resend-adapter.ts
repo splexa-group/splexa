@@ -3,7 +3,7 @@ import { Resend } from "resend";
 import { env } from "@/config/env";
 import { OTP_TTL_MINUTES } from "@/constants/auth";
 
-import type { EmailProvider } from "./email-interface";
+import { EmailProvider } from "./email-interface";
 
 export class ResendAdapter implements EmailProvider {
   private client = new Resend(env.RESEND_API_KEY);

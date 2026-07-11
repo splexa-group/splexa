@@ -1,4 +1,4 @@
-import type { FastifyRequest } from "fastify";
+import { FastifyRequest } from "fastify";
 
 import { dashboardService } from "./dashboard.service";
 

@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
 
 export const responsePlugin = fp(

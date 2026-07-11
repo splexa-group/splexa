@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 
-import type { StorageProvider } from "./storage-interface";
+import { StorageProvider } from "./storage-interface";
 
 export class SupabaseStorageAdapter implements StorageProvider {
   private storage;

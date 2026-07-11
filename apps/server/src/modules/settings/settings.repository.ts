@@ -1,9 +1,9 @@
-import { type Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { prisma } from "@/db/client";
 import { orgSelect } from "@/db/selects/org.select";
 
-import type { UpdateOrganizationBody, UpdateProfileBody } from "./settings.schema";
+import { UpdateOrganizationBody, UpdateProfileBody } from "./settings.schema";
 
 const profileSelect = {
   id:          true,

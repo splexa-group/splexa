@@ -1,9 +1,9 @@
+import { ServiceContext } from "@/models/service-context";
 import { casesRepository } from "@/modules/cases/cases.repository";
-import type { ServiceContext } from "@/types/service-context";
 import { Errors } from "@/utils/errors";
 
 import { importantDatesRepository } from "./important-dates.repository";
-import type { CreateImportantDateInput, ListImportantDatesQuery, UpdateImportantDateInput } from "./important-dates.schema";
+import { CreateImportantDateInput, ListImportantDatesQuery, UpdateImportantDateInput } from "./important-dates.schema";
 
 export const importantDatesService = {
   async listForCase(caseId: string, orgId: string) {

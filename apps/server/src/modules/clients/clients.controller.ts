@@ -1,6 +1,6 @@
-import type { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from "fastify";
 
-import type {
+import {
   ClientParams,
   CreateClientInput,
   ListClientsQuery,

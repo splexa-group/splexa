@@ -1,7 +1,7 @@
 import { Errors } from "@/utils/errors";
 
 import { settingsRepository } from "./settings.repository";
-import type { UpdateOrganizationBody, UpdateProfileBody } from "./settings.schema";
+import { UpdateOrganizationBody, UpdateProfileBody } from "./settings.schema";
 
 export const settingsService = {
   async getProfile(userId: string, orgId: string) {

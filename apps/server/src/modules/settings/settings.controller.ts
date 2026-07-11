@@ -1,7 +1,7 @@
-import type { FastifyRequest } from "fastify";
+import { FastifyRequest } from "fastify";
 
 import { settingsService } from "./settings.service";
-import type { UpdateOrganizationBody, UpdateProfileBody } from "./settings.schema";
+import { UpdateOrganizationBody, UpdateProfileBody } from "./settings.schema";
 
 export const settingsController = {
   async getProfile(req: FastifyRequest) {

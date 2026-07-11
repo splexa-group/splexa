@@ -3,7 +3,7 @@ import {
   serializerCompiler,
   validatorCompiler,
 } from "@fastify/type-provider-zod";
-import Fastify, { type FastifyInstance } from "fastify";
+import Fastify, { FastifyInstance } from "fastify";
 
 import { env } from "@/config/env";
 import { fastifyLogger } from "@/config/logger";

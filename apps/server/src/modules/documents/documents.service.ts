@@ -1,15 +1,15 @@
-import type { MultipartFile } from "@fastify/multipart";
+import { MultipartFile } from "@fastify/multipart";
 
 import { logger } from "@/config/logger";
 import { MAX_UPLOAD_BYTES, PRESIGNED_URL_TTL_SECONDS } from "@/constants/misc";
 import { storageProvider } from "@/integrations/storage";
+import { ServiceContext } from "@/models/service-context";
 import { casesRepository } from "@/modules/cases/cases.repository";
-import type { ServiceContext } from "@/types/service-context";
 import { generateUUID } from "@/utils/crypto";
 import { Errors } from "@/utils/errors";
 
 import { documentsRepository } from "./documents.repository";
-import type { ListDocumentsOrgQuery, ListDocumentsQuery } from "./documents.schema";
+import { ListDocumentsOrgQuery, ListDocumentsQuery } from "./documents.schema";
 
 export const documentsService = {
   async upload(caseId: string, file: MultipartFile | undefined, ctx: ServiceContext) {

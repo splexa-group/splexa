@@ -1,4 +1,4 @@
-import type { HearingPurpose, ImportantDateType } from "@splexa-group/shared/enums";
+import { HearingPurpose, ImportantDateType } from "@splexa-group/shared/enums";
 
 export interface UpcomingHearing {
   id:        string;

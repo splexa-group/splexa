@@ -1,7 +1,7 @@
 import { env } from "@/config/env";
 
 import { R2Adapter } from "./r2-adapter";
-import type { StorageProvider } from "./storage-interface";
+import { StorageProvider } from "./storage-interface";
 import { SupabaseStorageAdapter } from "./supabase-adapter";
 
 function createStorageProvider(): StorageProvider {

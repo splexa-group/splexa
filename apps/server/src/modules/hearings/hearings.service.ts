@@ -1,9 +1,9 @@
+import { ServiceContext } from "@/models/service-context";
 import { casesRepository } from "@/modules/cases/cases.repository";
-import type { ServiceContext } from "@/types/service-context";
 import { Errors } from "@/utils/errors";
 
 import { hearingsRepository } from "./hearings.repository";
-import type { CreateHearingInput, ListHearingsQuery, UpdateHearingInput } from "./hearings.schema";
+import { CreateHearingInput, ListHearingsQuery, UpdateHearingInput } from "./hearings.schema";
 
 export const hearingsService = {
   async create(caseId: string, input: CreateHearingInput, ctx: ServiceContext) {

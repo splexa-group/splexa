@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
 
 import { clientsController } from "./clients.controller";

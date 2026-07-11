@@ -17,12 +17,12 @@ export const documentsController = {
   ) {
     const file = await req.file();
 
-    const result = await documentsService.upload(req.params.caseId, file, {
+    const document = await documentsService.upload(req.params.caseId, file, {
       orgId: req.user.orgId,
       userId: req.user.userId,
     });
     reply.code(201);
-    return result;
+    return { document };
   },
 
   async listForCase(req: FastifyRequest<{ Params: DocumentCaseParams; Querystring: ListDocumentsQuery }>) {
@@ -31,12 +31,12 @@ export const documentsController = {
       req.query,
       { orgId: req.user.orgId, userId: req.user.userId },
     );
-    return { data, total, page: req.query.page, limit: req.query.limit };
+    return { documents: data, total, page: req.query.page, limit: req.query.limit };
   },
 
   async listForOrg(req: FastifyRequest<{ Querystring: ListDocumentsOrgQuery }>) {
     const { data, total } = await documentsService.listForOrg(req.user.orgId, req.query);
-    return { data, total, page: req.query.page, limit: req.query.limit };
+    return { documents: data, total, page: req.query.page, limit: req.query.limit };
   },
 
   async getUrl(req: FastifyRequest<{ Params: DocumentParams }>) {
@@ -61,15 +61,17 @@ export const documentsController = {
   async rename(
     req: FastifyRequest<{ Params: DocumentParams; Body: RenameDocumentBody }>,
   ) {
-    return documentsService.rename(
+    const document = await documentsService.rename(
       req.params.documentId,
       req.params.caseId,
       req.body.name,
       { orgId: req.user.orgId, userId: req.user.userId },
     );
+    return { document };
   },
 
   async listFolders(req: FastifyRequest) {
-    return documentsService.listFolders(req.user.orgId);
+    const folders = await documentsService.listFolders(req.user.orgId);
+    return { folders };
   },
 };

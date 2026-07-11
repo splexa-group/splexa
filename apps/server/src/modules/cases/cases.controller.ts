@@ -14,29 +14,37 @@ export const casesController = {
     req: FastifyRequest<{ Body: CreateCaseInput }>,
     reply: FastifyReply,
   ) {
-    reply.code(201);
-    return casesService.create(req.body, {
+    const caseDetails = await casesService.create(req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
     });
+    reply.code(201);
+    return { caseDetails };
   },
 
   async list(req: FastifyRequest<{ Querystring: ListCasesQuery }>) {
     const { data, total } = await casesService.list(req.user.orgId, req.query);
-    return { data, total, page: req.query.page, limit: req.query.limit };
+    return {
+      cases: data,
+      total,
+      page: req.query.page,
+      limit: req.query.limit,
+    };
   },
 
   async getById(req: FastifyRequest<{ Params: CaseParams }>) {
-    return casesService.findById(req.params.id, req.user.orgId);
+    const caseDetails = await casesService.findById(req.params.id, req.user.orgId);
+    return { caseDetails };
   },
 
   async update(
     req: FastifyRequest<{ Params: CaseParams; Body: UpdateCaseInput }>,
   ) {
-    return casesService.update(req.params.id, req.body, {
+    const caseDetails = await casesService.update(req.params.id, req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
     });
+    return { caseDetails };
   },
 
   async addClient(
@@ -52,7 +60,7 @@ export const casesController = {
       },
     );
     reply.code(201);
-    return warnings ? { ...data, warnings } : data;
+    return { caseDetails: data, ...(warnings ? { warnings } : {}) };
   },
 
   async delete(

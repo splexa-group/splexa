@@ -1,11 +1,11 @@
-import { ServiceContext } from "@/models/service-context";
+import { ReqContext } from "@/models/req-context";
 import { Errors } from "@/utils/errors";
 
 import { clientsRepository } from "./clients.repository";
 import { CreateClientInput, ListClientsQuery, UpdateClientInput } from "./clients.schema";
 
 export const clientsService = {
-  async create(input: CreateClientInput, ctx: ServiceContext) {
+  async create(input: CreateClientInput, ctx: ReqContext) {
     const existing = await clientsRepository.findByPhone(input.phone, ctx.orgId);
 
     const client = await clientsRepository.create({
@@ -34,7 +34,7 @@ export const clientsService = {
     return client;
   },
 
-  async update(id: string, input: UpdateClientInput, ctx: ServiceContext) {
+  async update(id: string, input: UpdateClientInput, ctx: ReqContext) {
     const existing = await clientsRepository.findById(id, ctx.orgId);
     if (!existing) throw Errors.clientNotFound();
     const updated = await clientsRepository.update(id, ctx.orgId, input);
@@ -42,7 +42,7 @@ export const clientsService = {
     return updated;
   },
 
-  async delete(id: string, ctx: ServiceContext) {
+  async delete(id: string, ctx: ReqContext) {
     const existing = await clientsRepository.findById(id, ctx.orgId);
     if (!existing) throw Errors.clientNotFound();
     const { count } = await clientsRepository.softDelete(id, ctx.orgId);

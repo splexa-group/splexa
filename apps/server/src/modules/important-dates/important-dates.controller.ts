@@ -13,32 +13,35 @@ export const importantDatesController = {
   async listCrossCase(
     req: FastifyRequest<{ Querystring: ListImportantDatesQuery }>,
   ) {
-    return importantDatesService.listCrossCase(req.user.orgId, req.query);
+    const { data, total } = await importantDatesService.listCrossCase(req.user.orgId, req.query);
+    return { importantDates: data, total, page: req.query.page, limit: req.query.limit };
   },
 
   async listForCase(req: FastifyRequest<{ Params: CaseParams }>) {
-    return importantDatesService.listForCase(req.params.caseId, req.user.orgId);
+    const importantDates = await importantDatesService.listForCase(req.params.caseId, req.user.orgId);
+    return { importantDates };
   },
 
   async create(
     req: FastifyRequest<{ Params: CaseParams; Body: CreateImportantDateInput }>,
     reply: FastifyReply,
   ) {
-    const result = await importantDatesService.create(req.params.caseId, req.body, {
+    const importantDate = await importantDatesService.create(req.params.caseId, req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
     });
     reply.code(201);
-    return result;
+    return { importantDate };
   },
 
   async update(
     req: FastifyRequest<{ Params: ImportantDateParams; Body: UpdateImportantDateInput }>,
   ) {
-    return importantDatesService.update(req.params.caseId, req.params.dateId, req.body, {
+    const importantDate = await importantDatesService.update(req.params.caseId, req.params.dateId, req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
     });
+    return { importantDate };
   },
 
   async delete(

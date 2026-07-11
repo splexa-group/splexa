@@ -1,4 +1,4 @@
-import { ServiceContext } from "@/models/service-context";
+import { ReqContext } from "@/models/req-context";
 import { casesRepository } from "@/modules/cases/cases.repository";
 import { Errors } from "@/utils/errors";
 
@@ -6,7 +6,7 @@ import { hearingsRepository } from "./hearings.repository";
 import { CreateHearingInput, ListHearingsQuery, UpdateHearingInput } from "./hearings.schema";
 
 export const hearingsService = {
-  async create(caseId: string, input: CreateHearingInput, ctx: ServiceContext) {
+  async create(caseId: string, input: CreateHearingInput, ctx: ReqContext) {
     const parentCase = await casesRepository.findById(caseId, ctx.orgId);
     if (!parentCase) throw Errors.caseNotFound();
 
@@ -37,7 +37,7 @@ export const hearingsService = {
     return hearingsRepository.listCrossCase(orgId, query);
   },
 
-  async update(id: string, input: UpdateHearingInput, ctx: ServiceContext) {
+  async update(id: string, input: UpdateHearingInput, ctx: ReqContext) {
     const hearing = await hearingsRepository.findById(id, ctx.orgId);
     if (!hearing) throw Errors.hearingNotFound();
 
@@ -46,7 +46,7 @@ export const hearingsService = {
     return updated;
   },
 
-  async delete(id: string, ctx: ServiceContext) {
+  async delete(id: string, ctx: ReqContext) {
     const hearing = await hearingsRepository.findById(id, ctx.orgId);
     if (!hearing) throw Errors.hearingNotFound();
 

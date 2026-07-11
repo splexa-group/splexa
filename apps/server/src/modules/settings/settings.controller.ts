@@ -5,18 +5,22 @@ import { UpdateOrganizationBody, UpdateProfileBody } from "./settings.schema";
 
 export const settingsController = {
   async getProfile(req: FastifyRequest) {
-    return settingsService.getProfile(req.user.userId, req.user.orgId);
+    const profile = await settingsService.getProfile(req.user.userId, req.user.orgId);
+    return { profile };
   },
 
   async updateProfile(req: FastifyRequest<{ Body: UpdateProfileBody }>) {
-    return settingsService.updateProfile(req.user.userId, req.user.orgId, req.body);
+    const profile = await settingsService.updateProfile(req.user.userId, req.user.orgId, req.body);
+    return { profile };
   },
 
   async getOrganization(req: FastifyRequest) {
-    return settingsService.getOrganization(req.user.orgId);
+    const organization = await settingsService.getOrganization(req.user.orgId);
+    return { organization };
   },
 
   async updateOrganization(req: FastifyRequest<{ Body: UpdateOrganizationBody }>) {
-    return settingsService.updateOrganization(req.user.orgId, req.body);
+    const organization = await settingsService.updateOrganization(req.user.orgId, req.body);
+    return { organization };
   },
 };

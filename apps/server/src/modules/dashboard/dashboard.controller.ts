@@ -4,6 +4,7 @@ import { dashboardService } from "./dashboard.service";
 
 export const dashboardController = {
   async getData(req: FastifyRequest) {
-    return dashboardService.getData(req.user.orgId);
+    const dashboard = await dashboardService.getData(req.user.orgId);
+    return { dashboard };
   },
 };

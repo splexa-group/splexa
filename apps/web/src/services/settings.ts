@@ -7,8 +7,16 @@ import type {
 } from "@/types/settings";
 
 export const settingsApi = {
-  getProfile:         () => GET<ProfileData>("/settings/profile"),
-  updateProfile:      (data: UpdateProfileInput) => PATCH<ProfileData>("/settings/profile", data),
-  getOrganization:    () => GET<OrganizationData>("/settings/organization"),
-  updateOrganization: (data: UpdateOrganizationInput) => PATCH<OrganizationData>("/settings/organization", data),
+  getProfile: () =>
+    GET<{ profile: ProfileData }>("/settings/profile").then((r) => r.profile),
+  updateProfile: (data: UpdateProfileInput) =>
+    PATCH<{ profile: ProfileData }>("/settings/profile", data).then((r) => r.profile),
+  getOrganization: () =>
+    GET<{ organization: OrganizationData }>("/settings/organization").then(
+      (r) => r.organization,
+    ),
+  updateOrganization: (data: UpdateOrganizationInput) =>
+    PATCH<{ organization: OrganizationData }>("/settings/organization", data).then(
+      (r) => r.organization,
+    ),
 };

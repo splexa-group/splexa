@@ -1,4 +1,4 @@
-import { ServiceContext } from "@/models/service-context";
+import { ReqContext } from "@/models/req-context";
 import { casesRepository } from "@/modules/cases/cases.repository";
 import { Errors } from "@/utils/errors";
 
@@ -14,7 +14,7 @@ export const importantDatesService = {
     return importantDatesRepository.listCrossCase(orgId, query);
   },
 
-  async create(caseId: string, input: CreateImportantDateInput, ctx: ServiceContext) {
+  async create(caseId: string, input: CreateImportantDateInput, ctx: ReqContext) {
     const parentCase = await casesRepository.findById(caseId, ctx.orgId);
     if (!parentCase) throw Errors.caseNotFound();
 
@@ -23,7 +23,7 @@ export const importantDatesService = {
     return importantDatesRepository.create({ ...input, caseId, orgId: ctx.orgId, notifyUserId });
   },
 
-  async update(caseId: string, dateId: string, input: UpdateImportantDateInput, ctx: ServiceContext) {
+  async update(caseId: string, dateId: string, input: UpdateImportantDateInput, ctx: ReqContext) {
     const date = await importantDatesRepository.findById(dateId, caseId, ctx.orgId);
     if (!date) throw Errors.importantDateNotFound();
     const updated = await importantDatesRepository.update(dateId, ctx.orgId, input);
@@ -31,7 +31,7 @@ export const importantDatesService = {
     return updated;
   },
 
-  async delete(caseId: string, dateId: string, ctx: ServiceContext) {
+  async delete(caseId: string, dateId: string, ctx: ReqContext) {
     const date = await importantDatesRepository.findById(dateId, caseId, ctx.orgId);
     if (!date) throw Errors.importantDateNotFound();
     const { count } = await importantDatesRepository.softDelete(dateId, ctx.orgId);

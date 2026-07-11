@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-import { ServiceContext } from "@/models/service-context";
+import { ReqContext } from "@/models/req-context";
 import { clientsRepository } from "@/modules/clients/clients.repository";
 import { parseDate } from "@/utils/date";
 import { Errors } from "@/utils/errors";
@@ -14,7 +14,7 @@ import {
 } from "./cases.schema";
 
 export const casesService = {
-  async create(input: CreateCaseInput, ctx: ServiceContext) {
+  create(input: CreateCaseInput, ctx: ReqContext) {
     return casesRepository.create({
       ...input,
       orgId: ctx.orgId,
@@ -22,7 +22,7 @@ export const casesService = {
     });
   },
 
-  async list(orgId: string, query: ListCasesQuery) {
+  list(orgId: string, query: ListCasesQuery) {
     return casesRepository.list(orgId, query);
   },
 
@@ -32,7 +32,7 @@ export const casesService = {
     return c;
   },
 
-  async update(id: string, input: UpdateCaseInput, ctx: ServiceContext) {
+  async update(id: string, input: UpdateCaseInput, ctx: ReqContext) {
     const existing = await casesRepository.findById(id, ctx.orgId);
     if (!existing) throw Errors.caseNotFound();
 
@@ -72,7 +72,7 @@ export const casesService = {
   async addClient(
     caseId: string,
     input: AddClientToCaseInput,
-    ctx: ServiceContext,
+    ctx: ReqContext,
   ) {
     const existing = await casesRepository.findById(caseId, ctx.orgId);
     if (!existing) throw Errors.caseNotFound();
@@ -108,7 +108,7 @@ export const casesService = {
     return { data: updated };
   },
 
-  async delete(id: string, ctx: ServiceContext) {
+  async delete(id: string, ctx: ReqContext) {
     const existing = await casesRepository.findById(id, ctx.orgId);
     if (!existing) throw Errors.caseNotFound();
     const { count } = await casesRepository.softDeleteCascade(id, ctx.orgId);

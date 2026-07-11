@@ -3,7 +3,7 @@ import { MultipartFile } from "@fastify/multipart";
 import { logger } from "@/config/logger";
 import { MAX_UPLOAD_BYTES, PRESIGNED_URL_TTL_SECONDS } from "@/constants/misc";
 import { storageProvider } from "@/integrations/storage";
-import { ServiceContext } from "@/models/service-context";
+import { ReqContext } from "@/models/req-context";
 import { casesRepository } from "@/modules/cases/cases.repository";
 import { Errors } from "@/utils/errors";
 import { UUID } from "@/utils/misc";
@@ -12,7 +12,7 @@ import { documentsRepository } from "./documents.repository";
 import { ListDocumentsOrgQuery, ListDocumentsQuery } from "./documents.schema";
 
 export const documentsService = {
-  async upload(caseId: string, file: MultipartFile | undefined, ctx: ServiceContext) {
+  async upload(caseId: string, file: MultipartFile | undefined, ctx: ReqContext) {
     if (!file) throw Errors.noFileUploaded();
 
     const parentCase = await casesRepository.findById(caseId, ctx.orgId);
@@ -39,7 +39,7 @@ export const documentsService = {
     });
   },
 
-  async listForCase(caseId: string, query: ListDocumentsQuery, ctx: ServiceContext) {
+  async listForCase(caseId: string, query: ListDocumentsQuery, ctx: ReqContext) {
     const parentCase = await casesRepository.findById(caseId, ctx.orgId);
     if (!parentCase) throw Errors.caseNotFound();
     return documentsRepository.listForCase(caseId, ctx.orgId, query);
@@ -55,7 +55,7 @@ export const documentsService = {
     return { url: await storageProvider.presignedUrl(doc.storageKey, PRESIGNED_URL_TTL_SECONDS) };
   },
 
-  async delete(documentId: string, caseId: string, ctx: ServiceContext) {
+  async delete(documentId: string, caseId: string, ctx: ReqContext) {
     const doc = await documentsRepository.findById(documentId, caseId, ctx.orgId);
     if (!doc) throw Errors.documentNotFound();
     // Soft-delete DB record first so the document is immediately inaccessible
@@ -67,7 +67,7 @@ export const documentsService = {
     });
   },
 
-  async rename(documentId: string, caseId: string, name: string, ctx: ServiceContext) {
+  async rename(documentId: string, caseId: string, name: string, ctx: ReqContext) {
     const doc = await documentsRepository.findById(documentId, caseId, ctx.orgId);
     if (!doc) throw Errors.documentNotFound();
     return documentsRepository.rename(documentId, caseId, ctx.orgId, name);

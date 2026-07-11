@@ -15,7 +15,7 @@ export const clientsController = {
       userId: req.user.userId,
     });
     reply.code(201);
-    return warnings ? { ...data, warnings } : data;
+    return { client: data, ...(warnings ? { warnings } : {}) };
   },
 
   async list(req: FastifyRequest<{ Querystring: ListClientsQuery }>) {
@@ -23,20 +23,22 @@ export const clientsController = {
       req.user.orgId,
       req.query,
     );
-    return { data, total, page: req.query.page, limit: req.query.limit };
+    return { clients: data, total, page: req.query.page, limit: req.query.limit };
   },
 
   async getById(req: FastifyRequest<{ Params: ClientParams }>) {
-    return clientsService.findById(req.params.id, req.user.orgId);
+    const client = await clientsService.findById(req.params.id, req.user.orgId);
+    return { client };
   },
 
   async update(
     req: FastifyRequest<{ Params: ClientParams; Body: UpdateClientInput }>,
   ) {
-    return clientsService.update(req.params.id, req.body, {
+    const client = await clientsService.update(req.params.id, req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
     });
+    return { client };
   },
 
   async delete(

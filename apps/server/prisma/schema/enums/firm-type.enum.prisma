@@ -1,0 +1,4 @@
+enum FirmType {
+  SOLO
+  FIRM
+}

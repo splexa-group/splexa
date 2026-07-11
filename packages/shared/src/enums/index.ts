@@ -1,5 +1,7 @@
 export * from "./designation";
+export * from "./firm-type";
 export * from "./practice-type";
+export * from "./states";
 export * from "./user-role";
 export * from "./client-type";
 export * from "./preferred-language";

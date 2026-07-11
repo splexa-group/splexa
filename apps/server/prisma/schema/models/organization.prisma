@@ -2,7 +2,9 @@ model Organization {
   id           String       @id @default(uuid())
   name         String
   practiceTypes PracticeType[] @map("practice_types")
+  firmType     FirmType     @map("firm_type")
   city         String
+  state        States
   createdBy    String       @map("created_by")
   createdAt    DateTime     @default(now()) @map("created_at")
   updatedAt    DateTime     @updatedAt @map("updated_at")

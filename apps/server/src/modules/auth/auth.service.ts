@@ -1,12 +1,14 @@
+import { Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
+import { logger } from "@/config/logger";
 import { MAX_OTP_ATTEMPTS, MAX_OTP_REQUESTS_PER_HOUR } from "@/constants/auth";
 import { emailProvider } from "@/integrations/email";
 import { VerifyOtpCtx, VerifyOtpResult } from "@/models/auth";
 import {
   generateOtp,
   generateRefreshToken,
-  generateUUID,
+  UUID,
   hashToken,
 } from "@/utils/crypto";
 import { Errors } from "@/utils/errors";
@@ -26,27 +28,44 @@ export const authService = {
     const count = await authRepository.countRecentOtpRequests(input.email);
     if (count >= MAX_OTP_REQUESTS_PER_HOUR) throw Errors.otpRateLimited();
 
-    const orgId = generateUUID();
-    const userId = generateUUID();
+    const orgId = UUID();
+    const userId = UUID();
     const otp = generateOtp();
     const otpHash = await bcrypt.hash(otp, 10);
 
     // Send email before writing to DB — if delivery fails nothing is persisted.
     try {
       await emailProvider.sendOtp(input.email, otp);
-    } catch {
+    } catch (err) {
+      logger.error(
+        { err, email: input.email },
+        "auth: failed to send signup OTP",
+      );
       throw Errors.emailSendFailed();
     }
 
     // Org, user, and OTP request are created atomically so there is never a
     // user with no verifiable OTP or an OTP with no owning user.
-    await authRepository.createOrgAndUser(
-      orgId,
-      userId,
-      input,
-      otpHash,
-      otpExpiry(),
-    );
+    try {
+      await authRepository.createOrgAndUser(
+        orgId,
+        userId,
+        input,
+        otpHash,
+        otpExpiry(),
+      );
+    } catch (err) {
+      // Two concurrent signups for the same email can both pass the `existing`
+      // check above — the DB's unique constraint is the real guard, so translate
+      // its violation into the same clean error the check above would have thrown.
+      if (
+        err instanceof Prisma.PrismaClientKnownRequestError &&
+        err.code === "P2002"
+      ) {
+        throw Errors.emailTaken();
+      }
+      throw err;
+    }
   },
 
   async requestOtp(input: OtpRequestInput): Promise<void> {
@@ -67,7 +86,8 @@ export const authService = {
 
     try {
       await emailProvider.sendOtp(input.email, otp);
-    } catch {
+    } catch (err) {
+      logger.error({ err, email: input.email }, "auth: failed to send OTP");
       throw Errors.emailSendFailed();
     }
 

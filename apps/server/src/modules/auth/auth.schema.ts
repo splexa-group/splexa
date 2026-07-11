@@ -1,4 +1,4 @@
-import { Designation, PracticeType } from "@splexa-group/shared/enums";
+import { Designation, FirmType, PracticeType, States } from "@splexa-group/shared/enums";
 import { z } from "zod";
 
 export const signupSchema = z
@@ -10,7 +10,9 @@ export const signupSchema = z
     designation: z.enum(Designation),
     orgName: z.string().min(1).max(200),
     practiceTypes: z.array(z.enum(PracticeType)).min(1),
+    firmType: z.enum(FirmType),
     city: z.string().min(1).max(100),
+    state: z.enum(States),
   })
   .strict();
 

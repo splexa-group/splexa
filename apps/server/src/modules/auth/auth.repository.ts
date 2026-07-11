@@ -39,7 +39,9 @@ export const authRepository = {
           id: orgId,
           name: input.orgName,
           practiceTypes: input.practiceTypes,
+          firmType: input.firmType,
           city: input.city,
+          state: input.state,
           createdBy: userId,
         },
       });

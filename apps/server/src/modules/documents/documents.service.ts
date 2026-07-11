@@ -5,7 +5,7 @@ import { MAX_UPLOAD_BYTES, PRESIGNED_URL_TTL_SECONDS } from "@/constants/misc";
 import { storageProvider } from "@/integrations/storage";
 import { ServiceContext } from "@/models/service-context";
 import { casesRepository } from "@/modules/cases/cases.repository";
-import { generateUUID } from "@/utils/crypto";
+import { UUID } from "@/utils/crypto";
 import { Errors } from "@/utils/errors";
 
 import { documentsRepository } from "./documents.repository";
@@ -24,7 +24,7 @@ export const documentsService = {
     }
 
     const ext = file.filename.includes(".") ? file.filename.split(".").pop() : "";
-    const storageKey = `orgs/${ctx.orgId}/cases/${caseId}/documents/${generateUUID()}${ext ? `.${ext}` : ""}`;
+    const storageKey = `orgs/${ctx.orgId}/cases/${caseId}/documents/${UUID()}${ext ? `.${ext}` : ""}`;
 
     await storageProvider.upload(storageKey, buffer, file.mimetype);
 

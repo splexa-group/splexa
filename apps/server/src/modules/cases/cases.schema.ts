@@ -77,13 +77,6 @@ export const listCasesQuerySchema = z
     search: z.string().optional(),
     status: z.enum(CaseStatus).optional(),
     caseType: z.enum(CaseType).optional(),
-    priority: z.enum(Priority).optional(),
-    courtType: z.enum(CourtType).optional(),
-    clientId: z.uuid().optional(),
-    sortBy: z
-      .enum(["hearingDate", "createdAt"])
-      .default("hearingDate")
-      .optional(),
     page: z.coerce.number().int().positive().default(1),
     limit: z.coerce.number().int().positive().max(100).default(20),
   })

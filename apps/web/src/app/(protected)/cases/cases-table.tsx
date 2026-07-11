@@ -13,8 +13,8 @@ import { DataTable } from "@/components/ui/data-table";
 import { Menu } from "@/components/ui/menu";
 import { Pencil, Trash2 } from "lucide-react";
 import { CaseSummary, CaseFilters } from "@/types/cases";
-import { CaseStatus } from "@splexa-group/shared/enums";
-import { CASE_STATUS_OPTIONS, CASE_SORT_OPTIONS } from "@/lib/options";
+import { CaseStatus, CaseType } from "@splexa-group/shared/enums";
+import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS } from "@/lib/options";
 import {
   priorityBorderClass,
   statusBadgeClass,
@@ -27,13 +27,8 @@ function isCaseStatus(v: string): v is CaseStatus {
   return (Object.values(CaseStatus) as string[]).includes(v);
 }
 
-const SORT_BY_VALUES: NonNullable<CaseFilters["sortBy"]>[] = [
-  "hearingDate",
-  "createdAt",
-];
-
-function isSortBy(v: string): v is NonNullable<CaseFilters["sortBy"]> {
-  return SORT_BY_VALUES.includes(v as NonNullable<CaseFilters["sortBy"]>);
+function isCaseType(v: string): v is CaseType {
+  return (Object.values(CaseType) as string[]).includes(v);
 }
 
 const COLUMNS = [
@@ -52,14 +47,14 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
-  const [sortBy, setSortBy] = useState("");
+  const [caseType, setCaseType] = useState("");
   const [page, setPage] = useState(1);
   const [toDelete, setToDelete] = useState<CaseSummary | null>(null);
 
   const filters: CaseFilters = {
     search: search || undefined,
     status: isCaseStatus(status) ? status : undefined,
-    sortBy: isSortBy(sortBy) ? sortBy : undefined,
+    caseType: isCaseType(caseType) ? caseType : undefined,
     page,
     limit: PAGE_SIZE,
   };
@@ -160,14 +155,14 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
           placeholder="Filter by status..."
         />
         <Select
-          options={CASE_SORT_OPTIONS}
-          value={sortBy}
-          onChange={setSortBy}
+          options={CASE_TYPE_OPTIONS}
+          value={caseType}
+          onChange={setCaseType}
           onClear={() => {
-            setSortBy("");
+            setCaseType("");
             setPage(1);
           }}
-          placeholder="Sort by..."
+          placeholder="Filter by case type..."
         />
       </FiltersBar>
 

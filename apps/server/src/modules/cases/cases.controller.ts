@@ -33,7 +33,10 @@ export const casesController = {
   },
 
   async getById(req: FastifyRequest<{ Params: CaseParams }>) {
-    const caseDetails = await casesService.findById(req.params.id, req.user.orgId);
+    const caseDetails = await casesService.findById(
+      req.params.id,
+      req.user.orgId,
+    );
     return { caseDetails };
   },
 

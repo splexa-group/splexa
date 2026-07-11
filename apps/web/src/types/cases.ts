@@ -21,9 +21,7 @@ export type CaseListResponse = PaginatedResult<CaseSummary>;
 export interface CaseFilters {
   search?: string;
   status?: CaseStatus;
-  priority?: Priority;
-  courtType?: CourtType;
-  sortBy?: "hearingDate" | "createdAt";
+  caseType?: CaseType;
   page?: number;
   limit?: number;
 }

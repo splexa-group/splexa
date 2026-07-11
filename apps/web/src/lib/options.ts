@@ -48,8 +48,3 @@ export const HEARING_STATUS_OPTIONS = toOptions(HearingStatus);
 export const IMPORTANT_DATE_TYPE_OPTIONS = toOptions(ImportantDateType);
 export const PREFERRED_LANGUAGE_OPTIONS = toOptions(PreferredLanguage);
 
-export const CASE_SORT_OPTIONS = [
-  { value: "hearingDate", label: "Hearing date" },
-  { value: "createdAt", label: "Date created" },
-];
-

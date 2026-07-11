@@ -25,6 +25,14 @@ export const casesService = {
       filingDate: filingDate ? parseDate(filingDate) : undefined,
     };
 
+    if (caseFields.assignedTo) {
+      const assignedUserExists = await casesRepository.userExistsInOrg(
+        caseFields.assignedTo,
+        ctx.orgId,
+      );
+      if (!assignedUserExists) throw Errors.assignedUserNotFound();
+    }
+
     if (clientId) {
       const client = await clientsRepository.findById(clientId, ctx.orgId);
       if (!client) throw Errors.clientNotFound();
@@ -80,6 +88,14 @@ export const casesService = {
       if (!client) throw Errors.clientNotFound();
     }
 
+    if (input.assignedTo) {
+      const assignedUserExists = await casesRepository.userExistsInOrg(
+        input.assignedTo,
+        ctx.orgId,
+      );
+      if (!assignedUserExists) throw Errors.assignedUserNotFound();
+    }
+
     const judgeChanged =
       (input.judgeName !== undefined &&
         input.judgeName !== existing.judgeName) ||
@@ -120,7 +136,10 @@ export const casesService = {
         createdBy: ctx.userId,
       },
     );
-    if (!updated) throw Errors.caseNotFound();
+    if (!updated) {
+      const stillExists = await casesRepository.findById(caseId, ctx.orgId);
+      throw stillExists ? Errors.caseClientExists() : Errors.caseNotFound();
+    }
 
     if (existingWithPhone) {
       return {

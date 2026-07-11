@@ -10,10 +10,12 @@ vi.mock("../cases.repository", () => ({
   casesRepository: {
     create: vi.fn(),
     createWithNewClient: vi.fn(),
+    createClientAndLink: vi.fn(),
     findById: vi.fn(),
     list: vi.fn(),
     update: vi.fn(),
     softDeleteCascade: vi.fn(),
+    userExistsInOrg: vi.fn(),
   },
 }));
 
@@ -117,6 +119,46 @@ describe("casesService.create with newClient", () => {
   });
 });
 
+describe("casesService.create with assignedTo", () => {
+  it("throws assignedUserNotFound when assignedTo does not belong to org", async () => {
+    vi.mocked(casesRepository.userExistsInOrg).mockResolvedValue(false);
+
+    await expect(
+      casesService.create(
+        {
+          title: "Test",
+          description: "Test description",
+          clientRole: "PETITIONER" as never,
+          assignedTo: "other-org-user",
+          status: "ACTIVE" as never,
+        },
+        ctx,
+      ),
+    ).rejects.toThrow(Errors.assignedUserNotFound());
+
+    expect(casesRepository.create).not.toHaveBeenCalled();
+  });
+
+  it("creates case when assignedTo belongs to org", async () => {
+    vi.mocked(casesRepository.userExistsInOrg).mockResolvedValue(true);
+    vi.mocked(casesRepository.create).mockResolvedValue(mockCase as never);
+
+    const result = await casesService.create(
+      {
+        title: "Test",
+        description: "Test description",
+        clientRole: "PETITIONER" as never,
+        assignedTo: "user-1",
+        status: "ACTIVE" as never,
+      },
+      ctx,
+    );
+
+    expect(result.data).toEqual(mockCase);
+    expect(casesRepository.userExistsInOrg).toHaveBeenCalledWith("user-1", "org-1");
+  });
+});
+
 describe("casesService.findById", () => {
   it("throws caseNotFound when null", async () => {
     vi.mocked(casesRepository.findById).mockResolvedValue(null);
@@ -170,6 +212,74 @@ describe("casesService.update", () => {
       "case-1",
       "org-1",
       expect.objectContaining({ title: "New Title" }),
+    );
+  });
+
+  it("throws assignedUserNotFound when assignedTo does not belong to org", async () => {
+    vi.mocked(casesRepository.findById).mockResolvedValue(mockCase as never);
+    vi.mocked(casesRepository.userExistsInOrg).mockResolvedValue(false);
+
+    await expect(
+      casesService.update("case-1", { assignedTo: "other-org-user" }, ctx),
+    ).rejects.toThrow(Errors.assignedUserNotFound());
+
+    expect(casesRepository.update).not.toHaveBeenCalled();
+  });
+});
+
+describe("casesService.addClient", () => {
+  const input = { fullName: "Ravi Kumar", phone: "9999999999", type: "INDIVIDUAL" as never };
+
+  it("throws caseNotFound when case does not exist", async () => {
+    vi.mocked(casesRepository.findById).mockResolvedValue(null);
+
+    await expect(casesService.addClient("bad-id", input, ctx)).rejects.toThrow(
+      Errors.caseNotFound(),
+    );
+  });
+
+  it("throws caseClientExists when case already has a client", async () => {
+    vi.mocked(casesRepository.findById).mockResolvedValue(mockCase as never);
+
+    await expect(casesService.addClient("case-1", input, ctx)).rejects.toThrow(
+      Errors.caseClientExists(),
+    );
+  });
+
+  it("links the new client and returns the updated case", async () => {
+    const clientlessCase = { ...mockCase, clientId: null };
+    vi.mocked(casesRepository.findById).mockResolvedValue(clientlessCase as never);
+    vi.mocked(clientsRepository.findByPhone).mockResolvedValue(null);
+    vi.mocked(casesRepository.createClientAndLink).mockResolvedValue(mockCase as never);
+
+    const result = await casesService.addClient("case-1", input, ctx);
+    expect(result.data).toEqual(mockCase);
+    expect(result.warnings).toBeUndefined();
+  });
+
+  it("throws caseClientExists (not caseNotFound) when a concurrent request wins the link race", async () => {
+    const clientlessCase = { ...mockCase, clientId: null };
+    vi.mocked(casesRepository.findById)
+      .mockResolvedValueOnce(clientlessCase as never) // initial existence check
+      .mockResolvedValueOnce(mockCase as never); // re-check after lost race: case still exists
+    vi.mocked(clientsRepository.findByPhone).mockResolvedValue(null);
+    vi.mocked(casesRepository.createClientAndLink).mockResolvedValue(null);
+
+    await expect(casesService.addClient("case-1", input, ctx)).rejects.toThrow(
+      Errors.caseClientExists(),
+    );
+  });
+
+  it("throws caseNotFound when the case is deleted mid-request", async () => {
+    const clientlessCase = { ...mockCase, clientId: null };
+    vi.mocked(casesRepository.findById)
+      .mockResolvedValueOnce(clientlessCase as never) // initial existence check
+      .mockResolvedValueOnce(null); // re-check after lost race: case no longer exists
+    vi.mocked(clientsRepository.findByPhone).mockResolvedValue(null);
+    vi.mocked(casesRepository.createClientAndLink).mockResolvedValue(null);
+
+    await expect(casesService.addClient("case-1", input, ctx)).rejects.toThrow(
+      Errors.caseNotFound(),
     );
   });
 });

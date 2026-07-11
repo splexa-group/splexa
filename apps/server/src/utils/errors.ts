@@ -97,6 +97,12 @@ export const Errors = {
       ErrorCode.CASE_CLIENT_EXISTS,
       "Case already has a client linked.",
     ),
+  assignedUserNotFound: () =>
+    new AppError(
+      404,
+      ErrorCode.ASSIGNED_USER_NOT_FOUND,
+      "Assigned user not found in this organization.",
+    ),
 
   hearingNotFound: () =>
     new AppError(404, ErrorCode.HEARING_NOT_FOUND, "Hearing not found."),

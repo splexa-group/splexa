@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
 import {
-  AddClientToCaseInput,
+  CreateClientInput,
   CaseParams,
   CreateCaseInput,
   ListCasesQuery,
@@ -50,20 +50,16 @@ export const casesController = {
     return { caseDetails };
   },
 
-  async addClient(
-    req: FastifyRequest<{ Params: CaseParams; Body: AddClientToCaseInput }>,
+  async addClientToCase(
+    req: FastifyRequest<{ Params: CaseParams; Body: CreateClientInput }>,
     reply: FastifyReply,
   ) {
-    const { data, warnings } = await casesService.addClient(
-      req.params.id,
-      req.body,
-      {
-        orgId: req.user.orgId,
-        userId: req.user.userId,
-      },
-    );
+    const caseDetails = await casesService.addClient(req.params.id, req.body, {
+      orgId: req.user.orgId,
+      userId: req.user.userId,
+    });
     reply.code(201);
-    return { caseDetails: data, ...(warnings ? { warnings } : {}) };
+    return { caseDetails };
   },
 
   async delete(

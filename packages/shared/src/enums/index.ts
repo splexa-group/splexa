@@ -4,6 +4,7 @@ export * from "./practice-type";
 export * from "./states";
 export * from "./user-role";
 export * from "./client-type";
+export * from "./relation-type";
 export * from "./preferred-language";
 export * from "./party-role";
 export * from "./case-type";

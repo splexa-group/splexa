@@ -18,6 +18,10 @@ export const clientsRepository = {
         companyName: data.companyName,
         notes: data.notes,
         preferredLanguage: data.preferredLanguage,
+        relationType: data.relationType,
+        relationName: data.relationName,
+        dateOfBirth: data.dateOfBirth,
+        occupation: data.occupation,
         createdBy: data.createdBy,
       },
       select: clientSelect,
@@ -28,13 +32,6 @@ export const clientsRepository = {
     return prisma.client.findFirst({
       where: { id, orgId, deletedAt: null },
       select: clientSelect,
-    });
-  },
-
-  async findByPhone(phone: string, orgId: string) {
-    return prisma.client.findFirst({
-      where: { phone, orgId, deletedAt: null },
-      select: { id: true, fullName: true },
     });
   },
 
@@ -73,7 +70,7 @@ export const clientsRepository = {
   async update(id: string, orgId: string, data: UpdateClientInput) {
     const { count } = await prisma.client.updateMany({ where: { id, orgId, deletedAt: null }, data });
     if (count === 0) return null;
-    return prisma.client.findFirstOrThrow({ where: { id, orgId, deletedAt: null }, select: clientSelect });
+    return prisma.client.findFirst({ where: { id, orgId, deletedAt: null }, select: clientSelect });
   },
 
   async softDelete(id: string, orgId: string) {

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { clientsRepository } from "@/modules/clients/clients.repository";
+import { settingsService } from "@/modules/settings/settings.service";
 import { Errors } from "@/utils/errors";
 
 import { casesRepository } from "../cases.repository";
@@ -14,12 +14,19 @@ vi.mock("../cases.repository", () => ({
     list: vi.fn(),
     update: vi.fn(),
     softDeleteCascade: vi.fn(),
-    userExistsInOrg: vi.fn(),
   },
 }));
 
-vi.mock("@/modules/clients/clients.repository", () => ({
-  clientsRepository: { findById: vi.fn(), findByPhone: vi.fn() },
+vi.mock("@/modules/clients/clients.service", () => ({
+  clientsService: { findById: vi.fn() },
+}));
+
+vi.mock("@/modules/settings/settings.service", () => ({
+  settingsService: { findUserById: vi.fn() },
+}));
+
+vi.mock("@/config/logger", () => ({
+  logger: { info: vi.fn() },
 }));
 
 const ctx = { orgId: "org-1", userId: "user-1", ipAddress: "127.0.0.1" };
@@ -125,7 +132,7 @@ describe("casesService.update", () => {
 
   it("throws assignedUserNotFound when assignedTo does not belong to org", async () => {
     vi.mocked(casesRepository.findById).mockResolvedValue(mockCase as never);
-    vi.mocked(casesRepository.userExistsInOrg).mockResolvedValue(false);
+    vi.mocked(settingsService.findUserById).mockResolvedValue(null);
 
     await expect(
       casesService.update("case-1", { assignedTo: "other-org-user" }, ctx),
@@ -157,12 +164,10 @@ describe("casesService.addClient", () => {
   it("links the new client and returns the updated case", async () => {
     const clientlessCase = { ...mockCase, clientId: null };
     vi.mocked(casesRepository.findById).mockResolvedValue(clientlessCase as never);
-    vi.mocked(clientsRepository.findByPhone).mockResolvedValue(null);
     vi.mocked(casesRepository.createClientAndLink).mockResolvedValue(mockCase as never);
 
     const result = await casesService.addClient("case-1", input, ctx);
-    expect(result.data).toEqual(mockCase);
-    expect(result.warnings).toBeUndefined();
+    expect(result).toEqual(mockCase);
   });
 
   it("throws caseClientExists (not caseNotFound) when a concurrent request wins the link race", async () => {
@@ -170,7 +175,6 @@ describe("casesService.addClient", () => {
     vi.mocked(casesRepository.findById)
       .mockResolvedValueOnce(clientlessCase as never) // initial existence check
       .mockResolvedValueOnce(mockCase as never); // re-check after lost race: case still exists
-    vi.mocked(clientsRepository.findByPhone).mockResolvedValue(null);
     vi.mocked(casesRepository.createClientAndLink).mockResolvedValue(null);
 
     await expect(casesService.addClient("case-1", input, ctx)).rejects.toThrow(
@@ -183,7 +187,6 @@ describe("casesService.addClient", () => {
     vi.mocked(casesRepository.findById)
       .mockResolvedValueOnce(clientlessCase as never) // initial existence check
       .mockResolvedValueOnce(null); // re-check after lost race: case no longer exists
-    vi.mocked(clientsRepository.findByPhone).mockResolvedValue(null);
     vi.mocked(casesRepository.createClientAndLink).mockResolvedValue(null);
 
     await expect(casesService.addClient("case-1", input, ctx)).rejects.toThrow(

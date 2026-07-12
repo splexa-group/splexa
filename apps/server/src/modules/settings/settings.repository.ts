@@ -57,4 +57,11 @@ export const settingsRepository = {
       select: orgSelect,
     });
   },
+
+  async findUserById(userId: string, orgId: string) {
+    return prisma.user.findFirst({
+      where: { id: userId, orgId, deletedAt: null },
+      select: { id: true },
+    });
+  },
 };

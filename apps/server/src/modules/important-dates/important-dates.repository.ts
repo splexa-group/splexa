@@ -89,7 +89,7 @@ export const importantDatesRepository = {
       },
     });
     if (count === 0) return null;
-    return prisma.importantDate.findFirstOrThrow({ where: { id, orgId, deletedAt: null } });
+    return prisma.importantDate.findFirst({ where: { id, orgId, deletedAt: null } });
   },
 
   async softDelete(id: string, orgId: string) {

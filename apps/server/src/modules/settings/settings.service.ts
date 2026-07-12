@@ -31,4 +31,8 @@ export const settingsService = {
     if (!updated) throw Errors.organizationNotFound();
     return updated;
   },
+
+  findUserById(userId: string, orgId: string) {
+    return settingsRepository.findUserById(userId, orgId);
+  },
 };

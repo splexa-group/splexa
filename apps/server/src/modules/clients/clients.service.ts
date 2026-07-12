@@ -2,26 +2,19 @@ import { ReqContext } from "@/models/req-context";
 import { Errors } from "@/utils/errors";
 
 import { clientsRepository } from "./clients.repository";
-import { CreateClientInput, ListClientsQuery, UpdateClientInput } from "./clients.schema";
+import {
+  CreateClientInput,
+  ListClientsQuery,
+  UpdateClientInput,
+} from "./clients.schema";
 
 export const clientsService = {
-  async create(input: CreateClientInput, ctx: ReqContext) {
-    const existing = await clientsRepository.findByPhone(input.phone, ctx.orgId);
-
-    const client = await clientsRepository.create({
+  create(input: CreateClientInput, ctx: ReqContext) {
+    return clientsRepository.create({
       ...input,
       orgId: ctx.orgId,
       createdBy: ctx.userId,
     });
-
-    if (existing) {
-      return {
-        data: client,
-        warnings: [`${existing.fullName} already has this phone number`],
-      };
-    }
-
-    return { data: client };
   },
 
   async list(orgId: string, query: ListClientsQuery) {

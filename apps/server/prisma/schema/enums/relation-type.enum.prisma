@@ -1,0 +1,6 @@
+enum RelationType {
+  SON_OF
+  DAUGHTER_OF
+  WIFE_OF
+  HUSBAND_OF
+}

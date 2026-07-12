@@ -12,6 +12,7 @@ import {
   PracticeType,
   PreferredLanguage,
   Priority,
+  RelationType,
 } from "@splexa-group/shared/enums";
 
 export function formatEnumLabel(value: string): string {
@@ -47,4 +48,5 @@ export const HEARING_PURPOSE_OPTIONS = toOptions(HearingPurpose);
 export const HEARING_STATUS_OPTIONS = toOptions(HearingStatus);
 export const IMPORTANT_DATE_TYPE_OPTIONS = toOptions(ImportantDateType);
 export const PREFERRED_LANGUAGE_OPTIONS = toOptions(PreferredLanguage);
+export const RELATION_TYPE_OPTIONS = toOptions(RelationType);
 

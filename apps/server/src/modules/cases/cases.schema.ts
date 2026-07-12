@@ -6,8 +6,12 @@ import {
   CourtType,
   PartyRole,
   Priority,
+  RelationType,
 } from "@splexa-group/shared/enums";
 import { z } from "zod";
+
+const emptyToUndefined = <T extends z.ZodTypeAny>(schema: T) =>
+  z.preprocess((v) => (v === "" ? undefined : v), schema);
 
 const oppositePartySchema = z
   .object({
@@ -19,7 +23,7 @@ const oppositePartySchema = z
   })
   .strict();
 
-const newClientSchema = z
+export const createClientSchema = z
   .object({
     fullName: z.string().min(1).max(200),
     phone: z.string().min(7).max(20),
@@ -28,6 +32,15 @@ const newClientSchema = z
     address: z.string().max(500).optional(),
     companyName: z.string().max(200).optional(),
     notes: z.string().max(2000).optional(),
+    relationType: z.enum(RelationType).optional(),
+    relationName: z.string().max(200).optional(),
+    dateOfBirth: emptyToUndefined(
+      z.iso
+        .date("Must be YYYY-MM-DD")
+        .transform((val) => new Date(val))
+        .optional(),
+    ),
+    occupation: z.string().max(200).optional(),
   })
   .strict();
 
@@ -39,9 +52,6 @@ export const createCaseSchema = z
   })
   .strict();
 
-const emptyToUndefined = <T extends z.ZodTypeAny>(schema: T) =>
-  z.preprocess((v) => (v === "" ? undefined : v), schema);
-
 export const updateCaseSchema = z
   .object({
     title: emptyToUndefined(z.string().min(1).max(300).optional()),
@@ -50,9 +60,9 @@ export const updateCaseSchema = z
     caseNumber: emptyToUndefined(z.string().max(100).optional()),
     caseType: z.enum(CaseType).optional(),
     filingDate: emptyToUndefined(
-      z
-        .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/, "Must be YYYY-MM-DD")
+      z.iso
+        .date("Must be YYYY-MM-DD")
+        .transform((val) => new Date(val))
         .optional(),
     ),
     courtName: emptyToUndefined(z.string().max(200).optional()),
@@ -84,10 +94,8 @@ export const listCasesQuerySchema = z
 
 export const caseParamsSchema = z.object({ id: z.uuid() }).strict();
 
-export const addClientToCaseSchema = newClientSchema;
-
 export type CreateCaseInput = z.infer<typeof createCaseSchema>;
 export type UpdateCaseInput = z.infer<typeof updateCaseSchema>;
-export type AddClientToCaseInput = z.infer<typeof addClientToCaseSchema>;
+export type CreateClientInput = z.infer<typeof createClientSchema>;
 export type ListCasesQuery = z.infer<typeof listCasesQuerySchema>;
 export type CaseParams = z.infer<typeof caseParamsSchema>;

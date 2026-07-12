@@ -1,13 +1,15 @@
 import { Prisma } from "@prisma/client";
 
+import { logger } from "@/config/logger";
 import { ReqContext } from "@/models/req-context";
-import { clientsRepository } from "@/modules/clients/clients.repository";
-import { parseDate } from "@/utils/date";
+import { clientsService } from "@/modules/clients/clients.service";
+import { settingsService } from "@/modules/settings/settings.service";
 import { Errors } from "@/utils/errors";
 
+import { didJudgeChange } from "./cases.helper";
 import { casesRepository } from "./cases.repository";
 import {
-  AddClientToCaseInput,
+  CreateClientInput,
   CreateCaseInput,
   ListCasesQuery,
   UpdateCaseInput,
@@ -26,64 +28,56 @@ export const casesService = {
     return casesRepository.list(orgId, query);
   },
 
-  async findById(id: string, orgId: string) {
-    const c = await casesRepository.findById(id, orgId);
-    if (!c) throw Errors.caseNotFound();
-    return c;
+  async findById(caseId: string, orgId: string) {
+    const caseDetails = await casesRepository.findById(caseId, orgId);
+    if (!caseDetails) throw Errors.caseNotFound();
+    return caseDetails;
   },
 
-  async update(id: string, input: UpdateCaseInput, ctx: ReqContext) {
-    const existing = await casesRepository.findById(id, ctx.orgId);
-    if (!existing) throw Errors.caseNotFound();
+  async update(caseId: string, input: UpdateCaseInput, ctx: ReqContext) {
+    const oldCaseDetails = await casesRepository.findById(caseId, ctx.orgId);
+    if (!oldCaseDetails) throw Errors.caseNotFound();
 
     if (input.clientId) {
-      const client = await clientsRepository.findById(
-        input.clientId,
-        ctx.orgId,
-      );
-      if (!client) throw Errors.clientNotFound();
+      await clientsService.findById(input.clientId, ctx.orgId);
     }
 
     if (input.assignedTo) {
-      const assignedUserExists = await casesRepository.userExistsInOrg(
+      const assignedUser = await settingsService.findUserById(
         input.assignedTo,
         ctx.orgId,
       );
-      if (!assignedUserExists) throw Errors.assignedUserNotFound();
+      if (!assignedUser) throw Errors.assignedUserNotFound();
     }
 
-    const judgeChanged =
-      (input.judgeName !== undefined &&
-        input.judgeName !== existing.judgeName) ||
-      (input.judgeDesignation !== undefined &&
-        input.judgeDesignation !== existing.judgeDesignation);
+    const judgeChanged = didJudgeChange(input, oldCaseDetails);
 
     const updateData: Prisma.CaseUpdateInput = {
       ...input,
-      ...(input.filingDate ? { filingDate: parseDate(input.filingDate) } : {}),
       ...(judgeChanged ? { judgeUpdatedAt: new Date() } : {}),
     };
 
-    const updated = await casesRepository.update(id, ctx.orgId, updateData);
+    const updated = await casesRepository.update(caseId, ctx.orgId, updateData);
     if (!updated) throw Errors.caseNotFound();
+    logger.info(
+      {
+        caseId,
+        userId: ctx.userId,
+        orgId: ctx.orgId,
+        oldCaseDetails,
+        updateData,
+      },
+      "cases: case updated",
+    );
     return updated;
   },
 
-  async addClient(
-    caseId: string,
-    input: AddClientToCaseInput,
-    ctx: ReqContext,
-  ) {
-    const existing = await casesRepository.findById(caseId, ctx.orgId);
-    if (!existing) throw Errors.caseNotFound();
-    if (existing.clientId) throw Errors.caseClientExists();
+  async addClient(caseId: string, input: CreateClientInput, ctx: ReqContext) {
+    const existingCase = await casesRepository.findById(caseId, ctx.orgId);
+    if (!existingCase) throw Errors.caseNotFound();
+    if (existingCase.clientId) throw Errors.caseClientExists();
 
-    const existingWithPhone = await clientsRepository.findByPhone(
-      input.phone,
-      ctx.orgId,
-    );
-
-    const updated = await casesRepository.createClientAndLink(
+    const updatedDetails = await casesRepository.createClientAndLink(
       caseId,
       ctx.orgId,
       {
@@ -92,26 +86,22 @@ export const casesService = {
         createdBy: ctx.userId,
       },
     );
-    if (!updated) {
+    if (!updatedDetails) {
       const stillExists = await casesRepository.findById(caseId, ctx.orgId);
       throw stillExists ? Errors.caseClientExists() : Errors.caseNotFound();
     }
 
-    if (existingWithPhone) {
-      return {
-        data: updated,
-        warnings: [
-          `${existingWithPhone.fullName} already has this phone number`,
-        ],
-      };
-    }
-    return { data: updated };
+    return updatedDetails;
   },
 
-  async delete(id: string, ctx: ReqContext) {
-    const existing = await casesRepository.findById(id, ctx.orgId);
-    if (!existing) throw Errors.caseNotFound();
-    const { count } = await casesRepository.softDeleteCascade(id, ctx.orgId);
+  async delete(caseId: string, ctx: ReqContext) {
+    const caseDetails = await casesRepository.findById(caseId, ctx.orgId);
+    if (!caseDetails) throw Errors.caseNotFound();
+
+    const { count } = await casesRepository.softDeleteCascade(
+      caseId,
+      ctx.orgId,
+    );
     if (count === 0) throw Errors.caseNotFound();
   },
 };

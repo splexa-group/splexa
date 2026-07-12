@@ -1,10 +1,10 @@
-import { Prisma, ClientType } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { HearingStatus } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
 import { caseDetailSelect, caseSummarySelect } from "@/db/selects/case.select";
 
-import { CreateCaseData } from "./cases.models";
+import { CaseClientData, CreateCaseData } from "./cases.models";
 import { ListCasesQuery } from "./cases.schema";
 
 export const casesRepository = {
@@ -60,7 +60,7 @@ export const casesRepository = {
       data,
     });
     if (count === 0) return null;
-    return prisma.case.findFirstOrThrow({
+    return prisma.case.findFirst({
       where: { id, orgId, deletedAt: null },
       select: caseDetailSelect,
     });
@@ -69,17 +69,7 @@ export const casesRepository = {
   async createClientAndLink(
     caseId: string,
     orgId: string,
-    clientData: {
-      fullName: string;
-      phone: string;
-      type: string;
-      email?: string;
-      address?: string;
-      companyName?: string;
-      notes?: string;
-      orgId: string;
-      createdBy: string;
-    },
+    clientData: CaseClientData,
   ) {
     return prisma.$transaction(async (tx) => {
       const client = await tx.client.create({
@@ -87,33 +77,32 @@ export const casesRepository = {
           orgId: clientData.orgId,
           fullName: clientData.fullName,
           phone: clientData.phone,
-          type: clientData.type as ClientType,
+          type: clientData.type,
           email: clientData.email,
           address: clientData.address,
           companyName: clientData.companyName,
           notes: clientData.notes,
+          relationType: clientData.relationType,
+          relationName: clientData.relationName,
+          dateOfBirth: clientData.dateOfBirth,
+          occupation: clientData.occupation,
           createdBy: clientData.createdBy,
         },
         select: { id: true },
       });
+
       const { count } = await tx.case.updateMany({
         where: { id: caseId, orgId, deletedAt: null, clientId: null },
         data: { clientId: client.id },
       });
+
       if (count === 0) return null;
+
       return tx.case.findFirstOrThrow({
         where: { id: caseId, orgId, deletedAt: null },
         select: caseDetailSelect,
       });
     });
-  },
-
-  async userExistsInOrg(userId: string, orgId: string): Promise<boolean> {
-    const user = await prisma.user.findFirst({
-      where: { id: userId, orgId, deletedAt: null },
-      select: { id: true },
-    });
-    return user !== null;
   },
 
   async softDeleteCascade(
@@ -122,6 +111,7 @@ export const casesRepository = {
   ): Promise<{ count: number }> {
     return prisma.$transaction(async (tx) => {
       const now = new Date();
+
       const { count } = await tx.case.updateMany({
         where: { id, orgId, deletedAt: null },
         data: { deletedAt: now },
@@ -132,14 +122,17 @@ export const casesRepository = {
         where: { caseId: id, orgId, deletedAt: null },
         data: { deletedAt: now },
       });
+
       await tx.importantDate.updateMany({
         where: { caseId: id, orgId, deletedAt: null },
         data: { deletedAt: now },
       });
+
       await tx.document.updateMany({
         where: { caseId: id, orgId, deletedAt: null },
         data: { deletedAt: now },
       });
+
       return { count };
     });
   },

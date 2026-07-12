@@ -9,7 +9,6 @@ import { clientsService } from "../clients.service";
 
 vi.mock("../clients.repository", () => ({
   clientsRepository: {
-    findByPhone: vi.fn(),
     create: vi.fn(),
     findById: vi.fn(),
     list: vi.fn(),
@@ -31,6 +30,10 @@ const mockClient = {
   companyName: null,
   notes: null,
   preferredLanguage: null,
+  relationType: null,
+  relationName: null,
+  dateOfBirth: null,
+  occupation: null,
   createdBy: "user-1",
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -39,8 +42,7 @@ const mockClient = {
 beforeEach(() => vi.clearAllMocks());
 
 describe("clientsService.create", () => {
-  it("creates a client and returns it when no duplicate phone", async () => {
-    vi.mocked(clientsRepository.findByPhone).mockResolvedValue(null);
+  it("creates a client and returns it", async () => {
     vi.mocked(clientsRepository.create).mockResolvedValue(mockClient);
 
     const result = await clientsService.create(
@@ -48,24 +50,7 @@ describe("clientsService.create", () => {
       ctx,
     );
 
-    expect(result).toEqual({ data: mockClient });
-    expect(result.warnings).toBeUndefined();
-  });
-
-  it("returns warnings array when phone already exists", async () => {
-    vi.mocked(clientsRepository.findByPhone).mockResolvedValue({
-      id: "existing-1",
-      fullName: "Old Ravi",
-    });
-    vi.mocked(clientsRepository.create).mockResolvedValue(mockClient);
-
-    const result = await clientsService.create(
-      { fullName: "Ravi Kumar", phone: "+91 99999 00000", type: ClientType.INDIVIDUAL },
-      ctx,
-    );
-
-    expect(result.data).toEqual(mockClient);
-    expect(result.warnings).toEqual(["Old Ravi already has this phone number"]);
+    expect(result).toEqual(mockClient);
   });
 });
 

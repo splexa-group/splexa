@@ -1,4 +1,4 @@
-import type { ClientType, PreferredLanguage } from "../enums";
+import type { ClientType, PreferredLanguage, RelationType } from "../enums";
 
 export interface ClientSummary {
   id: string;
@@ -17,6 +17,10 @@ export interface Client {
   companyName?: string | null;
   notes?: string | null;
   preferredLanguage?: PreferredLanguage | null;
+  relationType?: RelationType | null;
+  relationName?: string | null;
+  dateOfBirth?: string | null;
+  occupation?: string | null;
   createdBy: string;
   createdAt: string;
   updatedAt: string;

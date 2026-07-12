@@ -3,7 +3,7 @@ import fp from "fastify-plugin";
 
 import { casesController } from "./cases.controller";
 import {
-  addClientToCaseSchema,
+  createClientSchema,
   caseParamsSchema,
   createCaseSchema,
   listCasesQuerySchema,
@@ -36,9 +36,9 @@ async function routes(router: FastifyInstance): Promise<void> {
   });
 
   router.post("/cases/:id/client", {
-    schema: { params: caseParamsSchema, body: addClientToCaseSchema },
+    schema: { params: caseParamsSchema, body: createClientSchema },
     preHandler: [router.authenticate],
-    handler: casesController.addClient,
+    handler: casesController.addClientToCase,
   });
 
   router.delete("/cases/:id", {

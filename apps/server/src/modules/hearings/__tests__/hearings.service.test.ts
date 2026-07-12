@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import { Errors } from "@/utils/errors";
-import { casesRepository } from "@/modules/cases/cases.repository";
+import { casesService } from "@/modules/cases/cases.service";
 
 import { hearingsRepository } from "../hearings.repository";
 import { hearingsService } from "../hearings.service";
@@ -17,8 +17,8 @@ vi.mock("../hearings.repository", () => ({
   },
 }));
 
-vi.mock("@/modules/cases/cases.repository", () => ({
-  casesRepository: { findById: vi.fn() },
+vi.mock("@/modules/cases/cases.service", () => ({
+  casesService: { findById: vi.fn() },
 }));
 
 const ctx = { orgId: "org-1", userId: "user-1", ipAddress: "127.0.0.1" };
@@ -39,15 +39,17 @@ beforeEach(() => vi.clearAllMocks());
 
 describe("hearingsService.create", () => {
   it("throws caseNotFound when case does not belong to org", async () => {
-    vi.mocked(casesRepository.findById).mockResolvedValue(null);
+    vi.mocked(casesService.findById).mockRejectedValue(Errors.caseNotFound());
 
     await expect(
       hearingsService.create("case-1", { date: new Date().toISOString() }, ctx),
     ).rejects.toThrow(Errors.caseNotFound());
+
+    expect(hearingsRepository.create).not.toHaveBeenCalled();
   });
 
   it("creates hearing when case exists", async () => {
-    vi.mocked(casesRepository.findById).mockResolvedValue(mockCase as never);
+    vi.mocked(casesService.findById).mockResolvedValue(mockCase as never);
     vi.mocked(hearingsRepository.create).mockResolvedValue(mockHearing as never);
 
     const result = await hearingsService.create(
@@ -60,6 +62,28 @@ describe("hearingsService.create", () => {
     expect(hearingsRepository.create).toHaveBeenCalledWith(
       expect.objectContaining({ caseId: "case-1", orgId: "org-1", addedBy: "user-1" }),
     );
+  });
+});
+
+describe("hearingsService.listForCase", () => {
+  it("throws caseNotFound when case does not belong to org", async () => {
+    vi.mocked(casesService.findById).mockRejectedValue(Errors.caseNotFound());
+
+    await expect(hearingsService.listForCase("case-1", "org-1")).rejects.toThrow(
+      Errors.caseNotFound(),
+    );
+
+    expect(hearingsRepository.findByCaseId).not.toHaveBeenCalled();
+  });
+
+  it("returns the case's hearings when the case exists", async () => {
+    vi.mocked(casesService.findById).mockResolvedValue(mockCase as never);
+    vi.mocked(hearingsRepository.findByCaseId).mockResolvedValue([mockHearing] as never);
+
+    const result = await hearingsService.listForCase("case-1", "org-1");
+
+    expect(result).toEqual([mockHearing]);
+    expect(hearingsRepository.findByCaseId).toHaveBeenCalledWith("case-1", "org-1");
   });
 });
 

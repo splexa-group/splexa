@@ -1,5 +1,5 @@
 import { ReqContext } from "@/models/req-context";
-import { casesRepository } from "@/modules/cases/cases.repository";
+import { casesService } from "@/modules/cases/cases.service";
 import { Errors } from "@/utils/errors";
 
 import { hearingsRepository } from "./hearings.repository";
@@ -7,8 +7,7 @@ import { CreateHearingInput, ListHearingsQuery, UpdateHearingInput } from "./hea
 
 export const hearingsService = {
   async create(caseId: string, input: CreateHearingInput, ctx: ReqContext) {
-    const parentCase = await casesRepository.findById(caseId, ctx.orgId);
-    if (!parentCase) throw Errors.caseNotFound();
+    const parentCase = await casesService.findById(caseId, ctx.orgId);
 
     const notifyUserId = parentCase.assignedTo ?? parentCase.createdBy;
 
@@ -22,8 +21,7 @@ export const hearingsService = {
   },
 
   async listForCase(caseId: string, orgId: string) {
-    const parentCase = await casesRepository.findById(caseId, orgId);
-    if (!parentCase) throw Errors.caseNotFound();
+    await casesService.findById(caseId, orgId);
     return hearingsRepository.findByCaseId(caseId, orgId);
   },
 

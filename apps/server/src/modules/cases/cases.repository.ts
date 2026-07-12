@@ -142,20 +142,49 @@ export const casesRepository = {
     orgId: string,
     tx: Prisma.TransactionClient,
   ) {
-    const nextHearing = await tx.hearing.findFirst({
-      where: {
-        caseId,
-        orgId,
-        status: HearingStatus.SCHEDULED,
-        date: { gte: new Date() },
-        deletedAt: null,
-      },
-      orderBy: { date: "asc" },
-      select: { date: true },
-    });
+    const now = new Date();
+
+    // An adjourned hearing's upcoming date lives in `nextDate`, not `date` (`date` still
+    // holds the past date it was adjourned from) — both cases need to be considered, or a
+    // case's "next hearing" silently disappears every time its only hearing is adjourned.
+    const [nextScheduled, nextAdjourned] = await Promise.all([
+      tx.hearing.findFirst({
+        where: {
+          caseId,
+          orgId,
+          status: HearingStatus.SCHEDULED,
+          date: { gte: now },
+          deletedAt: null,
+        },
+        orderBy: { date: "asc" },
+        select: { date: true },
+      }),
+      tx.hearing.findFirst({
+        where: {
+          caseId,
+          orgId,
+          status: HearingStatus.ADJOURNED,
+          nextDate: { gte: now },
+          deletedAt: null,
+        },
+        orderBy: { nextDate: "asc" },
+        select: { nextDate: true },
+      }),
+    ]);
+
+    const candidates = [nextScheduled?.date, nextAdjourned?.nextDate].filter(
+      (date): date is Date => date != null,
+    );
+    const nextHearingDate =
+      candidates.length > 0
+        ? candidates.reduce((earliest, date) =>
+            date < earliest ? date : earliest,
+          )
+        : null;
+
     await tx.case.updateMany({
       where: { id: caseId, orgId },
-      data: { nextHearingDate: nextHearing?.date ?? null },
+      data: { nextHearingDate },
     });
   },
 };

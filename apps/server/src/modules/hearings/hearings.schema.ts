@@ -4,7 +4,10 @@ import { z } from "zod";
 export const createHearingSchema = z
   .object({
     date: z.iso.datetime({ offset: true }),
-    time: z.string().regex(/^\d{2}:\d{2}$/, "Time must be HH:MM").optional(),
+    time: z
+      .string()
+      .regex(/^\d{2}:\d{2}$/, "Time must be HH:MM")
+      .optional(),
     purpose: z.enum(HearingPurpose).optional(),
     status: z.enum(HearingStatus).optional(),
     notes: z.string().max(2000).optional(),
@@ -15,7 +18,14 @@ export const createHearingSchema = z
 export const updateHearingSchema = z
   .object({
     date: z.iso.datetime({ offset: true }).optional(),
-    time: z.string().regex(/^\d{2}:\d{2}$/, "Time must be HH:MM").optional(),
+    // "" is accepted deliberately — the repository treats it as "clear the time"
+    time: z
+      .string()
+      .refine(
+        (val) => val === "" || /^\d{2}:\d{2}$/.test(val),
+        "Time must be HH:MM",
+      )
+      .optional(),
     status: z.enum(HearingStatus).optional(),
     notes: z.string().max(2000).optional(),
     nextDate: z.iso.datetime({ offset: true }).optional(),

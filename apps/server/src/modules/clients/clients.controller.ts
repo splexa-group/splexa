@@ -9,7 +9,10 @@ import {
 import { clientsService } from "./clients.service";
 
 export const clientsController = {
-  async create(req: FastifyRequest<{ Body: CreateClientInput }>, reply: FastifyReply) {
+  async create(
+    req: FastifyRequest<{ Body: CreateClientInput }>,
+    reply: FastifyReply,
+  ) {
     const client = await clientsService.create(req.body, {
       orgId: req.user.orgId,
       userId: req.user.userId,
@@ -23,7 +26,12 @@ export const clientsController = {
       req.user.orgId,
       req.query,
     );
-    return { clients: data, total, page: req.query.page, limit: req.query.limit };
+    return {
+      clients: data,
+      total,
+      page: req.query.page,
+      limit: req.query.limit,
+    };
   },
 
   async getById(req: FastifyRequest<{ Params: ClientParams }>) {

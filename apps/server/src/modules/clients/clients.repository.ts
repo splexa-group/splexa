@@ -1,12 +1,14 @@
 import { prisma } from "@/db/client";
 import { clientSelect } from "@/db/selects/client.select";
 
-import { CreateClientInput, ListClientsQuery, UpdateClientInput } from "./clients.schema";
+import {
+  CreateClientInput,
+  ListClientsQuery,
+  UpdateClientInput,
+} from "./clients.schema";
 
 export const clientsRepository = {
-  async create(
-    data: CreateClientInput & { orgId: string; createdBy: string },
-  ) {
+  async create(data: CreateClientInput & { orgId: string; createdBy: string }) {
     return prisma.client.create({
       data: {
         orgId: data.orgId,
@@ -47,7 +49,9 @@ export const clientsRepository = {
               { fullName: { contains: search, mode: "insensitive" as const } },
               { phone: { contains: search, mode: "insensitive" as const } },
               { email: { contains: search, mode: "insensitive" as const } },
-              { companyName: { contains: search, mode: "insensitive" as const } },
+              {
+                companyName: { contains: search, mode: "insensitive" as const },
+              },
             ],
           }
         : {}),
@@ -68,9 +72,15 @@ export const clientsRepository = {
   },
 
   async update(id: string, orgId: string, data: UpdateClientInput) {
-    const { count } = await prisma.client.updateMany({ where: { id, orgId, deletedAt: null }, data });
+    const { count } = await prisma.client.updateMany({
+      where: { id, orgId, deletedAt: null },
+      data,
+    });
     if (count === 0) return null;
-    return prisma.client.findFirst({ where: { id, orgId, deletedAt: null }, select: clientSelect });
+    return prisma.client.findFirst({
+      where: { id, orgId, deletedAt: null },
+      select: clientSelect,
+    });
   },
 
   async softDelete(id: string, orgId: string) {

@@ -15,12 +15,14 @@ const dateOfBirthSchema = emptyToUndefined(
     .optional(),
 );
 
+const emailSchema = emptyToUndefined(z.email().optional());
+
 export const createClientSchema = z
   .object({
     fullName: z.string().min(1).max(200),
     phone: z.string().min(7).max(20),
     type: z.enum(ClientType),
-    email: z.email().optional(),
+    email: emailSchema,
     address: z.string().max(500).optional(),
     companyName: z.string().max(200).optional(),
     notes: z.string().max(2000).optional(),
@@ -37,7 +39,7 @@ export const updateClientSchema = z
     fullName: z.string().min(1).max(200).optional(),
     phone: z.string().min(7).max(20).optional(),
     type: z.enum(ClientType).optional(),
-    email: z.email().optional(),
+    email: emailSchema,
     address: z.string().max(500).optional(),
     companyName: z.string().max(200).optional(),
     notes: z.string().max(2000).optional(),
@@ -52,7 +54,7 @@ export const updateClientSchema = z
     message: "At least one field must be provided for update",
   });
 
-export const clientParamsSchema = z.object({ id: z.uuid() });
+export const clientParamsSchema = z.object({ id: z.uuid() }).strict();
 
 export const listClientsQuerySchema = z
   .object({

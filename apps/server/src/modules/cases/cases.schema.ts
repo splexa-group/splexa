@@ -28,7 +28,7 @@ export const createClientSchema = z
     fullName: z.string().min(1).max(200),
     phone: z.string().min(7).max(20),
     type: z.enum(ClientType),
-    email: z.email().optional(),
+    email: emptyToUndefined(z.email().optional()),
     address: z.string().max(500).optional(),
     companyName: z.string().max(200).optional(),
     notes: z.string().max(2000).optional(),

@@ -1,9 +1,12 @@
 import { Prisma } from "@prisma/client";
 
 import { prisma } from "@/db/client";
-import { documentSelect } from "@/db/selects/document.select";
+import {
+  documentSelect,
+  documentWithStorageKeySelect,
+} from "@/db/selects/document.select";
 
-import { DocumentFolderItem, ListDocumentsOrgQuery, ListDocumentsQuery } from "./documents.schema";
+import { DocumentFolderItem, ListDocumentsQuery } from "./documents.schema";
 
 export const documentsRepository = {
   async create(data: {
@@ -18,34 +21,17 @@ export const documentsRepository = {
     return prisma.document.create({ data, select: documentSelect });
   },
 
+  // Internal-only lookup (getPresignedUrl / delete) — the returned doc is never sent to the
+  // client, only used server-side to talk to the storage backend, so it includes storageKey.
   async findById(id: string, caseId: string, orgId: string) {
     return prisma.document.findFirst({
       where: { id, caseId, orgId, deletedAt: null },
-      select: documentSelect,
+      select: documentWithStorageKeySelect,
     });
   },
 
   async listForCase(caseId: string, orgId: string, query: ListDocumentsQuery) {
     const where: Prisma.DocumentWhereInput = { caseId, orgId, deletedAt: null };
-    const [data, total] = await Promise.all([
-      prisma.document.findMany({
-        where,
-        select: documentSelect,
-        orderBy: { createdAt: "desc" },
-        skip: (query.page - 1) * query.limit,
-        take: query.limit,
-      }),
-      prisma.document.count({ where }),
-    ]);
-    return { data, total };
-  },
-
-  async listForOrg(orgId: string, query: ListDocumentsOrgQuery) {
-    const where: Prisma.DocumentWhereInput = {
-      orgId,
-      deletedAt: null,
-      ...(query.caseId ? { caseId: query.caseId } : {}),
-    };
     const [data, total] = await Promise.all([
       prisma.document.findMany({
         where,
@@ -87,6 +73,7 @@ export const documentsRepository = {
       },
       orderBy: { title: "asc" },
     });
+
     return cases.map((c) => ({
       caseId: c.id,
       title: c.title,

@@ -19,6 +19,10 @@ export const authGuardPlugin = fp(
       } catch {
         throw Errors.invalidToken();
       }
+      req.log = req.log.child({
+        userId: req.user.userId,
+        orgId: req.user.orgId,
+      });
     });
 
     fastify.decorate(

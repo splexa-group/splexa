@@ -8,19 +8,12 @@ import { documentsController } from "./documents.controller";
 import {
   documentCaseParamsSchema,
   documentParamsSchema,
-  listDocumentsOrgQuerySchema,
   listDocumentsQuerySchema,
   renameDocumentBodySchema,
 } from "./documents.schema";
 
 async function routes(router: FastifyInstance): Promise<void> {
   await router.register(multipart, { limits: { fileSize: MAX_UPLOAD_BYTES } });
-
-  router.get("/documents", {
-    schema: { querystring: listDocumentsOrgQuerySchema },
-    preHandler: [router.authenticate],
-    handler: documentsController.listForOrg,
-  });
 
   router.get("/documents/folders", {
     preHandler: [router.authenticate],
@@ -34,7 +27,10 @@ async function routes(router: FastifyInstance): Promise<void> {
   });
 
   router.get("/cases/:caseId/documents", {
-    schema: { params: documentCaseParamsSchema, querystring: listDocumentsQuerySchema },
+    schema: {
+      params: documentCaseParamsSchema,
+      querystring: listDocumentsQuerySchema,
+    },
     preHandler: [router.authenticate],
     handler: documentsController.listForCase,
   });

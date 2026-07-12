@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { casesRepository } from "@/modules/cases/cases.repository";
+import { casesService } from "@/modules/cases/cases.service";
 import { Errors } from "@/utils/errors";
 
 import { documentsRepository } from "../documents.repository";
@@ -11,15 +11,14 @@ vi.mock("../documents.repository", () => ({
     create: vi.fn(),
     findById: vi.fn(),
     listForCase: vi.fn(),
-    listForOrg: vi.fn(),
     softDelete: vi.fn(),
     rename: vi.fn(),
     listFolders: vi.fn(),
   },
 }));
 
-vi.mock("@/modules/cases/cases.repository", () => ({
-  casesRepository: { findById: vi.fn() },
+vi.mock("@/modules/cases/cases.service", () => ({
+  casesService: { findById: vi.fn() },
 }));
 
 vi.mock("@/integrations/storage", () => ({
@@ -60,22 +59,28 @@ beforeEach(() => vi.clearAllMocks());
 
 describe("documentsService.upload", () => {
   it("throws caseNotFound when case does not exist", async () => {
-    vi.mocked(casesRepository.findById).mockResolvedValue(null);
+    vi.mocked(casesService.findById).mockRejectedValue(Errors.caseNotFound());
     await expect(
       documentsService.upload("bad-case", makeFile("doc.pdf", 100) as never, ctx),
     ).rejects.toThrow(Errors.caseNotFound());
   });
 
-  it("throws FILE_TOO_LARGE when buffer exceeds 50 MB", async () => {
-    vi.mocked(casesRepository.findById).mockResolvedValue(mockCase as never);
-    const oversized = makeFile("big.pdf", 51 * 1024 * 1024);
+  it("throws FILE_TOO_LARGE when @fastify/multipart's own size limit rejects the upload", async () => {
+    vi.mocked(casesService.findById).mockResolvedValue(mockCase as never);
+    const tooLarge = {
+      filename: "big.pdf",
+      mimetype: "application/pdf",
+      toBuffer: vi.fn().mockRejectedValue(Object.assign(new Error("request file too large"), {
+        code: "FST_REQ_FILE_TOO_LARGE",
+      })),
+    };
     await expect(
-      documentsService.upload("case-1", oversized as never, ctx),
+      documentsService.upload("case-1", tooLarge as never, ctx),
     ).rejects.toMatchObject({ code: "FILE_TOO_LARGE" });
   });
 
   it("uploads to storage and creates DB record", async () => {
-    vi.mocked(casesRepository.findById).mockResolvedValue(mockCase as never);
+    vi.mocked(casesService.findById).mockResolvedValue(mockCase as never);
     vi.mocked(documentsRepository.create).mockResolvedValue(mockDoc);
 
     const file = makeFile("contract.pdf", 1024);
@@ -94,13 +99,38 @@ describe("documentsService.upload", () => {
   });
 
   it("storage key includes orgId, caseId, and file extension", async () => {
-    vi.mocked(casesRepository.findById).mockResolvedValue(mockCase as never);
+    vi.mocked(casesService.findById).mockResolvedValue(mockCase as never);
     vi.mocked(documentsRepository.create).mockResolvedValue(mockDoc);
 
     await documentsService.upload("case-1", makeFile("report.xlsx", 500, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") as never, ctx);
 
     const createCall = vi.mocked(documentsRepository.create).mock.calls[0][0];
     expect(createCall.storageKey).toMatch(/^orgs\/org-1\/cases\/case-1\/documents\/.+\.xlsx$/);
+  });
+});
+
+describe("documentsService.listForCase", () => {
+  it("throws caseNotFound when case does not belong to org", async () => {
+    vi.mocked(casesService.findById).mockRejectedValue(Errors.caseNotFound());
+
+    await expect(
+      documentsService.listForCase("case-1", { page: 1, limit: 20 }, ctx),
+    ).rejects.toThrow(Errors.caseNotFound());
+
+    expect(documentsRepository.listForCase).not.toHaveBeenCalled();
+  });
+
+  it("returns the case's documents when the case exists", async () => {
+    vi.mocked(casesService.findById).mockResolvedValue(mockCase as never);
+    vi.mocked(documentsRepository.listForCase).mockResolvedValue({ data: [mockDoc], total: 1 });
+
+    const result = await documentsService.listForCase("case-1", { page: 1, limit: 20 }, ctx);
+
+    expect(result).toEqual({ data: [mockDoc], total: 1 });
+    expect(documentsRepository.listForCase).toHaveBeenCalledWith("case-1", "org-1", {
+      page: 1,
+      limit: 20,
+    });
   });
 });
 

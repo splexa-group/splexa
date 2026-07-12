@@ -4,7 +4,6 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import {
   DocumentCaseParams,
   DocumentParams,
-  ListDocumentsOrgQuery,
   ListDocumentsQuery,
   RenameDocumentBody,
 } from "./documents.schema";
@@ -31,11 +30,6 @@ export const documentsController = {
       req.query,
       { orgId: req.user.orgId, userId: req.user.userId },
     );
-    return { documents: data, total, page: req.query.page, limit: req.query.limit };
-  },
-
-  async listForOrg(req: FastifyRequest<{ Querystring: ListDocumentsOrgQuery }>) {
-    const { data, total } = await documentsService.listForOrg(req.user.orgId, req.query);
     return { documents: data, total, page: req.query.page, limit: req.query.limit };
   },
 

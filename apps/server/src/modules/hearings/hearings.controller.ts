@@ -9,14 +9,6 @@ import {
 import { hearingsService } from "./hearings.service";
 
 export const hearingsController = {
-  async getById(req: FastifyRequest<{ Params: HearingParams }>) {
-    const hearing = await hearingsService.findById(
-      req.params.id,
-      req.user.orgId,
-    );
-    return { hearing };
-  },
-
   async create(
     req: FastifyRequest<{
       Params: CaseHearingParams;

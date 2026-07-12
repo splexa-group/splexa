@@ -6,12 +6,6 @@ import { hearingsRepository } from "./hearings.repository";
 import { CreateHearingInput, UpdateHearingInput } from "./hearings.schema";
 
 export const hearingsService = {
-  async findById(id: string, orgId: string) {
-    const hearing = await hearingsRepository.findById(id, orgId);
-    if (!hearing) throw Errors.hearingNotFound();
-    return hearing;
-  },
-
   async create(caseId: string, input: CreateHearingInput, ctx: ReqContext) {
     const parentCase = await casesService.findById(caseId, ctx.orgId);
 

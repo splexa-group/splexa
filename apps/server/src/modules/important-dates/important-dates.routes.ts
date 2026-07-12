@@ -23,7 +23,10 @@ async function routes(router: FastifyInstance): Promise<void> {
   });
 
   router.patch("/cases/:caseId/important-dates/:dateId", {
-    schema: { params: importantDateParamsSchema, body: updateImportantDateSchema },
+    schema: {
+      params: importantDateParamsSchema,
+      body: updateImportantDateSchema,
+    },
     preHandler: [router.authenticate],
     handler: importantDatesController.update,
   });
@@ -35,4 +38,6 @@ async function routes(router: FastifyInstance): Promise<void> {
   });
 }
 
-export const importantDatesRoutes = fp(routes, { name: "important-dates-routes" });
+export const importantDatesRoutes = fp(routes, {
+  name: "important-dates-routes",
+});

@@ -1,7 +1,6 @@
 import { ImportantDateType } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
-import { parseDate } from "@/utils/date";
 
 import {
   CreateImportantDateInput,
@@ -21,7 +20,7 @@ export const importantDatesRepository = {
         caseId: data.caseId,
         orgId: data.orgId,
         dateType: data.dateType,
-        date: parseDate(data.date),
+        date: data.date,
         description: data.description,
         notifyUserId: data.notifyUserId,
       },
@@ -50,13 +49,15 @@ export const importantDatesRepository = {
     const { count } = await prisma.importantDate.updateMany({
       where: { id, orgId, deletedAt: null },
       data: {
-        ...(data.dateType ? { dateType: data.dateType } : {}),
-        ...(data.date ? { date: parseDate(data.date) } : {}),
-        ...(data.description !== undefined ? { description: data.description } : {}),
+        dateType: data.dateType,
+        date: data.date,
+        description: data.description,
       },
     });
     if (count === 0) return null;
-    return prisma.importantDate.findFirst({ where: { id, orgId, deletedAt: null } });
+    return prisma.importantDate.findFirst({
+      where: { id, orgId, deletedAt: null },
+    });
   },
 
   async softDelete(id: string, orgId: string) {

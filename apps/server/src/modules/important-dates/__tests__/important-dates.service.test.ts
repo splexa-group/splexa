@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { casesRepository } from "@/modules/cases/cases.repository";
+import { casesService } from "@/modules/cases/cases.service";
 import { Errors } from "@/utils/errors";
 
 import { importantDatesRepository } from "../important-dates.repository";
@@ -9,14 +9,15 @@ import { importantDatesService } from "../important-dates.service";
 vi.mock("../important-dates.repository", () => ({
   importantDatesRepository: {
     create: vi.fn(),
+    listForCase: vi.fn(),
     findById: vi.fn(),
     update: vi.fn(),
     softDelete: vi.fn(),
   },
 }));
 
-vi.mock("@/modules/cases/cases.repository", () => ({
-  casesRepository: { findById: vi.fn() },
+vi.mock("@/modules/cases/cases.service", () => ({
+  casesService: { findById: vi.fn() },
 }));
 
 const ctx = { orgId: "org-1", userId: "user-1", ipAddress: "127.0.0.1" };
@@ -25,21 +26,43 @@ const mockDate = { id: "date-1", caseId: "case-1", orgId: "org-1", dateType: "LI
 
 beforeEach(() => vi.clearAllMocks());
 
+describe("importantDatesService.listForCase", () => {
+  it("throws caseNotFound when case does not belong to org", async () => {
+    vi.mocked(casesService.findById).mockRejectedValue(Errors.caseNotFound());
+
+    await expect(importantDatesService.listForCase("case-1", "org-1")).rejects.toThrow(
+      Errors.caseNotFound(),
+    );
+
+    expect(importantDatesRepository.listForCase).not.toHaveBeenCalled();
+  });
+
+  it("returns the case's important dates when the case exists", async () => {
+    vi.mocked(casesService.findById).mockResolvedValue(mockCase as never);
+    vi.mocked(importantDatesRepository.listForCase).mockResolvedValue([mockDate] as never);
+
+    const result = await importantDatesService.listForCase("case-1", "org-1");
+
+    expect(result).toEqual([mockDate]);
+    expect(importantDatesRepository.listForCase).toHaveBeenCalledWith("case-1", "org-1");
+  });
+});
+
 describe("importantDatesService.create", () => {
   it("throws caseNotFound when case does not exist", async () => {
-    vi.mocked(casesRepository.findById).mockResolvedValue(null);
+    vi.mocked(casesService.findById).mockRejectedValue(Errors.caseNotFound());
     await expect(
-      importantDatesService.create("bad-id", { dateType: "LIMITATION" as never, date: new Date().toISOString() }, ctx),
+      importantDatesService.create("bad-id", { dateType: "LIMITATION" as never, date: new Date() }, ctx),
     ).rejects.toThrow(Errors.caseNotFound());
   });
 
   it("creates important date when case exists", async () => {
-    vi.mocked(casesRepository.findById).mockResolvedValue(mockCase as never);
+    vi.mocked(casesService.findById).mockResolvedValue(mockCase as never);
     vi.mocked(importantDatesRepository.create).mockResolvedValue(mockDate as never);
 
     const result = await importantDatesService.create(
       "case-1",
-      { dateType: "LIMITATION" as never, date: new Date().toISOString() },
+      { dateType: "LIMITATION" as never, date: new Date() },
       ctx,
     );
 

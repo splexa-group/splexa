@@ -46,7 +46,10 @@ export const PARTY_ROLE_OPTIONS = toOptions(PartyRole);
 export const CLIENT_TYPE_OPTIONS = toOptions(ClientType);
 export const HEARING_PURPOSE_OPTIONS = toOptions(HearingPurpose);
 export const HEARING_STATUS_OPTIONS = toOptions(HearingStatus);
-export const IMPORTANT_DATE_TYPE_OPTIONS = toOptions(ImportantDateType);
+// HEARING_DATE is a system-only marker the hearings module manages — never manually pickable.
+export const IMPORTANT_DATE_TYPE_OPTIONS = toOptions(ImportantDateType).filter(
+  (option) => option.value !== ImportantDateType.HEARING_DATE,
+);
 export const PREFERRED_LANGUAGE_OPTIONS = toOptions(PreferredLanguage);
 export const RELATION_TYPE_OPTIONS = toOptions(RelationType);
 

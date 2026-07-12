@@ -10,12 +10,6 @@ import {
 } from "./hearings.schema";
 
 async function routes(router: FastifyInstance): Promise<void> {
-  router.get("/hearings/:id", {
-    schema: { params: hearingParamsSchema },
-    preHandler: [router.authenticate],
-    handler: hearingsController.getById,
-  });
-
   router.patch("/hearings/:id", {
     schema: { params: hearingParamsSchema, body: updateHearingSchema },
     preHandler: [router.authenticate],

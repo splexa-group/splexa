@@ -15,7 +15,7 @@ import { dashboardRoutes } from "@/modules/dashboard/dashboard.routes";
 import { documentsRoutes } from "@/modules/documents/documents.routes";
 import { hearingsRoutes } from "@/modules/hearings/hearings.routes";
 import { importantDatesRoutes } from "@/modules/important-dates/important-dates.routes";
-import { settingsRoutes } from "@/modules/settings/settings.routes";
+import { organizationRoutes } from "@/modules/organization/organization.routes";
 import { authGuardPlugin } from "@/plugins/auth-guard.plugin";
 import { errorHandlerPlugin } from "@/plugins/error-handler.plugin";
 import { responsePlugin } from "@/plugins/response.plugin";
@@ -38,7 +38,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(importantDatesRoutes, { prefix: "/api/v1" });
   await app.register(calendarRoutes, { prefix: "/api/v1" });
   await app.register(documentsRoutes, { prefix: "/api/v1" });
-  await app.register(settingsRoutes, { prefix: "/api/v1" });
+  await app.register(organizationRoutes, { prefix: "/api/v1" });
   await app.register(dashboardRoutes, { prefix: "/api/v1" });
 
   return app;

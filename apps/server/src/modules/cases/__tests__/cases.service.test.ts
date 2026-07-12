@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { settingsService } from "@/modules/settings/settings.service";
+import { organizationService } from "@/modules/organization/organization.service";
 import { Errors } from "@/utils/errors";
 
 import { casesRepository } from "../cases.repository";
@@ -21,8 +21,8 @@ vi.mock("@/modules/clients/clients.service", () => ({
   clientsService: { findById: vi.fn() },
 }));
 
-vi.mock("@/modules/settings/settings.service", () => ({
-  settingsService: { findUserById: vi.fn() },
+vi.mock("@/modules/organization/organization.service", () => ({
+  organizationService: { findUserById: vi.fn() },
 }));
 
 vi.mock("@/config/logger", () => ({
@@ -132,7 +132,7 @@ describe("casesService.update", () => {
 
   it("throws assignedUserNotFound when assignedTo does not belong to org", async () => {
     vi.mocked(casesRepository.findById).mockResolvedValue(mockCase as never);
-    vi.mocked(settingsService.findUserById).mockResolvedValue(null);
+    vi.mocked(organizationService.findUserById).mockResolvedValue(null);
 
     await expect(
       casesService.update("case-1", { assignedTo: "other-org-user" }, ctx),

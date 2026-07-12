@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 import { logger } from "@/config/logger";
 import { ReqContext } from "@/models/req-context";
 import { clientsService } from "@/modules/clients/clients.service";
-import { settingsService } from "@/modules/settings/settings.service";
+import { organizationService } from "@/modules/organization/organization.service";
 import { Errors } from "@/utils/errors";
 
 import { didJudgeChange } from "./cases.helper";
@@ -43,7 +43,7 @@ export const casesService = {
     }
 
     if (input.assignedTo) {
-      const assignedUser = await settingsService.findUserById(
+      const assignedUser = await organizationService.findUserById(
         input.assignedTo,
         ctx.orgId,
       );

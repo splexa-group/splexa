@@ -11,7 +11,12 @@ import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { SETTINGS_TAB_CONFIG } from "@/config/settings-tabs";
 import { SettingsTabs } from "@/enums/settings-tabs";
 import { useActiveTab } from "@/hooks/use-active-tab";
-import { useOrganization, useProfile, useUpdateOrganization, useUpdateProfile } from "@/hooks/use-settings";
+import {
+  useOrganization,
+  useProfile,
+  useUpdateOrganization,
+  useUpdateProfile,
+} from "@/hooks/use-organization";
 import { useAuthStore } from "@/store/auth-store";
 import { ProfileTab, settingsFormSchema, type SettingsFormValues } from "@/components/settings/profile-tab";
 import { SubscriptionTab } from "@/components/settings/subscription-tab";

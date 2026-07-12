@@ -28,6 +28,7 @@ export const hearingCalendarSelect = {
   time: true,
   purpose: true,
   status: true,
+  notes: true,
   case: {
     select: {
       id: true,

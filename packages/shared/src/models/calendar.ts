@@ -14,6 +14,7 @@ export interface CalendarHearingEvent {
   time: string | null;
   purpose: HearingPurpose | null;
   status: HearingStatus;
+  notes: string | null;
 }
 
 export interface CalendarImportantDateEvent {

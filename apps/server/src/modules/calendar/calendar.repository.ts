@@ -9,7 +9,10 @@ import { parseDate } from "@/utils/date";
 
 export const calendarRepository = {
   async listEvents(orgId: string, from: string, to: string) {
-    const dateRange: Prisma.DateTimeFilter = { gte: parseDate(from), lte: parseDate(to) };
+    const dateRange: Prisma.DateTimeFilter = {
+      gte: parseDate(from),
+      lte: parseDate(to),
+    };
 
     const [hearings, importantDates] = await Promise.all([
       prisma.hearing.findMany({

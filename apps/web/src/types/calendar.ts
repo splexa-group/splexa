@@ -1,30 +1,11 @@
-import type { HearingPurpose, HearingStatus, ImportantDateType } from "@splexa-group/shared/enums";
+import type { HearingStatus } from "@splexa-group/shared/enums";
+import type { CalendarEvent } from "@splexa-group/shared/models";
 
-export interface CalendarHearing {
-  id: string;
-  caseId: string;
-  date: string;
-  time: string | null;
-  purpose: HearingPurpose | null;
-  status: HearingStatus;
-  notes: string | null;
-  case: { id: string; title: string; courtName: string | null };
-}
-
-export interface CalendarImportantDate {
-  id: string;
-  caseId: string;
-  dateType: ImportantDateType;
-  date: string;
-  description: string | null;
-  case: { id: string; title: string };
-}
+export type { CalendarEvent };
 
 export type CalendarEventKind = "hearing" | "important-date";
 
-export type CalendarFilter = "all" | "hearings" | "important-dates";
-
-export interface CalendarEvent {
+export interface CalendarDisplayEvent {
   id: string;
   kind: CalendarEventKind;
   caseId: string;
@@ -37,4 +18,4 @@ export interface CalendarEvent {
   description?: string | null;
 }
 
-export type CalendarEventMap = Map<string, CalendarEvent[]>;
+export type CalendarEventMap = Map<string, CalendarDisplayEvent[]>;

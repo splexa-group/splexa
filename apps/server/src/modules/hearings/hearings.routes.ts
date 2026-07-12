@@ -6,17 +6,10 @@ import {
   caseHearingParamsSchema,
   createHearingSchema,
   hearingParamsSchema,
-  listHearingsQuerySchema,
   updateHearingSchema,
 } from "./hearings.schema";
 
 async function routes(router: FastifyInstance): Promise<void> {
-  router.get("/hearings", {
-    schema: { querystring: listHearingsQuerySchema },
-    preHandler: [router.authenticate],
-    handler: hearingsController.listCrossCase,
-  });
-
   router.get("/hearings/:id", {
     schema: { params: hearingParamsSchema },
     preHandler: [router.authenticate],

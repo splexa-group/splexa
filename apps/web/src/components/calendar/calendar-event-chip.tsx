@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
-import type { CalendarEvent } from "@/types/calendar";
+import type { CalendarDisplayEvent } from "@/types/calendar";
 
 interface Props {
-  event: CalendarEvent;
+  event: CalendarDisplayEvent;
 }
 
 export function CalendarEventChip({ event }: Props) {

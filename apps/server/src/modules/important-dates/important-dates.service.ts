@@ -3,15 +3,11 @@ import { casesRepository } from "@/modules/cases/cases.repository";
 import { Errors } from "@/utils/errors";
 
 import { importantDatesRepository } from "./important-dates.repository";
-import { CreateImportantDateInput, ListImportantDatesQuery, UpdateImportantDateInput } from "./important-dates.schema";
+import { CreateImportantDateInput, UpdateImportantDateInput } from "./important-dates.schema";
 
 export const importantDatesService = {
   async listForCase(caseId: string, orgId: string) {
     return importantDatesRepository.listForCase(caseId, orgId);
-  },
-
-  async listCrossCase(orgId: string, query: ListImportantDatesQuery) {
-    return importantDatesRepository.listCrossCase(orgId, query);
   },
 
   async create(caseId: string, input: CreateImportantDateInput, ctx: ReqContext) {

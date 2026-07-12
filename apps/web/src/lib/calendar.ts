@@ -6,12 +6,8 @@ import {
   eachDayOfInterval,
 } from "date-fns";
 import { HearingPurpose, ImportantDateType } from "@splexa-group/shared/enums";
-import type {
-  CalendarEvent,
-  CalendarEventMap,
-  CalendarHearing,
-  CalendarImportantDate,
-} from "@/types/calendar";
+import type { CalendarEvent } from "@splexa-group/shared/models";
+import type { CalendarDisplayEvent, CalendarEventMap } from "@/types/calendar";
 
 export function getMonthGridDays(year: number, month: number): Date[] {
   const monthStart = new Date(year, month, 1);
@@ -62,41 +58,38 @@ function toLocalDateKey(isoString: string): string {
   return format(new Date(isoString), "yyyy-MM-dd");
 }
 
-export function buildEventMap(
-  hearings: CalendarHearing[] | undefined,
-  importantDates: CalendarImportantDate[] | undefined,
-): CalendarEventMap {
+export function buildEventMap(events: CalendarEvent[] | undefined): CalendarEventMap {
   const map: CalendarEventMap = new Map();
 
-  function push(key: string, event: CalendarEvent) {
+  function push(key: string, event: CalendarDisplayEvent) {
     const existing = map.get(key) ?? [];
     map.set(key, [...existing, event]);
   }
 
-  for (const h of hearings ?? []) {
-    push(toLocalDateKey(h.date), {
-      id: h.id,
-      kind: "hearing",
-      caseId: h.caseId,
-      caseTitle: h.case.title,
-      date: h.date,
-      label: h.purpose ? HEARING_PURPOSE_LABELS[h.purpose] : "Hearing",
-      status: h.status,
-      time: h.time,
-      courtName: h.case.courtName,
-    });
-  }
-
-  for (const d of importantDates ?? []) {
-    push(toLocalDateKey(d.date), {
-      id: d.id,
-      kind: "important-date",
-      caseId: d.caseId,
-      caseTitle: d.case.title,
-      date: d.date,
-      label: IMPORTANT_DATE_TYPE_LABELS[d.dateType],
-      description: d.description,
-    });
+  for (const event of events ?? []) {
+    if (event.kind === "hearing") {
+      push(toLocalDateKey(event.date), {
+        id: event.id,
+        kind: "hearing",
+        caseId: event.caseId,
+        caseTitle: event.caseTitle,
+        date: event.date,
+        label: event.purpose ? HEARING_PURPOSE_LABELS[event.purpose] : "Hearing",
+        status: event.status,
+        time: event.time,
+        courtName: event.courtName,
+      });
+    } else {
+      push(toLocalDateKey(event.date), {
+        id: event.id,
+        kind: "important-date",
+        caseId: event.caseId,
+        caseTitle: event.caseTitle,
+        date: event.date,
+        label: IMPORTANT_DATE_TYPE_LABELS[event.dateType],
+        description: event.description,
+      });
+    }
   }
 
   return map;

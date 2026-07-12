@@ -11,7 +11,6 @@ vi.mock("../hearings.repository", () => ({
     create: vi.fn(),
     findById: vi.fn(),
     findByCaseId: vi.fn(),
-    listCrossCase: vi.fn(),
     update: vi.fn(),
     softDelete: vi.fn(),
   },

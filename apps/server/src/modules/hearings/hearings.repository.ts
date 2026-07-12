@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import {
   HearingPurpose,
   HearingStatus,
@@ -6,11 +5,11 @@ import {
 } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
-import { hearingCalendarSelect, hearingDetailSelect, hearingSummarySelect } from "@/db/selects/hearing.select";
+import { hearingDetailSelect, hearingSummarySelect } from "@/db/selects/hearing.select";
 import { casesRepository } from "@/modules/cases/cases.repository";
 import { parseDate } from "@/utils/date";
 
-import { CreateHearingInput, ListHearingsQuery } from "./hearings.schema";
+import { CreateHearingInput } from "./hearings.schema";
 
 export const hearingsRepository = {
   async create(
@@ -71,37 +70,6 @@ export const hearingsRepository = {
       select: hearingSummarySelect,
       orderBy: { date: "desc" },
     });
-  },
-
-  async listCrossCase(orgId: string, query: ListHearingsQuery) {
-    const { from, to, status, caseId, page, limit } = query;
-    const where: Prisma.HearingWhereInput = {
-      orgId,
-      deletedAt: null,
-      ...(status ? { status } : {}),
-      ...(caseId ? { caseId } : {}),
-      ...(from || to
-        ? {
-            date: {
-              ...(from ? { gte: parseDate(from) } : {}),
-              ...(to ? { lte: parseDate(to) } : {}),
-            },
-          }
-        : {}),
-    };
-
-    const [data, total] = await Promise.all([
-      prisma.hearing.findMany({
-        where,
-        select: hearingCalendarSelect,
-        orderBy: { date: "asc" },
-        skip: (page - 1) * limit,
-        take: limit,
-      }),
-      prisma.hearing.count({ where }),
-    ]);
-
-    return { data, total };
   },
 
   async update(

@@ -3,7 +3,7 @@ import { casesService } from "@/modules/cases/cases.service";
 import { Errors } from "@/utils/errors";
 
 import { hearingsRepository } from "./hearings.repository";
-import { CreateHearingInput, ListHearingsQuery, UpdateHearingInput } from "./hearings.schema";
+import { CreateHearingInput, UpdateHearingInput } from "./hearings.schema";
 
 export const hearingsService = {
   async create(caseId: string, input: CreateHearingInput, ctx: ReqContext) {
@@ -29,10 +29,6 @@ export const hearingsService = {
     const hearing = await hearingsRepository.findById(id, orgId);
     if (!hearing) throw Errors.hearingNotFound();
     return hearing;
-  },
-
-  async listCrossCase(orgId: string, query: ListHearingsQuery) {
-    return hearingsRepository.listCrossCase(orgId, query);
   },
 
   async update(id: string, input: UpdateHearingInput, ctx: ReqContext) {

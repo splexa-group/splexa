@@ -8,6 +8,7 @@ import Fastify, { FastifyInstance } from "fastify";
 import { env } from "@/config/env";
 import { fastifyLogger } from "@/config/logger";
 import { authRoutes } from "@/modules/auth/auth.routes";
+import { calendarRoutes } from "@/modules/calendar/calendar.routes";
 import { casesRoutes } from "@/modules/cases/cases.routes";
 import { clientsRoutes } from "@/modules/clients/clients.routes";
 import { dashboardRoutes } from "@/modules/dashboard/dashboard.routes";
@@ -35,6 +36,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(casesRoutes, { prefix: "/api/v1" });
   await app.register(hearingsRoutes, { prefix: "/api/v1" });
   await app.register(importantDatesRoutes, { prefix: "/api/v1" });
+  await app.register(calendarRoutes, { prefix: "/api/v1" });
   await app.register(documentsRoutes, { prefix: "/api/v1" });
   await app.register(settingsRoutes, { prefix: "/api/v1" });
   await app.register(dashboardRoutes, { prefix: "/api/v1" });

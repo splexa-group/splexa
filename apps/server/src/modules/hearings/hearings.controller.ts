@@ -4,7 +4,6 @@ import {
   CaseHearingParams,
   CreateHearingInput,
   HearingParams,
-  ListHearingsQuery,
   UpdateHearingInput,
 } from "./hearings.schema";
 import { hearingsService } from "./hearings.service";
@@ -30,14 +29,6 @@ export const hearingsController = {
   async getById(req: FastifyRequest<{ Params: HearingParams }>) {
     const hearing = await hearingsService.findById(req.params.id, req.user.orgId);
     return { hearing };
-  },
-
-  async listCrossCase(req: FastifyRequest<{ Querystring: ListHearingsQuery }>) {
-    const { data, total } = await hearingsService.listCrossCase(
-      req.user.orgId,
-      req.query,
-    );
-    return { hearings: data, total, page: req.query.page, limit: req.query.limit };
   },
 
   async update(

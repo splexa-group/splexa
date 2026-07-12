@@ -12,7 +12,6 @@ vi.mock("../important-dates.repository", () => ({
     findById: vi.fn(),
     update: vi.fn(),
     softDelete: vi.fn(),
-    listCrossCase: vi.fn(),
   },
 }));
 
@@ -73,23 +72,5 @@ describe("importantDatesService.delete", () => {
     vi.mocked(importantDatesRepository.softDelete).mockResolvedValue({ count: 1 } as never);
     await importantDatesService.delete("case-1", "date-1", ctx);
     expect(importantDatesRepository.softDelete).toHaveBeenCalledWith("date-1", "org-1");
-  });
-});
-
-describe("importantDatesService.listCrossCase", () => {
-  it("delegates to repository with orgId and query", async () => {
-    const mockResult = { data: [], total: 0 };
-    vi.mocked(importantDatesRepository.listCrossCase).mockResolvedValue(
-      mockResult as never,
-    );
-
-    const query = { page: 1, limit: 50 };
-    const result = await importantDatesService.listCrossCase("org-1", query);
-
-    expect(result).toEqual(mockResult);
-    expect(importantDatesRepository.listCrossCase).toHaveBeenCalledWith(
-      "org-1",
-      query,
-    );
   });
 });

@@ -34,14 +34,3 @@ export type CreateImportantDateInput = z.infer<typeof createImportantDateSchema>
 export type UpdateImportantDateInput = z.infer<typeof updateImportantDateSchema>;
 export type ImportantDateParams = z.infer<typeof importantDateParamsSchema>;
 export type CaseParams = z.infer<typeof caseParamsSchema>;
-
-export const listImportantDatesQuerySchema = z
-  .object({
-    from: z.iso.datetime({ offset: true }).optional(),
-    to: z.iso.datetime({ offset: true }).optional(),
-    page: z.coerce.number().int().positive().default(1),
-    limit: z.coerce.number().int().positive().max(200).default(50),
-  })
-  .strict();
-
-export type ListImportantDatesQuery = z.infer<typeof listImportantDatesQuerySchema>;

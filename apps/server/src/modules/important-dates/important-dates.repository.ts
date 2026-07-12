@@ -1,13 +1,10 @@
-import { Prisma } from "@prisma/client";
 import { ImportantDateType } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
-import { importantDateCalendarSelect } from "@/db/selects/important-date.select";
 import { parseDate } from "@/utils/date";
 
 import {
   CreateImportantDateInput,
-  ListImportantDatesQuery,
   UpdateImportantDateInput,
 } from "./important-dates.schema";
 
@@ -41,36 +38,6 @@ export const importantDatesRepository = {
       },
       orderBy: { date: "asc" },
     });
-  },
-
-  async listCrossCase(orgId: string, query: ListImportantDatesQuery) {
-    const { from, to, page, limit } = query;
-    const where: Prisma.ImportantDateWhereInput = {
-      orgId,
-      deletedAt: null,
-      dateType: { not: ImportantDateType.HEARING_DATE },
-      ...(from || to
-        ? {
-            date: {
-              ...(from ? { gte: parseDate(from) } : {}),
-              ...(to ? { lte: parseDate(to) } : {}),
-            },
-          }
-        : {}),
-    };
-
-    const [data, total] = await Promise.all([
-      prisma.importantDate.findMany({
-        where,
-        select: importantDateCalendarSelect,
-        orderBy: { date: "asc" },
-        skip: (page - 1) * limit,
-        take: limit,
-      }),
-      prisma.importantDate.count({ where }),
-    ]);
-
-    return { data, total };
   },
 
   async findById(id: string, caseId: string, orgId: string) {

@@ -6,17 +6,10 @@ import {
   caseParamsSchema,
   createImportantDateSchema,
   importantDateParamsSchema,
-  listImportantDatesQuerySchema,
   updateImportantDateSchema,
 } from "./important-dates.schema";
 
 async function routes(router: FastifyInstance): Promise<void> {
-  router.get("/important-dates", {
-    schema: { querystring: listImportantDatesQuerySchema },
-    preHandler: [router.authenticate],
-    handler: importantDatesController.listCrossCase,
-  });
-
   router.get("/cases/:caseId/important-dates", {
     schema: { params: caseParamsSchema },
     preHandler: [router.authenticate],

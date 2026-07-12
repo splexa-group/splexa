@@ -56,19 +56,7 @@ export const hearingParamsSchema = z
   })
   .strict();
 
-export const listHearingsQuerySchema = z
-  .object({
-    from: z.iso.datetime({ offset: true }).optional(),
-    to: z.iso.datetime({ offset: true }).optional(),
-    status: z.enum(HearingStatus).optional(),
-    caseId: z.uuid().optional(),
-    page: z.coerce.number().int().positive().default(1),
-    limit: z.coerce.number().int().positive().max(100).default(20),
-  })
-  .strict();
-
 export type CreateHearingInput = z.infer<typeof createHearingSchema>;
 export type UpdateHearingInput = z.infer<typeof updateHearingSchema>;
 export type CaseHearingParams = z.infer<typeof caseHearingParamsSchema>;
 export type HearingParams = z.infer<typeof hearingParamsSchema>;
-export type ListHearingsQuery = z.infer<typeof listHearingsQuerySchema>;

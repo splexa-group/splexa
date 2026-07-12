@@ -144,10 +144,8 @@ export const casesRepository = {
   ) {
     const now = new Date();
 
-    // An adjourned hearing's upcoming date lives in `nextDate`, not `date` (`date` still
-    // holds the past date it was adjourned from) — both cases need to be considered, or a
-    // case's "next hearing" silently disappears every time its only hearing is adjourned.
-    const [nextScheduled, nextAdjourned] = await Promise.all([
+    // A hearing's upcoming date is `date` when SCHEDULED, or `nextDate` when ADJOURNED (its `date` is then stale) — check both.
+    const [earliestScheduled, earliestAdjourned] = await Promise.all([
       tx.hearing.findFirst({
         where: {
           caseId,
@@ -172,14 +170,12 @@ export const casesRepository = {
       }),
     ]);
 
-    const candidates = [nextScheduled?.date, nextAdjourned?.nextDate].filter(
+    const candidateDates = [earliestScheduled?.date, earliestAdjourned?.nextDate].filter(
       (date): date is Date => date != null,
     );
     const nextHearingDate =
-      candidates.length > 0
-        ? candidates.reduce((earliest, date) =>
-            date < earliest ? date : earliest,
-          )
+      candidateDates.length > 0
+        ? candidateDates.reduce((earliest, date) => (date < earliest ? date : earliest))
         : null;
 
     await tx.case.updateMany({

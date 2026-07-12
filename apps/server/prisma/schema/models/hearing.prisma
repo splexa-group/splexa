@@ -9,7 +9,7 @@ model Hearing {
   notes             String?
   nextDate          DateTime?       @map("next_date")
   adjournmentReason String?         @map("adjournment_reason")
-  judgePresent      String?         @map("judge_present")
+  judgeName         String?         @map("judge_name")
   addedBy           String          @map("added_by")
   createdAt         DateTime        @default(now()) @map("created_at")
   updatedAt         DateTime        @updatedAt @map("updated_at")

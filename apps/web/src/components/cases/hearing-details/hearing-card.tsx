@@ -52,11 +52,11 @@ export function HearingCard({ hearing, onEdit, onDelete }: Props) {
                 <span className="text-[13.5px] text-body">· {hearing.time}</span>
               )}
             </div>
-            {hearing.judgePresent && (
+            {hearing.judgeName && (
               <div className="flex items-center gap-1.5">
                 <Scale className="size-3.5 text-body shrink-0" />
                 <span className="text-[13.5px] text-body">
-                  {hearing.judgePresent}
+                  {hearing.judgeName}
                 </span>
               </div>
             )}
@@ -159,8 +159,8 @@ export function NextHearingCard({
 
   const metaParts = [
     { icon: Clock, text: dateText },
-    ...(hearing.judgePresent
-      ? [{ icon: Scale, text: hearing.judgePresent }]
+    ...(hearing.judgeName
+      ? [{ icon: Scale, text: hearing.judgeName }]
       : []),
     ...(courtParts as string[]).map((part) => ({ icon: Landmark, text: part })),
   ];

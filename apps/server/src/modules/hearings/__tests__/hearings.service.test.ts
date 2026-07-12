@@ -41,7 +41,7 @@ describe("hearingsService.create", () => {
     vi.mocked(casesService.findById).mockRejectedValue(Errors.caseNotFound());
 
     await expect(
-      hearingsService.create("case-1", { date: new Date().toISOString() }, ctx),
+      hearingsService.create("case-1", { date: new Date() }, ctx),
     ).rejects.toThrow(Errors.caseNotFound());
 
     expect(hearingsRepository.create).not.toHaveBeenCalled();
@@ -53,7 +53,7 @@ describe("hearingsService.create", () => {
 
     const result = await hearingsService.create(
       "case-1",
-      { date: new Date().toISOString() },
+      { date: new Date() },
       ctx,
     );
 

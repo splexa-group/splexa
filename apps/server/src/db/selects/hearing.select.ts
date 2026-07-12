@@ -10,7 +10,7 @@ export const hearingSelect = {
   notes: true,
   nextDate: true,
   adjournmentReason: true,
-  judgePresent: true,
+  judgeName: true,
   createdAt: true,
   updatedAt: true,
 } satisfies Prisma.HearingSelect;
@@ -49,7 +49,7 @@ export const hearingDetailSelect = {
   notes: true,
   nextDate: true,
   adjournmentReason: true,
-  judgePresent: true,
+  judgeName: true,
   addedBy: true,
   createdAt: true,
   updatedAt: true,

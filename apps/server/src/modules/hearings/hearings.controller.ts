@@ -9,8 +9,19 @@ import {
 import { hearingsService } from "./hearings.service";
 
 export const hearingsController = {
+  async getById(req: FastifyRequest<{ Params: HearingParams }>) {
+    const hearing = await hearingsService.findById(
+      req.params.id,
+      req.user.orgId,
+    );
+    return { hearing };
+  },
+
   async create(
-    req: FastifyRequest<{ Params: CaseHearingParams; Body: CreateHearingInput }>,
+    req: FastifyRequest<{
+      Params: CaseHearingParams;
+      Body: CreateHearingInput;
+    }>,
     reply: FastifyReply,
   ) {
     const hearing = await hearingsService.create(req.params.caseId, req.body, {
@@ -22,13 +33,11 @@ export const hearingsController = {
   },
 
   async listForCase(req: FastifyRequest<{ Params: CaseHearingParams }>) {
-    const hearings = await hearingsService.listForCase(req.params.caseId, req.user.orgId);
+    const hearings = await hearingsService.listForCase(
+      req.params.caseId,
+      req.user.orgId,
+    );
     return { hearings };
-  },
-
-  async getById(req: FastifyRequest<{ Params: HearingParams }>) {
-    const hearing = await hearingsService.findById(req.params.id, req.user.orgId);
-    return { hearing };
   },
 
   async update(

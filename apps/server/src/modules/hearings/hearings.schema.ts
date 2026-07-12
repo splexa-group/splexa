@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const createHearingSchema = z
   .object({
-    date: z.iso.datetime({ offset: true }),
+    date: z.iso.datetime({ offset: true }).transform((val) => new Date(val)),
     time: z
       .string()
       .regex(/^\d{2}:\d{2}$/, "Time must be HH:MM")
@@ -11,13 +11,13 @@ export const createHearingSchema = z
     purpose: z.enum(HearingPurpose).optional(),
     status: z.enum(HearingStatus).optional(),
     notes: z.string().max(2000).optional(),
-    judgePresent: z.string().max(200).optional(),
+    judgeName: z.string().max(200).optional(),
   })
   .strict();
 
 export const updateHearingSchema = z
   .object({
-    date: z.iso.datetime({ offset: true }).optional(),
+    date: z.iso.datetime({ offset: true }).transform((val) => new Date(val)).optional(),
     // "" is accepted deliberately — the repository treats it as "clear the time"
     time: z
       .string()
@@ -28,9 +28,9 @@ export const updateHearingSchema = z
       .optional(),
     status: z.enum(HearingStatus).optional(),
     notes: z.string().max(2000).optional(),
-    nextDate: z.iso.datetime({ offset: true }).optional(),
+    nextDate: z.iso.datetime({ offset: true }).transform((val) => new Date(val)).optional(),
     adjournmentReason: z.string().max(500).optional(),
-    judgePresent: z.string().max(200).optional(),
+    judgeName: z.string().max(200).optional(),
     purpose: z.enum(HearingPurpose).optional(),
   })
   .strict()

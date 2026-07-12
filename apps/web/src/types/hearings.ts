@@ -9,7 +9,7 @@ export interface CreateHearingInput {
   purpose?: HearingPurpose;
   status?: HearingStatus;
   notes?: string;
-  judgePresent?: string;
+  judgeName?: string;
 }
 
 export interface UpdateHearingInput {
@@ -20,5 +20,5 @@ export interface UpdateHearingInput {
   notes?: string;
   nextDate?: string;
   adjournmentReason?: string;
-  judgePresent?: string;
+  judgeName?: string;
 }

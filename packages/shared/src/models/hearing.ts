@@ -11,7 +11,7 @@ export interface Hearing {
   notes: string | null;
   nextDate: string | null;
   adjournmentReason: string | null;
-  judgePresent: string | null;
+  judgeName: string | null;
   createdAt: string;
   updatedAt: string;
 }

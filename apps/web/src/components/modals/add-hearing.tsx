@@ -26,7 +26,7 @@ const defaultValues: UpdateHearingInput = {
   time: "",
   purpose: undefined,
   status: HearingStatus.SCHEDULED,
-  judgePresent: "",
+  judgeName: "",
   notes: "",
   nextDate: "",
   adjournmentReason: "",
@@ -52,7 +52,7 @@ export function AddHearingModal({
           time: hearing.time ?? "",
           purpose: hearing.purpose ?? undefined,
           status: hearing.status,
-          judgePresent: hearing.judgePresent ?? "",
+          judgeName: hearing.judgeName ?? "",
           notes: hearing.notes ?? "",
           nextDate: hearing.nextDate ? hearing.nextDate.substring(0, 10) : "",
           adjournmentReason: hearing.adjournmentReason ?? "",
@@ -126,9 +126,9 @@ export function AddHearingModal({
             )}
           />
           <InputGroup
-            label="Judge Present"
+            label="Judge Name"
             placeholder="Enter judge name..."
-            {...register("judgePresent")}
+            {...register("judgeName")}
           />
 
           {status === HearingStatus.ADJOURNED && (

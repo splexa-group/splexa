@@ -1,15 +1,13 @@
-import {
-  HearingPurpose,
-  HearingStatus,
-  ImportantDateType,
-} from "@splexa-group/shared/enums";
+import { HearingStatus, ImportantDateType } from "@splexa-group/shared/enums";
 
 import { prisma } from "@/db/client";
-import { hearingDetailSelect, hearingSummarySelect } from "@/db/selects/hearing.select";
+import {
+  hearingDetailSelect,
+  hearingSummarySelect,
+} from "@/db/selects/hearing.select";
 import { casesRepository } from "@/modules/cases/cases.repository";
-import { parseDate } from "@/utils/date";
 
-import { CreateHearingInput } from "./hearings.schema";
+import { CreateHearingInput, UpdateHearingInput } from "./hearings.schema";
 
 export const hearingsRepository = {
   async create(
@@ -27,11 +25,11 @@ export const hearingsRepository = {
         data: {
           caseId: data.caseId,
           orgId: data.orgId,
-          date: parseDate(data.date),
+          date: data.date,
           time: data.time,
           purpose: data.purpose,
           notes: data.notes,
-          judgePresent: data.judgePresent,
+          judgeName: data.judgeName,
           addedBy: data.addedBy,
           status,
         },
@@ -46,7 +44,7 @@ export const hearingsRepository = {
             caseId: data.caseId,
             orgId: data.orgId,
             dateType: ImportantDateType.HEARING_DATE,
-            date: parseDate(data.date),
+            date: data.date,
             sourceId: hearing.id,
             notifyUserId: data.notifyUserId,
           },
@@ -76,33 +74,20 @@ export const hearingsRepository = {
     id: string,
     caseId: string,
     orgId: string,
-    data: {
-      status?: HearingStatus;
-      notes?: string;
-      date?: string;
-      time?: string;
-      nextDate?: string;
-      adjournmentReason?: string;
-      judgePresent?: string;
-      purpose?: HearingPurpose;
-    },
+    data: UpdateHearingInput,
   ) {
     return prisma.$transaction(async (tx) => {
       const { count } = await tx.hearing.updateMany({
         where: { id, orgId, deletedAt: null },
         data: {
-          ...(data.status !== undefined ? { status: data.status } : {}),
-          ...(data.notes !== undefined ? { notes: data.notes } : {}),
-          ...(data.date ? { date: parseDate(data.date) } : {}),
-          ...(data.time !== undefined ? { time: data.time || null } : {}),
-          ...(data.nextDate ? { nextDate: parseDate(data.nextDate) } : {}),
-          ...(data.adjournmentReason !== undefined
-            ? { adjournmentReason: data.adjournmentReason }
-            : {}),
-          ...(data.judgePresent !== undefined
-            ? { judgePresent: data.judgePresent }
-            : {}),
-          ...(data.purpose !== undefined ? { purpose: data.purpose } : {}),
+          status: data.status,
+          notes: data.notes,
+          date: data.date,
+          time: data.time !== undefined ? data.time || null : undefined,
+          nextDate: data.nextDate,
+          adjournmentReason: data.adjournmentReason,
+          judgeName: data.judgeName,
+          purpose: data.purpose,
         },
       });
 
@@ -115,17 +100,22 @@ export const hearingsRepository = {
 
       await casesRepository.updateNextHearingDate(caseId, orgId, tx);
 
-      if (
+      const isTerminal =
         data.status === HearingStatus.CANCELLED ||
-        data.status === HearingStatus.COMPLETED
-      ) {
+        data.status === HearingStatus.COMPLETED;
+
+      if (isTerminal) {
         // Terminal status — no more reminders needed for this hearing
         await tx.importantDate.updateMany({
           where: { sourceId: id, orgId, deletedAt: null },
           data: { deletedAt: new Date() },
         });
       } else {
-        if (data.date) {
+        // Hearing rescheduled (date) or adjourned to a new date (nextDate) — keep the
+        // reminder's date in sync. nextDate wins if both are somehow present, since it's
+        // the more specific "this is when it's actually happening next" signal.
+        const newReminderDate = data.nextDate ?? data.date;
+        if (newReminderDate) {
           await tx.importantDate.updateMany({
             where: {
               sourceId: id,
@@ -133,18 +123,7 @@ export const hearingsRepository = {
               dateType: ImportantDateType.HEARING_DATE,
               deletedAt: null,
             },
-            data: { date: parseDate(data.date) },
-          });
-        }
-        if (data.nextDate) {
-          await tx.importantDate.updateMany({
-            where: {
-              sourceId: id,
-              orgId,
-              dateType: ImportantDateType.HEARING_DATE,
-              deletedAt: null,
-            },
-            data: { date: parseDate(data.nextDate) },
+            data: { date: newReminderDate },
           });
         }
       }
@@ -153,7 +132,11 @@ export const hearingsRepository = {
     });
   },
 
-  async softDelete(id: string, caseId: string, orgId: string): Promise<{ count: number }> {
+  async softDelete(
+    id: string,
+    caseId: string,
+    orgId: string,
+  ): Promise<{ count: number }> {
     return prisma.$transaction(async (tx) => {
       const { count } = await tx.hearing.updateMany({
         where: { id, orgId, deletedAt: null },

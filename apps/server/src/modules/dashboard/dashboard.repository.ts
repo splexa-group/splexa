@@ -2,7 +2,7 @@ import { CaseStatus, HearingPurpose, HearingStatus, ImportantDateType, Priority 
 
 import { prisma } from "@/db/client";
 
-import { DashboardData } from "./dashboard.schema";
+import { DashboardData } from "./dashboard.models";
 
 const CRITICAL_DATE_TYPES = [
   ImportantDateType.LIMITATION,
@@ -30,6 +30,20 @@ function addDays(d: Date, days: number): Date {
   return r;
 }
 
+// A hearing's relevant upcoming date is `date` when SCHEDULED, or `nextDate` when ADJOURNED
+// (`date` is then stale — the date it was adjourned from) — every "is this hearing in range
+// X" query needs to check both, or adjourned hearings silently vanish from the dashboard.
+function upcomingHearingWhere(orgId: string, gte: Date, lte: Date) {
+  return {
+    orgId,
+    deletedAt: null,
+    OR: [
+      { status: HearingStatus.SCHEDULED, date: { gte, lte } },
+      { status: HearingStatus.ADJOURNED, nextDate: { gte, lte } },
+    ],
+  };
+}
+
 export const dashboardRepository = {
   async getData(orgId: string): Promise<DashboardData> {
     const now        = new Date();
@@ -44,7 +58,7 @@ export const dashboardRepository = {
       hearingsToday,
       hearingsThisWeek,
       upcomingDeadlinesCount,
-      upcomingHearings,
+      upcomingHearingCandidates,
       upcomingDeadlines,
       highPriorityCases,
     ] = await Promise.all([
@@ -53,21 +67,11 @@ export const dashboardRepository = {
       }),
 
       prisma.hearing.count({
-        where: {
-          orgId,
-          status: HearingStatus.SCHEDULED,
-          date: { gte: todayStart, lte: todayEnd },
-          deletedAt: null,
-        },
+        where: upcomingHearingWhere(orgId, todayStart, todayEnd),
       }),
 
       prisma.hearing.count({
-        where: {
-          orgId,
-          status: HearingStatus.SCHEDULED,
-          date: { gte: todayStart, lte: week7End },
-          deletedAt: null,
-        },
+        where: upcomingHearingWhere(orgId, todayStart, week7End),
       }),
 
       prisma.importantDate.count({
@@ -80,14 +84,7 @@ export const dashboardRepository = {
       }),
 
       prisma.hearing.findMany({
-        where: {
-          orgId,
-          status: HearingStatus.SCHEDULED,
-          date: { gte: todayStart, lte: week14End },
-          deletedAt: null,
-        },
-        orderBy: { date: "asc" },
-        take: 5,
+        where: upcomingHearingWhere(orgId, todayStart, week14End),
         include: { case: { select: { title: true, courtName: true } } },
       }),
 
@@ -111,6 +108,18 @@ export const dashboardRepository = {
       }),
     ]);
 
+    // Can't ask Prisma to order by "whichever date field is relevant" directly, so the
+    // candidate set above is unordered — resolve each hearing's effective date, then sort
+    // and cap to 5 here.
+    const upcomingHearings = upcomingHearingCandidates
+      .map((h) => {
+        const effectiveDate = h.status === HearingStatus.ADJOURNED ? h.nextDate : h.date;
+        return effectiveDate ? { ...h, effectiveDate } : null;
+      })
+      .filter((h): h is NonNullable<typeof h> => h !== null)
+      .sort((a, b) => a.effectiveDate.getTime() - b.effectiveDate.getTime())
+      .slice(0, 5);
+
     return {
       stats: {
         activeCases,
@@ -123,7 +132,7 @@ export const dashboardRepository = {
         caseId:    h.caseId,
         caseTitle: h.case.title,
         courtName: h.case.courtName,
-        date:      h.date,
+        date:      h.effectiveDate,
         time:      h.time,
         purpose:   h.purpose as HearingPurpose | null,
       })),

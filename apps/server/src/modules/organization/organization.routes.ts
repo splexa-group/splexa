@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
 
 import { organizationController } from "./organization.controller";
 import {
@@ -31,4 +30,4 @@ async function routes(router: FastifyInstance): Promise<void> {
   });
 }
 
-export const organizationRoutes = fp(routes, { name: "organization-routes" });
+export const organizationRoutes = routes;

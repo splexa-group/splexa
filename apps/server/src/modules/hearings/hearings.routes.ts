@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
 
 import { hearingsController } from "./hearings.controller";
 import {
@@ -35,4 +34,4 @@ async function routes(router: FastifyInstance): Promise<void> {
   });
 }
 
-export const hearingsRoutes = fp(routes, { name: "hearings-routes" });
+export const hearingsRoutes = routes;

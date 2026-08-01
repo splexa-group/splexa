@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
 
 import { calendarController } from "./calendar.controller";
 import { calendarEventsQuerySchema } from "./calendar.schema";
@@ -12,4 +11,4 @@ async function routes(router: FastifyInstance): Promise<void> {
   });
 }
 
-export const calendarRoutes = fp(routes, { name: "calendar-routes" });
+export const calendarRoutes = routes;

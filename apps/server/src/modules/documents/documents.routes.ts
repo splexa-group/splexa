@@ -1,6 +1,5 @@
 import multipart from "@fastify/multipart";
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
 
 import { MAX_UPLOAD_BYTES } from "@/constants/misc";
 
@@ -54,4 +53,4 @@ async function routes(router: FastifyInstance): Promise<void> {
   });
 }
 
-export const documentsRoutes = fp(routes, { name: "documents-routes" });
+export const documentsRoutes = routes;

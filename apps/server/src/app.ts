@@ -1,8 +1,5 @@
 import cookie from "@fastify/cookie";
-import {
-  serializerCompiler,
-  validatorCompiler,
-} from "@fastify/type-provider-zod";
+import { serializerCompiler, validatorCompiler } from "@fastify/type-provider-zod";
 import Fastify, { FastifyInstance } from "fastify";
 
 import { env } from "@/config/env";

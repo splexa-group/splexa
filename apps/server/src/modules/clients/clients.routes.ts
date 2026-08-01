@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
 
 import { clientsController } from "./clients.controller";
 import {
@@ -41,4 +40,4 @@ async function routes(router: FastifyInstance): Promise<void> {
   });
 }
 
-export const clientsRoutes = fp(routes, { name: "clients-routes" });
+export const clientsRoutes = routes;

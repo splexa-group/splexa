@@ -76,6 +76,22 @@ Default to Server Components. Add `'use client'` only when needed: `useState`, `
 ### Route Protection
 Protected routes are guarded in `middleware.ts`. No auth checks inside page components.
 
+### Page-Level Layout — `PageLayout`
+
+Every `page.tsx` renders through `components/layout/page-layout.tsx`'s `PageLayout` component instead of hand-rolling its own horizontal gutter or max-width:
+- `maxWidth`: `"small"` (a single form section) | `"medium"` (detail/tab pages — case detail, settings) | `"large"` (list pages with a data table — cases, documents) | `"full"` (uncapped).
+- `padded` (default `true`): set `false` when the content already owns its own gutter (a `FiltersBar` + `DataTable` pair) — `PageLayout` then only contributes the max-width cap.
+- Calendar is the one exception — its own full-height, edge-to-edge chrome predates `PageLayout` and isn't wired through it.
+
+### `constants/` vs `lib/`
+
+`constants/` holds plain data only — string/number/object/array literals and enums, nothing that executes. The moment a file needs even one function alongside its data (like `options.ts`'s `formatEnumLabel`/`toOptions`/`withNone`), it belongs in `lib/` instead.
+
+### Nav Items & Tabs — Single Source of Truth
+
+- Sidebar/bottom-nav entries: add or change one entry in `components/layout/sidebar/nav-items.ts`'s `NAV_ITEMS` — both surfaces update from that one array.
+- Tabs: each feature owns its own `constants/[name]-tabs.ts` (a `TabConfig[]` plus whatever enum backs it) and calls the generic `useActiveTab`/`useActiveSubTab` from `hooks/use-active-tab.ts` directly — never add a feature-specific wrapper hook to that file, it must stay feature-agnostic.
+
 ---
 
 ## Component Architecture

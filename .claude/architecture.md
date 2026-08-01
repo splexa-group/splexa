@@ -167,19 +167,24 @@ are private to it. Two deliberate exceptions:
 
 ```
 apps/web/src/
-├── app/                  # Next.js App Router pages (thin page.tsx files)
+├── app/                  # Next.js App Router pages (thin page.tsx files — resolve params, render one view component)
 │   ├── (auth)/
-│   ├── (dashboard)/
+│   ├── (protected)/
 │   └── portal/
 ├── components/
 │   ├── ui/               # Primitive, stateless components
-│   └── [feature]/        # Feature-specific composed components
-├── hooks/                # React Query hooks (one file per feature)
-├── lib/
-│   └── api/              # Typed API client functions
-├── stores/               # Zustand stores
-├── types/                # Frontend-only types (not in shared)
-└── styles/               # globals.css with design tokens
+│   ├── layout/            # App shell (sidebar, top bar, bottom nav, PageLayout)
+│   ├── shared/             # Generic, feature-agnostic components used by more than one feature (modal, confirm-delete)
+│   └── [feature]/          # Feature-specific composed components — cases, hearings (nested under cases/), important-dates (nested under cases/), client (nested under cases/), documents, calendar, dashboard, settings, auth
+├── hooks/                # React Query hooks — one file per feature, flat
+├── services/              # API objects — one file per feature, flat
+├── types/                 # Frontend-only types — one file per feature, flat
+├── constants/              # Plain data only — enums + arrays (case-tabs.ts, settings-tabs.ts). No functions.
+├── mappers/                # Form/API shape converters (case-form.ts)
+├── lib/                    # Pure helper functions, including ones that also export constant data alongside them (utils.ts, options.ts, calendar.ts, format-date-label.ts)
+├── api/                    # Axios client + typed HTTP helpers
+├── store/                  # Zustand stores
+└── middleware.ts
 ```
 
 ---

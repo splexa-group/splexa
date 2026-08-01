@@ -1,5 +1,5 @@
 import { use } from "react";
-import CaseDetails from "./case-details";
+import { CaseDetailView } from "@/components/cases/case-detail-view";
 
 export default function Page({
   params,
@@ -7,5 +7,5 @@ export default function Page({
   params: Promise<{ caseId: string }>;
 }) {
   const { caseId } = use(params);
-  return <CaseDetails caseId={caseId} />;
+  return <CaseDetailView caseId={caseId} />;
 }

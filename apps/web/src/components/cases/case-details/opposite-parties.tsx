@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { Trash2, Pencil, Scale } from "lucide-react";
 import { PartyRole } from "@splexa-group/shared/enums";
-import { CaseSubTabLabel } from "@/enums/case-tabs";
+import { CaseSubTabLabel } from "@/constants/case-tabs";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import { RoleDotBadge } from "@/components/cases/role-badge";

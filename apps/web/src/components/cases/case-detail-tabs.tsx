@@ -2,17 +2,17 @@
 
 import { useRouter } from "next/navigation";
 import { TabsNav } from "@/components/layout/tabs-nav";
-import { useCaseActiveTab, useCaseActiveSubTab } from "@/hooks/use-active-tab";
-import { CASE_TAB_CONFIG } from "@/config/case-tabs";
+import { useActiveTab, useActiveSubTab } from "@/hooks/use-active-tab";
+import { CASE_TAB_CONFIG, CaseTabs } from "@/constants/case-tabs";
 
 interface Props {
   caseId: string;
 }
 
-export function CaseTabs({ caseId }: Props) {
+export function CaseDetailTabs({ caseId }: Props) {
   const router = useRouter();
-  const activeTab = useCaseActiveTab();
-  const activeSubTab = useCaseActiveSubTab(activeTab);
+  const activeTab = useActiveTab(CASE_TAB_CONFIG, CaseTabs.CASE) as CaseTabs;
+  const activeSubTab = useActiveSubTab(activeTab, CASE_TAB_CONFIG);
 
   function navigateTo(tabId: string, subTabId?: string) {
     const params = new URLSearchParams({ tab: tabId });

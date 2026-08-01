@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { FormProvider, useForm, type UseFormReturn } from "react-hook-form";
-import { CaseTabs, CaseSubTabs } from "@/enums/case-tabs";
+import { CaseTabs, CaseSubTabs, CASE_TAB_CONFIG } from "@/constants/case-tabs";
 import { Documents } from "@/components/cases/documents/documents";
-import { CaseTabs as CaseTabsNav } from "@/app/(protected)/cases/[caseId]/case-tabs";
-import { useCaseActiveTab, useCaseActiveSubTab } from "@/hooks/use-active-tab";
+import { CaseDetailTabs } from "./case-detail-tabs";
+import { useActiveTab, useActiveSubTab } from "@/hooks/use-active-tab";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
 import { usePageLoading } from "@/components/layout/loader";
@@ -20,7 +20,7 @@ import { ClientDetails } from "@/components/cases/client/client-details";
 import { HearingsDetails } from "@/components/cases/hearing-details/hearings";
 import { ImportantDatesDetails } from "@/components/cases/important-dates/important-dates";
 import { PageFooter } from "@/components/layout/page-footer";
-import { PageContent } from "@/components/layout/page-content";
+import { PageLayout } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
 import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { UpdateCaseInput } from "@/types/cases";
@@ -93,9 +93,9 @@ function TabContent({
   }
 }
 
-const CaseDetails = ({ caseId }: { caseId: string }) => {
-  const activeTab = useCaseActiveTab();
-  const activeSubTab = useCaseActiveSubTab(activeTab);
+export function CaseDetailView({ caseId }: { caseId: string }) {
+  const activeTab = useActiveTab(CASE_TAB_CONFIG, CaseTabs.CASE) as CaseTabs;
+  const activeSubTab = useActiveSubTab(activeTab, CASE_TAB_CONFIG);
   const [showDelete, setShowDelete] = useState(false);
 
   const { data: caseDetails, isLoading } = useCase(caseId);
@@ -176,10 +176,10 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <CaseTabsNav caseId={caseId} />
+      <CaseDetailTabs caseId={caseId} />
 
       <div className="flex-1 overflow-y-auto bg-page">
-        <PageContent className="space-y-6">
+        <PageLayout maxWidth="medium" className="space-y-6">
           <TabContent
             tab={activeTab}
             subTab={activeSubTab}
@@ -187,7 +187,7 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
             caseForm={caseForm}
             clientForm={clientForm}
           />
-        </PageContent>
+        </PageLayout>
       </div>
 
       <PageFooter
@@ -215,6 +215,4 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
       />
     </div>
   );
-};
-
-export default CaseDetails;
+}

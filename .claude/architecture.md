@@ -181,7 +181,7 @@ apps/web/src/
 ├── types/                 # Frontend-only types — one file per feature, flat
 ├── constants/              # Plain data only — enums + arrays (case-tabs.ts, settings-tabs.ts). No functions.
 ├── mappers/                # Form/API shape converters (case-form.ts)
-├── lib/                    # Pure helper functions, including ones that also export constant data alongside them (utils.ts, options.ts, calendar.ts, format-date-label.ts)
+├── utils/                  # Pure helper functions, one concern per file (tailwind.ts, iso-date.ts, options.ts, calendar.ts, format-date-label.ts, format-hearing-date.ts). Presentation-only lookups (icon/color/class maps for one component) stay colocated with that component instead — see Component Architecture below.
 ├── api/                    # Axios client + typed HTTP helpers
 ├── store/                  # Zustand stores
 └── middleware.ts

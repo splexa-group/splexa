@@ -11,7 +11,7 @@ import {
 import { useCase } from "@/hooks/use-cases";
 import { HearingCard, NextHearingCard } from "./hearing-card";
 import { AddHearingModal } from "@/components/modals/add-hearing";
-import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/ui/section";
 import { toast } from "sonner";

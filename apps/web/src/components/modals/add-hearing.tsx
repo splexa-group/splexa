@@ -2,12 +2,12 @@
 
 import { useEffect } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Modal } from "./modal";
+import { Modal } from "@/components/shared/modal";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
 import { TextareaGroup } from "@/components/ui/form/textarea";
 import { DatePicker } from "@/components/ui/form/date-picker";
-import { HEARING_PURPOSE_OPTIONS, HEARING_STATUS_OPTIONS } from "@/lib/options";
+import { HEARING_PURPOSE_OPTIONS, HEARING_STATUS_OPTIONS } from "@/constants/options";
 import type { Hearing, UpdateHearingInput } from "@/types/hearings";
 import { HearingStatus } from "@splexa-group/shared/enums";
 import { toISODatetime } from "@/lib/utils";

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/modals/modal";
+import { Modal } from "@/components/shared/modal";
 
 interface ConfirmDeleteModalProps {
   open: boolean;

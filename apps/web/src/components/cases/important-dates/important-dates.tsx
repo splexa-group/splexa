@@ -10,10 +10,10 @@ import {
   useDeleteImportantDate,
 } from "@/hooks/use-important-dates";
 import { AddImportantDateModal } from "@/components/modals/add-important-date";
-import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
-import { formatEnumLabel } from "@/lib/options";
+import { formatEnumLabel } from "@/constants/options";
 import { ImportantDateType } from "@splexa-group/shared/enums";
 import type {
   ImportantDate,

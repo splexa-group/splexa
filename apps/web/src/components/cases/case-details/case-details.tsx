@@ -11,7 +11,7 @@ import {
   CASE_TYPE_OPTIONS,
   PARTY_ROLE_OPTIONS,
   PRIORITY_OPTIONS,
-} from "@/lib/options";
+} from "@/constants/options";
 import type { UpdateCaseInput } from "@/types/cases";
 
 export function CaseDetailsSection() {

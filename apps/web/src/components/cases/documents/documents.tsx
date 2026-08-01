@@ -21,7 +21,7 @@ import {
   useRenameDocument,
 } from "@/hooks/use-documents";
 import { documentsApi } from "@/services/documents";
-import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import type { Document } from "@/types/documents";

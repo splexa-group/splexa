@@ -22,7 +22,7 @@ import { ImportantDatesDetails } from "@/components/cases/important-dates/import
 import { PageFooter } from "@/components/layout/page-footer";
 import { PageContent } from "@/components/layout/page-content";
 import { Button } from "@/components/ui/button";
-import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { UpdateCaseInput } from "@/types/cases";
 import { CreateClientInput, UpdateClientInput } from "@/types/clients";
 import {

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useCases, useDeleteCase } from "@/hooks/use-cases";
 import { usePageLoading } from "@/components/layout/loader";
-import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { Select } from "@/components/ui/form/select";
 import { Search } from "@/components/ui/form/search";
 import { FiltersBar } from "@/components/ui/filters-bar";
@@ -14,7 +14,7 @@ import { Menu } from "@/components/ui/menu";
 import { Pencil, Trash2 } from "lucide-react";
 import { CaseSummary, CaseFilters } from "@/types/cases";
 import { CaseStatus, CaseType } from "@splexa-group/shared/enums";
-import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS } from "@/lib/options";
+import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS } from "@/constants/options";
 import {
   priorityBorderClass,
   statusBadgeClass,

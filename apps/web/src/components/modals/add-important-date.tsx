@@ -2,11 +2,11 @@
 
 import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Modal } from "./modal";
+import { Modal } from "@/components/shared/modal";
 import { DatePicker } from "@/components/ui/form/date-picker";
 import { SelectGroup } from "@/components/ui/form/select";
 import { TextareaGroup } from "@/components/ui/form/textarea";
-import { IMPORTANT_DATE_TYPE_OPTIONS } from "@/lib/options";
+import { IMPORTANT_DATE_TYPE_OPTIONS } from "@/constants/options";
 import type { ImportantDate, CreateImportantDateInput } from "@/types/important-dates";
 import { toISODatetime } from "@/lib/utils";
 

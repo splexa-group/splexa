@@ -4,7 +4,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
 import { Section } from "@/components/ui/section";
-import { DESIGNATION_OPTIONS } from "@/lib/options";
+import { DESIGNATION_OPTIONS } from "@/constants/options";
 import type { SettingsFormValues } from "@/components/settings/profile-tab";
 
 interface Props {

@@ -20,7 +20,7 @@ import {
   useRenameDocument,
 } from "@/hooks/use-documents";
 import { documentsApi } from "@/services/documents";
-import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Document } from "@/types/documents";
 

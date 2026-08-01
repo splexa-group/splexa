@@ -1,31 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
 import { FormProvider, useForm, type UseFormReturn } from "react-hook-form";
-import { CaseTabs, CaseSubTabs, CASE_TAB_CONFIG } from "@/constants/case-tabs";
-import { Documents } from "@/components/cases/documents/documents";
-import { CaseDetailTabs } from "./case-detail-tabs";
-import { useActiveTab, useActiveSubTab } from "@/hooks/use-active-tab";
-import { usePageTitle } from "@/components/layout/top/top-bar-context";
-import { useCase, useUpdateCase, useDeleteCase } from "@/hooks/use-cases";
-import { usePageLoading } from "@/components/layout/loader";
-import { useAddClientToCase, useUpdateClient } from "@/hooks/use-clients";
+import { toast } from "sonner";
+
 import { CaseDetailsSection } from "@/components/cases/case-details/case-details";
 import { CaseDescriptionSection } from "@/components/cases/case-details/case-description";
 import { CourtDetailsSection } from "@/components/cases/case-details/court-details";
 import { JudgeDetailsSection } from "@/components/cases/case-details/judge-details";
 import { OppositePartySection } from "@/components/cases/case-details/opposite-parties";
 import { ClientDetails } from "@/components/cases/client/client-details";
+import { Documents } from "@/components/cases/documents/documents";
 import { HearingsDetails } from "@/components/cases/hearing-details/hearings";
 import { ImportantDatesDetails } from "@/components/cases/important-dates/important-dates";
+import { usePageLoading } from "@/components/layout/loader";
 import { PageFooter } from "@/components/layout/page-footer";
 import { PageLayout } from "@/components/layout/page-layout";
-import { Button } from "@/components/ui/button";
+import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
-import { UpdateCaseInput } from "@/types/cases";
-import { CreateClientInput, UpdateClientInput } from "@/types/clients";
+import { Button } from "@/components/ui/button";
+import { CASE_TAB_CONFIG, CaseSubTabs, CaseTabs } from "@/constants/case-tabs";
+import { useActiveSubTab, useActiveTab } from "@/hooks/use-active-tab";
+import { useCase, useDeleteCase, useUpdateCase } from "@/hooks/use-cases";
+import { useAddClientToCase, useUpdateClient } from "@/hooks/use-clients";
 import { mapCaseToFormValues, mapClientToFormValues } from "@/mappers/case-form";
+import type { UpdateCaseInput } from "@/types/cases";
+import type { CreateClientInput, UpdateClientInput } from "@/types/clients";
+
+import { CaseDetailTabs } from "./case-detail-tabs";
 
 interface TabContentProps {
   tab: CaseTabs;

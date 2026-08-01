@@ -1,25 +1,23 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { usePageTitle } from "@/components/layout/top/top-bar-context";
-import { PageLayout } from "@/components/layout/page-layout";
 import { CasesTable } from "@/components/cases/cases-table";
+import { PageLayout } from "@/components/layout/page-layout";
+import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { CreateCaseModal } from "@/components/modals/create-case";
+import { useModalState } from "@/hooks/use-modal-state";
 
 export function CasesView() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const openModal = useCallback(() => setModalOpen(true), []);
-  const closeModal = useCallback(() => setModalOpen(false), []);
+  const modal = useModalState();
 
   usePageTitle({
     title: "Cases",
-    action: { label: "Add Case", onClick: openModal },
+    action: { label: "Add Case", onClick: modal.open },
   });
 
   return (
     <PageLayout maxWidth="large" padded={false} className="h-full">
-      <CasesTable onAdd={openModal} />
-      <CreateCaseModal open={modalOpen} onClose={closeModal} />
+      <CasesTable onAdd={modal.open} />
+      <CreateCaseModal open={modal.isOpen} onClose={modal.close} />
     </PageLayout>
   );
 }

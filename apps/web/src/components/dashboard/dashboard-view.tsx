@@ -1,24 +1,24 @@
 "use client";
 
-import { useState, useCallback } from "react";
 import { AlertCircle, Briefcase, Calendar, CalendarCheck } from "lucide-react";
-import { usePageTitle } from "@/components/layout/top/top-bar-context";
+
 import { PageLayout } from "@/components/layout/page-layout";
+import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { CreateCaseModal } from "@/components/modals/create-case";
+import { useDashboard } from "@/hooks/use-dashboard";
+import { useModalState } from "@/hooks/use-modal-state";
+
+import { AttentionNeeded } from "./attention-needed";
 import { StatCard } from "./stat-card";
 import { UpcomingHearings } from "./upcoming-hearings";
-import { AttentionNeeded } from "./attention-needed";
-import { useDashboard } from "@/hooks/use-dashboard";
 
 export function DashboardView() {
-  const [modalOpen, setModalOpen] = useState(false);
-  const openModal = useCallback(() => setModalOpen(true), []);
-  const closeModal = useCallback(() => setModalOpen(false), []);
+  const modal = useModalState();
   const { data, isError } = useDashboard();
 
   usePageTitle({
     title: "Dashboard",
-    action: { label: "Add New Case", onClick: openModal },
+    action: { label: "Add New Case", onClick: modal.open },
   });
 
   return (
@@ -56,7 +56,7 @@ export function DashboardView() {
         )}
       </PageLayout>
 
-      <CreateCaseModal open={modalOpen} onClose={closeModal} />
+      <CreateCaseModal open={modal.isOpen} onClose={modal.close} />
     </>
   );
 }

@@ -1,13 +1,14 @@
 "use client";
 
 import { useCallback, useRef } from "react";
-import { FolderGrid } from "@/components/documents/folder-grid";
+
 import {
   DocumentFileList,
   type DocumentFileListHandle,
 } from "@/components/documents/document-file-list";
-import { usePageTitle } from "@/components/layout/top/top-bar-context";
+import { FolderGrid } from "@/components/documents/folder-grid";
 import { PageLayout } from "@/components/layout/page-layout";
+import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { useFolders } from "@/hooks/use-documents";
 
 interface Props {

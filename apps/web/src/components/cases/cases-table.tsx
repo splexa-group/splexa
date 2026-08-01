@@ -2,21 +2,24 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { cn } from "@/utils/tailwind";
-import { useCases, useDeleteCase } from "@/hooks/use-cases";
-import { usePageLoading } from "@/components/layout/loader";
-import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
-import { Select } from "@/components/ui/form/select";
-import { Search } from "@/components/ui/form/search";
-import { FiltersBar } from "@/components/ui/filters-bar";
-import { DataTable } from "@/components/ui/data-table";
-import { Menu } from "@/components/ui/menu";
 import { Pencil, Trash2 } from "lucide-react";
-import { CaseSummary, CaseFilters } from "@/types/cases";
+
 import { CaseStatus, CaseType } from "@splexa-group/shared/enums";
-import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS } from "@/utils/options";
-import { priorityBorderClass, statusBadgeClass } from "./case-styles";
+
+import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
+import { usePageLoading } from "@/components/layout/loader";
+import { DataTable } from "@/components/ui/data-table";
+import { FiltersBar } from "@/components/ui/filters-bar";
+import { Search } from "@/components/ui/form/search";
+import { Select } from "@/components/ui/form/select";
+import { Menu } from "@/components/ui/menu";
+import { useCases, useDeleteCase } from "@/hooks/use-cases";
+import { CaseFilters, CaseSummary } from "@/types/cases";
 import { formatHearingDate } from "@/utils/format-hearing-date";
+import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS } from "@/utils/options";
+import { cn } from "@/utils/tailwind";
+
+import { priorityBorderClass, statusBadgeClass } from "./case-styles";
 
 const PAGE_SIZE = 30;
 

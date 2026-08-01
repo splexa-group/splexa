@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import { TabsNav } from "@/components/layout/tabs-nav";
+
 import { PageFooter } from "@/components/layout/page-footer";
-import { Button } from "@/components/ui/button";
+import { TabsNav } from "@/components/layout/tabs-nav";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
+import { Button } from "@/components/ui/button";
 import { SETTINGS_TAB_CONFIG, SettingsTabs } from "@/constants/settings-tabs";
 import { useActiveTab } from "@/hooks/use-active-tab";
 import {
@@ -17,6 +18,7 @@ import {
   useUpdateProfile,
 } from "@/hooks/use-organization";
 import { useAuthStore } from "@/store/auth-store";
+
 import { ProfileTab, settingsFormSchema, type SettingsFormValues } from "./profile-tab";
 import { SubscriptionTab } from "./subscription-tab";
 
@@ -122,7 +124,7 @@ export function SettingsView() {
               disabled={isDisabled}
               onClick={form.handleSubmit(onSubmit)}
             >
-              {isSaving ? "Saving…" : "Save Changes"}
+              {isSaving ? "Saving..." : "Save Changes"}
             </Button>
           }
         />

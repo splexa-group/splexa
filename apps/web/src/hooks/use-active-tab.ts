@@ -3,11 +3,11 @@
 import { useSearchParams } from "next/navigation";
 import type { TabConfig } from "@/components/layout/tabs-nav";
 
-export function useActiveTab(tabs: TabConfig[], defaultTab: string): string {
+export function useActiveTab<T extends string>(tabs: TabConfig[], defaultTab: T): T {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
   const isValid = tab !== null && tabs.some((t) => t.id === tab);
-  return isValid ? tab : defaultTab;
+  return (isValid ? tab : defaultTab) as T;
 }
 
 export function useActiveSubTab(activeTab: string, tabs: TabConfig[]): string {

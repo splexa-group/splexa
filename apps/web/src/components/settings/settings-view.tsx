@@ -22,7 +22,7 @@ import { SubscriptionTab } from "./subscription-tab";
 
 export function SettingsView() {
   const router     = useRouter();
-  const activeTab  = useActiveTab(SETTINGS_TAB_CONFIG, SettingsTabs.PROFILE);
+  const activeTab  = useActiveTab<SettingsTabs>(SETTINGS_TAB_CONFIG, SettingsTabs.PROFILE);
 
   usePageTitle({ title: "Settings" });
 

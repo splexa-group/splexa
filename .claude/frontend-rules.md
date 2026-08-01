@@ -136,14 +136,14 @@ apps/web/src/components/
 ├── cases/
 │   ├── case-detail-tabs.tsx
 │   ├── case-detail-view.tsx
-│   ├── case-utils.ts
+│   ├── case-styles.ts
 │   ├── cases-table.tsx
 │   ├── cases-view.tsx
 │   ├── role-badge.tsx
 │   ├── case-details/          # judge-details, court-details, opposite-parties, case-description, case-details
 │   ├── client/                # client-details.tsx
 │   ├── documents/              # documents.tsx (case-scoped document tab)
-│   ├── hearing-details/        # hearings.tsx, hearing-card.tsx, hearing-status.ts
+│   ├── hearing-details/        # hearings.tsx, hearing-card.tsx, hearing-status-styles.ts
 │   └── important-dates/        # important-dates.tsx
 ├── dashboard/
 │   ├── attention-needed.tsx

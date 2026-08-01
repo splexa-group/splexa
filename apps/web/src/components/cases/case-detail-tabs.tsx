@@ -11,7 +11,7 @@ interface Props {
 
 export function CaseDetailTabs({ caseId }: Props) {
   const router = useRouter();
-  const activeTab = useActiveTab(CASE_TAB_CONFIG, CaseTabs.CASE) as CaseTabs;
+  const activeTab = useActiveTab<CaseTabs>(CASE_TAB_CONFIG, CaseTabs.CASE);
   const activeSubTab = useActiveSubTab(activeTab, CASE_TAB_CONFIG);
 
   function navigateTo(tabId: string, subTabId?: string) {

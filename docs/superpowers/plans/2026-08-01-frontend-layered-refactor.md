@@ -1,5 +1,7 @@
 # Frontend Layered-Structure Cleanup Implementation Plan
 
+> **Note (2026-08-01, after this plan executed):** a follow-up conversational request renamed `lib/` → `utils/` and split a few mixed-concern files (`utils.ts` → `tailwind.ts`/`iso-date.ts`; presentation-only style/icon lookups moved back to live next to their components instead of in the helper folder). This plan's Task 1 and Task 6 below still describe the `lib/` name — `.claude/architecture.md` and `.claude/frontend-rules.md` reflect the current `utils/` reality; this plan file is left as the historical record of what was actually executed at the time.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Finish the frontend cleanup on the existing layered (type-based) folder structure — `hooks/`, `services/`, `types/` flat at the top level, `components/[name]/` for per-feature UI — after reverting an earlier feature-based (`features/[name]/`) reorganization attempt. Fixes the concrete layout, tab-hook, and thin-page issues found earlier without changing the folder philosophy this time.

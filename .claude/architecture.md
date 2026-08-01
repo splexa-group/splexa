@@ -175,7 +175,7 @@ apps/web/src/
 │   ├── ui/               # Primitive, stateless components
 │   ├── layout/            # App shell (sidebar, top bar, bottom nav, PageLayout)
 │   ├── shared/             # Generic, feature-agnostic components used by more than one feature (modal, confirm-delete)
-│   └── [feature]/          # Feature-specific composed components — cases, hearings (nested under cases/), important-dates (nested under cases/), client (nested under cases/), documents, calendar, dashboard, settings, auth
+│   └── [feature]/          # Feature-specific composed components — cases, hearing-details (nested under cases/), important-dates (nested under cases/), client (nested under cases/), documents, calendar, dashboard, settings, auth
 ├── hooks/                # React Query hooks — one file per feature, flat
 ├── services/              # API objects — one file per feature, flat
 ├── types/                 # Frontend-only types — one file per feature, flat

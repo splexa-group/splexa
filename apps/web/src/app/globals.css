@@ -191,11 +191,6 @@ summary {
 }
 
 @layer components {
-  /*  Page shell — applied to <main>; owns the horizontal gutter for all pages  */
-  .page-shell {
-    @apply px-4 md:px-6;
-  }
-
   .page-layout {
     @apply mx-auto w-full;
   }

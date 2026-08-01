@@ -2,7 +2,7 @@
 
 import { type ReactNode } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import { EmptyState } from "@/components/ui/empty-state";
 
 export interface DataTableRow {

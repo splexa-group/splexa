@@ -1,6 +1,4 @@
-import { cn } from "@/lib/utils";
 import { CaseStatus, Priority } from "@splexa-group/shared/enums";
-import { formatIndianDate, getRelativeDateLabel } from "@splexa-group/shared/utils";
 
 export function priorityStripeClass(priority: Priority | null | undefined): string {
   if (priority === Priority.HIGH) return "bg-priority-high";
@@ -39,12 +37,3 @@ export function hearingDateColor(date: string | null): string {
   if (d.toDateString() === tomorrow.toDateString()) return "text-brand";
   return "text-label";
 }
-
-export function formatHearingDate(date: string | null): string {
-  if (!date) return "—";
-  const relative = getRelativeDateLabel(date);
-  if (relative) return relative;
-  return formatIndianDate(date);
-}
-
-export { cn };

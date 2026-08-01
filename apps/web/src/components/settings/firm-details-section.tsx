@@ -4,7 +4,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { InputGroup } from "@/components/ui/form/input";
 import { MultiSelectGroup } from "@/components/ui/form/multi-select";
 import { Section } from "@/components/ui/section";
-import { PRACTICE_TYPE_OPTIONS } from "@/lib/options";
+import { PRACTICE_TYPE_OPTIONS } from "@/utils/options";
 import type { SettingsFormValues } from "@/components/settings/profile-tab";
 
 export function FirmDetailsSection() {

@@ -15,10 +15,10 @@ import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { Button } from "@/components/ui/button";
 import { Section } from "@/components/ui/section";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import { HearingStatus } from "@splexa-group/shared/enums";
 import type { Hearing, UpdateHearingInput } from "@/types/hearings";
-import { HEARING_TIMELINE_STATUS_ICON } from "./hearing-status";
+import { HEARING_TIMELINE_STATUS_ICON } from "./hearing-status-styles";
 
 interface Props {
   caseId: string;

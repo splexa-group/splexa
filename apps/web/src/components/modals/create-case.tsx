@@ -6,7 +6,7 @@ import { Modal } from "@/components/shared/modal";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
 import { useCreateCase } from "@/hooks/use-cases";
-import { CASE_TYPE_OPTIONS } from "@/lib/options";
+import { CASE_TYPE_OPTIONS } from "@/utils/options";
 import type { CaseType } from "@splexa-group/shared/enums";
 
 interface Props {

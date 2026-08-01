@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, HelpCircle, CalendarPlus, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import { Icon } from "@/components/ui/icon";
 import { useAuthStore } from "@/store/auth-store";
 import { authApi } from "@/services/auth";

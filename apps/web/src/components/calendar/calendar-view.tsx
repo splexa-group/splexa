@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { format } from "date-fns";
 import { useCalendarEvents } from "@/hooks/use-calendar";
-import { filterEventMap } from "@/lib/calendar";
+import { filterEventMap } from "@/utils/calendar";
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
 import { CalendarDayPanel } from "./calendar-day-panel";

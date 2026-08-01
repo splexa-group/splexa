@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 
-import { cn } from "@/lib/utils";
-import { formatDateLabel } from "@/lib/format-date-label";
+import { cn } from "@/utils/tailwind";
+import { formatDateLabel } from "@/utils/format-date-label";
 import { EmptyState } from "@/components/ui/empty-state";
 import { HearingPurpose } from "@splexa-group/shared/enums";
 import type { UpcomingHearing } from "@/types/dashboard";

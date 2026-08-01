@@ -11,12 +11,12 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { formatEnumLabel } from "@/lib/options";
+import { cn } from "@/utils/tailwind";
+import { formatEnumLabel } from "@/utils/options";
 import { Button } from "@/components/ui/button";
 import { Menu } from "@/components/ui/menu";
 import { Hearing } from "@/types/hearings";
-import { HEARING_STATUS_PILL } from "./hearing-status";
+import { HEARING_STATUS_PILL } from "./hearing-status-styles";
 
 interface Props {
   hearing: Hearing;

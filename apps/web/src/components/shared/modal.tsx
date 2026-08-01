@@ -3,7 +3,7 @@
 import * as React from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import { Button } from "@/components/ui/button";
 
 type ModalSize = "sm" | "md" | "lg" | "xl" | "xxl";

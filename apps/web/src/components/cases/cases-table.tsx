@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import { useCases, useDeleteCase } from "@/hooks/use-cases";
 import { usePageLoading } from "@/components/layout/loader";
 import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
@@ -14,12 +14,9 @@ import { Menu } from "@/components/ui/menu";
 import { Pencil, Trash2 } from "lucide-react";
 import { CaseSummary, CaseFilters } from "@/types/cases";
 import { CaseStatus, CaseType } from "@splexa-group/shared/enums";
-import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS } from "@/lib/options";
-import {
-  priorityBorderClass,
-  statusBadgeClass,
-  formatHearingDate,
-} from "@/components/cases/case-utils";
+import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS } from "@/utils/options";
+import { priorityBorderClass, statusBadgeClass } from "./case-styles";
+import { formatHearingDate } from "@/utils/format-hearing-date";
 
 const PAGE_SIZE = 30;
 

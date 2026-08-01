@@ -6,9 +6,9 @@ import { Modal } from "@/components/shared/modal";
 import { DatePicker } from "@/components/ui/form/date-picker";
 import { SelectGroup } from "@/components/ui/form/select";
 import { TextareaGroup } from "@/components/ui/form/textarea";
-import { IMPORTANT_DATE_TYPE_OPTIONS } from "@/lib/options";
+import { IMPORTANT_DATE_TYPE_OPTIONS } from "@/utils/options";
 import type { ImportantDate, CreateImportantDateInput } from "@/types/important-dates";
-import { toISODatetime } from "@/lib/utils";
+import { toISODatetime } from "@/utils/iso-date";
 
 interface AddImportantDateModalProps {
   open: boolean;

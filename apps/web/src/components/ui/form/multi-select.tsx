@@ -3,7 +3,7 @@
 import { useState, useId } from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { ChevronDownIcon, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 
 export interface MultiSelectOption {
   value: string;

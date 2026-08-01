@@ -1,7 +1,7 @@
 "use client";
 
 import { FolderOpen } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import type { DocumentFolder } from "@/types/documents";
 
 interface Props {

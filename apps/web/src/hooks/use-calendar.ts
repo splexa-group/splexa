@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { calendarApi } from "@/services/calendar";
-import { getMonthGridRange, buildEventMap } from "@/lib/calendar";
+import { getMonthGridRange, buildEventMap } from "@/utils/calendar";
 import type { CalendarEventMap } from "@/types/calendar";
 
 export const calendarKeys = {

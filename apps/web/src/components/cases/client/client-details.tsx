@@ -6,7 +6,7 @@ import { TextareaGroup } from "@/components/ui/form/textarea";
 import { SelectGroup } from "@/components/ui/form/select";
 import { DatePicker } from "@/components/ui/form/date-picker";
 import { Section } from "@/components/ui/section";
-import { CLIENT_TYPE_OPTIONS, RELATION_TYPE_OPTIONS } from "@/lib/options";
+import { CLIENT_TYPE_OPTIONS, RELATION_TYPE_OPTIONS } from "@/utils/options";
 import type { UpdateClientInput } from "@/types/clients";
 
 export function ClientDetails() {

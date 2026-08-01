@@ -3,7 +3,7 @@
 import { useId } from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { ChevronDownIcon, XIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 
 export interface SelectOption {
   value: string;

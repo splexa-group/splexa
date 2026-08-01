@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { SearchIcon, XIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 
 export interface SearchProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "type"> {
   onClear?: () => void;

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import {
   useImportantDates,
   useCreateImportantDate,
@@ -13,7 +13,7 @@ import { AddImportantDateModal } from "@/components/modals/add-important-date";
 import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
-import { formatEnumLabel } from "@/lib/options";
+import { formatEnumLabel } from "@/utils/options";
 import { ImportantDateType } from "@splexa-group/shared/enums";
 import type {
   ImportantDate,

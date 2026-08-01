@@ -3,7 +3,7 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreHorizontal, type LucideIcon } from "lucide-react";
 import { type ReactNode } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 
 export interface MenuItem {
   label: string;

@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Plus } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import { Icon } from "@/components/ui/icon";
 import { Button } from "@/components/ui/button";
 import { TopBarContext } from "./top-bar-context";

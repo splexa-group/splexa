@@ -13,7 +13,7 @@ import {
   Check,
 } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import {
   useDocuments,
   useUploadDocument,

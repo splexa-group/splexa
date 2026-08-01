@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 
 const OTP_LENGTH = 6;
 

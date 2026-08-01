@@ -13,7 +13,7 @@ import { AddImportantDateModal } from "@/components/modals/add-important-date";
 import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
-import { formatEnumLabel } from "@/constants/options";
+import { formatEnumLabel } from "@/lib/options";
 import { ImportantDateType } from "@splexa-group/shared/enums";
 import type {
   ImportantDate,

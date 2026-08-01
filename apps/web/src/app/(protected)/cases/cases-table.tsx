@@ -14,7 +14,7 @@ import { Menu } from "@/components/ui/menu";
 import { Pencil, Trash2 } from "lucide-react";
 import { CaseSummary, CaseFilters } from "@/types/cases";
 import { CaseStatus, CaseType } from "@splexa-group/shared/enums";
-import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS } from "@/constants/options";
+import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS } from "@/lib/options";
 import {
   priorityBorderClass,
   statusBadgeClass,

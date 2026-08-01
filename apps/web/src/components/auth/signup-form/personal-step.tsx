@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
-import { DESIGNATION_OPTIONS } from "@/constants/options";
+import { DESIGNATION_OPTIONS } from "@/lib/options";
 
 export interface PersonalFormValues {
   email: string;

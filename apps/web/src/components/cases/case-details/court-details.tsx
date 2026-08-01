@@ -3,7 +3,7 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
-import { COURT_TYPE_OPTIONS } from "@/constants/options";
+import { COURT_TYPE_OPTIONS } from "@/lib/options";
 import type { UpdateCaseInput } from "@/types/cases";
 import { Section } from "@/components/ui/section";
 

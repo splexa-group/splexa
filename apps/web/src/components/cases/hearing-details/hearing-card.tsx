@@ -12,7 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { formatEnumLabel } from "@/constants/options";
+import { formatEnumLabel } from "@/lib/options";
 import { Button } from "@/components/ui/button";
 import { Menu } from "@/components/ui/menu";
 import { Hearing } from "@/types/hearings";

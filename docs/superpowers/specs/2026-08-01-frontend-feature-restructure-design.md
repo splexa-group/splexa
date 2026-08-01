@@ -5,6 +5,10 @@
 
 ---
 
+> **SUPERSEDED (2026-08-01):** after implementing this spec through Task 10, the feature-based `features/[name]/{hooks,services,types,components}` structure was reviewed and rejected in favor of layered (type-based) folders — `hooks/`, `services/`, `types/` flat at the top level, `components/[name]/` for per-feature UI. The branch was reset to the commit right after this plan's Task 2 (`PageLayout`, `constants/options.ts`, shared modals, nav-items cleanup — all independent of feature-vs-layered and kept). See `docs/superpowers/plans/2026-08-01-frontend-layered-refactor.md` for the remaining work applied to the layered structure. Everything below this notice describes the abandoned `features/` approach — kept for history, not a guide to follow.
+
+---
+
 ## Overview
 
 The frontend (`apps/web/src`) is organized by **type** today: `hooks/`, `services/`, `types/` each hold one file per feature, and `components/` holds one folder per feature. As more feature modules land (dashboard, settings, calendar, documents, important-dates were all added in the last few weeks), everything about a single feature — e.g. "cases" — is scattered across 5+ top-level folders (`hooks/use-cases.ts`, `services/cases.ts`, `types/cases.ts`, `mappers/case-form.ts`, `components/cases/`), which makes a feature hard to see, review, or hand off as a unit.

@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { PageLayout } from "@/components/layout/page-layout";
-import { CasesTable } from "@/app/(protected)/cases/cases-table";
+import { CasesTable } from "@/components/cases/cases-table";
 import { CreateCaseModal } from "@/components/modals/create-case";
 
 export function CasesView() {

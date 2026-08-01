@@ -100,27 +100,80 @@ Every `page.tsx` renders through `components/layout/page-layout.tsx`'s `PageLayo
 apps/web/src/components/
 ├── ui/                         # Primitive, stateless, zero business logic
 │   ├── button.tsx
-│   ├── input.tsx
-│   ├── badge.tsx
-│   ├── card.tsx
-│   ├── modal.tsx
-│   ├── toast.tsx
-│   ├── spinner.tsx
+│   ├── data-table.tsx
 │   ├── empty-state.tsx
-│   ├── avatar.tsx
-│   ├── countdown-badge.tsx
-│   └── skeleton.tsx
-├── cases/                      # Feature components
-├── hearings/
+│   ├── filters-bar.tsx
+│   ├── icon.tsx
+│   ├── logo.tsx
+│   ├── menu.tsx
+│   ├── section.tsx
+│   └── form/                   # Input primitives (Controller-wrapped for Radix)
+│       ├── checkbox.tsx
+│       ├── date-picker.tsx
+│       ├── input.tsx
+│       ├── multi-select.tsx
+│       ├── otp-input.tsx
+│       ├── search.tsx
+│       ├── select.tsx
+│       ├── textarea.tsx
+│       └── toggle.tsx
+├── auth/                       # Feature components
+│   ├── auth-layout.tsx
+│   ├── auth-panel.tsx
+│   ├── login-form/
+│   └── signup-form/
+├── calendar/
+│   ├── calendar-cell.tsx
+│   ├── calendar-day-panel.tsx
+│   ├── calendar-event-chip.tsx
+│   ├── calendar-grid.tsx
+│   ├── calendar-header.tsx
+│   └── calendar-view.tsx
+├── cases/
+│   ├── case-detail-tabs.tsx
+│   ├── case-detail-view.tsx
+│   ├── case-utils.ts
+│   ├── cases-table.tsx
+│   ├── cases-view.tsx
+│   ├── role-badge.tsx
+│   ├── case-details/          # judge-details, court-details, opposite-parties, case-description, case-details
+│   ├── client/                # client-details.tsx
+│   ├── documents/              # documents.tsx (case-scoped document tab)
+│   ├── hearing-details/        # hearings.tsx, hearing-card.tsx, hearing-status.ts
+│   └── important-dates/        # important-dates.tsx
 ├── dashboard/
-├── auth/
+│   ├── attention-needed.tsx
+│   ├── dashboard-view.tsx
+│   ├── stat-card.tsx
+│   └── upcoming-hearings.tsx
+├── documents/
+│   ├── document-file-list.tsx
+│   ├── documents-view.tsx
+│   ├── folder-card.tsx
+│   └── folder-grid.tsx
+├── settings/
+│   ├── firm-details-section.tsx
+│   ├── my-details-section.tsx
+│   ├── profile-tab.tsx
+│   ├── settings-view.tsx
+│   └── subscription-tab.tsx
+├── modals/                     # Feature-owned modals, not tied to one view
+│   ├── add-hearing.tsx
+│   ├── add-important-date.tsx
+│   ├── create-case.tsx
+│   └── opposite-party.tsx
 ├── layout/                     # App shell
-│   ├── sidebar.tsx
-│   ├── top-nav.tsx
-│   └── bottom-nav.tsx
+│   ├── auth-rehydrator.tsx
+│   ├── bottom-nav.tsx
+│   ├── page-footer.tsx
+│   ├── page-layout.tsx
+│   ├── tabs-nav.tsx
+│   ├── loader/                 # app-loader.tsx, page-loading-context.tsx, page-skeleton.tsx
+│   ├── sidebar/                # index.tsx, nav-items.ts
+│   └── top/                    # top-bar.tsx, top-bar-context.tsx
 └── shared/                     # Cross-feature, non-primitive
-    ├── empty-state.tsx
-    └── error-boundary.tsx
+    ├── confirm-delete.tsx
+    └── modal.tsx
 ```
 
 ### Component Rules

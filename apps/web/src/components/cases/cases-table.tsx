@@ -19,7 +19,7 @@ import {
   priorityBorderClass,
   statusBadgeClass,
   formatHearingDate,
-} from "../../../components/cases/case-utils";
+} from "@/components/cases/case-utils";
 
 const PAGE_SIZE = 30;
 

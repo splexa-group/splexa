@@ -23,12 +23,7 @@ export function FirmDetailsSection() {
         {...register("orgName")}
       />
 
-      <InputGroup
-        label="City"
-        required
-        error={errors.city?.message}
-        {...register("city")}
-      />
+      <InputGroup label="City" required error={errors.city?.message} {...register("city")} />
       <Controller
         name="practiceTypes"
         control={control}

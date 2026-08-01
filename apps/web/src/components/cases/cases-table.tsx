@@ -28,15 +28,7 @@ function isCaseType(v: string): v is CaseType {
   return (Object.values(CaseType) as string[]).includes(v);
 }
 
-const COLUMNS = [
-  "Case",
-  "Number",
-  "Client",
-  "Court",
-  "Status",
-  "Next Hearing",
-  "",
-];
+const COLUMNS = ["Case", "Number", "Client", "Court", "Status", "Next Hearing", ""];
 
 const COLUMN_WIDTHS = "200px 200px 1fr 130px 120px 120px 35px";
 
@@ -74,8 +66,7 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
       onClick: () => router.push(`/cases/${c.id}`),
       className: cn(
         priorityBorderClass(c.priority),
-        (c.status === CaseStatus.STAYED || c.status === CaseStatus.DISPOSED) &&
-          "opacity-40",
+        (c.status === CaseStatus.STAYED || c.status === CaseStatus.DISPOSED) && "opacity-40",
       ),
       cells: [
         <p key="title" className="text-sm text-body truncate pr-4">
@@ -168,9 +159,7 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
         columnWidths={COLUMN_WIDTHS}
         rows={rows}
         emptyStateText="No cases found."
-        emptyStateAction={
-          onAdd ? { label: "Add new case", onClick: onAdd } : undefined
-        }
+        emptyStateAction={onAdd ? { label: "Add new case", onClick: onAdd } : undefined}
         page={page}
         pageSize={PAGE_SIZE}
         totalRows={data?.total ?? 0}

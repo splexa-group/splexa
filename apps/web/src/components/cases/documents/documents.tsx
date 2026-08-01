@@ -1,17 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import {
-  Download,
-  File,
-  FileImage,
-  FileText,
-  Pencil,
-  Plus,
-  Trash2,
-  X,
-  Check,
-} from "lucide-react";
+import { Download, File, FileImage, FileText, Pencil, Plus, Trash2, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/utils/tailwind";
 import {
@@ -31,15 +21,9 @@ interface DocumentsTabProps {
 }
 
 function fileIcon(mimeType: string) {
-  if (mimeType === "application/pdf")
-    return <FileText className="size-5 text-negative shrink-0" />;
-  if (mimeType.startsWith("image/"))
-    return <FileImage className="size-5 text-brand shrink-0" />;
-  if (
-    mimeType.includes("word") ||
-    mimeType.includes("document") ||
-    mimeType.includes("text")
-  )
+  if (mimeType === "application/pdf") return <FileText className="size-5 text-negative shrink-0" />;
+  if (mimeType.startsWith("image/")) return <FileImage className="size-5 text-brand shrink-0" />;
+  if (mimeType.includes("word") || mimeType.includes("document") || mimeType.includes("text"))
     return <FileText className="size-5 text-positive shrink-0" />;
   return <File className="size-5 text-secondary shrink-0" />;
 }
@@ -125,11 +109,7 @@ export function Documents({ caseId }: DocumentsTabProps) {
       <Section
         title={isLoading ? "Documents" : `Documents (${documents.length})`}
         action={
-          <Button
-            size="sm"
-            onClick={handleUploadClick}
-            disabled={upload.isPending}
-          >
+          <Button size="sm" onClick={handleUploadClick} disabled={upload.isPending}>
             <Plus className="size-3.5" />
             {upload.isPending ? "Uploading…" : "Upload"}
           </Button>

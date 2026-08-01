@@ -93,10 +93,7 @@ export function SignupPersonalStep({ defaultValues, onSuccess }: Props) {
       <div className="text-center">
         <p className="text-sm text-secondary">
           Already have an account?{" "}
-          <Link
-            href="/login"
-            className="text-brand hover:underline font-medium"
-          >
+          <Link href="/login" className="text-brand hover:underline font-medium">
             Sign in
           </Link>
         </p>

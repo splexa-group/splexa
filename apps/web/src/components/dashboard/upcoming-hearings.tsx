@@ -13,13 +13,13 @@ interface Props {
 }
 
 const PURPOSE_LABELS: Record<HearingPurpose, string> = {
-  [HearingPurpose.ARGUMENTS]:         "Arguments",
-  [HearingPurpose.EVIDENCE]:          "Evidence",
+  [HearingPurpose.ARGUMENTS]: "Arguments",
+  [HearingPurpose.EVIDENCE]: "Evidence",
   [HearingPurpose.CROSS_EXAMINATION]: "Cross Exam.",
-  [HearingPurpose.ORDER]:             "Order",
-  [HearingPurpose.MENTION]:           "Mention",
-  [HearingPurpose.SETTLEMENT]:        "Settlement",
-  [HearingPurpose.MISCELLANEOUS]:     "Misc.",
+  [HearingPurpose.ORDER]: "Order",
+  [HearingPurpose.MENTION]: "Mention",
+  [HearingPurpose.SETTLEMENT]: "Settlement",
+  [HearingPurpose.MISCELLANEOUS]: "Misc.",
 };
 
 export function UpcomingHearings({ hearings }: Props) {
@@ -52,12 +52,8 @@ export function UpcomingHearings({ hearings }: Props) {
               )}
             >
               <div className="min-w-[76px] shrink-0">
-                <span className="text-xs font-semibold text-brand">
-                  {formatDateLabel(h.date)}
-                </span>
-                {h.time && (
-                  <p className="text-xs text-secondary mt-0.5">{h.time}</p>
-                )}
+                <span className="text-xs font-semibold text-brand">{formatDateLabel(h.date)}</span>
+                {h.time && <p className="text-xs text-secondary mt-0.5">{h.time}</p>}
               </div>
 
               <div className="flex-1 min-w-0">

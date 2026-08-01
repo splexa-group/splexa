@@ -14,11 +14,7 @@ export function ClientDetails() {
 
   return (
     <Section title="Client Information" cols={2}>
-      <InputGroup
-        label="Full Name"
-        placeholder="Enter full name..."
-        {...register("fullName")}
-      />
+      <InputGroup label="Full Name" placeholder="Enter full name..." {...register("fullName")} />
       <Controller
         name="type"
         control={control}
@@ -31,26 +27,14 @@ export function ClientDetails() {
           />
         )}
       />
-      <InputGroup
-        label="Phone"
-        placeholder="Enter phone number..."
-        {...register("phone")}
-      />
-      <InputGroup
-        label="Email"
-        placeholder="Enter email address..."
-        {...register("email")}
-      />
+      <InputGroup label="Phone" placeholder="Enter phone number..." {...register("phone")} />
+      <InputGroup label="Email" placeholder="Enter email address..." {...register("email")} />
       <InputGroup
         label="Company Name"
         placeholder="Enter company name..."
         {...register("companyName")}
       />
-      <InputGroup
-        label="Address"
-        placeholder="Enter address..."
-        {...register("address")}
-      />
+      <InputGroup label="Address" placeholder="Enter address..." {...register("address")} />
       <Controller
         name="relationType"
         control={control}
@@ -73,11 +57,7 @@ export function ClientDetails() {
         name="dateOfBirth"
         control={control}
         render={({ field }) => (
-          <DatePicker
-            label="Date of Birth"
-            value={field.value ?? ""}
-            onChange={field.onChange}
-          />
+          <DatePicker label="Date of Birth" value={field.value ?? ""} onChange={field.onChange} />
         )}
       />
       <InputGroup

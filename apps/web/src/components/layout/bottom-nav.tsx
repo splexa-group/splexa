@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { cn } from '@/utils/tailwind';
-import { Icon } from '@/components/ui/icon';
-import { NAV_ITEMS } from './sidebar/nav-items';
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { cn } from "@/utils/tailwind";
+import { Icon } from "@/components/ui/icon";
+import { NAV_ITEMS } from "./sidebar/nav-items";
 
-const TABS = NAV_ITEMS
-  .filter((item) => item.href !== '/settings')
-  .map((item) => ({ ...item, label: item.shortLabel ?? item.label }));
+const TABS = NAV_ITEMS.filter((item) => item.href !== "/settings").map((item) => ({
+  ...item,
+  label: item.shortLabel ?? item.label,
+}));
 
 export function BottomNav() {
   const pathname = usePathname();
@@ -18,11 +19,7 @@ export function BottomNav() {
       {TABS.map(({ label, href, icon }) => {
         const active = pathname.startsWith(href);
         return (
-          <Link
-            key={href}
-            href={href}
-            className={cn('bottom-tab', active && 'bottom-tab-active')}
-          >
+          <Link key={href} href={href} className={cn("bottom-tab", active && "bottom-tab-active")}>
             <Icon icon={icon} size="md" />
             <span>{label}</span>
           </Link>

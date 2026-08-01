@@ -1,16 +1,7 @@
 "use client";
 
 import { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import {
-  Check,
-  Download,
-  File,
-  FileImage,
-  FileText,
-  Pencil,
-  Trash2,
-  X,
-} from "lucide-react";
+import { Check, Download, File, FileImage, FileText, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/utils/tailwind";
 import {
@@ -33,15 +24,9 @@ export interface DocumentFileListHandle {
 }
 
 function fileIcon(mimeType: string) {
-  if (mimeType === "application/pdf")
-    return <FileText className="size-5 text-negative shrink-0" />;
-  if (mimeType.startsWith("image/"))
-    return <FileImage className="size-5 text-brand shrink-0" />;
-  if (
-    mimeType.includes("word") ||
-    mimeType.includes("document") ||
-    mimeType.includes("text")
-  )
+  if (mimeType === "application/pdf") return <FileText className="size-5 text-negative shrink-0" />;
+  if (mimeType.startsWith("image/")) return <FileImage className="size-5 text-brand shrink-0" />;
+  if (mimeType.includes("word") || mimeType.includes("document") || mimeType.includes("text"))
     return <FileText className="size-5 text-positive shrink-0" />;
   return <File className="size-5 text-secondary shrink-0" />;
 }
@@ -52,8 +37,10 @@ function formatBytes(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export const DocumentFileList = forwardRef<DocumentFileListHandle, Props>(
-function DocumentFileList({ caseId }, ref) {
+export const DocumentFileList = forwardRef<DocumentFileListHandle, Props>(function DocumentFileList(
+  { caseId },
+  ref,
+) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [toDelete, setToDelete] = useState<Document | null>(null);
   const [openingId, setOpeningId] = useState<string | null>(null);

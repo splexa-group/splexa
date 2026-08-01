@@ -23,12 +23,9 @@ const buttonVariants = cva(
         positiveSoft: "bg-positive-muted text-positive-dark",
 
         primaryOutline: "border border-brand text-brand hover:bg-brand-soft",
-        negativeOutline:
-          "border border-negative text-negative hover:bg-negative-muted",
-        amberOutline:
-          "border border-amber text-amber-dark hover:bg-amber-muted",
-        positiveOutline:
-          "border border-positive text-positive-dark hover:bg-positive-muted",
+        negativeOutline: "border border-negative text-negative hover:bg-negative-muted",
+        amberOutline: "border border-amber text-amber-dark hover:bg-amber-muted",
+        positiveOutline: "border border-positive text-positive-dark hover:bg-positive-muted",
       },
       size: {
         default: "h-10 px-4",
@@ -45,25 +42,14 @@ const buttonVariants = cva(
 );
 
 interface ButtonProps
-  extends
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    {
-      className,
-      variant,
-      size,
-      asChild = false,
-      loading = false,
-      disabled,
-      children,
-      ...props
-    },
+    { className, variant, size, asChild = false, loading = false, disabled, children, ...props },
     ref,
   ) => {
     const Comp = asChild ? Slot : "button";
@@ -79,12 +65,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading && <Loader2 className="absolute size-4 animate-spin" />}
-        <span
-          className={cn(
-            "inline-flex items-center gap-2",
-            loading && "opacity-0",
-          )}
-        >
+        <span className={cn("inline-flex items-center gap-2", loading && "opacity-0")}>
           {children}
         </span>
       </Comp>

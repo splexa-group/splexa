@@ -67,9 +67,7 @@ export function Modal({
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-line">
-            <Dialog.Title className="text-base font-semibold text-dark">
-              {title}
-            </Dialog.Title>
+            <Dialog.Title className="text-base font-semibold text-dark">{title}</Dialog.Title>
             <Dialog.Close asChild>
               <button
                 type="button"

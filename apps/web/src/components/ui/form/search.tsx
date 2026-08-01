@@ -21,7 +21,7 @@ const Search = React.forwardRef<HTMLInputElement, SearchProps>(
             "w-full rounded border border-line bg-card pl-9 pr-9 py-[9px] text-sm text-dark placeholder:text-placeholder transition-colors",
             "focus-visible:outline-none focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/20",
             "disabled:bg-subtle disabled:text-disabled disabled:cursor-not-allowed",
-            className
+            className,
           )}
           {...props}
         />
@@ -37,7 +37,7 @@ const Search = React.forwardRef<HTMLInputElement, SearchProps>(
         )}
       </div>
     );
-  }
+  },
 );
 Search.displayName = "Search";
 

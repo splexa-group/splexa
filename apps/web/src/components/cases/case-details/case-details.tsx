@@ -105,11 +105,7 @@ export function CaseDetailsSection() {
         name="filingDate"
         control={control}
         render={({ field }) => (
-          <DatePicker
-            label="Filing Date"
-            value={field.value ?? ""}
-            onChange={field.onChange}
-          />
+          <DatePicker label="Filing Date" value={field.value ?? ""} onChange={field.onChange} />
         )}
       />
     </Section>

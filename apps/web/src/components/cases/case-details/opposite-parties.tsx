@@ -87,9 +87,7 @@ export function OppositePartySection() {
               key={field.id}
               className="grid grid-cols-[1fr_auto_1fr_auto] items-center gap-4 px-4 py-3 border-b border-line last:border-b-0"
             >
-              <span className="text-sm font-semibold text-dark truncate">
-                {field.name}
-              </span>
+              <span className="text-sm font-semibold text-dark truncate">{field.name}</span>
 
               <div>{field.role && <RoleDotBadge role={field.role} />}</div>
 

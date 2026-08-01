@@ -26,9 +26,17 @@ export function DashboardView() {
       <PageLayout maxWidth="large" className="space-y-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <StatCard label="Active Cases" value={data?.stats.activeCases} icon={Briefcase} />
-          <StatCard label="Today's Hearings" value={data?.stats.hearingsToday} icon={CalendarCheck} />
+          <StatCard
+            label="Today's Hearings"
+            value={data?.stats.hearingsToday}
+            icon={CalendarCheck}
+          />
           <StatCard label="This Week" value={data?.stats.hearingsThisWeek} icon={Calendar} />
-          <StatCard label="Upcoming Deadlines" value={data?.stats.upcomingDeadlines} icon={AlertCircle} />
+          <StatCard
+            label="Upcoming Deadlines"
+            value={data?.stats.upcomingDeadlines}
+            icon={AlertCircle}
+          />
         </div>
 
         {isError && (

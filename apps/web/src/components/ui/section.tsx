@@ -56,12 +56,7 @@ export function Section({
           className="py-6"
         />
       ) : (
-        <div
-          className={cn(
-            "px-1",
-            cols && cn("grid grid-cols-1 gap-4", mdColsClass[cols]),
-          )}
-        >
+        <div className={cn("px-1", cols && cn("grid grid-cols-1 gap-4", mdColsClass[cols]))}>
           {children}
         </div>
       )}

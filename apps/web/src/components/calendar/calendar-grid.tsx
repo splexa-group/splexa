@@ -35,10 +35,7 @@ export function CalendarGrid({
   if (isError) {
     return (
       <div className="flex-1 flex items-center justify-center p-8">
-        <EmptyState
-          text="Could not load calendar."
-          action={{ label: "Retry", onClick: onRetry }}
-        />
+        <EmptyState text="Could not load calendar." action={{ label: "Retry", onClick: onRetry }} />
       </div>
     );
   }

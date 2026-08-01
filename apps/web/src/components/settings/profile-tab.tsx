@@ -8,21 +8,21 @@ import { FirmDetailsSection } from "@/components/settings/firm-details-section";
 import { MyDetailsSection } from "@/components/settings/my-details-section";
 
 export const settingsFormSchema = z.object({
-  firstName:     z.string().min(1, "Required"),
-  lastName:      z.string().min(1, "Required"),
-  phoneNumber:   z.string().min(1, "Required").max(20),
-  designation:   z.nativeEnum(Designation),
-  orgName:       z.string().min(1, "Required").max(200),
-  city:          z.string().min(1, "Required").max(100),
+  firstName: z.string().min(1, "Required"),
+  lastName: z.string().min(1, "Required"),
+  phoneNumber: z.string().min(1, "Required").max(20),
+  designation: z.nativeEnum(Designation),
+  orgName: z.string().min(1, "Required").max(200),
+  city: z.string().min(1, "Required").max(100),
   practiceTypes: z.array(z.nativeEnum(PracticeType)).min(1, "Select at least one"),
 });
 
 export type SettingsFormValues = z.infer<typeof settingsFormSchema>;
 
 interface Props {
-  form:      UseFormReturn<SettingsFormValues>;
-  email:     string;
-  role:      string;
+  form: UseFormReturn<SettingsFormValues>;
+  email: string;
+  role: string;
   isLoading: boolean;
 }
 

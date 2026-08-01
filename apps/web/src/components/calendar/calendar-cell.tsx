@@ -14,14 +14,7 @@ interface Props {
   onClick: () => void;
 }
 
-export function CalendarCell({
-  date,
-  events,
-  isToday,
-  isCurrentMonth,
-  isLoading,
-  onClick,
-}: Props) {
+export function CalendarCell({ date, events, isToday, isCurrentMonth, isLoading, onClick }: Props) {
   const visibleEvents = events.slice(0, 2);
   const overflowCount = events.length - visibleEvents.length;
 

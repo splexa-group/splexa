@@ -33,11 +33,7 @@ function Select({
 
   return (
     <div className="relative">
-      <SelectPrimitive.Root
-        value={value}
-        onValueChange={onChange}
-        disabled={disabled}
-      >
+      <SelectPrimitive.Root value={value} onValueChange={onChange} disabled={disabled}>
         <SelectPrimitive.Trigger
           className={cn(
             "flex w-full items-center justify-between rounded border border-line bg-card px-3.5 py-[9px] text-sm text-dark transition-colors [&>span]:line-clamp-1",
@@ -109,10 +105,7 @@ function SelectGroup({
         className,
       )}
     >
-      <p
-        id={id}
-        className="text-[13px] font-medium text-label/70 leading-none mb-1.5"
-      >
+      <p id={id} className="text-[13px] font-medium text-label/70 leading-none mb-1.5">
         {label}
         {required && <span className="text-negative ml-0.5">*</span>}
       </p>
@@ -125,16 +118,16 @@ function SelectGroup({
           aria-labelledby={id}
           className="flex w-full items-center justify-between bg-transparent font-medium text-sm focus:outline-none disabled:text-disabled disabled:cursor-not-allowed"
         >
-          <span className={cn("flex-1 text-left truncate", value ? "text-dark" : "text-placeholder")}>
+          <span
+            className={cn("flex-1 text-left truncate", value ? "text-dark" : "text-placeholder")}
+          >
             {value ? (options.find((o) => o.value === value)?.label ?? placeholder) : placeholder}
           </span>
           <ChevronDownIcon className="size-4 text-placeholder shrink-0" />
         </SelectPrimitive.Trigger>
         <SelectDropdown options={options} showNone />
       </SelectPrimitive.Root>
-      {!error && hint && (
-        <p className="mt-1.5 text-xs text-secondary">{hint}</p>
-      )}
+      {!error && hint && <p className="mt-1.5 text-xs text-secondary">{hint}</p>}
       {error && <p className="mt-1.5 text-xs text-negative">{error}</p>}
     </div>
   );

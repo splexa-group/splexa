@@ -53,12 +53,7 @@ export function MyDetailsSection({ email, role }: Props) {
           />
         )}
       />
-      <InputGroup
-        label="Email"
-        value={email}
-        disabled
-        readOnly
-      />
+      <InputGroup label="Email" value={email} disabled readOnly />
       <InputGroup
         label="Role"
         value={role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}

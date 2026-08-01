@@ -1,10 +1,4 @@
-import {
-  format,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-} from "date-fns";
+import { format, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval } from "date-fns";
 import { HearingPurpose, ImportantDateType } from "@splexa-group/shared/enums";
 import type { CalendarEvent } from "@splexa-group/shared/models";
 import type { CalendarDisplayEvent, CalendarEventMap } from "@/types/calendar";
@@ -95,19 +89,14 @@ export function buildEventMap(events: CalendarEvent[] | undefined): CalendarEven
   return map;
 }
 
-export function filterEventMap(
-  eventMap: CalendarEventMap,
-  search: string,
-): CalendarEventMap {
+export function filterEventMap(eventMap: CalendarEventMap, search: string): CalendarEventMap {
   if (!search.trim()) return eventMap;
 
   const q = search.trim().toLowerCase();
   const result: CalendarEventMap = new Map();
 
   for (const [key, events] of eventMap) {
-    const matching = events.filter((e) =>
-      e.caseTitle.toLowerCase().includes(q),
-    );
+    const matching = events.filter((e) => e.caseTitle.toLowerCase().includes(q));
     if (matching.length > 0) result.set(key, matching);
   }
 

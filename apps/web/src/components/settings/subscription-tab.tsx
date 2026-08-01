@@ -27,13 +27,7 @@ export function SubscriptionTab() {
           ))}
         </ul>
 
-        <Button
-          variant="primary"
-          size="sm"
-          disabled
-          title="Coming soon"
-          className="w-full"
-        >
+        <Button variant="primary" size="sm" disabled title="Coming soon" className="w-full">
           Upgrade Plan
         </Button>
       </div>

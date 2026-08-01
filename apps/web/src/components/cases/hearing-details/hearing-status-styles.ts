@@ -28,10 +28,7 @@ export const HEARING_TIMELINE_STATUS_ICON: Record<
   },
 };
 
-export const HEARING_STATUS_PILL: Record<
-  HearingStatus,
-  { pill: string; dot: string }
-> = {
+export const HEARING_STATUS_PILL: Record<HearingStatus, { pill: string; dot: string }> = {
   [HearingStatus.SCHEDULED]: {
     pill: "bg-amber-muted text-amber-dark",
     dot: "bg-amber",

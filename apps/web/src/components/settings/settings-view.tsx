@@ -21,25 +21,25 @@ import { ProfileTab, settingsFormSchema, type SettingsFormValues } from "./profi
 import { SubscriptionTab } from "./subscription-tab";
 
 export function SettingsView() {
-  const router     = useRouter();
-  const activeTab  = useActiveTab<SettingsTabs>(SETTINGS_TAB_CONFIG, SettingsTabs.PROFILE);
+  const router = useRouter();
+  const activeTab = useActiveTab<SettingsTabs>(SETTINGS_TAB_CONFIG, SettingsTabs.PROFILE);
 
   usePageTitle({ title: "Settings" });
 
-  const { data: profile,      isLoading: profileLoading }      = useProfile();
-  const { data: organization, isLoading: orgLoading }          = useOrganization();
-  const updateProfile      = useUpdateProfile();
+  const { data: profile, isLoading: profileLoading } = useProfile();
+  const { data: organization, isLoading: orgLoading } = useOrganization();
+  const updateProfile = useUpdateProfile();
   const updateOrganization = useUpdateOrganization();
 
   const form = useForm<SettingsFormValues>({
     resolver: zodResolver(settingsFormSchema),
     defaultValues: {
-      firstName:     "",
-      lastName:      "",
-      phoneNumber:   "",
-      designation:   undefined,
-      orgName:       "",
-      city:          "",
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+      designation: undefined,
+      orgName: "",
+      city: "",
       practiceTypes: [],
     },
   });
@@ -47,33 +47,33 @@ export function SettingsView() {
   useEffect(() => {
     if (profile && organization) {
       form.reset({
-        firstName:     profile.firstName,
-        lastName:      profile.lastName,
-        phoneNumber:   profile.phoneNumber,
-        designation:   profile.designation,
-        orgName:       organization.name,
-        city:          organization.city,
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        phoneNumber: profile.phoneNumber,
+        designation: profile.designation,
+        orgName: organization.name,
+        city: organization.city,
         practiceTypes: organization.practiceTypes,
       });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profile, organization]);
 
-  const isSaving   = updateProfile.isPending || updateOrganization.isPending;
-  const isLoading  = profileLoading || orgLoading;
+  const isSaving = updateProfile.isPending || updateOrganization.isPending;
+  const isLoading = profileLoading || orgLoading;
   const isDisabled = isSaving || isLoading;
 
   async function onSubmit(values: SettingsFormValues) {
     try {
       await updateProfile.mutateAsync({
-        firstName:   values.firstName,
-        lastName:    values.lastName,
+        firstName: values.firstName,
+        lastName: values.lastName,
         phoneNumber: values.phoneNumber,
         designation: values.designation,
       });
       const updatedOrg = await updateOrganization.mutateAsync({
-        name:          values.orgName,
-        city:          values.city,
+        name: values.orgName,
+        city: values.city,
         practiceTypes: values.practiceTypes,
       });
       const currentUser = useAuthStore.getState().user;

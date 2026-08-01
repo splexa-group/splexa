@@ -12,14 +12,7 @@ export interface ToggleProps {
   className?: string;
 }
 
-function Toggle({
-  label,
-  hint,
-  checked = false,
-  onChange,
-  disabled,
-  className,
-}: ToggleProps) {
+function Toggle({ label, hint, checked = false, onChange, disabled, className }: ToggleProps) {
   const id = React.useId();
 
   return (

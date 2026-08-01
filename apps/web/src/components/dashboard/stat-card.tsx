@@ -18,10 +18,12 @@ export function StatCard({ label, value, icon: Icon }: Props) {
         {value === undefined ? (
           <div className="h-7 w-10 rounded bg-subtle animate-pulse" />
         ) : (
-          <p className={cn(
-            "text-2xl font-bold leading-none",
-            value === 0 ? "text-secondary" : "text-dark",
-          )}>
+          <p
+            className={cn(
+              "text-2xl font-bold leading-none",
+              value === 0 ? "text-secondary" : "text-dark",
+            )}
+          >
             {value}
           </p>
         )}

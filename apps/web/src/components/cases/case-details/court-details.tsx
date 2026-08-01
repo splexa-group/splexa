@@ -12,11 +12,7 @@ export function CourtDetailsSection() {
 
   return (
     <Section title="Court Details" cols={2}>
-      <InputGroup
-        label="Court Name"
-        placeholder="Enter court name..."
-        {...register("courtName")}
-      />
+      <InputGroup label="Court Name" placeholder="Enter court name..." {...register("courtName")} />
 
       <Controller
         name="courtType"
@@ -36,16 +32,8 @@ export function CourtDetailsSection() {
         placeholder="Enter bench number..."
         {...register("benchNumber")}
       />
-      <InputGroup
-        label="State"
-        placeholder="Enter state..."
-        {...register("courtState")}
-      />
-      <InputGroup
-        label="City"
-        placeholder="Enter city..."
-        {...register("courtCity")}
-      />
+      <InputGroup label="State" placeholder="Enter state..." {...register("courtState")} />
+      <InputGroup label="City" placeholder="Enter city..." {...register("courtCity")} />
     </Section>
   );
 }

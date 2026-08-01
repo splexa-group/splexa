@@ -25,10 +25,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { UpdateCaseInput } from "@/types/cases";
 import { CreateClientInput, UpdateClientInput } from "@/types/clients";
-import {
-  mapCaseToFormValues,
-  mapClientToFormValues,
-} from "@/mappers/case-form";
+import { mapCaseToFormValues, mapClientToFormValues } from "@/mappers/case-form";
 
 interface TabContentProps {
   tab: CaseTabs;
@@ -57,13 +54,7 @@ function CaseSubTabContent({ subTab }: { subTab: string }) {
   }
 }
 
-function TabContent({
-  tab,
-  subTab,
-  caseId,
-  caseForm,
-  clientForm,
-}: TabContentProps) {
+function TabContent({ tab, subTab, caseId, caseForm, clientForm }: TabContentProps) {
   switch (tab) {
     case CaseTabs.CLIENT:
       return (
@@ -114,15 +105,12 @@ export function CaseDetailView({ caseId }: { caseId: string }) {
   });
 
   const clientForm = useForm<UpdateClientInput>({
-    values: caseDetails?.client
-      ? mapClientToFormValues(caseDetails.client)
-      : undefined,
+    values: caseDetails?.client ? mapClientToFormValues(caseDetails.client) : undefined,
   });
 
   usePageLoading(isLoading);
 
-  const isEditableTab =
-    activeTab === CaseTabs.CASE || activeTab === CaseTabs.CLIENT;
+  const isEditableTab = activeTab === CaseTabs.CASE || activeTab === CaseTabs.CLIENT;
   const isSaving =
     activeTab === CaseTabs.CLIENT
       ? updateClient.isPending || addClientToCase.isPending

@@ -32,15 +32,8 @@ const defaultValues: UpdateHearingInput = {
   adjournmentReason: "",
 };
 
-export function AddHearingModal({
-  open,
-  hearing,
-  onClose,
-  onSave,
-  isPending,
-}: Props) {
-  const { register, control, handleSubmit, reset } =
-    useForm<UpdateHearingInput>({ defaultValues });
+export function AddHearingModal({ open, hearing, onClose, onSave, isPending }: Props) {
+  const { register, control, handleSubmit, reset } = useForm<UpdateHearingInput>({ defaultValues });
 
   const status = useWatch({ control, name: "status" });
 
@@ -95,11 +88,7 @@ export function AddHearingModal({
               />
             )}
           />
-          <InputGroup
-            label="Hearing Time"
-            type="time"
-            {...register("time")}
-          />
+          <InputGroup label="Hearing Time" type="time" {...register("time")} />
           <Controller
             name="purpose"
             control={control}

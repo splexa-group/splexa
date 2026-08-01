@@ -25,8 +25,7 @@ export function ConfirmDeleteModal({
       <div className="p-5 space-y-3">
         <p className="text-sm text-secondary leading-relaxed">
           You are about to permanently delete{" "}
-          <span className="font-semibold text-dark">{entityName}</span> and all
-          its associated data.
+          <span className="font-semibold text-dark">{entityName}</span> and all its associated data.
         </p>
       </div>
       <div className="flex items-center justify-end gap-2 px-5 py-4 border-t border-line">

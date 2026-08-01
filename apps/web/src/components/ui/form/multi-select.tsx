@@ -98,7 +98,9 @@ export function MultiSelectGroup({
           aria-labelledby={id}
           className="flex w-full items-center justify-between bg-transparent text-sm focus:outline-none data-[placeholder]:text-placeholder disabled:text-disabled disabled:cursor-not-allowed"
         >
-          <SelectPrimitive.Value placeholder={remaining.length === 0 ? "All selected" : placeholder} />
+          <SelectPrimitive.Value
+            placeholder={remaining.length === 0 ? "All selected" : placeholder}
+          />
           <SelectPrimitive.Icon asChild>
             <ChevronDownIcon className="size-4 text-placeholder shrink-0" />
           </SelectPrimitive.Icon>

@@ -15,10 +15,7 @@ import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import { formatEnumLabel } from "@/utils/options";
 import { ImportantDateType } from "@splexa-group/shared/enums";
-import type {
-  ImportantDate,
-  CreateImportantDateInput,
-} from "@/types/important-dates";
+import type { ImportantDate, CreateImportantDateInput } from "@/types/important-dates";
 
 const CRITICAL_TYPES: ImportantDateType[] = [
   ImportantDateType.LIMITATION,
@@ -48,12 +45,9 @@ function getUrgency(isoDate: string): { label: string; pill: string } | null {
       label: `${Math.abs(diff)} day${Math.abs(diff) === 1 ? "" : "s"} ago`,
       pill: "bg-negative-muted text-negative",
     };
-  if (diff === 0)
-    return { label: "Today", pill: "bg-amber-muted text-amber-dark" };
-  if (diff === 1)
-    return { label: "Tomorrow", pill: "bg-amber-muted text-amber-dark" };
-  if (diff <= 7)
-    return { label: `In ${diff} days`, pill: "bg-amber-muted text-amber-dark" };
+  if (diff === 0) return { label: "Today", pill: "bg-amber-muted text-amber-dark" };
+  if (diff === 1) return { label: "Tomorrow", pill: "bg-amber-muted text-amber-dark" };
+  if (diff <= 7) return { label: `In ${diff} days`, pill: "bg-amber-muted text-amber-dark" };
   return null;
 }
 
@@ -99,9 +93,7 @@ export function ImportantDatesDetails({ caseId }: Props) {
   return (
     <>
       <Section
-        title={
-          isLoading ? "Important Dates" : `Important Dates (${dates.length})`
-        }
+        title={isLoading ? "Important Dates" : `Important Dates (${dates.length})`}
         action={
           <Button size="sm" onClick={() => handleOpenModal()}>
             <Plus className="size-3.5" /> Add Date
@@ -117,9 +109,7 @@ export function ImportantDatesDetails({ caseId }: Props) {
             const urgency = getUrgency(importantDate.date);
             const d = new Date(importantDate.date);
             const day = d.toLocaleDateString("en-IN", { day: "2-digit" });
-            const month = d
-              .toLocaleDateString("en-IN", { month: "short" })
-              .toUpperCase();
+            const month = d.toLocaleDateString("en-IN", { month: "short" }).toUpperCase();
             const year = d.getFullYear();
 
             return (
@@ -132,15 +122,11 @@ export function ImportantDatesDetails({ caseId }: Props) {
               >
                 {/* Date block */}
                 <div className="flex flex-col items-center text-center shrink-0 w-10">
-                  <span className="text-2xl font-black text-dark leading-none">
-                    {day}
-                  </span>
+                  <span className="text-2xl font-black text-dark leading-none">{day}</span>
                   <span className="text-[9px] font-bold text-label uppercase tracking-widest mt-0.5">
                     {month}
                   </span>
-                  <span className="text-[10px] font-medium text-secondary mt-0.5">
-                    {year}
-                  </span>
+                  <span className="text-[10px] font-medium text-secondary mt-0.5">{year}</span>
                 </div>
 
                 {/* Content */}

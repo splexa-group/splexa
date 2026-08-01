@@ -18,10 +18,7 @@ function NavLink({ href, icon, label, active }: NavItem & { active: boolean }) {
       <Icon
         icon={ChevronRight}
         size="sm"
-        className={cn(
-          "hidden lg:block ml-auto shrink-0",
-          active ? "text-white" : "text-white/30",
-        )}
+        className={cn("hidden lg:block ml-auto shrink-0", active ? "text-white" : "text-white/30")}
       />
     </Link>
   );
@@ -34,7 +31,9 @@ export function Sidebar() {
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
   const displayName = user
-    ? ("org" in user ? user.org.name : `${user.firstName} ${user.lastName}`)
+    ? "org" in user
+      ? user.org.name
+      : `${user.firstName} ${user.lastName}`
     : "";
   const initial = displayName.charAt(0).toUpperCase();
 

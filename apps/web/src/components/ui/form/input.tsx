@@ -10,10 +10,7 @@ export interface FieldProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 const Field = React.forwardRef<HTMLInputElement, FieldProps>(
-  (
-    { label, hint, error, className, id: explicitId, required, ...props },
-    ref,
-  ) => {
+  ({ label, hint, error, className, id: explicitId, required, ...props }, ref) => {
     const autoId = React.useId();
     const id = explicitId ?? autoId;
 
@@ -30,14 +27,11 @@ const Field = React.forwardRef<HTMLInputElement, FieldProps>(
           ref={ref}
           required={required}
           aria-invalid={error ? true : undefined}
-          aria-describedby={
-            error ? `${id}-error` : hint ? `${id}-hint` : undefined
-          }
+          aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
           className={cn(
             "w-full rounded border border-line bg-card px-3 py-[9px] text-sm text-dark placeholder:text-placeholder transition-colors",
             "focus-visible:outline-none focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/20",
-            error &&
-              "border-negative focus-visible:border-negative focus-visible:ring-negative/20",
+            error && "border-negative focus-visible:border-negative focus-visible:ring-negative/20",
             "disabled:bg-subtle disabled:text-disabled disabled:cursor-not-allowed",
             className,
           )}
@@ -67,10 +61,7 @@ export interface InputGroupProps extends React.InputHTMLAttributes<HTMLInputElem
 }
 
 const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
-  (
-    { label, hint, error, className, id: explicitId, required, ...inputProps },
-    ref,
-  ) => {
+  ({ label, hint, error, className, id: explicitId, required, ...inputProps }, ref) => {
     const autoId = React.useId();
     const id = explicitId ?? autoId;
 
@@ -97,9 +88,7 @@ const InputGroup = React.forwardRef<HTMLInputElement, InputGroupProps>(
           ref={ref}
           required={required}
           aria-invalid={error ? true : undefined}
-          aria-describedby={
-            error ? `${id}-error` : hint ? `${id}-hint` : undefined
-          }
+          aria-describedby={error ? `${id}-error` : hint ? `${id}-hint` : undefined}
           className="w-full bg-transparent font-medium text-sm text-dark placeholder:text-placeholder focus:outline-none disabled:text-disabled disabled:cursor-not-allowed"
           {...inputProps}
         />

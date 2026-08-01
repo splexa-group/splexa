@@ -52,4 +52,3 @@ export const IMPORTANT_DATE_TYPE_OPTIONS = toOptions(ImportantDateType).filter(
 );
 export const PREFERRED_LANGUAGE_OPTIONS = toOptions(PreferredLanguage);
 export const RELATION_TYPE_OPTIONS = toOptions(RelationType);
-

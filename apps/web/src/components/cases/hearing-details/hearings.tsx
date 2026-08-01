@@ -39,9 +39,7 @@ export function HearingsDetails({ caseId }: Props) {
   today.setHours(0, 0, 0, 0);
 
   const upNext = [...hearings]
-    .filter(
-      (h) => new Date(h.date) >= today && h.status === HearingStatus.SCHEDULED,
-    )
+    .filter((h) => new Date(h.date) >= today && h.status === HearingStatus.SCHEDULED)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
   const openCreate = () => {
@@ -100,12 +98,8 @@ export function HearingsDetails({ caseId }: Props) {
             courtName={caseData?.courtName}
             benchNumber={caseData?.benchNumber}
             onEdit={() => openEdit(upNext)}
-            onMarkHeard={() =>
-              void handleHearingStatus(upNext.id, HearingStatus.COMPLETED)
-            }
-            onMarkMissed={() =>
-              void handleHearingStatus(upNext.id, HearingStatus.CANCELLED)
-            }
+            onMarkHeard={() => void handleHearingStatus(upNext.id, HearingStatus.COMPLETED)}
+            onMarkMissed={() => void handleHearingStatus(upNext.id, HearingStatus.CANCELLED)}
             onAdjourn={() => openEdit(upNext)}
           />
         )}
@@ -123,9 +117,7 @@ export function HearingsDetails({ caseId }: Props) {
             const day = hearingDate.toLocaleDateString("en-IN", {
               day: "2-digit",
             });
-            const month = hearingDate
-              .toLocaleDateString("en-IN", { month: "short" })
-              .toUpperCase();
+            const month = hearingDate.toLocaleDateString("en-IN", { month: "short" }).toUpperCase();
             const year = hearingDate.getFullYear();
 
             const iconCfg =
@@ -142,27 +134,18 @@ export function HearingsDetails({ caseId }: Props) {
                 <div className="flex gap-4">
                   {/* Date: stretches full row height, content centered */}
                   <div className="w-24 flex flex-col items-end justify-center text-right shrink-0 py-3">
-                    <span className="text-3xl font-black text-dark leading-none">
-                      {day}
-                    </span>
+                    <span className="text-3xl font-black text-dark leading-none">{day}</span>
                     <span className="text-[11px] font-bold text-label uppercase tracking-widest mt-1">
                       {month}
                     </span>
-                    <span className="text-xs font-medium text-secondary mt-0.5">
-                      {year}
-                    </span>
+                    <span className="text-xs font-medium text-secondary mt-0.5">{year}</span>
                   </div>
 
                   {/* Connector: top-line | icon | bottom-line
                       Each segment is flex-1 → icon sits exactly in vertical center.
                       First row top segment is transparent; last row bottom segment is transparent. */}
                   <div className="flex flex-col items-center self-stretch shrink-0">
-                    <div
-                      className={cn(
-                        "w-0.5 flex-1",
-                        index > 0 ? "bg-brand" : "",
-                      )}
-                    />
+                    <div className={cn("w-0.5 flex-1", index > 0 ? "bg-brand" : "")} />
                     <div
                       className={cn(
                         "size-9 rounded-full flex items-center justify-center shrink-0",
@@ -171,9 +154,7 @@ export function HearingsDetails({ caseId }: Props) {
                     >
                       <Icon className={cn("size-4", color)} />
                     </div>
-                    <div
-                      className={cn("w-0.5 flex-1", !isLast ? "bg-brand" : "")}
-                    />
+                    <div className={cn("w-0.5 flex-1", !isLast ? "bg-brand" : "")} />
                   </div>
 
                   <div className="flex-1 min-w-0 py-3">

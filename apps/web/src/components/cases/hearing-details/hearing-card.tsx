@@ -1,16 +1,7 @@
 "use client";
 
 import { Fragment } from "react";
-import {
-  Clock,
-  Check,
-  CornerDownRight,
-  X,
-  Landmark,
-  Scale,
-  Pencil,
-  Trash2,
-} from "lucide-react";
+import { Clock, Check, CornerDownRight, X, Landmark, Scale, Pencil, Trash2 } from "lucide-react";
 import { cn } from "@/utils/tailwind";
 import { formatEnumLabel } from "@/utils/options";
 import { Button } from "@/components/ui/button";
@@ -27,9 +18,7 @@ interface Props {
 export function HearingCard({ hearing, onEdit, onDelete }: Props) {
   const style = HEARING_STATUS_PILL[hearing.status];
 
-  const purposeLabel = hearing.purpose
-    ? formatEnumLabel(hearing.purpose)
-    : "Hearing";
+  const purposeLabel = hearing.purpose ? formatEnumLabel(hearing.purpose) : "Hearing";
 
   const formattedDate = new Date(hearing.date).toLocaleDateString("en-IN", {
     weekday: "short",
@@ -48,16 +37,12 @@ export function HearingCard({ hearing, onEdit, onDelete }: Props) {
             <div className="flex items-center gap-1.5">
               <Clock className="size-3.5 text-body shrink-0" />
               <span className="text-[13.5px] text-body">{formattedDate}</span>
-              {hearing.time && (
-                <span className="text-[13.5px] text-body">· {hearing.time}</span>
-              )}
+              {hearing.time && <span className="text-[13.5px] text-body">· {hearing.time}</span>}
             </div>
             {hearing.judgeName && (
               <div className="flex items-center gap-1.5">
                 <Scale className="size-3.5 text-body shrink-0" />
-                <span className="text-[13.5px] text-body">
-                  {hearing.judgeName}
-                </span>
+                <span className="text-[13.5px] text-body">{hearing.judgeName}</span>
               </div>
             )}
           </div>
@@ -118,28 +103,18 @@ export function NextHearingCard({
 }: NextHearingCardProps) {
   const date = new Date(hearing.date);
   const day = date.toLocaleDateString("en-IN", { day: "2-digit" });
-  const month = date
-    .toLocaleDateString("en-IN", { month: "short" })
-    .toUpperCase();
+  const month = date.toLocaleDateString("en-IN", { month: "short" }).toUpperCase();
   const year = date.getFullYear();
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const hearingDay = new Date(date);
   hearingDay.setHours(0, 0, 0, 0);
-  const daysUntil = Math.ceil(
-    (hearingDay.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
-  );
+  const daysUntil = Math.ceil((hearingDay.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
   const daysLabel =
-    daysUntil === 0
-      ? "Today"
-      : daysUntil === 1
-        ? "Tomorrow"
-        : `In ${daysUntil} days`;
+    daysUntil === 0 ? "Today" : daysUntil === 1 ? "Tomorrow" : `In ${daysUntil} days`;
 
-  const purposeLabel = hearing.purpose
-    ? formatEnumLabel(hearing.purpose)
-    : "Hearing";
+  const purposeLabel = hearing.purpose ? formatEnumLabel(hearing.purpose) : "Hearing";
 
   const formattedDate = date.toLocaleDateString("en-IN", {
     weekday: "short",
@@ -148,20 +123,13 @@ export function NextHearingCard({
     year: "numeric",
   });
 
-  const courtParts = [
-    courtName,
-    benchNumber ? `Hall ${benchNumber}` : null,
-  ].filter(Boolean);
+  const courtParts = [courtName, benchNumber ? `Hall ${benchNumber}` : null].filter(Boolean);
 
-  const dateText = hearing.time
-    ? `${formattedDate} · ${hearing.time}`
-    : formattedDate;
+  const dateText = hearing.time ? `${formattedDate} · ${hearing.time}` : formattedDate;
 
   const metaParts = [
     { icon: Clock, text: dateText },
-    ...(hearing.judgeName
-      ? [{ icon: Scale, text: hearing.judgeName }]
-      : []),
+    ...(hearing.judgeName ? [{ icon: Scale, text: hearing.judgeName }] : []),
     ...(courtParts as string[]).map((part) => ({ icon: Landmark, text: part })),
   ];
 
@@ -184,9 +152,7 @@ export function NextHearingCard({
             </span>
           </div>
           <div className="flex flex-col items-center justify-center bg-brand/10 py-1.5">
-            <span className="text-2xl font-bold text-dark leading-none">
-              {day}
-            </span>
+            <span className="text-2xl font-bold text-dark leading-none">{day}</span>
             <span className="text-[11px] text-brand/60 mt-0.5">{year}</span>
           </div>
         </div>
@@ -210,9 +176,7 @@ export function NextHearingCard({
             ))}
           </div>
 
-          {hearing.notes && (
-            <p className="text-[13px] text-secondary italic">{hearing.notes}</p>
-          )}
+          {hearing.notes && <p className="text-[13px] text-secondary italic">{hearing.notes}</p>}
         </div>
       </div>
 

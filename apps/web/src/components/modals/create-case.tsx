@@ -89,8 +89,8 @@ export function CreateCaseModal({ open, onClose }: Props) {
           )}
         />
         <p className="text-xs text-placeholder text-left pt-1">
-          You can add detailed case information, client details, hearing
-          records, and supporting documents after creating the case.
+          You can add detailed case information, client details, hearing records, and supporting
+          documents after creating the case.
         </p>
       </div>
     </Modal>

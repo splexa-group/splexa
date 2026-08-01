@@ -38,9 +38,7 @@ export function TopBar() {
         <Icon icon={ArrowLeft} size="sm" />
       </button>
 
-      <h1 className="text-[15px] font-semibold text-dark flex-1 truncate">
-        {displayTitle}
-      </h1>
+      <h1 className="text-[15px] font-semibold text-dark flex-1 truncate">{displayTitle}</h1>
 
       {config?.action &&
         (config.action.href ? (

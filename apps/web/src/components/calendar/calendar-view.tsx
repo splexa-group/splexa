@@ -17,10 +17,7 @@ export function CalendarView() {
   const [selectedDateKey, setSelectedDateKey] = useState<string>(todayKey);
   const [search, setSearch] = useState("");
 
-  const { eventMap, isLoading, isError, refetch } = useCalendarEvents(
-    year,
-    month,
-  );
+  const { eventMap, isLoading, isError, refetch } = useCalendarEvents(year, month);
 
   const filteredMap = filterEventMap(eventMap, search);
   const panelEvents = filteredMap.get(selectedDateKey) ?? [];
@@ -71,7 +68,6 @@ export function CalendarView() {
         </div>
         <CalendarDayPanel dateKey={selectedDateKey} events={panelEvents} />
       </div>
-
     </div>
   );
 }

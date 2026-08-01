@@ -64,28 +64,24 @@ export function DataTable({
             </div>
 
             {rows.map((row) => (
-                <div
-                  key={row.key}
-                  role={row.onClick ? "button" : "row"}
-                  tabIndex={row.onClick ? 0 : undefined}
-                  onKeyDown={
-                    row.onClick
-                      ? (e) => e.key === "Enter" && row.onClick?.()
-                      : undefined
-                  }
-                  onClick={row.onClick}
-                  className={cn(
-                    "grid px-4 border-b border-line last:border-b-0 min-h-[54px] items-center",
-                    row.onClick && "cursor-pointer hover:bg-surface transition-colors",
-                    row.className,
-                  )}
-                  style={{ gridTemplateColumns: columnWidths }}
-                >
-                  {row.cells.map((cell, i) => (
-                    <div key={i}>{cell}</div>
-                  ))}
-                </div>
-              ))}
+              <div
+                key={row.key}
+                role={row.onClick ? "button" : "row"}
+                tabIndex={row.onClick ? 0 : undefined}
+                onKeyDown={row.onClick ? (e) => e.key === "Enter" && row.onClick?.() : undefined}
+                onClick={row.onClick}
+                className={cn(
+                  "grid px-4 border-b border-line last:border-b-0 min-h-[54px] items-center",
+                  row.onClick && "cursor-pointer hover:bg-surface transition-colors",
+                  row.className,
+                )}
+                style={{ gridTemplateColumns: columnWidths }}
+              >
+                {row.cells.map((cell, i) => (
+                  <div key={i}>{cell}</div>
+                ))}
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -124,4 +120,3 @@ export function DataTable({
     </div>
   );
 }
-

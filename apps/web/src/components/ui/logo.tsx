@@ -36,12 +36,7 @@ const NAME_COLOR = {
   brandDark: "text-brand-dark",
 };
 
-export function Logo({
-  size = "md",
-  variant = "white",
-  showName = true,
-  className,
-}: LogoProps) {
+export function Logo({ size = "md", variant = "white", showName = true, className }: LogoProps) {
   const { width, height } = SIZE_MAP[size];
   return (
     <div className={cn("flex items-center gap-2", className)}>
@@ -53,13 +48,7 @@ export function Logo({
         className="shrink-0"
       />
       {showName && (
-        <span
-          className={cn(
-            "font-bold leading-none",
-            NAME_SIZE[size],
-            NAME_COLOR[variant],
-          )}
-        >
+        <span className={cn("font-bold leading-none", NAME_SIZE[size], NAME_COLOR[variant])}>
           Splexa
         </span>
       )}

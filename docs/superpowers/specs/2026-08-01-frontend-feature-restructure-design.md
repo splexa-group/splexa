@@ -98,6 +98,7 @@ Each feature folder only gets the subfolders it actually uses — e.g. `clients`
 | `components/cases/client/**` | `features/clients/components/` |
 | `hooks/use-documents.ts`, `services/documents.ts`, `types/documents.ts` | `features/documents/{hooks,services,types}/` |
 | `components/documents/**` | `features/documents/components/` |
+| `components/cases/documents/documents.tsx` (the case-scoped Documents tab, `export function Documents`) | `features/documents/components/documents.tsx` — same feature as the org-wide folder view above, just the case-scoped half of it |
 | `hooks/use-calendar.ts`, `services/calendar.ts`, `types/calendar.ts`, `lib/calendar.ts` | `features/calendar/{hooks,services,types,lib}/` |
 | `components/calendar/**` | `features/calendar/components/` |
 | `hooks/use-dashboard.ts`, `services/dashboard.ts`, `types/dashboard.ts`, `lib/format-date-label.ts` | `features/dashboard/{hooks,services,types,lib}/` |
@@ -118,9 +119,10 @@ After the move, `config/`, `enums/`, and `services/` are deleted (empty — ever
 
 ## Rules This Introduces (codify in `frontend-rules.md`)
 
-1. **Features never import another feature's internals directly.** Cross-feature composition happens only at the `app/` page level, or through `components/shared/` and `components/ui/`. This is already a documented rule ("Importing from another feature's components directly" is forbidden) — this refactor is what makes the codebase actually honor it.
-2. **One sanctioned exception**, mirroring the backend's cross-module repository rule for genuinely related entities (`hearings.repository.ts` calling `casesRepository.updateNextHearingDate`): a feature's hook may invalidate another feature's exported query-key factory when the two are genuinely coupled — e.g. updating a hearing invalidates `caseKeys.detail(id)` because the case view shows "next hearing date". It must import only the `*Keys` factory, never the other feature's components or services.
-3. Each feature is a flat `{components, hooks, services, types}` folder — no forced sub-splitting. A feature adds `constants/`, `mappers/`, or `lib/` only if it actually needs one.
+1. **Features never import another feature's internals directly**, except the two sanctioned cases below. Ordinary components reach other features only through `components/shared/` and `components/ui/`. This is already a documented rule ("Importing from another feature's components directly" is forbidden) — this refactor is what makes the codebase actually honor it.
+2. **Exception A — query-key invalidation**, mirroring the backend's cross-module repository rule for genuinely related entities (`hearings.repository.ts` calling `casesRepository.updateNextHearingDate`): a feature's hook may invalidate another feature's exported query-key factory when the two are genuinely coupled — e.g. updating a hearing invalidates `caseKeys.detail(id)` because the case view shows "next hearing date". It must import only the `*Keys` factory, never the other feature's components or services.
+3. **Exception B — the one orchestrator view per composite route.** A route that is inherently a composite of several features (a case detail page whose tabs *are* hearings/important-dates/client/documents for that case; a dashboard whose whole purpose is surfacing actions and summaries from several features at once) needs exactly one component that imports across those features to assemble the page — e.g. `features/cases/components/case-detail-view.tsx` importing `HearingsDetails`, `ImportantDatesDetails`, `ClientDetails`, `Documents` from their own features; `features/dashboard/components/dashboard-view.tsx` importing cases' `CreateCaseModal` for its "Add New Case" action. This import right is scoped to that one orchestrator component only — the components it renders still fetch their own data through their own feature's hooks, never reaching back into the orchestrator's feature.
+4. Each feature is a flat `{components, hooks, services, types}` folder — no forced sub-splitting. A feature adds `constants/`, `mappers/`, or `lib/` only if it actually needs one.
 
 ---
 
@@ -142,17 +144,20 @@ type PageMaxWidth = "small" | "medium" | "large" | "full";
 // small  → forms (e.g. a single settings section)
 // medium → detail/tab pages (case detail, settings)
 // large  → list pages with a data table (cases, documents)
-// full   → content that must not be width-capped at all (rare — e.g. the calendar grid)
+// full   → content that must not be width-capped at all (rare)
 
 interface PageLayoutProps {
   maxWidth?: PageMaxWidth;   // defaults to "medium"
+  padded?: boolean;          // defaults to true — set false when the content already manages
+                             // its own horizontal gutter (e.g. a FiltersBar + DataTable pair),
+                             // so PageLayout only contributes the max-width cap, not a second gutter
   children: ReactNode;
   className?: string;
 }
 
-export function PageLayout({ maxWidth = "medium", children, className }: PageLayoutProps) {
+export function PageLayout({ maxWidth = "medium", padded = true, children, className }: PageLayoutProps) {
   return (
-    <div className={cn("page-layout", pageMaxWidthClass[maxWidth], className)}>
+    <div className={cn("page-layout", pageMaxWidthClass[maxWidth], padded && "page-layout--padded", className)}>
       {children}
     </div>
   );
@@ -161,7 +166,9 @@ export function PageLayout({ maxWidth = "medium", children, className }: PageLay
 
 Named `maxWidth` instead of `width` because that's precisely what it constrains — a ceiling, not an exact size — and spelled-out t-shirt sizes (`small`/`medium`/`large`/`full`) instead of abbreviations (`sm`/`md`/`lg`/`xl`) because they read correctly at first sight, with no lookup table needed to know what it means.
 
-`.page-layout` in `globals.css` becomes the single real definition of the gutter + vertical page padding (`px-4 md:px-6 py-6`) — replacing both the dead `.page-shell` and `PageContent`'s inline `mx-auto w-full py-6`.
+`.page-layout` (bare — just `mx-auto w-full`) plus `.page-layout--padded` (`px-4 md:px-6 py-6`) in `globals.css` become the single real definition of the gutter + vertical page padding — replacing both the dead `.page-shell` and `PageContent`'s inline `mx-auto w-full py-6`.
+
+**Why `padded` exists:** `FiltersBar` and `DataTable` already apply their own `px-4 md:px-6` internally (confirmed during investigation — `data-table.tsx` does it twice, once around the table and once around pagination). Cases and documents' list pages wrap that pair in `PageLayout` purely to gain the max-width cap; adding the padded variant on top would double the gutter. Pages without their own internal gutter (dashboard, settings, case detail tabs) use the default `padded={true}`. Calendar is excluded from `PageLayout` entirely — it already has its own full-height, edge-to-edge chrome (`.calendar-page`, `.calendar-toolbar`) that a page-level max-width/padding wrapper would conflict with, and it was already flagged as the one rare "full-bleed" exception above.
 
 **Fix, as part of this migration:**
 1. Delete the dead `.page-shell` class and the old `PageContent` component entirely — one mechanism (`PageLayout`), not a leftover second one.
@@ -170,7 +177,8 @@ Named `maxWidth` instead of `width` because that's precisely what it constrains 
 4. Standardize the vertical rhythm between page sections to one scale — `space-y-6` at the page level, `gap-4` inside stat/card grids — matching what dashboard already does, applied everywhere instead of ad hoc per page.
 
 **Page composition convention** (documentation only — `FiltersBar`, `DataTable`, and `Section` already exist, only `PageLayout` is new):
-- **List pages** (cases, documents folders): `PageLayout maxWidth="large"` → `FiltersBar` → (`DataTable` or a card grid) → click-through to a detail route.
+- **List pages** (cases, documents folders): `PageLayout maxWidth="large" padded={false}` (the width cap only — `FiltersBar`/`DataTable` already provide their own gutter) → `FiltersBar` → (`DataTable` or a card grid) → click-through to a detail route.
+- **Calendar is excluded** from `PageLayout` — its own full-height, edge-to-edge chrome (`.calendar-page`, `.calendar-toolbar`) already handles this and predates the refactor; forcing it through `PageLayout` isn't part of this pass.
 - **Detail/form pages** (case detail, settings): `PageLayout maxWidth="medium"` → one or more `Section` blocks (already the pattern in `profile-tab.tsx`).
 
 Every feature's list-style page follows the first shape and every detail-style page follows the second — new features don't invent a third shape.
@@ -244,7 +252,7 @@ Since every touched file already gets opened and re-saved for its import fixes, 
 2. Merge each `config/[x]-tabs.ts` + `enums/[x]-tabs.ts` pair into one `features/[x]/constants/[x]-tabs.ts`.
 3. Fix imports repo-wide for every moved path (mechanical find-replace per path, then verify with `tsc --noEmit` and `eslint`) — this is also where the stray relative import in `cases-table.tsx` gets corrected to the `@/` alias, and where the `CaseTabs as CaseTabsNav` import alias disappears (the export is now already named `CaseDetailTabs`, no alias needed).
 4. Delete now-empty `config/` and `enums/` folders.
-5. Layout pass: delete the dead `.page-shell` CSS class and the old `PageContent` component; add the new `PageLayout` component (`components/layout/page-layout.tsx`); wire every `page.tsx` through `<PageLayout maxWidth="...">`; remove the ad-hoc padding duplicated in the dashboard page and `FiltersBar`.
+5. Layout pass: add the new `PageLayout` component (`components/layout/page-layout.tsx`) alongside the existing `PageContent`/`.page-shell` (additive, nothing deleted yet); wire dashboard, settings, and case-detail through `<PageLayout maxWidth="...">` (default `padded`, no changes needed to their inner content); wire cases' and documents' list pages through `<PageLayout maxWidth="large" padded={false}>` — `padded={false}` means `PageLayout` contributes only the max-width cap here, so `FiltersBar`/`DataTable` keep their own internal `px-4 md:px-6` completely untouched, no doubling; remove the dashboard page's ad-hoc `"px-4 md:px-6 py-6 space-y-6"` div. Calendar is left untouched. Only after every consumer is migrated: delete the now-unused `PageContent` component and the dead `.page-shell` CSS class.
 6. Nav & tabs pass: remove the dead commented-out nav item and normalize quotes in `nav-items.ts`; delete `useCaseActiveTab`/`useCaseActiveSubTab` from `hooks/use-active-tab.ts` and switch their call sites to the generic `useActiveTab`/`useActiveSubTab` directly.
 7. Thin-page pass: extract the body of `cases/[caseId]` (already done via the rename above), `settings/page.tsx`, `dashboard/page.tsx`, and `cases/page.tsx` into a `[name]-view.tsx` (or `-table.tsx`, matching what already exists) component in each feature's `components/`, leaving `page.tsx` as params-in/component-out — matching the shape `calendar/page.tsx` and `login/page.tsx` already use correctly.
 8. Code-quality pass on each moved file: verify toasts/invalidations live in the feature's hook file (not the component), fix any obviously generic/AI-ish names encountered, confirm one component per file, rename a helper file if its current name doesn't describe its contents (e.g. `case-utils.ts`).

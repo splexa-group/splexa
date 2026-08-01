@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { Designation, PracticeType } from "@splexa-group/shared/enums";
 import { FormProvider, type UseFormReturn } from "react-hook-form";
-import { PageContent } from "@/components/layout/page-content";
+import { PageLayout } from "@/components/layout/page-layout";
 import { FirmDetailsSection } from "@/components/settings/firm-details-section";
 import { MyDetailsSection } from "@/components/settings/my-details-section";
 
@@ -29,22 +29,22 @@ interface Props {
 export function ProfileTab({ form, email, role, isLoading }: Props) {
   if (isLoading) {
     return (
-      <PageContent width="md" className="space-y-6">
+      <PageLayout maxWidth="medium" className="space-y-6">
         <div className="space-y-4">
           {Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="h-12 rounded border border-line bg-card animate-pulse" />
           ))}
         </div>
-      </PageContent>
+      </PageLayout>
     );
   }
 
   return (
     <FormProvider {...form}>
-      <PageContent width="md" className="space-y-6">
+      <PageLayout maxWidth="medium" className="space-y-6">
         <MyDetailsSection email={email} role={role} />
         <FirmDetailsSection />
-      </PageContent>
+      </PageLayout>
     </FormProvider>
   );
 }

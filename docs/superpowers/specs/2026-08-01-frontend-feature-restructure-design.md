@@ -15,9 +15,9 @@ Two concrete messes get fixed as part of the move:
 - `config/[feature]-tabs.ts` + `enums/[feature]-tabs.ts` (two top-level folders, one tightly-coupled file pair each) merge into a single `constants/[feature]-tabs.ts` inside the owning feature.
 - `components/modals/` — today a flat grab-bag mixing the generic `Modal` primitive with feature-specific modals (`create-case.tsx`, `add-hearing.tsx`, `add-important-date.tsx`, `opposite-party.tsx`) — splits: feature-specific modals move into their owning feature's `components/modals/`, and only the truly generic `modal.tsx` + `confirm-delete.tsx` remain shared.
 
-**No file is renamed.** Every file keeps its exact current name — only its parent folder path changes. This keeps the migration mechanical (move + fix imports) and avoids touching the kebab-case naming rule (CLAUDE.md rule #9 scopes the `[name].[role].ts` dot-convention to backend modules only — frontend files stay kebab-case).
+**Component, hook, service, and type files are not renamed** — only their parent folder path changes. This keeps the bulk of the migration mechanical (move + fix imports) and avoids touching the kebab-case naming rule (CLAUDE.md rule #9 scopes the `[name].[role].ts` dot-convention to backend modules only — frontend files stay kebab-case). Generically-named helper/util files (e.g. `case-utils.ts`) may still be renamed to describe their actual contents — see "Code Quality Standards Applied During the Move" below.
 
-**No behavior change.** No renamed exports, no new dependencies, no new abstractions (no barrel `index.ts` files added unless a feature already needs one to break an import cycle).
+**No functional/product behavior change** — same routes, same data, same user-facing flows. What does change, as part of this same PR: a few concrete layout inconsistencies and code-quality issues get fixed on files this migration already has to touch for import fixes (see "Layout & Visual Consistency" and "Code Quality Standards" below) — this is not a separate refactor bolted on, it's cleanup that piggybacks on files already being opened. No new dependencies, no new state layer, no barrel `index.ts` files added unless a feature already needs one to break an import cycle.
 
 ---
 
@@ -86,6 +86,8 @@ Each feature folder only gets the subfolders it actually uses — e.g. `clients`
 | `config/case-tabs.ts` + `enums/case-tabs.ts` (merged into one file) | `features/cases/constants/case-tabs.ts` |
 | `components/cases/**`, `app/(protected)/cases/cases-table.tsx` | `features/cases/components/` |
 | `components/modals/create-case.tsx`, `opposite-party.tsx` | `features/cases/components/modals/` |
+| `app/(protected)/cases/[caseId]/case-details.tsx` (`export default CaseDetails`) | `features/cases/components/case-detail-view.tsx`, renamed to named export `CaseDetailView` — matches the pattern `frontend-rules.md` already documents for this exact file; also fixes the default-export inconsistency (every other component in the codebase is a named export) |
+| `app/(protected)/cases/[caseId]/case-tabs.tsx` (`export function CaseTabs`) | `features/cases/components/case-detail-tabs.tsx`, renamed to `CaseDetailTabs` — the component currently shares its name with the `CaseTabs` enum, forcing every call site to alias the import (`import { CaseTabs as CaseTabsNav }`); the new name matches its sibling `CaseDetailView` and avoids "Nav," which this codebase reserves for actual site navigation (`Sidebar`, `BottomNav`) — this is an in-page tab bar, not navigation between pages |
 | `hooks/use-hearings.ts`, `services/hearings.ts`, `types/hearings.ts` | `features/hearings/{hooks,services,types}/` |
 | `components/cases/hearing-details/**` | `features/hearings/components/` |
 | `components/modals/add-hearing.tsx` | `features/hearings/components/modals/` |
@@ -122,14 +124,132 @@ After the move, `config/`, `enums/`, and `services/` are deleted (empty — ever
 
 ---
 
+## Layout & Visual Consistency
+
+Investigation turned up a concrete instance of inconsistent spacing, caused by there being two competing, half-used mechanisms instead of one:
+
+- **`.page-shell`** in `globals.css` is dead code — its comment claims it's "applied to `<main>`; owns the horizontal gutter for all pages," but it is applied nowhere in the codebase.
+- **`PageContent`** (`components/layout/page-content.tsx`) already has the right idea — a size-constrained wrapper — but its prop is named `width` with values `"sm" | "md" | "lg" | "xl"`, which says nothing about what those sizes mean without checking the lookup table, and it isn't used everywhere: the horizontal gutter (`px-4 md:px-6`) ends up hand-duplicated — baked into `FiltersBar`, hardcoded directly on a `<div>` in the dashboard page, and simply absent on the cases list page.
+
+**Fix: delete both, replace with one dedicated, clearly-named component.**
+
+### `PageLayout` — the one page-level spacing owner
+
+Named to match the existing `AuthLayout` convention already in this codebase (`components/auth/auth-layout.tsx`) — a `[Name]Layout` wrapper is already a recognized pattern here, so this isn't a new idea, just applied consistently. Lives in `components/layout/page-layout.tsx`, replacing `page-content.tsx` outright (not kept alongside it).
+
+```tsx
+type PageMaxWidth = "small" | "medium" | "large" | "full";
+// small  → forms (e.g. a single settings section)
+// medium → detail/tab pages (case detail, settings)
+// large  → list pages with a data table (cases, documents)
+// full   → content that must not be width-capped at all (rare — e.g. the calendar grid)
+
+interface PageLayoutProps {
+  maxWidth?: PageMaxWidth;   // defaults to "medium"
+  children: ReactNode;
+  className?: string;
+}
+
+export function PageLayout({ maxWidth = "medium", children, className }: PageLayoutProps) {
+  return (
+    <div className={cn("page-layout", pageMaxWidthClass[maxWidth], className)}>
+      {children}
+    </div>
+  );
+}
+```
+
+Named `maxWidth` instead of `width` because that's precisely what it constrains — a ceiling, not an exact size — and spelled-out t-shirt sizes (`small`/`medium`/`large`/`full`) instead of abbreviations (`sm`/`md`/`lg`/`xl`) because they read correctly at first sight, with no lookup table needed to know what it means.
+
+`.page-layout` in `globals.css` becomes the single real definition of the gutter + vertical page padding (`px-4 md:px-6 py-6`) — replacing both the dead `.page-shell` and `PageContent`'s inline `mx-auto w-full py-6`.
+
+**Fix, as part of this migration:**
+1. Delete the dead `.page-shell` class and the old `PageContent` component entirely — one mechanism (`PageLayout`), not a leftover second one.
+2. Every top-level `page.tsx` renders its content through `<PageLayout maxWidth="...">` — no page hand-rolls its own outer horizontal padding or `max-w-*` again. `FiltersBar` and `DataTable` stop owning outer gutter — they fill 100% of `PageLayout`'s inner width; `PageLayout` is the only place that decision is made.
+3. Pick `maxWidth` per page by content shape, consistently: list/table pages (cases, documents) → `large`; form/detail pages (settings, case detail) → `medium`; a lone form section → `small`. Document the mapping in `frontend-rules.md` so the next feature page picks the right one without guessing.
+4. Standardize the vertical rhythm between page sections to one scale — `space-y-6` at the page level, `gap-4` inside stat/card grids — matching what dashboard already does, applied everywhere instead of ad hoc per page.
+
+**Page composition convention** (documentation only — `FiltersBar`, `DataTable`, and `Section` already exist, only `PageLayout` is new):
+- **List pages** (cases, documents folders): `PageLayout maxWidth="large"` → `FiltersBar` → (`DataTable` or a card grid) → click-through to a detail route.
+- **Detail/form pages** (case detail, settings): `PageLayout maxWidth="medium"` → one or more `Section` blocks (already the pattern in `profile-tab.tsx`).
+
+Every feature's list-style page follows the first shape and every detail-style page follows the second — new features don't invent a third shape.
+
+---
+
+## Navigation & Tabs — Single Source of Truth
+
+### Nav items (sidebar + bottom nav) — already correct, keep as-is
+
+`components/layout/sidebar/nav-items.ts` exports one `NAV_ITEMS` array; `Sidebar` renders it directly and `BottomNav` derives its own list from it (`NAV_ITEMS.filter(...).map(...)`). Add a nav entry once, in one file, and both surfaces update — this already is the pattern the rest of this refactor is trying to establish elsewhere. It stays in `components/layout/` (cross-cutting app-shell concern, not owned by any single feature) and is not touched by the File Moves table.
+
+Two small cleanups while the file is opened:
+- Remove the commented-out dead `// { label: 'Clients', ... }` line — there's no standalone `/clients` route (clients are only viewed inside a case), so this isn't a gap, it's just dead code that should go rather than sit commented out indefinitely.
+- Normalize its string quotes to double quotes — the file currently uses single quotes, inconsistent with the rest of the codebase.
+
+### Tabs — fix the real leak, then it matches the nav-items pattern
+
+Unlike nav items, the tabs mechanism today is **not** actually generic where it claims to be. `hooks/use-active-tab.ts` is meant to be cross-cutting (`TabConfig`, `useActiveTab`, `useActiveSubTab` — feature-agnostic), but it also directly imports `CASE_TAB_CONFIG` and `CaseTabs` from the cases feature and exports `useCaseActiveTab`/`useCaseActiveSubTab` wrapper hooks. That's a feature reaching backward into a "global" file. Meanwhile `settings/page.tsx` already calls the generic hook directly — `useActiveTab(SETTINGS_TAB_CONFIG, SettingsTabs.PROFILE)` — with no wrapper. Two different patterns for the identical problem.
+
+**Fix:** standardize on the settings way — it's simpler and keeps the global hook feature-agnostic.
+- `hooks/use-active-tab.ts` keeps only `TabConfig`, `SubTabConfig`, `useActiveTab`, `useActiveSubTab` — no feature imports, ever.
+- Delete `useCaseActiveTab`/`useCaseActiveSubTab`. Call sites (the new `case-detail-tabs.tsx`, `case-detail-view.tsx`) call `useActiveTab(CASE_TAB_CONFIG, CaseTabs.CASE)` / `useActiveSubTab(...)` directly, same as settings does today.
+- Result: adding a tab means editing exactly one file — the feature's own `constants/[name]-tabs.ts` — same "change one file, it's reflected everywhere" property nav items already have, and the same rule applies to both: **the generic mechanism (`TabsNav`, `useActiveTab`, `NAV_ITEMS` pattern) lives at the top level and knows nothing about any feature; each feature owns its own config and calls the generic mechanism directly.**
+
+### Future extension point — role/subscription-gated tabs and nav items (not built now)
+
+Not a Phase 1 requirement, but worth documenting so it lands in the right place when it does become one, instead of being solved by centralizing everything into a root config file (which would undo the point of this refactor).
+
+The tab/nav **data** stays feature-owned exactly as designed above. When gating by role or subscription plan is needed, extend the two already-shared, already-centralized **shape** definitions instead:
+- `TabConfig` (`components/layout/tabs-nav.tsx`) gains optional fields, e.g. `requiredRole?: UserRole[]` / `requiredPlan?: PlanTier[]`.
+- `NavItem` (`components/layout/sidebar/nav-items.ts`) gains the same optional fields, for the same reason (e.g. hiding "Settings" from non-admins, or a nav item behind a paid plan).
+- One shared, generic filter (e.g. `getVisibleTabs(tabs, context)` / `getVisibleNavItems(items, context)`) lives alongside those shared types and is called by `TabsNav`/`Sidebar`/`BottomNav` before rendering.
+
+Each feature's tab/nav entries then just optionally populate `requiredRole`/`requiredPlan` on their own data — no feature needs to know how gating is evaluated, only whether one of its own tabs needs it. Data stays per-feature; the gating rule and its evaluation logic stay in the one place that already owns the shared shape.
+
+---
+
+## Thin-Page Consistency
+
+`frontend-rules.md` already documents that `page.tsx` files must be thin — resolve params, render one feature component, nothing else — and gives `CaseDetailView` as the worked example. `calendar/page.tsx` and `login/page.tsx` already follow this exactly. Several others have drifted from it, inconsistently:
+
+| File | Problem |
+|---|---|
+| `app/(protected)/cases/[caseId]/case-details.tsx` | 220 lines directly in the route folder — form state, mutations, save/delete handlers. This is the exact file `frontend-rules.md`'s own example describes as `CaseDetailView` in `components/cases/` — the code just never got moved there. |
+| `app/(protected)/cases/[caseId]/case-tabs.tsx` | Same issue, smaller scale, plus the `CaseTabs` naming collision with the enum (see above). |
+| `app/(protected)/settings/page.tsx` | 133 lines of form/mutation logic directly in the page file. |
+| `app/(protected)/dashboard/page.tsx`, `app/(protected)/cases/page.tsx` | Smaller-scale version of the same thing — modal open/close state and data hooks live in the page file instead of a feature component. |
+
+**Fix, applied per feature as each one is moved into `features/[name]/`:** each of these pages' body moves into a `[name]-view.tsx` (or equivalent) component inside that feature's `components/`, following the already-correct `calendar`/`login` shape — `page.tsx` only resolves route params/search params and renders that one component. This isn't a new rule — it's enforcing the one already written, consistently, instead of only where it happened to be followed.
+
+---
+
+## Code Quality Standards Applied During the Move
+
+Since every touched file already gets opened and re-saved for its import fixes, the following get fixed in the same pass — not as a separate line-by-line rewrite of unrelated logic, but wherever the moved file already needs a look:
+
+- **React Query discipline** (already documented in `frontend-rules.md`, being enforced here, not re-invented): every mutation's `onSuccess`/`onError` toast, query invalidation, and derived state lives in the feature's `hooks/` file — never in a component. If a component-level `toast()` call for an API outcome is found during the move (the way `mutateAsync` + component toast was previously flagged and fixed in settings), it gets moved into the hook in the same commit.
+- **Naming.** Variable, function, and prop names describe the domain, not the mechanism — `activeCase`, `onArchiveCase`, `pendingDeleteId`, not `data`, `item`, `handleClick`, `temp`. Fixed opportunistically on files already being touched; not a repo-wide rename sweep.
+- **One component per file** — already a documented rule; verified for every moved file. A file colocating a form component with its Zod schema and inferred type (e.g. `profile-tab.tsx` exporting `ProfileTab` + `settingsFormSchema` + `SettingsFormValues`) is not a violation — that's one component and the schema it owns, not two components.
+- **Helper files named for what they hold, not generically.** `case-utils.ts` and `hearing-status.ts` are exactly the kind of file this refactor keeps feature-scoped (see File Moves) — as an explicit exception to the "no renames" rule, a helper/util file may be renamed if its current name is generic or misleading (e.g. a follow-up could rename `case-utils.ts` → `case-status-styles.ts` to describe its actual contents — priority/status class lookups). Component, hook, service, and type files keep their names regardless, since those are already named for the domain they represent.
+- **No unnecessary hooks or prop drilling.** `useRef` stays only where it's load-bearing (e.g. `DocumentFileList`'s upload-trigger ref — a real imperative-API need). Don't introduce `useEffect`, `useRef`, or context providers to solve something a plain prop or a query hook already solves. Prefer colocating state where it's used over threading callbacks through more than one intermediate layer — if a value needs to pass through 3+ components untouched, that's a signal that composition (children/slots) fits better than more props.
+
+**Known bug fixed as a side effect:** `cases-table.tsx` currently imports `case-utils` via `"../../../components/cases/case-utils"` instead of the `@/` path alias — corrected automatically since the move rewrites this import to `@/features/cases/components/case-utils`.
+
+---
+
 ## Migration Steps
 
-1. Create `features/[name]/` folders; `git mv` each file per the File Moves table (preserves git history/blame).
+1. Create `features/[name]/` folders; `git mv` each file per the File Moves table (preserves git history/blame), including the `case-details.tsx` → `case-detail-view.tsx` (`CaseDetailView`) and `case-tabs.tsx` → `case-detail-tabs.tsx` (`CaseDetailTabs`) renames.
 2. Merge each `config/[x]-tabs.ts` + `enums/[x]-tabs.ts` pair into one `features/[x]/constants/[x]-tabs.ts`.
-3. Fix imports repo-wide for every moved path (mechanical find-replace per path, then verify with `tsc --noEmit` and `eslint`).
+3. Fix imports repo-wide for every moved path (mechanical find-replace per path, then verify with `tsc --noEmit` and `eslint`) — this is also where the stray relative import in `cases-table.tsx` gets corrected to the `@/` alias, and where the `CaseTabs as CaseTabsNav` import alias disappears (the export is now already named `CaseDetailTabs`, no alias needed).
 4. Delete now-empty `config/` and `enums/` folders.
-5. Update `.claude/architecture.md`'s "Frontend Structure" section and `.claude/frontend-rules.md`'s "App Router Structure" section to reflect the new `features/` tree and the actual `(protected)` route group name (currently documented as `(dashboard)`).
-6. Run full build (`pnpm build` for `apps/web`) and manually smoke-test the app (nav between cases, hearings, dashboard, settings, calendar, documents) to confirm no broken imports or runtime regressions.
+5. Layout pass: delete the dead `.page-shell` CSS class and the old `PageContent` component; add the new `PageLayout` component (`components/layout/page-layout.tsx`); wire every `page.tsx` through `<PageLayout maxWidth="...">`; remove the ad-hoc padding duplicated in the dashboard page and `FiltersBar`.
+6. Nav & tabs pass: remove the dead commented-out nav item and normalize quotes in `nav-items.ts`; delete `useCaseActiveTab`/`useCaseActiveSubTab` from `hooks/use-active-tab.ts` and switch their call sites to the generic `useActiveTab`/`useActiveSubTab` directly.
+7. Thin-page pass: extract the body of `cases/[caseId]` (already done via the rename above), `settings/page.tsx`, `dashboard/page.tsx`, and `cases/page.tsx` into a `[name]-view.tsx` (or `-table.tsx`, matching what already exists) component in each feature's `components/`, leaving `page.tsx` as params-in/component-out — matching the shape `calendar/page.tsx` and `login/page.tsx` already use correctly.
+8. Code-quality pass on each moved file: verify toasts/invalidations live in the feature's hook file (not the component), fix any obviously generic/AI-ish names encountered, confirm one component per file, rename a helper file if its current name doesn't describe its contents (e.g. `case-utils.ts`).
+9. Update `.claude/architecture.md`'s "Frontend Structure" section and `.claude/frontend-rules.md`'s "App Router Structure" section to reflect the new `features/` tree, the actual `(protected)` route group name (currently documented as `(dashboard)`), the `PageLayout` maxWidth-per-page-type convention, the list-page vs. detail-page composition pattern, and the nav-items/tabs single-source-of-truth rule.
+10. Run full build (`pnpm build` for `apps/web`) and manually smoke-test the app (nav between cases, hearings, dashboard, settings, calendar, documents) to confirm no broken imports, no visual regressions, and consistent spacing across pages.
 
 Single PR — all moves land together, per the chosen migration approach.
 
@@ -138,8 +258,9 @@ Single PR — all moves land together, per the chosen migration approach.
 ## What Is Explicitly Out of Scope
 
 - No frontend test framework setup (noted as a gap, not addressed here)
-- No component renames or prop signature changes
-- No new shared abstractions (no barrel `index.ts` files, no new state layer)
+- No component/hook/service/type renames and no prop signature changes, **except** the two documented above (`CaseDetails` → `CaseDetailView`, `CaseTabs` → `CaseDetailTabs`) — both are forced by a real naming collision or a default-export inconsistency, not a style preference. Generically-named helper/util files are also candidates for a clarity rename (e.g. `case-utils.ts`).
+- No repo-wide naming rewrite — naming fixes only happen on files this migration already touches, not a separate sweep
+- No new shared abstractions beyond `PageLayout` itself (no barrel `index.ts` files, no new state layer, no separate List-page or Detail-page wrapper component — `PageLayout` + the existing `FiltersBar`/`DataTable`/`Section` primitives already cover both page shapes)
 - No change to backend structure, API contracts, or database schema
 - No change to the `(auth)` / `(protected)` / `portal` route group boundaries in `app/`
 

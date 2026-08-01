@@ -11,7 +11,12 @@ import { usePageTitle } from "@/components/layout/top/top-bar-context";
 import { SETTINGS_TAB_CONFIG } from "@/config/settings-tabs";
 import { SettingsTabs } from "@/enums/settings-tabs";
 import { useActiveTab } from "@/hooks/use-active-tab";
-import { useOrganization, useProfile, useUpdateOrganization, useUpdateProfile } from "@/hooks/use-settings";
+import {
+  useOrganization,
+  useProfile,
+  useUpdateOrganization,
+  useUpdateProfile,
+} from "@/hooks/use-organization";
 import { useAuthStore } from "@/store/auth-store";
 import { ProfileTab, settingsFormSchema, type SettingsFormValues } from "@/components/settings/profile-tab";
 import { SubscriptionTab } from "@/components/settings/subscription-tab";
@@ -73,8 +78,11 @@ export default function SettingsPage() {
         practiceTypes: values.practiceTypes,
       });
       const currentUser = useAuthStore.getState().user;
-      if (currentUser) {
-        useAuthStore.getState().setAuth({ ...currentUser, orgName: updatedOrg.data.name });
+      if (currentUser && "org" in currentUser) {
+        useAuthStore.getState().setAuth({
+          ...currentUser,
+          org: { ...currentUser.org, name: updatedOrg.name },
+        });
       }
     } catch {
       // onError handlers in mutations show the toast

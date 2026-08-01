@@ -1,0 +1,44 @@
+import { ReqContext } from "@/models/req-context";
+import { Errors } from "@/utils/errors";
+
+import { clientsRepository } from "./clients.repository";
+import {
+  CreateClientInput,
+  ListClientsQuery,
+  UpdateClientInput,
+} from "./clients.schema";
+
+export const clientsService = {
+  create(input: CreateClientInput, ctx: ReqContext) {
+    return clientsRepository.create({
+      ...input,
+      orgId: ctx.orgId,
+      createdBy: ctx.userId,
+    });
+  },
+
+  async list(orgId: string, query: ListClientsQuery) {
+    return clientsRepository.list(orgId, query);
+  },
+
+  async findById(id: string, orgId: string) {
+    const client = await clientsRepository.findById(id, orgId);
+    if (!client) throw Errors.clientNotFound();
+    return client;
+  },
+
+  async update(id: string, input: UpdateClientInput, ctx: ReqContext) {
+    const existing = await clientsRepository.findById(id, ctx.orgId);
+    if (!existing) throw Errors.clientNotFound();
+    const updated = await clientsRepository.update(id, ctx.orgId, input);
+    if (!updated) throw Errors.clientNotFound();
+    return updated;
+  },
+
+  async delete(id: string, ctx: ReqContext) {
+    const existing = await clientsRepository.findById(id, ctx.orgId);
+    if (!existing) throw Errors.clientNotFound();
+    const { count } = await clientsRepository.softDelete(id, ctx.orgId);
+    if (count === 0) throw Errors.clientNotFound();
+  },
+};

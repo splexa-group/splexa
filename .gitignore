@@ -5,6 +5,7 @@ build
 .next
 out
 coverage
+html-report
 .turbo
 .env
 .env.*

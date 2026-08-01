@@ -40,7 +40,7 @@ export function HearingsDetails({ caseId }: Props) {
 
   const upNext = [...hearings]
     .filter(
-      (h) => new Date(h.date) >= today && h.status === HearingStatus.Scheduled,
+      (h) => new Date(h.date) >= today && h.status === HearingStatus.SCHEDULED,
     )
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
@@ -59,7 +59,7 @@ export function HearingsDetails({ caseId }: Props) {
 
   const handleSave = async (data: UpdateHearingInput) => {
     if (!hearingToEdit) {
-      const { date, time, purpose, status, notes, judgePresent } = data;
+      const { date, time, purpose, status, notes, judgeName } = data;
       if (!date) {
         toast.error("Hearing date is required");
         return;
@@ -70,7 +70,7 @@ export function HearingsDetails({ caseId }: Props) {
         purpose,
         status,
         notes,
-        judgePresent,
+        judgeName,
       });
     } else {
       await updateHearing.mutateAsync({ id: hearingToEdit.id, data });
@@ -101,10 +101,10 @@ export function HearingsDetails({ caseId }: Props) {
             benchNumber={caseData?.benchNumber}
             onEdit={() => openEdit(upNext)}
             onMarkHeard={() =>
-              void handleHearingStatus(upNext.id, HearingStatus.Completed)
+              void handleHearingStatus(upNext.id, HearingStatus.COMPLETED)
             }
             onMarkMissed={() =>
-              void handleHearingStatus(upNext.id, HearingStatus.Cancelled)
+              void handleHearingStatus(upNext.id, HearingStatus.CANCELLED)
             }
             onAdjourn={() => openEdit(upNext)}
           />

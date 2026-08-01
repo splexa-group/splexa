@@ -12,34 +12,38 @@
 
 ## Module Layer Structure
 
-Every module follows this exact five-layer order — no skipping, no merging layers:
+Every module follows this layer order — no skipping, no merging layers:
 
 ```
 modules/[name]/
-├── plugin.ts       # Fastify plugin — registers routes
-├── routes.ts       # Route declarations — path, method, schema, preHandlers only
-├── controller.ts   # Request/response handling — calls service, returns data
-├── service.ts      # Business logic — enforces rules, calls repository
-├── repository.ts   # All Prisma queries — only DB access here
-├── schema.ts       # Zod schemas for validation
-├── helper.ts       # Pure helpers (expiry builders, etc.) — optional
+├── [name].routes.ts       # Exports one fp()-wrapped Fastify plugin. Route declarations — full
+│                          # sub-path, method, schema, preHandlers only. There is no separate
+│                          # plugin.ts — routes.ts IS the plugin app.ts registers.
+├── [name].controller.ts   # Request/response handling — calls service, returns data
+├── [name].service.ts      # Business logic — enforces rules, calls repository
+├── [name].repository.ts   # All Prisma queries — only DB access here; select shapes come from
+│                          # db/selects/, never defined inline
+├── [name].schema.ts       # Zod schemas for validation
+├── [name].models.ts       # Module-internal types not derived from a Zod schema — optional
+├── [name].helper.ts       # Pure helpers used only by this module (expiry builders, etc.) — optional
 └── __tests__/
-    └── [name].test.ts
+    ├── [name].service.test.ts
+    └── [name].helper.test.ts   # One file per source file with real logic — not one file per module
 ```
 
 ### Why the Controller Layer Exists
 
 If routes contained permission logic directly, they would become unmanageable as roles grow. The split:
 
-- **Route**: declares path, HTTP method, schema validation, and preHandlers (auth + role). Nothing else.
+- **Route**: declares its own full path (e.g. `/cases/:id`, not just `:id`), HTTP method, schema validation, and preHandlers (auth + role). Nothing else. `app.ts` registers every module's routes under the same `/api/v1` prefix — there is no per-module prefix, so the route's own path is the complete picture of what URL it serves.
 - **Controller**: receives typed `req`/`reply`, calls service, sends response. One function per route. No business logic.
 - **Service**: all business rules, permission assertions, orchestration.
 - **Repository**: all Prisma. Never called directly from controllers or routes.
 
 ```
 HTTP Request
-  → Plugin (registered in server.ts)
-  → Route (schema validation, preHandler: authenticate → requireRole)
+  → Route (schema validation, preHandler: authenticate → requireRole) — same file exports the
+    Fastify plugin app.ts registers, no separate plugin file
   → Controller (calls service, formats reply)
   → Service (business logic, data-level permission checks)
   → Repository (Prisma query, always scoped by orgId)
@@ -49,42 +53,53 @@ HTTP Request
 
 ## Layer Examples
 
-### Plugin
+### Routes — also the plugin
+
+There is no separate `plugin.ts`. `[name].routes.ts` defines the routes AND exports the
+`fastify-plugin`-wrapped plugin that `app.ts` registers directly. Every route declares its own
+full sub-path (no per-module Fastify `prefix` option) since `app.ts` registers every module under
+the same single `/api/v1` prefix.
+
 ```ts
-// modules/cases/cases-plugin.ts
+// modules/cases/cases.routes.ts
+import type { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
-import { FastifyInstance } from 'fastify';
-import { registerCasesRoutes } from './cases-routes';
 
-export const casesPlugin = fp(async (fastify: FastifyInstance) => {
-  registerCasesRoutes(fastify);
-}, { name: 'cases-plugin' });
-```
+import { casesController } from './cases.controller';
+import { createCaseSchema, listCasesQuerySchema, caseParamsSchema } from './cases.schema';
 
-### Routes
-```ts
-// modules/cases/cases-routes.ts
-import { FastifyInstance } from 'fastify';
-import { createCaseSchema, listCasesQuerySchema, caseParamsSchema } from './cases-schema';
-import { listCasesController, createCaseController, archiveCaseController } from './cases-controller';
-
-export function registerCasesRoutes(fastify: FastifyInstance) {
-  fastify.get('/cases', {
+async function routes(router: FastifyInstance): Promise<void> {
+  router.get('/cases', {
     schema: { querystring: listCasesQuerySchema },
-    preHandler: [fastify.authenticate],
-  }, listCasesController);
+    preHandler: [router.authenticate],
+    handler: casesController.list,
+  });
 
-  fastify.post('/cases', {
+  router.post('/cases', {
     schema: { body: createCaseSchema },
-    preHandler: [fastify.authenticate],
-  }, createCaseController);
+    preHandler: [router.authenticate],
+    handler: casesController.create,
+  });
 
-  fastify.delete('/cases/:id', {
+  router.delete('/cases/:id', {
     schema: { params: caseParamsSchema },
-    preHandler: [fastify.authenticate, fastify.requireRole('ADMIN')],
-  }, archiveCaseController);
+    preHandler: [router.authenticate],
+    handler: casesController.delete,
+  });
 }
+
+export const casesRoutes = fp(routes, { name: 'cases-routes' });
 ```
+
+```ts
+// app.ts — every module registered under the same prefix, no per-module prefix
+await app.register(casesRoutes, { prefix: '/api/v1' });
+```
+
+A module with both a top-level surface and a case-scoped surface (`hearings`, `documents`,
+`important-dates`) still declares both sets of routes in this one file, each with its own full
+path (`/hearings`, `/hearings/:id`, `/cases/:caseId/hearings`) — never split into a second routes
+file or registered with a second prefix.
 
 Fastify validates the request against the Zod schema before the handler runs — via `@fastify/type-provider-zod` configured in `app.ts`.
 
@@ -93,10 +108,10 @@ Fastify validates the request against the Zod schema before the handler runs —
 Controllers are exported as **objects**, not individual functions. They `return` data directly — a `preSerialization` hook wraps all successful responses in `{ success: true, data: ... }`. Only use `reply` when you need to set a status code or cookie.
 
 ```ts
-// modules/cases/controller.ts
+// modules/cases/cases.controller.ts
 import type { FastifyRequest, FastifyReply } from 'fastify';
-import { caseService } from './service';
-import type { CreateCaseInput, ListCasesQuery, CaseParams } from './schema';
+import { caseService } from './cases.service';
+import type { CreateCaseInput, ListCasesQuery, CaseParams } from './cases.schema';
 
 export const caseController = {
   async list(req: FastifyRequest<{ Querystring: ListCasesQuery }>) {
@@ -123,12 +138,12 @@ Types (`CreateCaseInput`, `ListCasesQuery`, `CaseParams`) are all `z.infer<>` �
 
 ### Service
 ```ts
-// modules/cases/service.ts
+// modules/cases/cases.service.ts
 import { FastifyRequest } from 'fastify';
-import { casesRepository } from './repository';
+import { casesRepository } from './cases.repository';
 import { logActivity } from '@/utils/activity-logger';
 import { Errors } from '@/utils/errors';
-import { ActivityAction } from '@/constants';
+import { ActivityAction } from '@/enums/activity-action';
 import type { AuthUser, CreateCaseInput, CaseFilters } from '@splexa-group/shared';
 
 export const caseService = {
@@ -173,7 +188,7 @@ export const caseService = {
 
 ### Repository
 ```ts
-// modules/cases/repository.ts
+// modules/cases/cases.repository.ts
 import { prisma } from '@/db/client';
 import type { CreateCaseInput } from '@splexa-group/shared';
 
@@ -211,7 +226,7 @@ export const casesRepository = {
 The schema file owns all Zod schemas for the module. **No raw JSON Schema objects anywhere.** Fastify validates using Zod directly via `@fastify/type-provider-zod`. TypeScript types are always derived from schemas using `z.infer` — never written manually alongside them.
 
 ```ts
-// modules/cases/schema.ts
+// modules/cases/cases.schema.ts
 import { z } from 'zod';
 import { createCaseSchema } from '@splexa-group/shared'; // Reuse shared input schema — single source of truth
 
@@ -237,7 +252,7 @@ export type CaseParams = z.infer<typeof caseParamsSchema>;
 **Rules:**
 - No raw JSON Schema — Zod only. `@fastify/type-provider-zod` converts Zod to ajv internally.
 - Types always come from `z.infer<typeof schema>` — never write a separate interface that duplicates a schema.
-- Import schemas for form-validated inputs from `@splexa/shared`. Server-only schemas (query params, route params) stay in the module schema file.
+- Import schemas for form-validated inputs from `@splexa-group/shared/schemas`. Server-only schemas (query params, route params) stay in the module schema file.
 - Response schemas are not needed in Phase 1 — explicit `select` in the repository controls what is returned.
 
 ---
@@ -270,24 +285,64 @@ Phase 2 adds mobile OTP (WhatsApp/SMS). The auth module is designed so adding a 
 
 ### Flow
 ```
-POST /api/v1/auth/signup  { email, firstName, lastName }       ← new users
+POST /api/v1/auth/signup  { email, ..., firstName, lastName, orgName, practiceTypes, firmType,
+                             city, state }                     ← new users, creates Organization + User
 POST /api/v1/auth/otp/request  { email }                      ← returning users (login)
-  → check rate limit (max 5 OTPs/hour per email) via DB count
+  → check rate limit (max requests/hour per email) via DB count
   → generate 6-digit OTP, bcrypt-hash it
   → send via email provider
-  → store OtpRequest row in PostgreSQL (expiresAt = now + 10 min)
+  → invalidate any previous still-pending OTP for this email (invalidatedAt), then store the new
+    OtpRequest row in PostgreSQL (expiresAt = now + OTP_TTL_MS)
 
 POST /api/v1/auth/otp/verify  { email, otp }
-  → find latest active OtpRequest for email
+  → find the latest non-verified, non-invalidated OtpRequest for email (deliberately not filtered
+    by expiresAt at the query level — see below)
+  → no row at all → 404 "no OTP requested"; row exists but expired → 422 "code expired, request a
+    new one" (two distinct errors, not one generic "not found")
   → bcrypt.compare(otp, otpRequest.otpHash)
   → on failure: increment attempts (lock after MAX_OTP_ATTEMPTS)
   → on success: mark OTP verified, mark user emailVerified
-  → issue access token (15 min JWT, in httpOnly cookie)
-  → create Session row (hashed refresh token, 30 days)
-  → return { user, accessToken }
+  → issue access token (JWT, in httpOnly cookie)
+  → create Session row (refreshTokenHash — a SHA-256 hash of the raw refresh token, never the raw
+    token itself)
+  → return { user, accessToken, refreshToken }
 ```
 
 **OTP is stored in PostgreSQL** (`OtpRequest` model), not Redis. Redis is not used for OTP in Phase 1.
+
+**Why "not found" and "expired" are different errors:** the repository's OTP lookup deliberately
+does **not** filter by `expiresAt` in its `where` clause — only by `verifiedAt: null` and
+`invalidatedAt: null`. If it filtered by expiry too, the service couldn't tell "no OTP was ever
+requested" apart from "one was requested but it's now expired" — both would come back as `null`.
+The expiry check happens in the service instead, after the row is fetched, so it can throw the
+correct one of the two errors.
+
+**`invalidatedAt` vs `verifiedAt` on `OtpRequest`:** these are two different, non-overlapping
+outcomes and must never share a column. `verifiedAt` means the user actually entered the correct
+code. `invalidatedAt` means this OTP was superseded by a newer request before anyone touched it
+(requesting a fresh OTP invalidates any still-pending previous one, closing a replay gap — an
+attacker holding an intercepted earlier code can't submit it after the user verifies with a newer
+one). Writing "invalidated because superseded" into the same `verifiedAt` column would corrupt any
+future audit/analytics query that reads `verifiedAt IS NOT NULL` expecting it to mean "genuinely
+verified."
+
+**Concurrent signup**: `signup()` checks `findUserByEmail` before creating the org/user, but that
+check-then-act has a real race — two concurrent signups for the same email can both pass the check.
+The DB's unique constraint on `User.email` is the actual guard; the service catches the resulting
+`Prisma.PrismaClientKnownRequestError` with `code === "P2002"` and converts it into the same
+`Errors.emailTaken()` the earlier check would have thrown, rather than letting a raw 500 through.
+
+**`logout()` never throws** on a missing/invalid refresh token — it treats "nothing to revoke" as
+success, not an error. A logout call is not proving the caller has a session; it's just clearing
+one if it exists. The controller always calls `clearAuthCookies(reply)` after, so `logout` throwing
+would skip clearing cookies on the exact request whose whole purpose is to clear them.
+
+**Revoking a single session (`DELETE /auth/sessions/:id`)** checks whether the session being
+revoked is the one authenticating the current request (by comparing it against the session tied to
+the request's own refresh-token cookie, checked *before* the revoke so the "active" filter still
+matches) and clears cookies if so — otherwise the browser that just revoked its own session would
+keep a still-valid access token (JWTs aren't checked against the `Session` table on every request)
+for the rest of its lifetime.
 
 ---
 
@@ -314,93 +369,97 @@ fastify.decorate('requireRole', (role: UserRole) => async (req, reply) => {
 
 ---
 
-## Activity Logging — Every Action in DB
+## Activity Logging — Phase 2 Scope, Not Built
 
-Every meaningful user action is recorded in `activity_logs`. This is mandatory from day one. Monitor and optimize performance later — never lose the audit trail.
+**Not a Phase 1 requirement** — see `developer-workflow.md`'s Phase 1 Scope Discipline. Do not implement `logActivity`, `ActivityAction`, or an `AuditLog` table in Phase 1. The blueprint below is kept for when Phase 2 picks this up — do not treat its presence here as evidence it exists in the codebase.
 
 ### Activity Log Table
 
 ```prisma
-model ActivityLog {
-  id           String   @id @default(cuid())
-  orgId        String   @map("org_id")
-  userId       String   @map("user_id")
-  action       String   // 'case.created', 'hearing.added', 'member.invited' etc.
-  resourceType String   @map("resource_type")
-  resourceId   String?  @map("resource_id")
-  metadata     Json?    // { caseNumber, oldStatus, newStatus, ... }
-  ipAddress    String?  @map("ip_address")
-  createdAt    DateTime @default(now()) @map("created_at")
+model AuditLog {
+  id           String    @id @default(uuid())
+  orgId        String?   @map("org_id")
+  userId       String?   @map("user_id")
+  action       String    // 'case.created', 'hearing.added', etc. — see ActivityAction enum
+  resourceType String?   @map("resource_type")
+  resourceId   String?   @map("resource_id")
+  ipAddress    String    @map("ip_address")
+  metadata     Json      // { caseNumber, oldStatus, newStatus, ... }
+  createdAt    DateTime  @default(now()) @map("created_at")
 
-  @@map("activity_logs")
+  @@map("audit_logs")
   @@index([orgId, createdAt])
-  @@index([orgId, userId])
-  @@index([orgId, resourceType, resourceId])
+  @@index([userId])
 }
 ```
 
 ### Activity Logger
 
 ```ts
-// lib/activity-logger.ts
-import { prisma } from '@/lib/db';
+// src/utils/activity-logger.ts
+import { logger } from '@/config/logger';
+import { prisma } from '@/db/client';
+import type { ActivityAction } from '@/enums/activity-action';
 
 export interface LogActivityInput {
-  orgId: string;
-  userId: string;
-  action: ActivityActionValue;  // typed — no freeform strings
-  resourceType: string;
+  orgId?: string;
+  userId?: string;
+  action: ActivityAction;  // typed — no freeform strings
+  resourceType?: string;
   resourceId?: string;
   metadata?: Record<string, unknown>;
-  ipAddress?: string;
+  ipAddress: string;
 }
 
 export async function logActivity(input: LogActivityInput): Promise<void> {
-  await prisma.activityLogs.create({ data: input }).catch((err) => {
+  await prisma.auditLog.create({ data: { ...input, metadata: input.metadata ?? {} } }).catch((err) => {
     // Never let logging failure break the main operation — log and continue
-    console.error('Activity log write failed', { err, action: input.action });
+    logger.error({ err, action: input.action }, 'activity-logger: failed to write audit log');
   });
 }
 ```
 
-### Action Names — Use `ActivityAction` Constants
+### Action Names — Use the `ActivityAction` Enum
 
-Never pass a raw string to `logActivity`. Define all action names in `lib/constants.ts` and import from there. This makes actions consistent, searchable, and refactorable.
+Never pass a raw string to `logActivity`. Action names are a TS `enum` in `src/enums/activity-action.ts` — the same pattern as `ErrorCode` (`src/enums/error-code.ts`), not a `const` object. This makes actions consistent, searchable, and refactorable.
 
 ```ts
-// lib/constants.ts
-export const ActivityAction = {
-  AUTH_OTP_SENT:       'auth.otp_sent',
-  AUTH_OTP_VERIFIED:   'auth.otp_verified',
-  AUTH_LOGIN_FAILED:   'auth.login_failed',
-  AUTH_LOGOUT:         'auth.logout',
-  AUTH_ACCOUNT_LOCKED: 'auth.account_locked',
-  AUTH_REFRESH:        'auth.refresh',
-  CASE_CREATED:        'case.created',
-  CASE_UPDATED:        'case.updated',
-  CASE_ARCHIVED:       'case.archived',
-  HEARING_ADDED:       'hearing.added',
-  HEARING_UPDATED:     'hearing.updated',
-  HEARING_ADJOURNED:   'hearing.adjourned',
-  DOCUMENT_UPLOADED:   'document.uploaded',
-  DOCUMENT_DELETED:    'document.deleted',
-  CLIENT_CREATED:      'client.created',
-  CLIENT_UPDATED:      'client.updated',
-  MEMBER_INVITED:      'member.invited',
-  MEMBER_REMOVED:      'member.removed',
-  PORTAL_ENABLED:      'portal.enabled',
-  PORTAL_LINK_SHARED:  'portal.link_shared',
-  REMINDER_SENT:       'reminder.sent',
-  REMINDER_FAILED:     'reminder.failed',
-  SETTINGS_UPDATED:    'settings.updated',
-} as const;
-
-export type ActivityActionValue = typeof ActivityAction[keyof typeof ActivityAction];
+// src/enums/activity-action.ts
+export enum ActivityAction {
+  AUTH_SIGNUP = 'auth.signup',
+  AUTH_OTP_SENT = 'auth.otp_sent',
+  AUTH_OTP_VERIFIED = 'auth.otp_verified',
+  AUTH_LOGIN_FAILED = 'auth.login_failed',
+  AUTH_ACCOUNT_LOCKED = 'auth.account_locked',
+  AUTH_REFRESH = 'auth.refresh',
+  AUTH_LOGOUT = 'auth.logout',
+  AUTH_SESSION_REVOKED = 'auth.session_revoked',
+  CASE_CREATED = 'case.created',
+  CASE_UPDATED = 'case.updated',
+  CASE_ARCHIVED = 'case.archived',
+  CASE_CLIENT_ADDED = 'case.client_added',
+  CLIENT_CREATED = 'client.created',
+  CLIENT_UPDATED = 'client.updated',
+  CLIENT_ARCHIVED = 'client.archived',
+  HEARING_ADDED = 'hearing.added',
+  HEARING_UPDATED = 'hearing.updated',
+  HEARING_DELETED = 'hearing.deleted',
+  IMPORTANT_DATE_CREATED = 'important_date.created',
+  IMPORTANT_DATE_UPDATED = 'important_date.updated',
+  IMPORTANT_DATE_DELETED = 'important_date.deleted',
+  DOCUMENT_UPLOADED = 'document.uploaded',
+  DOCUMENT_RENAMED = 'document.renamed',
+  DOCUMENT_DELETED = 'document.deleted',
+  PROFILE_UPDATED = 'settings.profile_updated',
+  ORGANIZATION_UPDATED = 'settings.organization_updated',
+  // Add new members here as features that need audit logging are built
+  // (e.g. member invites, portal sharing, reminder delivery).
+}
 ```
 
 Usage:
 ```ts
-import { ActivityAction } from '@/lib/constants';
+import { ActivityAction } from '@/enums/activity-action';
 await logActivity({ action: ActivityAction.CASE_CREATED, ... });
 ```
 
@@ -413,31 +472,52 @@ All server-side compile-time values live here. Split by domain:
 ```
 src/constants/
 ├── auth.ts    # OTP thresholds, token TTLs, cookie names
-├── misc.ts    # Pagination defaults
-└── index.ts   # Re-exports all
+└── misc.ts    # Pagination defaults, upload limits
 ```
+
+No `index.ts` barrel — import from the concrete file (`@/constants/auth`, `@/constants/misc`). Categorical string identifiers (like `ActivityAction`, `ErrorCode`) belong in `src/enums/` as TS `enum`, not here — `constants/` is for primitive config values.
+
+**Every duration constant is milliseconds** — the single unit `Date.now()` and `new Date(Date.now() ± x)` both work with natively, with no conversion at the call site. Each still gets a
+human-readable comment since raw ms values aren't self-explanatory:
 
 ```ts
 // src/constants/auth.ts
 export const MAX_OTP_ATTEMPTS = 3;
-export const OTP_LOCKOUT_MINUTES = 15;
+export const OTP_LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
 export const MAX_OTP_REQUESTS_PER_HOUR = 5;
-export const OTP_TTL_MINUTES = 10;
-export const REFRESH_TOKEN_EXPIRY_DAYS = 30;
+export const OTP_TTL_MS = 10 * 60 * 1000; // 10 minutes
+export const REFRESH_TOKEN_EXPIRY_MS = 3 * 24 * 60 * 60 * 1000; // 3 days
+export const OTP_RATE_WINDOW_MS = 60 * 60 * 1000; // 1 hour
+export const ACCESS_TOKEN_TTL_MS = 15 * 60 * 1000; // 15 minutes
 export const ACCESS_TOKEN_COOKIE = 'access_token';
 export const REFRESH_TOKEN_COOKIE = 'refresh_token';
 
 // src/constants/misc.ts
 export const DEFAULT_PAGE_SIZE = 20;
 export const MAX_PAGE_SIZE = 100;
+export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024; // 50 MB
 ```
 
-Import in services and repositories:
+The one exception forced into a different unit: a cookie's `Max-Age` is seconds per the HTTP spec —
+that conversion happens at the point of use via `utils/date-time.ts`'s `msToSeconds()`, not as a
+separately-tracked constant duplicating the ms one.
+
 ```ts
-import { MAX_OTP_ATTEMPTS, OTP_TTL_MINUTES } from '@/constants';
+// src/utils/date-time.ts — shared ms helpers, used wherever a module needs "since X ms ago" or
+// "X ms from now" instead of hand-rolling new Date(Date.now() ± x) at every call site
+export function msAgo(ms: number): Date { return new Date(Date.now() - ms); }
+export function msFromNow(ms: number): Date { return new Date(Date.now() + ms); }
+export function msToSeconds(ms: number): number { return Math.floor(ms / 1000); }
+export function msToMinutes(ms: number): number { return Math.floor(ms / (60 * 1000)); }
 ```
 
-**Note:** `ActivityAction` constants and `redisKeys` builders are not yet implemented — add them to `src/constants/` when activity logging is built.
+Import in services and repositories — there is no root `@/constants` barrel, import from the concrete file:
+```ts
+import { MAX_OTP_ATTEMPTS, OTP_TTL_MS } from '@/constants/auth';
+import { msFromNow } from '@/utils/date-time';
+```
+
+**Note:** `redisKeys` builders are not implemented — Redis is not used in Phase 1 (see OTP storage note above). `ActivityAction` and `logActivity` are also not implemented — Phase 2 scope, see the "Activity Logging" section above.
 
 ---
 
@@ -562,7 +642,18 @@ After this, passing a Zod schema to `schema: { body: myZodSchema }` in any route
 4. responsePlugin           (preSerialization hook — wraps success responses)
 5. @fastify/cookie          (cookie parsing — needed before auth reads cookies)
 6. authGuardPlugin          (decorates fastify.authenticate, fastify.requireRole)
-7. Modules (auth, cases, hearings, clients, documents, dashboard, notifications, team)
+7. Every module's routes, each registered under the SAME "/api/v1" prefix — there is no
+   per-module prefix. A module's own route paths (e.g. "/cases", "/cases/:caseId/hearings")
+   are the complete picture of what it serves; app.ts is the one place that shows every
+   mounted module.
+```
+
+```ts
+// app.ts
+await app.register(authRoutes, { prefix: "/api/v1" });
+await app.register(casesRoutes, { prefix: "/api/v1" });
+await app.register(hearingsRoutes, { prefix: "/api/v1" });
+// ...every module, same prefix, one registration each — no plugin.ts, no nested prefix
 ```
 
 ---
@@ -685,7 +776,6 @@ Before declaring backend work done:
 - [ ] Every mutation route has the correct `requireRole` preHandler where spec requires it
 - [ ] Every tenant-scoped DB query has `orgId` from `req.user.orgId`
 - [ ] `softDelete` / `update` use `updateMany` with `{ id, orgId }` — not `update` by id alone
-- [ ] New action is logged via `logActivity` with correct `action` name from the standard list
 
 **Types**
 - [ ] Fastify request is typed: `FastifyRequest<{ Body: X }>` / `{ Params: X }` / `{ Querystring: X }`

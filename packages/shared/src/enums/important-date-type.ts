@@ -1,9 +1,9 @@
 export enum ImportantDateType {
-  HearingDate = "HearingDate",
-  Limitation = "Limitation",
-  BailExpiry = "BailExpiry",
-  StayExpiry = "StayExpiry",
-  AppealDeadline = "AppealDeadline",
-  InjunctionValidity = "InjunctionValidity",
-  Other = "Other",
+  HEARING_DATE = "HEARING_DATE",
+  LIMITATION = "LIMITATION",
+  BAIL_EXPIRY = "BAIL_EXPIRY",
+  STAY_EXPIRY = "STAY_EXPIRY",
+  APPEAL_DEADLINE = "APPEAL_DEADLINE",
+  INJUNCTION_VALIDITY = "INJUNCTION_VALIDITY",
+  OTHER = "OTHER",
 }

@@ -1,0 +1,26 @@
+import { Prisma } from "@prisma/client";
+
+export const userSelect = {
+  id: true,
+  orgId: true,
+  firstName: true,
+  lastName: true,
+  email: true,
+  phoneNumber: true,
+  designation: true,
+  role: true,
+  emailVerified: true,
+  createdAt: true,
+  updatedAt: true,
+} satisfies Prisma.UserSelect;
+
+// Narrower shape for the profile endpoint — no orgId/emailVerified/timestamps
+export const profileSelect = {
+  id: true,
+  firstName: true,
+  lastName: true,
+  email: true,
+  phoneNumber: true,
+  designation: true,
+  role: true,
+} satisfies Prisma.UserSelect;

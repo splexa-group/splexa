@@ -1,11 +1,11 @@
 import { TextEncoder } from "node:util";
 
-import type { UserRole } from "@splexa-group/shared/enums";
-import type { AuthUser } from "@splexa-group/shared/types";
+import { UserRole } from "@splexa-group/shared/enums";
+import { AuthUser } from "@splexa-group/shared/models";
 import { jwtVerify, SignJWT } from "jose";
 
 import { env } from "@/config/env";
-import { RawJwtPayload } from "@/types/auth";
+import { RawJwtPayload } from "@/models/auth";
 
 export async function signAccessToken(payload: {
   userId: string;

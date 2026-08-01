@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { authApi } from "@/services/auth";
 import { SignupPayload, VerifyOtpResponse } from "@/types/auth";
 import { useAuthStore } from "@/store/auth-store";
-import { maskEmail } from "@/lib/utils";
+import { maskEmail } from "@splexa-group/shared/utils";
 
 const MESSAGES = {
   loginSuccess: "Welcome back!",

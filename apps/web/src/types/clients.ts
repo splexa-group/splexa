@@ -1,16 +1,11 @@
-import type { ClientType, PreferredLanguage } from "@splexa-group/shared/enums";
+import type {
+  ClientType,
+  PreferredLanguage,
+  RelationType,
+} from "@splexa-group/shared/enums";
+import type { Client, PaginatedResult } from "@splexa-group/shared/models";
 
-export interface Client {
-  id: string;
-  fullName: string;
-  phone: string;
-  type: ClientType;
-  email: string | null;
-  address: string | null;
-  companyName: string | null;
-  notes: string | null;
-  preferredLanguage: PreferredLanguage | null;
-}
+export type { Client };
 
 export interface CreateClientInput {
   fullName: string;
@@ -21,6 +16,10 @@ export interface CreateClientInput {
   companyName?: string;
   notes?: string;
   preferredLanguage?: PreferredLanguage;
+  relationType?: RelationType;
+  relationName?: string;
+  dateOfBirth?: string;
+  occupation?: string;
 }
 
 export interface ClientSearchResult {
@@ -30,12 +29,7 @@ export interface ClientSearchResult {
   type: ClientType;
 }
 
-export interface ClientListResponse {
-  data: ClientSearchResult[];
-  total: number;
-  page: number;
-  limit: number;
-}
+export type ClientListResponse = PaginatedResult<ClientSearchResult>;
 
 export interface UpdateClientInput {
   fullName?: string;
@@ -46,4 +40,8 @@ export interface UpdateClientInput {
   companyName?: string;
   notes?: string;
   preferredLanguage?: PreferredLanguage;
+  relationType?: RelationType;
+  relationName?: string;
+  dateOfBirth?: string;
+  occupation?: string;
 }

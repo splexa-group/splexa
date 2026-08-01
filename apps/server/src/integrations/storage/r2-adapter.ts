@@ -10,7 +10,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 import { env } from "@/config/env";
 
-import type { StorageProvider } from "./storage-interface";
+import { StorageProvider } from "./storage-interface";
 
 export class R2Adapter implements StorageProvider {
   private client: S3Client;

@@ -10,17 +10,24 @@ import { CreateClientInput } from "@/types/clients";
 
 export const casesApi = {
   list: (filters: CaseFilters = {}) =>
-    GET<CaseListResponse>("/cases", { params: filters }),
+    GET<{ cases: CaseListResponse["data"]; total: number; page: number; limit: number }>(
+      "/cases",
+      { params: filters },
+    ).then((r) => ({ data: r.cases, total: r.total, page: r.page, limit: r.limit })),
 
-  getById: (id: string) => GET<CaseDetail>(`/cases/${id}`),
+  getById: (id: string) =>
+    GET<{ caseDetails: CaseDetail }>(`/cases/${id}`).then((r) => r.caseDetails),
 
-  create: (data: CreateCaseInput) => POST<CaseDetail>("/cases", data),
+  create: (data: CreateCaseInput) =>
+    POST<{ caseDetails: CaseDetail }>("/cases", data).then((r) => r.caseDetails),
 
   update: (id: string, data: UpdateCaseInput) =>
-    PATCH<CaseDetail>(`/cases/${id}`, data),
+    PATCH<{ caseDetails: CaseDetail }>(`/cases/${id}`, data).then((r) => r.caseDetails),
 
   addClient: (id: string, data: CreateClientInput) =>
-    POST<CaseDetail>(`/cases/${id}/client`, data),
+    POST<{ caseDetails: CaseDetail }>(`/cases/${id}/client`, data).then(
+      (r) => r.caseDetails,
+    ),
 
   delete: (id: string) => DELETE<void>(`/cases/${id}`),
 };

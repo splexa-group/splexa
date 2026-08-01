@@ -1,6 +1,6 @@
 enum HearingStatus {
-  Scheduled
-  Completed
-  Adjourned
-  Cancelled
+  SCHEDULED
+  COMPLETED
+  ADJOURNED
+  CANCELLED
 }

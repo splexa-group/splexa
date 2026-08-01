@@ -1,10 +1,10 @@
-import { AuthUser } from "@/types/user";
+import type { LoginUser, UserProfile } from "@splexa-group/shared/models";
 import { create } from "zustand";
 
 interface AuthState {
-  user: AuthUser | null;
+  user: UserProfile | LoginUser | null;
   isReady: boolean;
-  setAuth: (user: AuthUser) => void;
+  setAuth: (user: UserProfile | LoginUser) => void;
   clearAuth: () => void;
   setReady: () => void;
 }

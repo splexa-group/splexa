@@ -87,11 +87,11 @@ Both levels are required. The frontend hiding a button is not access control.
 
 ---
 
-## Activity Logging — Security Audit Trail
+## Activity Logging — Security Audit Trail (Phase 2, Not Built)
 
-Every meaningful action is logged to `activity_logs`. This is a security requirement, not just a nice-to-have. Who did what, to which resource, from which IP, and when — this is the basis of any security investigation.
+Not implemented in Phase 1 — see `developer-workflow.md`'s Phase 1 Scope Discipline. When Phase 2 builds this, the intent is: who did what, to which resource, from which IP, and when — the basis of any security investigation.
 
-Logged for security specifically:
+Should be logged for security specifically:
 - `auth.otp_sent` — who requested an OTP and for which email
 - `auth.otp_verified` — successful verifications
 - `auth.login_failed` — failed OTP attempts (with attempt count)
@@ -101,7 +101,7 @@ Logged for security specifically:
 - `member.invited` / `member.removed` — team changes
 - Any access to a document or case update visible to client
 
-Refer to `backend-rules.md` for the full `logActivity` implementation.
+See `backend-rules.md`'s "Activity Logging" section for the intended blueprint if and when this is built.
 
 ---
 
@@ -224,10 +224,6 @@ Before declaring any feature complete that touches data access or auth:
 - [ ] Every DB query on a tenant-scoped table filters by `orgId` from `req.user.orgId`
 - [ ] `findFirst` used (not `findUnique`) on tenant tables, always with `{ id, orgId }`
 - [ ] Wrong-org request returns 404, not 403
-
-**Activity logging**
-- [ ] Every mutation calls `logActivity` with an `ActivityAction.*` constant (not a raw string)
-- [ ] Auth events logged: OTP sent, OTP verified, login failed, account locked, logout
 
 **Input validation**
 - [ ] Zod schema used for all request body, query, and params — no raw JSON Schema

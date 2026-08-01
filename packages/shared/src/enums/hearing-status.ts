@@ -1,6 +1,6 @@
 export enum HearingStatus {
-  Scheduled = "Scheduled",
-  Completed = "Completed",
-  Adjourned = "Adjourned",
-  Cancelled = "Cancelled",
+  SCHEDULED = "SCHEDULED",
+  COMPLETED = "COMPLETED",
+  ADJOURNED = "ADJOURNED",
+  CANCELLED = "CANCELLED",
 }

@@ -5,20 +5,21 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { formatDateLabel } from "@/lib/format-date-label";
 import { EmptyState } from "@/components/ui/empty-state";
+import { HearingPurpose } from "@splexa-group/shared/enums";
 import type { UpcomingHearing } from "@/types/dashboard";
 
 interface Props {
   hearings: UpcomingHearing[] | undefined;
 }
 
-const PURPOSE_LABELS: Record<string, string> = {
-  Arguments:       "Arguments",
-  Evidence:        "Evidence",
-  CrossExamination:"Cross Exam.",
-  Order:           "Order",
-  Mention:         "Mention",
-  Settlement:      "Settlement",
-  Miscellaneous:   "Misc.",
+const PURPOSE_LABELS: Record<HearingPurpose, string> = {
+  [HearingPurpose.ARGUMENTS]:         "Arguments",
+  [HearingPurpose.EVIDENCE]:          "Evidence",
+  [HearingPurpose.CROSS_EXAMINATION]: "Cross Exam.",
+  [HearingPurpose.ORDER]:             "Order",
+  [HearingPurpose.MENTION]:           "Mention",
+  [HearingPurpose.SETTLEMENT]:        "Settlement",
+  [HearingPurpose.MISCELLANEOUS]:     "Misc.",
 };
 
 export function UpcomingHearings({ hearings }: Props) {

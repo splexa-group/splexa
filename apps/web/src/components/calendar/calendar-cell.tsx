@@ -2,12 +2,12 @@
 
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import type { CalendarEvent } from "@/types/calendar";
+import type { CalendarDisplayEvent } from "@/types/calendar";
 import { CalendarEventChip } from "./calendar-event-chip";
 
 interface Props {
   date: Date;
-  events: CalendarEvent[];
+  events: CalendarDisplayEvent[];
   isToday: boolean;
   isCurrentMonth: boolean;
   isLoading: boolean;

@@ -1,6 +1,6 @@
 enum PartyRole {
-  Petitioner
-  Respondent
-  Accused
-  Complainant
+  PETITIONER
+  RESPONDENT
+  ACCUSED
+  COMPLAINANT
 }

@@ -166,7 +166,6 @@ AI agents produce plausible-looking code that passes TypeScript but may violate 
 | `softDelete` scope | Is `orgId` in the `updateMany` where? A bare `where: { id }` is a bug |
 | `deletedAt` filter | Do case/document queries have `deletedAt: null`? |
 | Layer violations | Is there a `prisma.*` call outside a repository file? Is there business logic in a route or controller? |
-| Missing `logActivity` | Did a mutation happen without an activity log call? |
 | Schema `additionalProperties` | Is `additionalProperties: false` on every request schema? |
 | Floating promises | Is every `async` call awaited or explicitly returned? |
 | `any` hiding a type problem | Is `any` used to silence a TS error instead of fixing the underlying type? |

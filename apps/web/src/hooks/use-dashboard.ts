@@ -10,6 +10,5 @@ export function useDashboard() {
   return useQuery({
     queryKey: dashboardKeys.all(),
     queryFn:  () => dashboardApi.get(),
-    select:   (res) => res.data,
   });
 }

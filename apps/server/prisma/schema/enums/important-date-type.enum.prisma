@@ -1,9 +1,9 @@
 enum ImportantDateType {
-  HearingDate
-  Limitation
-  BailExpiry
-  StayExpiry
-  AppealDeadline
-  InjunctionValidity
-  Other
+  HEARING_DATE
+  LIMITATION
+  BAIL_EXPIRY
+  STAY_EXPIRY
+  APPEAL_DEADLINE
+  INJUNCTION_VALIDITY
+  OTHER
 }

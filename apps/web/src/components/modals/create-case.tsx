@@ -1,10 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useForm, useWatch } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { Modal } from "@/components/modals/modal";
 import { InputGroup } from "@/components/ui/form/input";
+import { SelectGroup } from "@/components/ui/form/select";
 import { useCreateCase } from "@/hooks/use-cases";
+import { CASE_TYPE_OPTIONS } from "@/lib/options";
+import type { CaseType } from "@splexa-group/shared/enums";
 
 interface Props {
   open: boolean;
@@ -14,6 +17,7 @@ interface Props {
 interface FormValues {
   title: string;
   caseNumber: string;
+  caseType: CaseType | "";
 }
 
 export function CreateCaseModal({ open, onClose }: Props) {
@@ -27,7 +31,7 @@ export function CreateCaseModal({ open, onClose }: Props) {
     reset,
     formState: { errors },
   } = useForm<FormValues>({
-    defaultValues: { title: "", caseNumber: "" },
+    defaultValues: { title: "", caseNumber: "", caseType: "" },
   });
 
   const title = useWatch({ control, name: "title" });
@@ -36,6 +40,7 @@ export function CreateCaseModal({ open, onClose }: Props) {
     const result = await createCase.mutateAsync({
       title: data.title.trim(),
       ...(data.caseNumber.trim() ? { caseNumber: data.caseNumber.trim() } : {}),
+      ...(data.caseType ? { caseType: data.caseType } : {}),
     });
     reset();
     onClose();
@@ -69,6 +74,19 @@ export function CreateCaseModal({ open, onClose }: Props) {
           label="Case Number"
           placeholder="Enter case number..."
           {...register("caseNumber")}
+        />
+        <Controller
+          name="caseType"
+          control={control}
+          render={({ field }) => (
+            <SelectGroup
+              label="Case Type"
+              options={CASE_TYPE_OPTIONS}
+              value={field.value}
+              onChange={field.onChange}
+              placeholder="Select type..."
+            />
+          )}
         />
         <p className="text-xs text-placeholder text-left pt-1">
           You can add detailed case information, client details, hearing

@@ -1,6 +1,6 @@
 enum ClientType {
-  Individual
-  Company
+  INDIVIDUAL
+  COMPANY
   NGO
-  Government
+  GOVERNMENT
 }

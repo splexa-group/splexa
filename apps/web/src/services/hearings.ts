@@ -7,13 +7,13 @@ import type {
 
 export const hearingsApi = {
   listByCaseId: (caseId: string) =>
-    GET<Hearing[]>(`/cases/${caseId}/hearings`),
+    GET<{ hearings: Hearing[] }>(`/cases/${caseId}/hearings`).then((r) => r.hearings),
 
   create: (caseId: string, data: CreateHearingInput) =>
-    POST<Hearing>(`/cases/${caseId}/hearings`, data),
+    POST<{ hearing: Hearing }>(`/cases/${caseId}/hearings`, data).then((r) => r.hearing),
 
   update: (id: string, data: UpdateHearingInput) =>
-    PATCH<Hearing>(`/hearings/${id}`, data),
+    PATCH<{ hearing: Hearing }>(`/hearings/${id}`, data).then((r) => r.hearing),
 
   delete: (id: string) => DELETE<void>(`/hearings/${id}`),
 };

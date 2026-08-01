@@ -1,9 +1,9 @@
 enum CourtType {
-  DistrictCourt
-  HighCourt
-  SupremeCourt
-  Tribunal
-  ConsumerForum
-  FamilyCourt
-  Other
+  DISTRICT_COURT
+  HIGH_COURT
+  SUPREME_COURT
+  TRIBUNAL
+  CONSUMER_FORUM
+  FAMILY_COURT
+  OTHER
 }

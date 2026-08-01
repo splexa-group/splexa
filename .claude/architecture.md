@@ -39,24 +39,51 @@ Build the simplest thing that correctly solves the problem. No abstract factorie
 
 ## Backend Module Layer Order
 
-Every backend module follows this exact five-layer structure:
+Every backend module follows this layer order:
 
 ```
-plugin → routes → controller → service → repository (Prisma)
+routes → controller → service → repository (Prisma)
 ```
+
+There is no separate `plugin.ts` file. `routes.ts` itself exports the `fastify-plugin`-wrapped
+Fastify plugin — a module is one registration, not two.
 
 ```
 modules/[name]/
-├── plugin.ts          # Fastify plugin registration
-├── routes.ts          # Route declarations + preHandlers
-├── controller.ts      # Request/response handling
-├── service.ts         # Business logic + activity logging
-├── repository.ts      # All Prisma queries
-├── schema.ts          # Zod schemas for validation (no raw JSON Schema)
-├── helper.ts          # Pure helpers (date builders, token expiry, etc.) — optional
+├── [name].routes.ts       # Exports one fp()-wrapped Fastify plugin. Declares every route's own
+│                          # full sub-path directly (e.g. "/cases", "/cases/:id",
+│                          # "/cases/:caseId/hearings") rather than relying on a per-module Fastify
+│                          # prefix. app.ts registers every module under the same "/api/v1" prefix —
+│                          # that is the ONLY prefix in the whole app. A module with both a
+│                          # top-level surface and a case-scoped surface (hearings, documents,
+│                          # important-dates) still gets one routes.ts with both sets of routes,
+│                          # not two files and not two app.ts registrations.
+├── [name].controller.ts   # Request/response handling
+├── [name].service.ts      # Business logic
+├── [name].repository.ts   # All Prisma queries — imports its select shape(s) from db/selects/,
+│                          # never defines them inline and never owns them itself
+├── [name].schema.ts       # Zod schemas for validation (no raw JSON Schema)
+├── [name].models.ts       # Module-internal types not derived from a Zod schema — optional.
+│                          # Server-assembled shapes (e.g. CreateXData combining validated input
+│                          # with injected fields like orgId) and request-context interfaces
+│                          # (e.g. VerifyOtpCtx) live here. Never duplicate a shape a Zod schema
+│                          # already covers — derive with z.infer<> instead (see backend-rules.md).
+├── [name].helper.ts       # Pure helpers used ONLY by this module — optional. The moment a second
+│                          # module needs the same helper, it moves to src/utils/ instead.
 └── __tests__/
-    └── [name].test.ts
+    ├── [name].service.test.ts   # One file per source file that has real logic to test —
+    └── [name].helper.test.ts    # not one grab-bag file per module. Mock what the file under test
+                                  # imports (repository, other modules' repositories, integrations),
+                                  # let pure helpers run for real.
 ```
+
+File naming inside a module is **`[module-name].[role].ts`** — the module name is repeated
+deliberately (e.g. `cases.controller.ts`, `important-dates.repository.ts`), not left generic
+(`controller.ts`), so a search result or an open editor tab is unambiguous without needing the
+folder path.
+
+Prisma `select` shapes never live inside a module folder — see "Backend Module Boundaries" below
+and `database-rules.md` for the `db/selects/` pattern.
 
 See `backend-rules.md` for full examples of each layer.
 
@@ -84,24 +111,55 @@ apps/server/src/
 │   ├── hearings/
 │   ├── clients/
 │   ├── documents/
+│   ├── important-dates/
 │   ├── dashboard/
-│   ├── notifications/
-│   ├── organizations/
-│   └── team/
+│   └── settings/
 ├── config/           # Runtime config only — env.ts (Zod-validated), logger.ts
-├── constants/        # Compile-time values — auth.ts, misc.ts, index.ts
-├── db/               # db/client.ts — Prisma singleton with PrismaPg adapter
+├── constants/        # Compile-time values — auth.ts, misc.ts (no index.ts barrel — import the
+│                      # concrete file). Every duration constant is milliseconds (e.g. OTP_TTL_MS,
+│                      # REFRESH_TOKEN_EXPIRY_MS), each with a human-readable comment, except the
+│                      # ones a specific API forces into a different unit (cookie maxAge = seconds —
+│                      # converted at the point of use via utils/date-time.ts, never stored as its
+│                      # own separate constant).
+├── db/
+│   ├── client.ts     # Prisma singleton with PrismaPg adapter
+│   └── selects/      # One file per entity — [entity].select.ts. The ONLY place a Prisma `select`
+│                      # shape lives, regardless of which module(s) query that entity. A select that
+│                      # composes another entity's shape (e.g. case.select.ts embedding
+│                      # client/hearing/important-date selects) imports the sibling file directly —
+│                      # this is a neutral layer, so that import is not a module-boundary violation.
 ├── enums/            # Server-only enums — error-code.ts, env.ts
 ├── integrations/     # Third-party provider adapters
 │   └── email/        # email-interface.ts, resend-adapter.ts, index.ts
+├── models/           # Cross-cutting TS types with no owning module, not derived from a Zod
+│                      # schema — e.g. RawJwtPayload (models/auth.ts, used by utils/jwt.ts and,
+│                      # through it, the global auth-guard plugin — not auth-module-private),
+│                      # ServiceContext (models/service-context.ts). Distinct from
+│                      # packages/shared/models, which is for types shared between apps/server and
+│                      # apps/web specifically.
 ├── plugins/          # Fastify plugin registrations — error-handler, response, auth-guard
-├── types/            # types/fastify.d.ts (req.user augmentation), types/auth.ts
-├── utils/            # Pure utilities — crypto.ts, errors.ts, jwt.ts
-├── app.ts            # Builds and exports the Fastify app (all registrations)
+├── types/            # types/fastify.d.ts (req.user augmentation) only
+├── utils/            # Cross-cutting pure utilities used by more than one module — date-time.ts
+│                      # (msAgo/msFromNow/msToSeconds/msToMinutes), errors.ts, jwt.ts, misc.ts
+│                      # (UUID — used by both auth and documents). A helper used by only one module
+│                      # belongs in that module's [name].helper.ts instead, not here — e.g.
+│                      # generateOtp/hashToken/generateRefreshToken live in auth.helper.ts because
+│                      # nothing outside auth calls them.
+├── app.ts            # Builds the Fastify app — registers every module under the single "/api/v1"
+│                      # prefix (see backend-rules.md's Plugin Registration Order)
 └── index.ts          # Entry point — calls app.ts, starts listening
 ```
 
-Modules are **self-contained**. A module exports a Fastify plugin and does not reach into another module's internal files. If module A needs something from module B, it is either in `packages/shared` or exposed via a service function.
+Modules are **self-contained**: a module's controller/service/repository/schema/models/helper files
+are private to it. Two deliberate exceptions:
+1. **`db/selects/`** — every module's select shape lives there, not in the module folder. Prisma
+   select composition (a case embedding its own hearings) is a data-shape concern, not a
+   module-privacy concern.
+2. **Cross-module repository calls for read/write on a genuinely related entity** — e.g.
+   `hearings.repository.ts` calling `casesRepository.updateNextHearingDate(...)` — are accepted
+   practice, since the call still goes through the owning module's repository rather than reaching
+   past it into raw Prisma. What's still forbidden is reaching into another module's
+   controller/service/schema/models, or calling `prisma.*` directly on an entity another module owns.
 
 ---
 
@@ -128,14 +186,25 @@ apps/web/src/
 
 ## File Naming — Entire Repo
 
-**kebab-case everywhere**, no exceptions:
+**kebab-case for standalone/top-level files** — config, plugins, frontend components/hooks, and
+anything that isn't inside a backend module folder:
 
 ```
-cases-service.ts      ✅      casesService.ts       ❌
-cases-controller.ts   ✅      CasesController.ts    ❌
-use-cases-query.ts    ✅      useCasesQuery.ts      ❌
-case-card.tsx         ✅      CaseCard.tsx          ❌
+use-cases-query.ts      ✅      useCasesQuery.ts       ❌
+case-card.tsx           ✅      CaseCard.tsx           ❌
+error-handler.plugin.ts ✅
 ```
+
+**Inside a backend module (`apps/server/src/modules/[name]/`)**, files use
+**`[module-name].[role].ts`** — the module name is repeated, dot-separated from the role:
+
+```
+cases.controller.ts        ✅      controller.ts          ❌ (ambiguous without the folder path)
+important-dates.service.ts ✅      important-dates-service.ts ❌ (hyphen, not dot, is wrong here)
+```
+
+Same pattern in `db/selects/` (`case.select.ts`, `hearing.select.ts`) — one file per entity,
+named after the entity, dot-suffixed with what the file is.
 
 Framework exceptions (match what the framework requires):
 - `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx` — Next.js App Router
@@ -223,4 +292,4 @@ export async function emailFactory(): Promise<EmailProvider> {
 - All changes via `pnpm` — never `npm` or `yarn`
 - Before adding: check publish date, check CVEs via `pnpm audit`, check weekly downloads
 - After removing a feature: remove its dependencies immediately
-- Internal package imports use workspace aliases (`@splexa/shared`) not relative paths
+- Internal package imports use workspace aliases (`@splexa-group/shared/enums`, `@splexa-group/shared/models`) not relative paths

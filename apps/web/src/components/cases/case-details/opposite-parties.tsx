@@ -38,7 +38,7 @@ export function OppositePartySection() {
     const f = fields[index];
     setForm({
       name: f.name ?? "",
-      role: f.role ?? PartyRole.Respondent,
+      role: f.role ?? PartyRole.RESPONDENT,
       advocateName: f.advocateName ?? "",
       advocatePhone: f.advocatePhone ?? "",
     });

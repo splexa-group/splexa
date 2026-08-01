@@ -9,7 +9,7 @@ Stack: pnpm monorepo + Turborepo. Backend: Fastify + Prisma + PostgreSQL (no Red
 
 ## Before You Write a Single Line
 
-1. Identify the module: `auth` `cases` `hearings` `clients` `documents` `notifications` `dashboard` `team`
+1. Identify the module: `auth` `cases` `hearings` `clients` `documents` `important-dates` `dashboard` `settings`
 2. Read the existing files in that module — the pattern is already there, follow it exactly
 3. Check `packages/shared` — does the type or constant you need already exist?
 4. Run the relevant self-check checklist (bottom of each skill file) before claiming done
@@ -39,17 +39,19 @@ Stack: pnpm monorepo + Turborepo. Backend: Fastify + Prisma + PostgreSQL (no Red
 ### Backend request flow — never skip or merge layers
 ```
 HTTP request
-  → Plugin (registers routes in server)
-  → Route (path + method + Zod schema + preHandlers only)
+  → Route (path + method + Zod schema + preHandlers only — this file also IS the Fastify
+    plugin app.ts registers; there is no separate plugin.ts)
   → Controller (calls service, sends reply — no logic)
   → Service (business rules + activity logging)
-  → Repository (all Prisma — always scoped by orgId)
+  → Repository (all Prisma — always scoped by orgId, select shapes from db/selects/)
 ```
+Every module is registered in `app.ts` under the same single `/api/v1` prefix — a route's own
+path (e.g. `/cases/:caseId/hearings`) is the complete picture of what URL it serves.
 
 ### Schema split — where Zod schemas live
 | Schema type | Location |
 |---|---|
-| Query param, route param, body schemas | `modules/[name]/schema.ts` |
+| Query param, route param, body schemas | `modules/[name]/[name].schema.ts` |
 
 No raw JSON Schema objects anywhere. Use `@fastify/type-provider-zod`. Types always from `z.infer<>` — never written separately alongside a schema.
 
@@ -57,9 +59,9 @@ No raw JSON Schema objects anywhere. Use `@fastify/type-provider-zod`. Types alw
 | Constant type | Location |
 |---|---|
 | Enums used by both apps (UserRole, etc.) | `packages/shared/src/enums/` |
-| Types used by both apps | `packages/shared/src/types/` |
-| OTP thresholds, token TTLs, cookie names | `apps/server/src/constants/auth.ts` |
-| Pagination limits | `apps/server/src/constants/misc.ts` |
+| Types used by both apps | `packages/shared/src/models/` |
+| OTP thresholds, token TTLs (all in ms), cookie names | `apps/server/src/constants/auth.ts` |
+| Pagination limits, upload limits | `apps/server/src/constants/misc.ts` |
 
 ### Response envelope
 All API responses share one shape — controllers just `return` data:
@@ -77,19 +79,23 @@ These are never negotiable. No exceptions without an architecture decision.
 
 1. **`orgId` comes from `req.user.orgId` (JWT) only** — never body, params, or query string
 2. **Every query on a tenant-scoped table filters by `orgId`** — missing this is a critical security bug
-3. **Every successful mutation calls `logActivity()`** — use `ActivityAction.*` constants, never raw strings
-4. **Five backend layers, always** — plugin → route → controller → service → repository. No merging.
-5. **Zod everywhere on the server** — no raw JSON Schema. Types from `z.infer<>` only.
-6. **No magic values** — use `CASE_STATUS.ACTIVE`, `USER_ROLES.ADMIN`, `ActivityAction.CASE_CREATED`, `redisKeys.otp(email)` — never hardcode strings or numbers with business meaning
-7. **No `any`, no `!`, no `@ts-ignore`** — fix the type, don't suppress it
-8. **No `prisma.*` outside `*-repository.ts`** — ever
-9. **No business logic in routes or controllers** — service layer owns this
-10. **`softDelete` uses `updateMany({ where: { id, orgId } })`** — never `update({ where: { id } })` alone
-11. **Repositories return `null` — services throw `NotFoundError`** — not the other way
-12. **No raw `fetch` in frontend components** — use `lib/api/` typed client
-13. **No `useEffect` for server data** — React Query only
-14. **Access tokens in Zustand (memory) only** — never `localStorage` or `sessionStorage`
-15. **kebab-case for all file names** — everywhere, always
+3. **Backend layers, always** — route → controller → service → repository. No merging. (`route.ts`
+   itself is the Fastify plugin — there is no separate `plugin.ts`; every module registers under
+   the same single `/api/v1` prefix in `app.ts`.)
+4. **Zod everywhere on the server** — no raw JSON Schema. Types from `z.infer<>` only.
+5. **No magic values** — use `CASE_STATUS.ACTIVE`, `USER_ROLES.ADMIN` — never hardcode strings or numbers with business meaning
+6. **No `any`, no `!`, no `@ts-ignore`** — fix the type, don't suppress it
+7. **No `prisma.*` outside `*.repository.ts`** — ever. Select shapes live in `db/selects/[entity].select.ts`, not inline in the repository and not in a module folder.
+8. **No business logic in routes or controllers** — service layer owns this
+9. **`softDelete` uses `updateMany({ where: { id, orgId } })`** — never `update({ where: { id } })` alone
+10. **Repositories return `null` — services throw** via the `Errors.xxx()` factory (`@/utils/errors`) — not the other way
+11. **No raw `fetch` in frontend components** — use `lib/api/` typed client
+12. **No `useEffect` for server data** — React Query only
+13. **Access tokens in Zustand (memory) only** — never `localStorage` or `sessionStorage`
+14. **File naming**: kebab-case for standalone/top-level files everywhere; inside a backend module,
+    `[module-name].[role].ts` (e.g. `cases.controller.ts`) — see `architecture.md`.
+
+Activity/audit logging (`logActivity()`, `ActivityAction`) is **Phase 2 scope** — not built. Do not add it; it is not a violation of these rules to omit it.
 
 ---
 
@@ -104,8 +110,6 @@ Read this before writing anything. These are the most frequent mistakes.
 | `prisma.cases.findUnique({ where: { id } })` | `prisma.cases.findFirst({ where: { id, orgId } })` |
 | Missing `deletedAt: null` on case/document queries | Archived records appear as active |
 | `softDelete(id)` without orgId | `softDelete(id, orgId)` using `updateMany` |
-| No `logActivity()` after a mutation | Every state change must be logged |
-| `action: 'case.created'` raw string | `action: ActivityAction.CASE_CREATED` |
 | `redis.get(\`otp:${email}\`)` inline | `redis.get(redisKeys.otp(email))` |
 | `where: { status: 'ACTIVE' }` | `where: { status: CASE_STATUS.ACTIVE }` |
 | Writing a TypeScript type alongside a Zod schema | `type X = z.infer<typeof xSchema>` — one source |
@@ -121,7 +125,7 @@ Read this before writing anything. These are the most frequent mistakes.
 | Magic number `3` for OTP attempts | `MAX_OTP_ATTEMPTS` from `@/constants` |
 | `new NotFoundError('...')` in a service | `throw Errors.userNotFound()` from `@/utils/errors` |
 | `reply.code(201).send(data)` in a controller | `reply.code(201); return data;` — never call `send()` |
-| `import from '@splexa/shared'` | `import from '@splexa-group/shared/enums'` or `/types` |
+| `import from '@splexa/shared'` | `import from '@splexa-group/shared/enums'` or `/models` |
 
 ---
 
@@ -141,12 +145,6 @@ softDelete(id: string, orgId: string): Promise<void>
 import { Errors } from '@/utils/errors';
 if (!user) throw Errors.userNotFound();
 if (!session) throw Errors.sessionExpired();
-```
-
-### Activity logging (every mutation in service layer)
-```ts
-import { ActivityAction } from '@/constants';
-await logActivity({ orgId: user.orgId, userId: user.userId, action: ActivityAction.CASE_CREATED, resourceType: 'case', resourceId: case_.id, ipAddress: req.ip });
 ```
 
 ### Pagination (all list queries)

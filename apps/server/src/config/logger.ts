@@ -1,4 +1,4 @@
-import type { FastifyServerOptions } from "fastify";
+import { FastifyServerOptions } from "fastify";
 import pino from "pino";
 
 import { env } from "./env";

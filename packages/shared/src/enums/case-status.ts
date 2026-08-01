@@ -1,6 +1,6 @@
 export enum CaseStatus {
-  Active = "Active",
-  Stayed = "Stayed",
-  Disposed = "Disposed",
-  Appealed = "Appealed",
+  ACTIVE = "ACTIVE",
+  STAYED = "STAYED",
+  DISPOSED = "DISPOSED",
+  APPEALED = "APPEALED",
 }

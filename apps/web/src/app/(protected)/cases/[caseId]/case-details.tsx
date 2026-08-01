@@ -148,6 +148,10 @@ const CaseDetails = ({ caseId }: { caseId: string }) => {
           address: data.address,
           companyName: data.companyName,
           notes: data.notes,
+          relationType: data.relationType,
+          relationName: data.relationName,
+          dateOfBirth: data.dateOfBirth,
+          occupation: data.occupation,
         };
         await addClientToCase.mutateAsync(clientInput);
       } else {

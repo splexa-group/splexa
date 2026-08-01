@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
 
 import { ErrorCode } from "@/enums/error-code";
@@ -31,7 +31,10 @@ export const errorHandlerPlugin = fp(
       fastify.log.error(error);
       reply.code(500).send({
         success: false,
-        error: { code: ErrorCode.INTERNAL_ERROR, message: "Internal server error" },
+        error: {
+          code: ErrorCode.INTERNAL_ERROR,
+          message: "Internal server error",
+        },
       });
     });
   },

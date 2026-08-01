@@ -7,13 +7,20 @@ import type {
 
 export const importantDatesApi = {
   listByCaseId: (caseId: string) =>
-    GET<ImportantDate[]>(`/cases/${caseId}/important-dates`),
+    GET<{ importantDates: ImportantDate[] }>(`/cases/${caseId}/important-dates`).then(
+      (r) => r.importantDates,
+    ),
 
   create: (caseId: string, data: CreateImportantDateInput) =>
-    POST<ImportantDate>(`/cases/${caseId}/important-dates`, data),
+    POST<{ importantDate: ImportantDate }>(`/cases/${caseId}/important-dates`, data).then(
+      (r) => r.importantDate,
+    ),
 
   update: (caseId: string, dateId: string, data: UpdateImportantDateInput) =>
-    PATCH<ImportantDate>(`/cases/${caseId}/important-dates/${dateId}`, data),
+    PATCH<{ importantDate: ImportantDate }>(
+      `/cases/${caseId}/important-dates/${dateId}`,
+      data,
+    ).then((r) => r.importantDate),
 
   delete: (caseId: string, dateId: string) =>
     DELETE<void>(`/cases/${caseId}/important-dates/${dateId}`),

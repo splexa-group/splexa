@@ -73,7 +73,11 @@ export const Errors = {
   sessionNotFound: () =>
     new AppError(404, ErrorCode.SESSION_NOT_FOUND, "Session not found."),
   sessionExpired: () =>
-    new AppError(401, ErrorCode.SESSION_EXPIRED, "Invalid or expired session"),
+    new AppError(
+      401,
+      ErrorCode.SESSION_EXPIRED,
+      "Session has expired. Please log in again.",
+    ),
 
   emailSendFailed: () =>
     new AppError(
@@ -88,7 +92,17 @@ export const Errors = {
   caseNotFound: () =>
     new AppError(404, ErrorCode.CASE_NOT_FOUND, "Case not found."),
   caseClientExists: () =>
-    new AppError(409, ErrorCode.CASE_CLIENT_EXISTS, "Case already has a client linked."),
+    new AppError(
+      409,
+      ErrorCode.CASE_CLIENT_EXISTS,
+      "Case already has a client linked.",
+    ),
+  assignedUserNotFound: () =>
+    new AppError(
+      404,
+      ErrorCode.ASSIGNED_USER_NOT_FOUND,
+      "Assigned user not found in this organization.",
+    ),
 
   hearingNotFound: () =>
     new AppError(404, ErrorCode.HEARING_NOT_FOUND, "Hearing not found."),
@@ -109,7 +123,19 @@ export const Errors = {
 
   documentNotFound: () =>
     new AppError(404, ErrorCode.DOCUMENT_NOT_FOUND, "Document not found."),
+  noFileUploaded: () =>
+    new AppError(400, ErrorCode.NO_FILE_UPLOADED, "No file uploaded."),
+  fileTooLarge: () =>
+    new AppError(
+      413,
+      ErrorCode.FILE_TOO_LARGE,
+      "File must be 50 MB or smaller.",
+    ),
 
   organizationNotFound: () =>
-    new AppError(404, ErrorCode.ORGANIZATION_NOT_FOUND, "Organization not found."),
+    new AppError(
+      404,
+      ErrorCode.ORGANIZATION_NOT_FOUND,
+      "Organization not found.",
+    ),
 } as const;

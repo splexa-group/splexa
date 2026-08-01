@@ -5,7 +5,6 @@ export interface Document {
   name: string;
   mimeType: string;
   size: number;
-  storageKey: string;
   uploadedBy: string;
   createdAt: string;
 }
@@ -23,6 +22,3 @@ export interface DocumentFolder {
   documentCount: number;
 }
 
-export interface DocumentFolderListResponse {
-  data: DocumentFolder[];
-}

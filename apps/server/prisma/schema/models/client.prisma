@@ -9,6 +9,10 @@ model Client {
   companyName       String?            @map("company_name")
   notes             String?
   preferredLanguage PreferredLanguage? @map("preferred_language")
+  relationType      RelationType?      @map("relation_type")
+  relationName      String?            @map("relation_name")
+  dateOfBirth       DateTime?          @map("date_of_birth")
+  occupation        String?
   createdBy         String             @map("created_by")
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")

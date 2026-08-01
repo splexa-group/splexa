@@ -504,7 +504,7 @@ import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 
 // 3. Workspace packages
-import type { Case } from '@splexa/shared';
+import type { Case } from '@splexa-group/shared/models';
 
 // 4. Internal aliases
 import { useCases } from '@/hooks/use-cases';

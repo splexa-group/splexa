@@ -9,6 +9,6 @@
       "@splexa-group/shared/types": ["../../packages/shared/src/types/index.ts"]
     }
   },
-  "include": ["src", "src/types"],
+  "include": ["src", "src/models"],
   "exclude": ["node_modules", "dist"]
 }

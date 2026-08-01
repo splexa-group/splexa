@@ -1,6 +1,6 @@
 enum CaseStatus {
-  Active
-  Stayed
-  Disposed
-  Appealed
+  ACTIVE
+  STAYED
+  DISPOSED
+  APPEALED
 }

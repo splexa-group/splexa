@@ -3,11 +3,11 @@
 import { parseISO, format } from "date-fns";
 import { Clock, Landmark, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import type { CalendarEvent } from "@/types/calendar";
+import type { CalendarDisplayEvent } from "@/types/calendar";
 
 interface Props {
   dateKey: string;
-  events: CalendarEvent[];
+  events: CalendarDisplayEvent[];
 }
 
 export function CalendarDayPanel({ dateKey, events }: Props) {

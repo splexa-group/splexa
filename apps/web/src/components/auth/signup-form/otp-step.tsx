@@ -5,7 +5,7 @@ import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/form/otp-input";
 import { useVerifyOtp, useRequestOtp, AUTH_MESSAGES } from "@/hooks/use-auth";
-import { maskEmail } from "@/lib/utils";
+import { maskEmail } from "@splexa-group/shared/utils";
 
 const RESEND_COOL_DOWN_SECONDS = 60;
 

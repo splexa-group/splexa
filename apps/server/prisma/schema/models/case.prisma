@@ -20,7 +20,7 @@ model Case {
   judgeDesignation String?   @map("judge_designation")
   judgeUpdatedAt   DateTime? @map("judge_updated_at")
 
-  status   CaseStatus @default(Active)
+  status   CaseStatus @default(ACTIVE)
   stage    CaseStage?
   priority Priority?
 

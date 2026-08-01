@@ -4,8 +4,9 @@ import { Controller, useFormContext } from "react-hook-form";
 import { InputGroup } from "@/components/ui/form/input";
 import { TextareaGroup } from "@/components/ui/form/textarea";
 import { SelectGroup } from "@/components/ui/form/select";
+import { DatePicker } from "@/components/ui/form/date-picker";
 import { Section } from "@/components/ui/section";
-import { CLIENT_TYPE_OPTIONS } from "@/lib/options";
+import { CLIENT_TYPE_OPTIONS, RELATION_TYPE_OPTIONS } from "@/lib/options";
 import type { UpdateClientInput } from "@/types/clients";
 
 export function ClientDetails() {
@@ -49,6 +50,40 @@ export function ClientDetails() {
         label="Address"
         placeholder="Enter address..."
         {...register("address")}
+      />
+      <Controller
+        name="relationType"
+        control={control}
+        render={({ field }) => (
+          <SelectGroup
+            label="Relation"
+            options={RELATION_TYPE_OPTIONS}
+            value={field.value ?? ""}
+            onChange={field.onChange}
+            placeholder="Select relation..."
+          />
+        )}
+      />
+      <InputGroup
+        label="Relation Name"
+        placeholder="Enter father's/husband's name..."
+        {...register("relationName")}
+      />
+      <Controller
+        name="dateOfBirth"
+        control={control}
+        render={({ field }) => (
+          <DatePicker
+            label="Date of Birth"
+            value={field.value ?? ""}
+            onChange={field.onChange}
+          />
+        )}
+      />
+      <InputGroup
+        label="Occupation"
+        placeholder="Enter occupation..."
+        {...register("occupation")}
       />
       <TextareaGroup
         label="Notes"

@@ -35,5 +35,9 @@ export function mapClientToFormValues(
     companyName: client.companyName ?? "",
     notes: client.notes ?? "",
     preferredLanguage: client.preferredLanguage ?? undefined,
+    relationType: client.relationType ?? undefined,
+    relationName: client.relationName ?? "",
+    dateOfBirth: client.dateOfBirth?.substring(0, 10) ?? "",
+    occupation: client.occupation ?? "",
   };
 }

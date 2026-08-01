@@ -13,23 +13,25 @@ import { AddImportantDateModal } from "@/components/modals/add-important-date";
 import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
+import { formatEnumLabel } from "@/lib/options";
+import { ImportantDateType } from "@splexa-group/shared/enums";
 import type {
   ImportantDate,
   CreateImportantDateInput,
 } from "@/types/important-dates";
 
-const CRITICAL_TYPES = [
-  "Limitation",
-  "BailExpiry",
-  "StayExpiry",
-  "AppealDeadline",
+const CRITICAL_TYPES: ImportantDateType[] = [
+  ImportantDateType.LIMITATION,
+  ImportantDateType.BAIL_EXPIRY,
+  ImportantDateType.STAY_EXPIRY,
+  ImportantDateType.APPEAL_DEADLINE,
 ];
 
 interface Props {
   caseId: string;
 }
 
-function typeBadgeClass(type: string) {
+function typeBadgeClass(type: ImportantDateType) {
   return CRITICAL_TYPES.includes(type)
     ? "bg-negative-muted text-negative"
     : "bg-brand-soft text-brand";
@@ -150,7 +152,7 @@ export function ImportantDatesDetails({ caseId }: Props) {
                         typeBadgeClass(importantDate.dateType),
                       )}
                     >
-                      {importantDate.dateType.replace(/([A-Z])/g, " $1").trim()}
+                      {formatEnumLabel(importantDate.dateType)}
                     </span>
                     {urgency && (
                       <span

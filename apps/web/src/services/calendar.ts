@@ -1,19 +1,9 @@
 import { GET } from "@/api/http";
-import type { CalendarHearing, CalendarImportantDate } from "@/types/calendar";
-
-interface CalendarPageResult<T> {
-  data: T[];
-  total: number;
-}
+import type { CalendarEvent } from "@/types/calendar";
 
 export const calendarApi = {
-  hearings: (from: string, to: string) =>
-    GET<CalendarPageResult<CalendarHearing>>("/hearings", {
-      params: { from, to, limit: 100 },
-    }),
-
-  importantDates: (from: string, to: string) =>
-    GET<CalendarPageResult<CalendarImportantDate>>("/important-dates", {
-      params: { from, to, limit: 200 },
-    }),
+  listEvents: (from: string, to: string) =>
+    GET<{ events: CalendarEvent[] }>("/calendar", { params: { from, to } }).then(
+      (r) => r.events,
+    ),
 };

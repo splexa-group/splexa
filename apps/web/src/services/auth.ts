@@ -1,9 +1,9 @@
 import { GET, POST } from "@/api/http";
 import { SignupPayload, VerifyOtpResponse } from "@/types/auth";
-import { AuthUser } from "@/types/user";
+import type { UserProfile } from "@splexa-group/shared/models";
 
 export const authApi = {
-  me: () => GET<AuthUser>("/auth/me"),
+  me: () => GET<{ user: UserProfile }>("/auth/me").then((r) => r.user),
 
   signup: (data: SignupPayload) => POST<void>("/auth/signup", data),
 

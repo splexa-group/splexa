@@ -1,9 +1,9 @@
 export enum CourtType {
-  DistrictCourt = "DistrictCourt",
-  HighCourt = "HighCourt",
-  SupremeCourt = "SupremeCourt",
-  Tribunal = "Tribunal",
-  ConsumerForum = "ConsumerForum",
-  FamilyCourt = "FamilyCourt",
-  Other = "Other",
+  DISTRICT_COURT = "DISTRICT_COURT",
+  HIGH_COURT = "HIGH_COURT",
+  SUPREME_COURT = "SUPREME_COURT",
+  TRIBUNAL = "TRIBUNAL",
+  CONSUMER_FORUM = "CONSUMER_FORUM",
+  FAMILY_COURT = "FAMILY_COURT",
+  OTHER = "OTHER",
 }

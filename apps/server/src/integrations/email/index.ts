@@ -1,6 +1,6 @@
 import { env } from "@/config/env";
 
-import type { EmailProvider } from "./email-interface";
+import { EmailProvider } from "./email-interface";
 import { ResendAdapter } from "./resend-adapter";
 
 function createEmailProvider(): EmailProvider {

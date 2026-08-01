@@ -1,6 +1,6 @@
 import { env } from "@/config/env";
 
-import type { WhatsAppProvider } from "./whatsapp-interface";
+import { WhatsAppProvider } from "./whatsapp-interface";
 
 export class InteraktAdapter implements WhatsAppProvider {
   async sendTemplateMessage(

@@ -15,7 +15,7 @@ export interface PartyFormData {
 
 export const DEFAULT_PARTY_FORM: PartyFormData = {
   name: "",
-  role: PartyRole.Respondent,
+  role: PartyRole.RESPONDENT,
   advocateName: "",
   advocatePhone: "",
 };

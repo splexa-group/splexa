@@ -57,18 +57,24 @@ apps/web/src/
 │       ├── modal.tsx
 │       └── confirm-delete.tsx
 ├── hooks/
-│   └── use-active-tab.ts      # genuinely generic (URL-driven tab state) — stays global
-├── api/                       # client.ts, http.ts — unchanged
-├── store/                     # auth-store.ts — unchanged (used by layout + auth feature both)
+│   └── use-active-tab.ts      # shared hooks — genuinely generic (URL-driven tab state)
 ├── types/
-│   └── misc.ts                # ApiErrorResponse etc. — genuinely cross-cutting, stays global
+│   └── misc.ts                # shared types — ApiErrorResponse etc.
+├── constants/
+│   └── options.ts             # shared constant/reference data — DESIGNATION_OPTIONS etc., used by 6+ features
 ├── lib/
-│   ├── utils.ts                # cn() — unchanged
-│   └── options.ts               # DESIGNATION_OPTIONS etc., used by 6+ features — unchanged
+│   └── utils.ts                # pure, dependency-free helper functions only — cn()
+├── api/                       # client.ts, http.ts — unchanged, already documented in frontend-rules.md
+├── store/                     # auth-store.ts — unchanged (used by layout + auth feature both)
 └── middleware.ts
 ```
 
 Each feature folder only gets the subfolders it actually uses — e.g. `clients` does not get an empty `constants/` just for symmetry with `cases`.
+
+**Global-layer convention** (adapted from the bulletproof-react reference architecture — a widely-recognized pattern for scaling React apps past folder-per-type): every top-level folder outside `features/` has exactly one job, no overlap —
+`hooks/` = shared hooks, `types/` = shared types, `constants/` = shared constant/reference data, `lib/` = pure helper functions, `api/` = HTTP client, `store/` = global state. The whole model collapses to one rule: **used by exactly one feature → lives in that feature; genuinely cross-cutting → has exactly one correctly-named home at the top level.** This is what keeps the structure legible as more features are added, not the specific folder names.
+
+`api/` and `store/` keep their current names rather than folding into `lib/` or `utils/` — they're already documented by these exact paths in `frontend-rules.md` (the Axios three-layer pattern, the JWT storage rule), and renaming them would touch those docs plus every service/store import for no structural benefit. `lib/utils.ts` also keeps its name — it's the shadcn/ui-idiomatic filename for `cn()`, which this stack already follows (Radix UI, cva, tailwind-merge), and instantly recognizable to anyone who's worked in a shadcn-based project.
 
 ---
 
@@ -100,8 +106,9 @@ Each feature folder only gets the subfolders it actually uses — e.g. `clients`
 | `hooks/use-auth.ts`, `services/auth.ts`, `types/auth.ts` | `features/auth/{hooks,services,types}/` |
 | `components/auth/**` | `features/auth/components/` |
 | `components/modals/modal.tsx`, `confirm-delete.tsx` | `components/shared/` |
+| `lib/options.ts` | `constants/options.ts` |
 
-After the move, `config/` and `enums/` are deleted (empty). `hooks/`, `services/`, `types/`, `components/` at the top level only retain the genuinely global leftovers (`use-active-tab.ts`, `misc.ts`, `ui/`, `layout/`, `shared/`).
+After the move, `config/`, `enums/`, and `services/` are deleted (empty — every service file moved into its owning feature). `hooks/`, `types/`, `components/`, `lib/` at the top level only retain the genuinely global leftovers (`use-active-tab.ts`, `misc.ts`, `ui/`, `layout/`, `shared/`, `utils.ts`).
 
 `lib/format-date-label.ts` is demoted into `features/dashboard/lib/` since dashboard is its only consumer today. If a second feature needs it later, it gets promoted back to the global `lib/` — same rule the backend already applies to module helpers (`.claude/architecture.md`: "a helper used by only one module belongs in that module's helper file — moves to shared utils the moment a second module needs it").
 

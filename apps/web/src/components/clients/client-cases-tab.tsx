@@ -4,7 +4,9 @@ import { useRouter } from "next/navigation";
 import { statusBadgeClass } from "@/components/cases/case-styles";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useCases } from "@/hooks/use-cases";
+import { deadlineUrgencyPillClass, getDeadlineUrgency } from "@/utils/deadline-urgency";
 import { formatHearingDate } from "@/utils/format-hearing-date";
+import { formatEnumLabel } from "@/utils/options";
 import { cn } from "@/utils/tailwind";
 
 export function ClientCasesTab({ clientId }: { clientId: string }) {
@@ -34,13 +36,25 @@ export function ClientCasesTab({ clientId }: { clientId: string }) {
           <div className="flex items-center gap-3 shrink-0">
             <span
               className={cn(
-                "inline-flex items-center px-2.5 py-0.5 rounded-full text-sm",
+                "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
                 statusBadgeClass(c.status),
               )}
             >
-              {c.status}
+              {formatEnumLabel(c.status)}
             </span>
-            <span className="text-sm text-body">{formatHearingDate(c.nextHearingDate)}</span>
+            <div className="flex flex-col items-end gap-1">
+              <span className="text-sm text-body">{formatHearingDate(c.nextHearingDate)}</span>
+              {c.nextHearingDate && getDeadlineUrgency(c.nextHearingDate).urgency === "overdue" && (
+                <span
+                  className={cn(
+                    "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold",
+                    deadlineUrgencyPillClass("overdue"),
+                  )}
+                >
+                  Overdue
+                </span>
+              )}
+            </div>
           </div>
         </div>
       ))}

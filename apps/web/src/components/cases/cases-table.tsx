@@ -15,8 +15,9 @@ import { Select } from "@/components/ui/form/select";
 import { Menu } from "@/components/ui/menu";
 import { useCases, useDeleteCase } from "@/hooks/use-cases";
 import { CaseFilters, CaseSummary } from "@/types/cases";
+import { deadlineUrgencyPillClass, getDeadlineUrgency } from "@/utils/deadline-urgency";
 import { formatHearingDate } from "@/utils/format-hearing-date";
-import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS } from "@/utils/options";
+import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS, formatEnumLabel } from "@/utils/options";
 import { cn } from "@/utils/tailwind";
 
 import { priorityBorderClass, statusBadgeClass } from "./case-styles";
@@ -91,16 +92,26 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
         <span
           key="status"
           className={cn(
-            "inline-flex items-center px-2.5 py-0.5 rounded-full text-sm w-fit",
+            "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium w-fit",
             statusBadgeClass(c.status),
           )}
         >
-          {c.status}
+          {formatEnumLabel(c.status)}
         </span>,
 
-        <p key="hearing" className="text-sm text-body pr-4 truncate">
-          {formatHearingDate(c.nextHearingDate)}
-        </p>,
+        <div key="hearing" className="pr-4 flex flex-col gap-1">
+          <p className="text-sm text-body truncate">{formatHearingDate(c.nextHearingDate)}</p>
+          {c.nextHearingDate && getDeadlineUrgency(c.nextHearingDate).urgency === "overdue" && (
+            <span
+              className={cn(
+                "inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[10px] font-semibold",
+                deadlineUrgencyPillClass("overdue"),
+              )}
+            >
+              Overdue
+            </span>
+          )}
+        </div>,
 
         <div key="actions" onClick={(e) => e.stopPropagation()}>
           <Menu

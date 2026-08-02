@@ -58,7 +58,7 @@ export function ClientsTable({ onAdd }: { onAdd?: () => void }) {
       </p>,
 
       <p key="email" className="text-sm text-body pr-4 truncate">
-        {c.email ?? "—"}
+        {c.email ?? "NA"}
       </p>,
     ],
   }));

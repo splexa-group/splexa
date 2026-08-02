@@ -98,7 +98,7 @@ export function OppositePartySection() {
                     {field.advocateName}
                   </>
                 ) : (
-                  <span className="text-placeholder">—</span>
+                  <span className="text-placeholder">NA</span>
                 )}
               </span>
 

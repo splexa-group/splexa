@@ -5,7 +5,7 @@ import { formatIndianDate } from "@splexa-group/shared/utils";
 import { statusBadgeClass } from "@/components/cases/case-styles";
 import { EmptyState } from "@/components/ui/empty-state";
 import { useCases } from "@/hooks/use-cases";
-import { deadlineUrgencyPillClass, getDeadlineUrgency } from "@/utils/deadline-urgency";
+import { getDeadlineUrgency } from "@/utils/deadline-urgency";
 import { formatHearingDate } from "@/utils/format-hearing-date";
 import { formatEnumLabel } from "@/utils/options";
 import { cn } from "@/utils/tailwind";
@@ -48,21 +48,14 @@ export function ClientCasesTab({ clientId }: { clientId: string }) {
                 {formatEnumLabel(c.status)}
               </span>
               <div className="flex items-center gap-1.5">
-                <span className="text-sm text-body">
+                {isOverdue && <span className="size-1.5 rounded-full bg-negative shrink-0" />}
+                <span
+                  className={cn("text-sm", isOverdue ? "text-negative font-medium" : "text-body")}
+                >
                   {isOverdue
                     ? formatIndianDate(c.nextHearingDate as string)
                     : formatHearingDate(c.nextHearingDate)}
                 </span>
-                {isOverdue && (
-                  <span
-                    className={cn(
-                      "inline-flex items-center shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold",
-                      deadlineUrgencyPillClass("overdue"),
-                    )}
-                  >
-                    Overdue
-                  </span>
-                )}
               </div>
             </div>
           </div>

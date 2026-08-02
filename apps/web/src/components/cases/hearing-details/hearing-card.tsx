@@ -138,7 +138,7 @@ export function NextHearingCard({
       {/* Header */}
       <div className="flex items-center gap-2.5 px-4 pt-3 pb-3">
         <span className="text-sm font-semibold text-brand">Next Hearing</span>
-        <span className="text-[11px] font-semibold bg-brand/15 text-brand px-2 py-0.5 rounded-full">
+        <span className="text-[11px] font-semibold bg-brand/10 text-brand px-2 py-0.5 rounded-full">
           {daysLabel}
         </span>
       </div>

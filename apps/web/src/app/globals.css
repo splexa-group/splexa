@@ -247,10 +247,6 @@ summary {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
 
-  .calendar-month-label {
-    @apply text-base font-bold text-dark w-40 text-center;
-  }
-
   .calendar-day-panel {
     @apply flex-[3] min-w-0 self-stretch rounded-lg border border-line bg-card flex-col overflow-hidden hidden md:flex;
   }
@@ -264,7 +260,7 @@ summary {
   }
 
   .calendar-panel-event {
-    @apply p-3 border border-line rounded-lg bg-page space-y-2;
+    @apply p-3 border border-line rounded-lg bg-card space-y-2;
   }
 
   .calendar-panel-badge--hearing {

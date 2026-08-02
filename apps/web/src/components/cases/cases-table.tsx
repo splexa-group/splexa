@@ -98,9 +98,9 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
           {c.status}
         </span>,
 
-        <span key="hearing" className="text-sm text-body pr-4 truncate">
+        <p key="hearing" className="text-sm text-body pr-4 truncate">
           {formatHearingDate(c.nextHearingDate)}
-        </span>,
+        </p>,
 
         <div key="actions" onClick={(e) => e.stopPropagation()}>
           <Menu

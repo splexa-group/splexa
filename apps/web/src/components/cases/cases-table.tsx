@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Pencil, Trash2 } from "lucide-react";
 
@@ -125,7 +126,7 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
 
   return (
     <div className="flex flex-col h-full">
-      <FiltersBar columns="1fr 300px 300px">
+      <FiltersBar columns="1fr 300px 300px auto">
         <Search
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -155,6 +156,12 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
           }}
           placeholder="Filter by case type..."
         />
+        <Link
+          href="/clients"
+          className="text-sm font-medium text-secondary hover:text-brand transition-colors whitespace-nowrap px-2"
+        >
+          Clients
+        </Link>
       </FiltersBar>
 
       <DataTable

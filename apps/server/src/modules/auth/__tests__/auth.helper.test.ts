@@ -8,6 +8,7 @@ import {
   OTP_TTL_MS,
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_EXPIRY_MS,
+  SESSION_ACTIVE_COOKIE,
 } from "@/constants/auth";
 
 import {
@@ -18,6 +19,7 @@ import {
   refreshTokenExpiry,
   setAccessTokenCookie,
   setRefreshTokenCookie,
+  setSessionActiveCookie,
   clearAuthCookies,
 } from "../auth.helper";
 
@@ -87,12 +89,8 @@ describe("refreshTokenExpiry", () => {
     const expiry = refreshTokenExpiry();
     const after = Date.now();
 
-    expect(expiry.getTime()).toBeGreaterThanOrEqual(
-      before + REFRESH_TOKEN_EXPIRY_MS,
-    );
-    expect(expiry.getTime()).toBeLessThanOrEqual(
-      after + REFRESH_TOKEN_EXPIRY_MS,
-    );
+    expect(expiry.getTime()).toBeGreaterThanOrEqual(before + REFRESH_TOKEN_EXPIRY_MS);
+    expect(expiry.getTime()).toBeLessThanOrEqual(after + REFRESH_TOKEN_EXPIRY_MS);
   });
 });
 
@@ -136,8 +134,28 @@ describe("setRefreshTokenCookie", () => {
   });
 });
 
+describe("setSessionActiveCookie", () => {
+  it("sets a non-secret session marker cookie scoped to '/' with the refresh token's lifetime", () => {
+    const reply = createMockReply();
+
+    setSessionActiveCookie(reply);
+
+    expect(reply.setCookie).toHaveBeenCalledWith(
+      SESSION_ACTIVE_COOKIE,
+      "1",
+      expect.objectContaining({
+        httpOnly: true,
+        secure: env.IS_PRODUCTION,
+        sameSite: "strict",
+        path: "/",
+        maxAge: Math.floor(REFRESH_TOKEN_EXPIRY_MS / 1000),
+      }),
+    );
+  });
+});
+
 describe("clearAuthCookies", () => {
-  it("clears both cookies with matching paths", () => {
+  it("clears all three cookies with matching paths", () => {
     const reply = createMockReply();
 
     clearAuthCookies(reply);
@@ -147,6 +165,9 @@ describe("clearAuthCookies", () => {
     });
     expect(reply.clearCookie).toHaveBeenCalledWith(REFRESH_TOKEN_COOKIE, {
       path: "/api/v1/auth",
+    });
+    expect(reply.clearCookie).toHaveBeenCalledWith(SESSION_ACTIVE_COOKIE, {
+      path: "/",
     });
   });
 });

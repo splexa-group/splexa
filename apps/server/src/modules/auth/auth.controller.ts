@@ -7,13 +7,9 @@ import {
   hashToken,
   setAccessTokenCookie,
   setRefreshTokenCookie,
+  setSessionActiveCookie,
 } from "./auth.helper";
-import {
-  OtpRequestInput,
-  OtpVerifyInput,
-  SessionParams,
-  SignupInput,
-} from "./auth.schema";
+import { OtpRequestInput, OtpVerifyInput, SessionParams, SignupInput } from "./auth.schema";
 import { authService } from "./auth.service";
 
 export const authController = {
@@ -27,17 +23,15 @@ export const authController = {
     return { message: "OTP sent to your email" };
   },
 
-  async verifyOtp(
-    req: FastifyRequest<{ Body: OtpVerifyInput }>,
-    reply: FastifyReply,
-  ) {
+  async verifyOtp(req: FastifyRequest<{ Body: OtpVerifyInput }>, reply: FastifyReply) {
     const userAgent = req.headers["user-agent"] ?? "unknown";
-    const { accessToken, refreshToken, user } = await authService.verifyOtp(
-      req.body,
-      { ipAddress: req.ip, userAgent },
-    );
+    const { accessToken, refreshToken, user } = await authService.verifyOtp(req.body, {
+      ipAddress: req.ip,
+      userAgent,
+    });
     setAccessTokenCookie(reply, accessToken);
     setRefreshTokenCookie(reply, refreshToken);
+    setSessionActiveCookie(reply);
     return { user };
   },
 
@@ -66,17 +60,11 @@ export const authController = {
   },
 
   async getSession(req: FastifyRequest<{ Params: SessionParams }>) {
-    const session = await authService.getSession(
-      req.params.id,
-      req.user.userId,
-    );
+    const session = await authService.getSession(req.params.id, req.user.userId);
     return { session };
   },
 
-  async revokeSession(
-    req: FastifyRequest<{ Params: SessionParams }>,
-    reply: FastifyReply,
-  ) {
+  async revokeSession(req: FastifyRequest<{ Params: SessionParams }>, reply: FastifyReply) {
     const currentToken = req.cookies[REFRESH_TOKEN_COOKIE];
     const refreshTokenHash = currentToken ? hashToken(currentToken) : undefined;
     const { isCurrentSession } = await authService.revokeSession(

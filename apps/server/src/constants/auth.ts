@@ -8,3 +8,4 @@ export const ACCESS_TOKEN_TTL_MS = 15 * 60 * 1000; // 15 minutes
 
 export const ACCESS_TOKEN_COOKIE = "access_token";
 export const REFRESH_TOKEN_COOKIE = "refresh_token";
+export const SESSION_ACTIVE_COOKIE = "session_active";

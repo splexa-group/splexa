@@ -9,6 +9,7 @@ import {
   OTP_TTL_MS,
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_EXPIRY_MS,
+  SESSION_ACTIVE_COOKIE,
 } from "@/constants/auth";
 import { msFromNow, msToSeconds } from "@/utils/date-time";
 
@@ -42,10 +43,7 @@ export function setAccessTokenCookie(reply: FastifyReply, token: string): void {
   });
 }
 
-export function setRefreshTokenCookie(
-  reply: FastifyReply,
-  token: string,
-): void {
+export function setRefreshTokenCookie(reply: FastifyReply, token: string): void {
   reply.setCookie(REFRESH_TOKEN_COOKIE, token, {
     httpOnly: true,
     secure: env.IS_PRODUCTION,
@@ -55,7 +53,24 @@ export function setRefreshTokenCookie(
   });
 }
 
+/**
+ * Non-secret marker cookie, scoped to "/" and lived like the refresh token.
+ * The refresh token itself stays scoped to /api/v1/auth so the browser never
+ * sends it on page navigations — this cookie is what edge middleware reads
+ * to know a session still exists, without needing the real credential.
+ */
+export function setSessionActiveCookie(reply: FastifyReply): void {
+  reply.setCookie(SESSION_ACTIVE_COOKIE, "1", {
+    httpOnly: true,
+    secure: env.IS_PRODUCTION,
+    sameSite: "strict",
+    path: "/",
+    maxAge: msToSeconds(REFRESH_TOKEN_EXPIRY_MS),
+  });
+}
+
 export function clearAuthCookies(reply: FastifyReply): void {
   reply.clearCookie(ACCESS_TOKEN_COOKIE, { path: "/" });
   reply.clearCookie(REFRESH_TOKEN_COOKIE, { path: "/api/v1/auth" });
+  reply.clearCookie(SESSION_ACTIVE_COOKIE, { path: "/" });
 }

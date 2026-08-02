@@ -49,9 +49,7 @@ export function ClientCasesTab({ clientId }: { clientId: string }) {
               </span>
               <div className="flex items-center gap-1.5">
                 {isOverdue && <span className="size-1.5 rounded-full bg-negative shrink-0" />}
-                <span
-                  className={cn("text-sm", isOverdue ? "text-negative font-medium" : "text-body")}
-                >
+                <span className="text-sm text-body">
                   {isOverdue
                     ? formatIndianDate(c.nextHearingDate as string)
                     : formatHearingDate(c.nextHearingDate)}

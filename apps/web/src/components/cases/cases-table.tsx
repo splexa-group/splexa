@@ -105,12 +105,7 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
 
         <div key="hearing" className="pr-4 flex items-center gap-1.5 min-w-0">
           {isOverdue && <span className="size-1.5 rounded-full bg-negative shrink-0" />}
-          <p
-            className={cn(
-              "text-sm truncate",
-              isOverdue ? "text-negative font-medium" : "text-body",
-            )}
-          >
+          <p className="text-sm text-body truncate">
             {isOverdue
               ? formatIndianDate(c.nextHearingDate as string)
               : formatHearingDate(c.nextHearingDate)}

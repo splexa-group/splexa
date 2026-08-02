@@ -166,8 +166,8 @@ export function NextHearingCard({
             {metaParts.map(({ icon: Icon, text }, i) => (
               <Fragment key={i}>
                 <div className="flex items-center gap-1.5">
-                  <Icon className="size-3 text-brand/50 shrink-0" />
-                  <span className="text-[13px] text-secondary">{text}</span>
+                  <Icon className="size-3.5 text-body shrink-0" />
+                  <span className="text-[13.5px] text-body">{text}</span>
                 </div>
                 {i < metaParts.length - 1 && (
                   <span className="size-1 rounded-full bg-brand/20 shrink-0" />

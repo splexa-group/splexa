@@ -52,7 +52,7 @@ export function UpcomingHearings({ hearings }: Props) {
               )}
             >
               <div className="min-w-[76px] shrink-0">
-                <span className="text-xs font-semibold text-brand">{formatDateLabel(h.date)}</span>
+                <span className="text-sm font-semibold text-brand">{formatDateLabel(h.date)}</span>
                 {h.time && <p className="text-xs text-secondary mt-0.5">{h.time}</p>}
               </div>
 

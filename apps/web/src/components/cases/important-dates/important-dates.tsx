@@ -13,7 +13,9 @@ import { AddImportantDateModal } from "@/components/modals/add-important-date";
 import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
+import { DateBadge } from "@/components/ui/date-badge";
 import { formatEnumLabel } from "@/utils/options";
+import { deadlineUrgencyPillClass, getDeadlineUrgency } from "@/utils/deadline-urgency";
 import { ImportantDateType } from "@splexa-group/shared/enums";
 import type { ImportantDate, CreateImportantDateInput } from "@/types/important-dates";
 
@@ -35,20 +37,19 @@ function typeBadgeClass(type: ImportantDateType) {
 }
 
 function getUrgency(isoDate: string): { label: string; pill: string } | null {
-  const date = new Date(isoDate);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  date.setHours(0, 0, 0, 0);
-  const diff = Math.round((date.getTime() - today.getTime()) / 86_400_000);
-  if (diff < 0)
-    return {
-      label: `${Math.abs(diff)} day${Math.abs(diff) === 1 ? "" : "s"} ago`,
-      pill: "bg-negative-muted text-negative",
-    };
-  if (diff === 0) return { label: "Today", pill: "bg-amber-muted text-amber-dark" };
-  if (diff === 1) return { label: "Tomorrow", pill: "bg-amber-muted text-amber-dark" };
-  if (diff <= 7) return { label: `In ${diff} days`, pill: "bg-amber-muted text-amber-dark" };
-  return null;
+  const { diff, urgency } = getDeadlineUrgency(isoDate);
+  if (!urgency) return null;
+
+  const label =
+    diff < 0
+      ? `${Math.abs(diff)} day${Math.abs(diff) === 1 ? "" : "s"} ago`
+      : diff === 0
+        ? "Today"
+        : diff === 1
+          ? "Tomorrow"
+          : `In ${diff} days`;
+
+  return { label, pill: deadlineUrgencyPillClass(urgency) };
 }
 
 export function ImportantDatesDetails({ caseId }: Props) {
@@ -107,10 +108,6 @@ export function ImportantDatesDetails({ caseId }: Props) {
         <div className="rounded-lg border border-line bg-card overflow-hidden">
           {sortedDates.map((importantDate, i) => {
             const urgency = getUrgency(importantDate.date);
-            const d = new Date(importantDate.date);
-            const day = d.toLocaleDateString("en-IN", { day: "2-digit" });
-            const month = d.toLocaleDateString("en-IN", { month: "short" }).toUpperCase();
-            const year = d.getFullYear();
 
             return (
               <div
@@ -120,14 +117,7 @@ export function ImportantDatesDetails({ caseId }: Props) {
                   i < sortedDates.length - 1 && "border-b border-line",
                 )}
               >
-                {/* Date block */}
-                <div className="flex flex-col items-center text-center shrink-0 w-10">
-                  <span className="text-2xl font-black text-dark leading-none">{day}</span>
-                  <span className="text-[9px] font-bold text-label uppercase tracking-widest mt-0.5">
-                    {month}
-                  </span>
-                  <span className="text-[10px] font-medium text-secondary mt-0.5">{year}</span>
-                </div>
+                <DateBadge date={importantDate.date} className="w-10" />
 
                 {/* Content */}
                 <div className="flex-1 min-w-0 space-y-1">

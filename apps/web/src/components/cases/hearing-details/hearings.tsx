@@ -13,6 +13,7 @@ import { HearingCard, NextHearingCard } from "./hearing-card";
 import { AddHearingModal } from "@/components/modals/add-hearing";
 import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { Button } from "@/components/ui/button";
+import { DateBadge } from "@/components/ui/date-badge";
 import { Section } from "@/components/ui/section";
 import { toast } from "sonner";
 import { cn } from "@/utils/tailwind";
@@ -113,13 +114,6 @@ export function HearingsDetails({ caseId }: Props) {
           addLabel="Add Hearing"
         >
           {hearings.map((hearing, index) => {
-            const hearingDate = new Date(hearing.date);
-            const day = hearingDate.toLocaleDateString("en-IN", {
-              day: "2-digit",
-            });
-            const month = hearingDate.toLocaleDateString("en-IN", { month: "short" }).toUpperCase();
-            const year = hearingDate.getFullYear();
-
             const iconCfg =
               upNext?.id === hearing.id
                 ? { Icon: Hammer, bg: "bg-brand", color: "text-white" }
@@ -133,13 +127,7 @@ export function HearingsDetails({ caseId }: Props) {
               <Fragment key={hearing.id}>
                 <div className="flex gap-4">
                   {/* Date: stretches full row height, content centered */}
-                  <div className="w-24 flex flex-col items-end justify-center text-right shrink-0 py-3">
-                    <span className="text-3xl font-black text-dark leading-none">{day}</span>
-                    <span className="text-[11px] font-bold text-label uppercase tracking-widest mt-1">
-                      {month}
-                    </span>
-                    <span className="text-xs font-medium text-secondary mt-0.5">{year}</span>
-                  </div>
+                  <DateBadge date={hearing.date} align="end" className="w-24 justify-center py-3" />
 
                   {/* Connector: top-line | icon | bottom-line
                       Each segment is flex-1 → icon sits exactly in vertical center.

@@ -47,7 +47,7 @@ export function ClientCasesTab({ clientId }: { clientId: string }) {
               >
                 {formatEnumLabel(c.status)}
               </span>
-              <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-1.5">
                 <span className="text-sm text-body">
                   {isOverdue
                     ? formatIndianDate(c.nextHearingDate as string)
@@ -56,7 +56,7 @@ export function ClientCasesTab({ clientId }: { clientId: string }) {
                 {isOverdue && (
                   <span
                     className={cn(
-                      "inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold",
+                      "inline-flex items-center shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold",
                       deadlineUrgencyPillClass("overdue"),
                     )}
                   >

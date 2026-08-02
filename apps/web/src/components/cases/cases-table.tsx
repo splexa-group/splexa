@@ -103,7 +103,7 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
           {formatEnumLabel(c.status)}
         </span>,
 
-        <div key="hearing" className="pr-4 flex flex-col gap-1">
+        <div key="hearing" className="pr-4 flex items-center gap-1.5">
           <p className="text-sm text-body truncate">
             {isOverdue
               ? formatIndianDate(c.nextHearingDate as string)
@@ -112,7 +112,7 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
           {isOverdue && (
             <span
               className={cn(
-                "inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[10px] font-semibold",
+                "inline-flex items-center shrink-0 px-2 py-0.5 rounded-full text-[10px] font-semibold",
                 deadlineUrgencyPillClass("overdue"),
               )}
             >

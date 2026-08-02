@@ -5,7 +5,7 @@ type PageMaxWidth = "small" | "medium" | "large" | "full";
 
 const pageMaxWidthClass: Record<PageMaxWidth, string> = {
   small: "max-w-xl",
-  medium: "max-w-2xl",
+  medium: "max-w-3xl",
   large: "max-w-6xl",
   full: "",
 };

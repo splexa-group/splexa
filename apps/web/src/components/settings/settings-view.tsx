@@ -122,9 +122,10 @@ export function SettingsView() {
               variant="primary"
               size="sm"
               disabled={isDisabled}
+              loading={isSaving}
               onClick={form.handleSubmit(onSubmit)}
             >
-              {isSaving ? "Saving..." : "Save Changes"}
+              Save Changes
             </Button>
           }
         />

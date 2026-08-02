@@ -81,27 +81,18 @@ export function Sidebar() {
       {/* Bottom actions */}
       <div className="flex items-center justify-between px-3 pb-4 pt-2">
         <div className="flex items-center gap-1">
-          <button
-            type="button"
-            title="Log out"
-            onClick={handleLogout}
-            className="p-2 rounded text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
-          >
+          <button type="button" title="Log out" onClick={handleLogout} className="sidebar-icon-btn">
             <Icon icon={LogOut} size="md" />
           </button>
           <button
             type="button"
             title="Support"
             onClick={() => window.open("mailto:support@splexa.in")}
-            className="p-2 rounded text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
+            className="sidebar-icon-btn"
           >
             <Icon icon={HelpCircle} size="md" />
           </button>
-          <button
-            type="button"
-            title="Book a demo"
-            className="p-2 rounded text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
-          >
+          <button type="button" title="Coming soon" disabled className="sidebar-icon-btn">
             <Icon icon={CalendarPlus} size="md" />
           </button>
         </div>

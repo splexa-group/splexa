@@ -104,7 +104,7 @@ export function ImportantDatesDetails({ caseId }: Props) {
         onAdd={() => handleOpenModal()}
         addLabel="Add Date"
       >
-        <div className="rounded border border-line bg-card overflow-hidden">
+        <div className="rounded-lg border border-line bg-card overflow-hidden">
           {sortedDates.map((importantDate, i) => {
             const urgency = getUrgency(importantDate.date);
             const d = new Date(importantDate.date);
@@ -161,22 +161,22 @@ export function ImportantDatesDetails({ caseId }: Props) {
 
                 {/* Actions */}
                 <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    type="button"
+                  <Button
+                    variant="secondarySoft"
+                    size="icon"
                     onClick={() => handleOpenModal(importantDate)}
-                    className="p-1.5 rounded bg-subtle text-secondary hover:text-dark transition-colors"
                     aria-label="Edit"
                   >
                     <Pencil className="size-3.5" />
-                  </button>
-                  <button
-                    type="button"
+                  </Button>
+                  <Button
+                    variant="negativeSoft"
+                    size="icon"
                     onClick={() => setToDelete(importantDate)}
-                    className="p-1.5 rounded bg-negative-muted text-negative hover:opacity-80 transition-opacity"
                     aria-label="Delete"
                   >
                     <Trash2 className="size-3.5" />
-                  </button>
+                  </Button>
                 </div>
               </div>
             );

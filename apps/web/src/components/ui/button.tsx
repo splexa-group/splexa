@@ -5,7 +5,7 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/utils/tailwind";
 
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -21,6 +21,7 @@ const buttonVariants = cva(
         negativeSoft: "bg-negative-muted text-negative",
         amberSoft: "bg-amber-muted text-amber-dark",
         positiveSoft: "bg-positive-muted text-positive-dark",
+        secondarySoft: "bg-subtle text-secondary hover:bg-line hover:text-dark",
 
         primaryOutline: "border border-brand text-brand hover:bg-brand-soft",
         negativeOutline: "border border-negative text-negative hover:bg-negative-muted",
@@ -31,7 +32,7 @@ const buttonVariants = cva(
         default: "h-10 px-4",
         sm: "h-9 px-3 text-[12.5px]",
         lg: "h-10 px-5",
-        icon: "size-9",
+        icon: "size-11",
       },
     },
     defaultVariants: {

@@ -4,6 +4,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { MoreHorizontal, type LucideIcon } from "lucide-react";
 import { type ReactNode } from "react";
 import { cn } from "@/utils/tailwind";
+import { Button } from "@/components/ui/button";
 
 export interface MenuItem {
   label: string;
@@ -22,13 +23,9 @@ export function Menu({ items, trigger }: MenuProps) {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         {trigger ?? (
-          <button
-            type="button"
-            className="p-1.5 rounded text-secondary hover:text-label hover:bg-subtle transition-colors outline-none"
-            aria-label="Actions"
-          >
+          <Button variant="secondarySoft" size="icon" aria-label="Actions">
             <MoreHorizontal color="currentColor" className="size-4" />
-          </button>
+          </Button>
         )}
       </DropdownMenu.Trigger>
 

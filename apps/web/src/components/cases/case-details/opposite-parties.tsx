@@ -81,7 +81,7 @@ export function OppositePartySection() {
           ) : undefined
         }
       >
-        <div className="rounded border border-line bg-card overflow-hidden">
+        <div className="rounded-lg border border-line bg-card overflow-hidden">
           {fields.map((field, index) => (
             <div
               key={field.id}
@@ -103,22 +103,22 @@ export function OppositePartySection() {
               </span>
 
               <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
+                <Button
+                  variant="secondarySoft"
+                  size="icon"
                   onClick={() => openEdit(index)}
-                  className="p-2 rounded bg-subtle text-secondary hover:text-dark transition-colors"
                   aria-label="Edit"
                 >
-                  <Pencil className="size-4" />
-                </button>
-                <button
-                  type="button"
+                  <Pencil className="size-3.5" />
+                </Button>
+                <Button
+                  variant="negativeSoft"
+                  size="icon"
                   onClick={() => remove(index)}
-                  className="p-2 rounded bg-negative-muted text-negative hover:opacity-80 transition-opacity"
                   aria-label="Remove"
                 >
-                  <Trash2 className="size-4" />
-                </button>
+                  <Trash2 className="size-3.5" />
+                </Button>
               </div>
             </div>
           ))}

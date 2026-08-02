@@ -20,7 +20,8 @@ interface Props {
   onNavigate: (tabId: string, subTabId?: string) => void;
 }
 
-const tabClass = "px-3 py-2 text-sm font-medium rounded transition-all";
+const tabClass =
+  "px-3 py-2 text-sm font-medium rounded transition-all min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
 export function TabsNav({ tabs, activeTab, activeSubTab, onNavigate }: Props) {
   const activeTabConfig = tabs.find((t) => t.id === activeTab);

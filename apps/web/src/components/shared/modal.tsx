@@ -30,6 +30,8 @@ interface ModalProps {
   saveDisabled?: boolean;
   onDelete?: () => void;
   deleteLabel?: string;
+  deleteLoading?: boolean;
+  deleteDisabled?: boolean;
   cancelLabel?: string;
 }
 
@@ -46,6 +48,8 @@ export function Modal({
   saveDisabled,
   onDelete,
   deleteLabel = "Delete",
+  deleteLoading,
+  deleteDisabled,
   cancelLabel = "Cancel",
 }: ModalProps) {
   const showFooter = !!(onSave || onDelete);
@@ -69,13 +73,9 @@ export function Modal({
           <div className="flex items-center justify-between px-5 py-4 border-b border-line">
             <Dialog.Title className="text-base font-semibold text-dark">{title}</Dialog.Title>
             <Dialog.Close asChild>
-              <button
-                type="button"
-                className="rounded p-1 text-placeholder hover:text-secondary hover:bg-subtle transition-colors"
-                aria-label="Close"
-              >
+              <Button variant="secondarySoft" size="icon" aria-label="Close">
                 <X className="size-4" />
-              </button>
+              </Button>
             </Dialog.Close>
           </div>
 
@@ -86,7 +86,13 @@ export function Modal({
           {showFooter && (
             <div className="flex items-center gap-2 px-5 py-4 border-t border-line">
               {onDelete && (
-                <Button type="button" variant="negative" onClick={onDelete}>
+                <Button
+                  type="button"
+                  variant="negative"
+                  loading={deleteLoading}
+                  disabled={deleteDisabled}
+                  onClick={onDelete}
+                >
                   {deleteLabel}
                 </Button>
               )}

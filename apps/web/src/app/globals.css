@@ -47,7 +47,9 @@
   --color-positive-dark: var(--positive-dark);
   --color-positive-muted: var(--positive-muted);
 
-  /*  Border radius  */
+  /*  Border radius — bare `rounded` must resolve to this project's own --radius,
+      not Tailwind's disconnected built-in default  */
+  --radius: var(--radius);
   --radius-sm: calc(var(--radius) - 2px);
   --radius-md: var(--radius);
   --radius-lg: calc(var(--radius) + 2px);
@@ -200,12 +202,21 @@ summary {
 
   /*  Sidebar nav item  */
   .nav-item {
-    @apply flex items-center gap-3 rounded-md px-3 py-[9px] min-h-[36px];
+    @apply flex items-center gap-3 rounded-md px-3 py-[9px] min-h-[44px];
     @apply text-[13.5px] text-white transition-colors cursor-pointer;
     @apply hover:bg-white/5 hover:text-white/90;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40;
   }
   .nav-item-active {
     @apply bg-white/12 text-white;
+  }
+
+  /*  Sidebar bottom-row icon button (logout, support, demo)  */
+  .sidebar-icon-btn {
+    @apply flex items-center justify-center min-h-[44px] min-w-[44px] rounded text-white;
+    @apply hover:text-white/90 hover:bg-brand-soft/20 transition-colors active:scale-95;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40;
+    @apply disabled:opacity-50 disabled:pointer-events-none disabled:cursor-not-allowed;
   }
 
   /*  Mobile bottom tab  */
@@ -231,8 +242,9 @@ summary {
   }
 
   .calendar-nav-btn {
-    @apply flex items-center justify-center size-[32px] rounded text-secondary;
-    @apply hover:bg-subtle hover:text-dark transition-colors active:bg-line;
+    @apply flex items-center justify-center size-11 rounded text-secondary;
+    @apply hover:bg-subtle hover:text-dark transition-colors active:bg-line active:scale-95;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
 
   .calendar-month-label {

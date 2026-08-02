@@ -23,7 +23,7 @@ export function Menu({ items, trigger }: MenuProps) {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         {trigger ?? (
-          <Button variant="secondarySoft" size="icon" aria-label="Actions">
+          <Button variant="secondarySoft" size="iconSm" aria-label="Actions">
             <MoreHorizontal color="currentColor" className="size-4" />
           </Button>
         )}

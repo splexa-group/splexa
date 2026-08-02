@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Pencil, Trash2 } from "lucide-react";
 
 import { CaseStatus, CaseType } from "@splexa-group/shared/enums";
+import { formatIndianDate } from "@splexa-group/shared/utils";
 
 import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { usePageLoading } from "@/components/layout/loader";
@@ -65,6 +66,9 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
   };
 
   const rows = cases.map((c) => {
+    const isOverdue =
+      !!c.nextHearingDate && getDeadlineUrgency(c.nextHearingDate).urgency === "overdue";
+
     return {
       key: c.id,
       onClick: () => router.push(`/cases/${c.id}`),
@@ -100,8 +104,12 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
         </span>,
 
         <div key="hearing" className="pr-4 flex flex-col gap-1">
-          <p className="text-sm text-body truncate">{formatHearingDate(c.nextHearingDate)}</p>
-          {c.nextHearingDate && getDeadlineUrgency(c.nextHearingDate).urgency === "overdue" && (
+          <p className="text-sm text-body truncate">
+            {isOverdue
+              ? formatIndianDate(c.nextHearingDate as string)
+              : formatHearingDate(c.nextHearingDate)}
+          </p>
+          {isOverdue && (
             <span
               className={cn(
                 "inline-flex items-center w-fit px-2 py-0.5 rounded-full text-[10px] font-semibold",

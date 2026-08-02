@@ -69,7 +69,7 @@ export function CreateClientModal({ open, onClose }: Props) {
       saveLoading={createClient.isPending}
       saveDisabled={!fullName?.trim() || !phone?.trim() || !type}
     >
-      <div className="p-5">
+      <div className="p-5 max-h-[70vh] overflow-y-auto">
         <FormProvider {...form}>
           <ClientDetails />
         </FormProvider>

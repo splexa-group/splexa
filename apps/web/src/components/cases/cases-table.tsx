@@ -126,7 +126,16 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
 
   return (
     <div className="flex flex-col h-full">
-      <FiltersBar columns="1fr 300px 300px auto">
+      <div className="flex justify-end px-4 md:px-6 pt-4">
+        <Link
+          href="/clients"
+          className="inline-flex items-center min-h-[44px] px-2 text-sm font-medium text-secondary hover:text-brand transition-colors"
+        >
+          Clients
+        </Link>
+      </div>
+
+      <FiltersBar columns="1fr 300px 300px">
         <Search
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -156,12 +165,6 @@ export function CasesTable({ onAdd }: { onAdd?: () => void }) {
           }}
           placeholder="Filter by case type..."
         />
-        <Link
-          href="/clients"
-          className="text-sm font-medium text-secondary hover:text-brand transition-colors whitespace-nowrap px-2"
-        >
-          Clients
-        </Link>
       </FiltersBar>
 
       <DataTable

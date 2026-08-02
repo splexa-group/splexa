@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ClientType } from "@splexa-group/shared/enums";
 
+import { usePageLoading } from "@/components/layout/loader";
 import { DataTable } from "@/components/ui/data-table";
 import { FiltersBar } from "@/components/ui/filters-bar";
 import { Search } from "@/components/ui/form/search";
@@ -35,8 +36,10 @@ export function ClientsTable({ onAdd }: { onAdd?: () => void }) {
     limit: PAGE_SIZE,
   };
 
-  const { data } = useClients(filters);
+  const { data, isLoading } = useClients(filters);
   const clients = data?.data ?? [];
+
+  usePageLoading(isLoading);
 
   const rows = clients.map((c) => ({
     key: c.id,

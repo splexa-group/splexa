@@ -83,6 +83,7 @@ export function useDeleteClient() {
     mutationFn: (id: string) => clientsApi.delete(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: clientKeys.all });
+      qc.invalidateQueries({ queryKey: caseKeys.all });
       toast.success("Client deleted");
       router.push("/clients");
     },

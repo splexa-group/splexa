@@ -7,6 +7,13 @@ import type { Client, PaginatedResult } from "@splexa-group/shared/models";
 
 export type { Client };
 
+export interface ClientFilters {
+  search?: string;
+  type?: ClientType;
+  page?: number;
+  limit?: number;
+}
+
 export interface CreateClientInput {
   fullName: string;
   phone: string;

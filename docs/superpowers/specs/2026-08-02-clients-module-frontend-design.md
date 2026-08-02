@@ -9,7 +9,9 @@
 
 A minimal, lookup-oriented Clients directory: a `/clients` list page and a `/clients/[clientId]` detail page. This is deliberately **not** a CRM surface — per `product-context.md`, the client record exists purely so an advocate has instant context when a client calls, not to manage relationships or pipelines.
 
-The backend `clients` module is already complete (create/list/getById/update/soft-delete, search, pagination) — **no backend changes are needed**. The only backend-adjacent gap is that the frontend's `clientsApi` only wires up `search`/`create`/`update` today; `list`, `getById`, and `delete` need to be added to call the existing endpoints.
+The backend `clients` module is already complete (create/list/getById/update/soft-delete, search, pagination) — no changes needed there. The frontend's `clientsApi` only wires up `search`/`create`/`update` today; `list`, `getById`, and `delete` need to be added to call the existing endpoints.
+
+One genuine backend gap: the Cases tab on the client detail page needs to list a client's cases, but `GET /cases`'s `listCasesQuerySchema` only supports `search`/`status`/`caseType` — there is no `clientId` filter (a `clientId` field does exist on `updateCaseSchema`, but that's the "assign a client to a case" body, unrelated to list filtering). This needs a small addition: `clientId: z.uuid().optional()` on `listCasesQuerySchema` and a matching `where` clause in `cases.repository.ts`'s `list()`, mirroring how `status`/`caseType` are already handled there.
 
 No new nav item and no mobile bottom-tab slot — the directory is reached via a small "Clients" link on the Cases page. Mobile bottom-nav is already at 4 tabs (its practical ceiling), and product-context is explicit that clients are secondary to cases.
 
@@ -127,13 +129,21 @@ Mirrors `CaseDetailView` but simpler — no sub-tabs, no client-creation branchi
 ### Cases Tab (`components/clients/client-cases-tab.tsx`)
 
 ```tsx
-const { data, isLoading } = useCases({ clientId });
+const { data, isLoading } = useCases({ clientId }); // requires the CaseFilters.clientId addition below
 // renders the same row/column treatment as CasesTable's `rows` (title, number, court, status, next hearing)
 // but without the FiltersBar/pagination chrome — just the list, since a client won't have enough
 // cases to need search/pagination inside their own detail page
 ```
 
 If a client has zero cases, show the existing empty-state pattern with no action button (creating a case from here is out of scope — cases are still created from the Cases page).
+
+### Backend Addition: `clientId` filter on cases list
+
+- `apps/server/src/modules/cases/cases.schema.ts` — add `clientId: z.uuid().optional()` to `listCasesQuerySchema`.
+- `apps/server/src/modules/cases/cases.repository.ts` — in `list()`, add `...(query.clientId ? { clientId: query.clientId } : {})` to the `where` object, alongside the existing `status`/`caseType` spreads.
+- `apps/web/src/types/cases.ts` — add `clientId?: string` to `CaseFilters`.
+
+No new test is needed for the repository `where`-clause itself — the existing `status`/`caseType` filters aren't unit-tested at that layer either (only `cases.service.test.ts` and `cases.helper.test.ts` exist, both testing above the repository).
 
 ---
 

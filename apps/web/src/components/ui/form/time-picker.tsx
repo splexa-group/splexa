@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { Clock } from "lucide-react";
+import { ChevronDown, ChevronUp, Clock } from "lucide-react";
 import { cn } from "@/utils/tailwind";
 import { Button } from "@/components/ui/button";
 
@@ -19,10 +19,6 @@ export interface TimePickerProps {
 }
 
 type Period = "AM" | "PM";
-
-const HOURS = Array.from({ length: 12 }, (_, i) => i + 1); // 1–12
-const MINUTES = Array.from({ length: 60 }, (_, i) => i); // 0–59
-const PERIODS: Period[] = ["AM", "PM"];
 
 function to24Hour(hour12: number, minute: number, period: Period): string {
   const h = period === "PM" ? (hour12 % 12) + 12 : hour12 % 12;
@@ -97,7 +93,7 @@ export function TimePicker({
           }
           if (!open && wrapperRef.current) {
             const rect = wrapperRef.current.getBoundingClientRect();
-            const POPUP_HEIGHT = 232;
+            const POPUP_HEIGHT = 160;
             const spaceBelow = window.innerHeight - rect.bottom;
             const spaceAbove = rect.top;
             setDropUp(spaceBelow < POPUP_HEIGHT && spaceAbove > spaceBelow);
@@ -137,67 +133,36 @@ export function TimePicker({
       {error && <p className="mt-1.5 text-xs text-negative">{error}</p>}
       {!error && hint && <p className="mt-1.5 text-xs text-secondary">{hint}</p>}
 
-      {/* Picker — absolute, 224px, flips up when space below is insufficient */}
+      {/* Picker — absolute, compact stepper, flips up when space below is insufficient */}
       {open && (
         <div
           className={cn(
-            "absolute right-0 w-56 z-20 bg-card border border-line rounded shadow-xl overflow-hidden select-none",
+            "absolute right-0 w-52 z-20 bg-card border border-line rounded shadow-xl select-none p-4",
             dropUp ? "bottom-full mb-1" : "top-full mt-1",
           )}
         >
-          {/* Header */}
-          <div className="bg-brand px-4 py-3 text-center">
-            <span className="text-sm font-semibold text-white tracking-wider">
-              {String(hour12).padStart(2, "0")}:{String(minute).padStart(2, "0")} {period}
-            </span>
-          </div>
+          <div className="flex items-center justify-center gap-2">
+            <TimeStepper
+              display={String(hour12).padStart(2, "0")}
+              onIncrement={() => commit(hour12 === 12 ? 1 : hour12 + 1, minute, period)}
+              onDecrement={() => commit(hour12 === 1 ? 12 : hour12 - 1, minute, period)}
+            />
+            <span className="text-xl font-bold text-dark pb-3">:</span>
+            <TimeStepper
+              display={String(minute).padStart(2, "0")}
+              onIncrement={() => commit(hour12, minute === 59 ? 0 : minute + 1, period)}
+              onDecrement={() => commit(hour12, minute === 0 ? 59 : minute - 1, period)}
+            />
 
-          <div className="grid grid-cols-3 divide-x divide-line">
-            <div className="max-h-44 overflow-y-auto py-1">
-              {HOURS.map((h) => (
-                <button
-                  key={h}
-                  type="button"
-                  onClick={() => commit(h, minute, period)}
-                  className={cn(
-                    "w-full py-1.5 text-sm transition-colors",
-                    h === hour12
-                      ? "bg-brand text-white font-semibold"
-                      : "text-label hover:bg-subtle",
-                  )}
-                >
-                  {String(h).padStart(2, "0")}
-                </button>
-              ))}
-            </div>
-            <div className="max-h-44 overflow-y-auto py-1">
-              {MINUTES.map((m) => (
-                <button
-                  key={m}
-                  type="button"
-                  onClick={() => commit(hour12, m, period)}
-                  className={cn(
-                    "w-full py-1.5 text-sm transition-colors",
-                    m === minute
-                      ? "bg-brand text-white font-semibold"
-                      : "text-label hover:bg-subtle",
-                  )}
-                >
-                  {String(m).padStart(2, "0")}
-                </button>
-              ))}
-            </div>
-            <div className="py-1">
-              {PERIODS.map((p) => (
+            <div className="flex flex-col gap-1 pb-3">
+              {(["AM", "PM"] as const).map((p) => (
                 <button
                   key={p}
                   type="button"
                   onClick={() => commit(hour12, minute, p)}
                   className={cn(
-                    "w-full py-1.5 text-sm transition-colors",
-                    p === period
-                      ? "bg-brand text-white font-semibold"
-                      : "text-label hover:bg-subtle",
+                    "px-2 py-1 rounded text-[11px] font-semibold transition-colors",
+                    p === period ? "bg-brand text-white" : "bg-subtle text-label hover:bg-line",
                   )}
                 >
                   {p}
@@ -206,13 +171,43 @@ export function TimePicker({
             </div>
           </div>
 
-          <div className="p-2 border-t border-line">
-            <Button size="sm" className="w-full" onClick={() => setOpen(false)}>
-              Done
-            </Button>
-          </div>
+          <Button size="sm" className="w-full mt-3" onClick={() => setOpen(false)}>
+            Done
+          </Button>
         </div>
       )}
+    </div>
+  );
+}
+
+interface TimeStepperProps {
+  display: string;
+  onIncrement: () => void;
+  onDecrement: () => void;
+}
+
+function TimeStepper({ display, onIncrement, onDecrement }: TimeStepperProps) {
+  return (
+    <div className="flex flex-col items-center">
+      <button
+        type="button"
+        onClick={onIncrement}
+        aria-label="Increase"
+        className="p-1 text-label hover:text-brand transition-colors"
+      >
+        <ChevronUp className="size-4" />
+      </button>
+      <span className="text-xl font-bold text-dark tabular-nums w-9 text-center py-0.5">
+        {display}
+      </span>
+      <button
+        type="button"
+        onClick={onDecrement}
+        aria-label="Decrease"
+        className="p-1 text-label hover:text-brand transition-colors"
+      >
+        <ChevronDown className="size-4" />
+      </button>
     </div>
   );
 }

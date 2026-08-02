@@ -30,6 +30,10 @@ export function Documents({ caseId }: DocumentsTabProps) {
           Upload
         </Button>
       }
+      isEmpty={!isLoading && documents.length === 0}
+      emptyLabel="No documents yet. Upload petitions, orders, affidavits, or any case file."
+      onAdd={handleUploadClick}
+      addLabel="Upload Document"
     >
       <DocumentFileList
         ref={listRef}

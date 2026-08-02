@@ -1,6 +1,6 @@
 import { differenceInCalendarDays } from "date-fns";
 
-export type DeadlineUrgency = "overdue" | "soon" | null;
+import type { DeadlineUrgency } from "@/types/misc";
 
 export function getDeadlineUrgency(isoDate: string): { diff: number; urgency: DeadlineUrgency } {
   const diff = differenceInCalendarDays(new Date(isoDate), new Date());

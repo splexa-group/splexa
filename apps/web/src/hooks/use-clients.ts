@@ -63,14 +63,8 @@ export function useAddClientToCase(caseId: string) {
 export function useUpdateClient() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      id,
-      data,
-    }: {
-      id: string;
-      caseId?: string;
-      data: UpdateClientInput;
-    }) => clientsApi.update(id, data),
+    mutationFn: ({ id, data }: { id: string; caseId?: string; data: UpdateClientInput }) =>
+      clientsApi.update(id, data),
     onSuccess: (_, { caseId }) => {
       qc.invalidateQueries({ queryKey: clientKeys.all });
       if (caseId) {

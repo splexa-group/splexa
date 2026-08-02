@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import { Hammer } from "lucide-react";
+import { Hammer, Plus } from "lucide-react";
 import {
   useHearings,
   useCreateHearing,
@@ -107,7 +107,12 @@ export function HearingsDetails({ caseId }: Props) {
 
         <Section
           title={isLoading ? "Hearings" : `Hearings (${hearings.length})`}
-          action={<Button onClick={openCreate}>Add Hearing</Button>}
+          action={
+            <Button size="sm" onClick={openCreate}>
+              <Plus className="size-3.5" />
+              Add Hearing
+            </Button>
+          }
           isEmpty={!isLoading && hearings.length === 0}
           emptyLabel="No hearings yet. Add your first hearing to start tracking court dates."
           onAdd={openCreate}

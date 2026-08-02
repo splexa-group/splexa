@@ -2,8 +2,10 @@
 
 import { Fragment } from "react";
 import { Clock, Check, CornerDownRight, X, Landmark, Scale, Pencil, Trash2 } from "lucide-react";
+import { formatIndianDate } from "@splexa-group/shared/utils";
 import { cn } from "@/utils/tailwind";
 import { formatEnumLabel } from "@/utils/options";
+import { formatTime12Hour } from "@/components/ui/form/time-picker";
 import { Button } from "@/components/ui/button";
 import { Menu } from "@/components/ui/menu";
 import { Hearing } from "@/types/hearings";
@@ -20,12 +22,7 @@ export function HearingCard({ hearing, onEdit, onDelete }: Props) {
 
   const purposeLabel = hearing.purpose ? formatEnumLabel(hearing.purpose) : "Hearing";
 
-  const formattedDate = new Date(hearing.date).toLocaleDateString("en-IN", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  const formattedDate = formatIndianDate(hearing.date, { includeWeekday: true, includeYear: true });
 
   return (
     <div className="bg-card border border-line rounded-lg">
@@ -37,7 +34,9 @@ export function HearingCard({ hearing, onEdit, onDelete }: Props) {
             <div className="flex items-center gap-1.5">
               <Clock className="size-3.5 text-body shrink-0" />
               <span className="text-[13.5px] text-body">{formattedDate}</span>
-              {hearing.time && <span className="text-[13.5px] text-body">· {hearing.time}</span>}
+              {hearing.time && (
+                <span className="text-[13.5px] text-body">· {formatTime12Hour(hearing.time)}</span>
+              )}
             </div>
             {hearing.judgeName && (
               <div className="flex items-center gap-1.5">
@@ -62,7 +61,7 @@ export function HearingCard({ hearing, onEdit, onDelete }: Props) {
             )}
           >
             <span className={cn("size-1.5 rounded-full", style.dot)} />
-            {hearing.status}
+            {formatEnumLabel(hearing.status)}
           </span>
 
           <Menu
@@ -116,16 +115,13 @@ export function NextHearingCard({
 
   const purposeLabel = hearing.purpose ? formatEnumLabel(hearing.purpose) : "Hearing";
 
-  const formattedDate = date.toLocaleDateString("en-IN", {
-    weekday: "short",
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
+  const formattedDate = formatIndianDate(hearing.date, { includeWeekday: true, includeYear: true });
 
   const courtParts = [courtName, benchNumber ? `Hall ${benchNumber}` : null].filter(Boolean);
 
-  const dateText = hearing.time ? `${formattedDate} · ${hearing.time}` : formattedDate;
+  const dateText = hearing.time
+    ? `${formattedDate} · ${formatTime12Hour(hearing.time)}`
+    : formattedDate;
 
   const metaParts = [
     { icon: Clock, text: dateText },

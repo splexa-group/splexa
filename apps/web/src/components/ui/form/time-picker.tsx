@@ -143,13 +143,19 @@ export function TimePicker({
         >
           <div className="flex items-center justify-center gap-2">
             <TimeStepper
-              display={String(hour12).padStart(2, "0")}
+              value={hour12}
+              min={1}
+              max={12}
+              onChange={(v) => commit(v, minute, period)}
               onIncrement={() => commit(hour12 === 12 ? 1 : hour12 + 1, minute, period)}
               onDecrement={() => commit(hour12 === 1 ? 12 : hour12 - 1, minute, period)}
             />
             <span className="text-xl font-bold text-dark pb-3">:</span>
             <TimeStepper
-              display={String(minute).padStart(2, "0")}
+              value={minute}
+              min={0}
+              max={59}
+              onChange={(v) => commit(hour12, v, period)}
               onIncrement={() => commit(hour12, minute === 59 ? 0 : minute + 1, period)}
               onDecrement={() => commit(hour12, minute === 0 ? 59 : minute - 1, period)}
             />
@@ -181,12 +187,18 @@ export function TimePicker({
 }
 
 interface TimeStepperProps {
-  display: string;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (value: number) => void;
   onIncrement: () => void;
   onDecrement: () => void;
 }
 
-function TimeStepper({ display, onIncrement, onDecrement }: TimeStepperProps) {
+// Typing the number directly is the primary path — clicking +1/-1 sixty
+// times to reach a target minute is not a real interaction. The chevrons
+// stay only for quick nudges once close to the target.
+function TimeStepper({ value, min, max, onChange, onIncrement, onDecrement }: TimeStepperProps) {
   return (
     <div className="flex flex-col items-center">
       <button
@@ -197,9 +209,19 @@ function TimeStepper({ display, onIncrement, onDecrement }: TimeStepperProps) {
       >
         <ChevronUp className="size-4" />
       </button>
-      <span className="text-xl font-bold text-dark tabular-nums w-9 text-center py-0.5">
-        {display}
-      </span>
+      <input
+        type="number"
+        inputMode="numeric"
+        value={String(value).padStart(2, "0")}
+        onFocus={(e) => e.target.select()}
+        onChange={(e) => {
+          if (e.target.value === "") return;
+          const v = Number(e.target.value);
+          if (Number.isNaN(v)) return;
+          onChange(Math.min(max, Math.max(min, v)));
+        }}
+        className="text-xl font-bold text-dark tabular-nums w-11 text-center py-0.5 bg-transparent outline-none [appearance:textfield]"
+      />
       <button
         type="button"
         onClick={onDecrement}

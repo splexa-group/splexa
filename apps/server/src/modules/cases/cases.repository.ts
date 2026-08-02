@@ -20,12 +20,13 @@ export const casesRepository = {
   },
 
   async list(orgId: string, query: ListCasesQuery) {
-    const { search, status, caseType, page, limit } = query;
+    const { search, status, caseType, clientId, page, limit } = query;
     const where: Prisma.CaseWhereInput = {
       orgId,
       deletedAt: null,
       ...(status ? { status } : {}),
       ...(caseType ? { caseType } : {}),
+      ...(clientId ? { clientId } : {}),
       ...(search
         ? {
             OR: [

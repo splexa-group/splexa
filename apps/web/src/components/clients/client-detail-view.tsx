@@ -16,6 +16,7 @@ import { useClient, useDeleteClient, useUpdateClient } from "@/hooks/use-clients
 import { mapClientToFormValues } from "@/mappers/case-form";
 import type { UpdateClientInput } from "@/types/clients";
 
+import { ClientCasesTab } from "@/components/clients/client-cases-tab";
 import { ClientDetailTabs } from "./client-detail-tabs";
 
 export function ClientDetailView({ clientId }: { clientId: string }) {
@@ -59,7 +60,7 @@ export function ClientDetailView({ clientId }: { clientId: string }) {
               <ClientDetails />
             </FormProvider>
           )}
-          {activeTab === ClientTabs.CASES && null}
+          {activeTab === ClientTabs.CASES && <ClientCasesTab clientId={clientId} />}
         </PageLayout>
       </div>
 

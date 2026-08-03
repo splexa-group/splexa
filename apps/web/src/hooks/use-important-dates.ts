@@ -17,11 +17,10 @@ export function useImportantDates(caseId: string) {
 export function useCreateImportantDate(caseId: string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (data: CreateImportantDateInput) =>
-      importantDatesApi.create(caseId, data),
+    mutationFn: (data: CreateImportantDateInput) => importantDatesApi.create(caseId, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: caseKeys.detail(caseId) });
-      toast.success("Date added");
+      toast.success("Date added successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to add date"),
   });
@@ -34,7 +33,7 @@ export function useUpdateImportantDate(caseId: string) {
       importantDatesApi.update(caseId, dateId, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: caseKeys.detail(caseId) });
-      toast.success("Date updated");
+      toast.success("Date updated successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to update date"),
   });
@@ -46,7 +45,7 @@ export function useDeleteImportantDate(caseId: string) {
     mutationFn: (dateId: string) => importantDatesApi.delete(caseId, dateId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: caseKeys.detail(caseId) });
-      toast.success("Date deleted");
+      toast.success("Date deleted successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to delete date"),
   });

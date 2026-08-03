@@ -36,6 +36,16 @@ Activity/audit logging (`logActivity()`, `ActivityAction`) is Phase 2 scope — 
 
 ---
 
+## Documentation Standard
+
+Every doc — design spec, implementation plan, future enhancement proposal, critical-bug writeup — lives in one feature folder under `docs/<feature>/`, e.g. `docs/cases/`, `docs/auth/`, `docs/clients/`. Never a top-level `docs/specs/` or `docs/plans/`, never nested deeper than one level.
+
+Inside a feature folder, filenames are `YYYY-MM-DD-<description>.md` — date first so the folder stays chronological, description says what it is (`design`, `plan`, `requirements`, `frontend-design`, etc). Cross-cutting frontend architecture work that isn't tied to one product feature (layout, folder-structure refactors) goes in `docs/frontend/` instead of a feature folder.
+
+This is a deliberate override of the `docs/superpowers/specs/` and `docs/superpowers/plans/` default paths the brainstorming/writing-plans skills otherwise use — always write to the relevant `docs/<feature>/` folder instead. See `developer-workflow.md` for the full rationale.
+
+---
+
 ## Skill Files
 
 All rules, patterns, and decisions live in `.claude/`. The README routes you to the right file for your task.

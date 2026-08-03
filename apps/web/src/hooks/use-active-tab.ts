@@ -2,14 +2,12 @@
 
 import { useSearchParams } from "next/navigation";
 import type { TabConfig } from "@/components/layout/tabs-nav";
-import { CaseTabs } from "@/enums/case-tabs";
-import { CASE_TAB_CONFIG } from "@/config/case-tabs";
 
-export function useActiveTab(tabs: TabConfig[], defaultTab: string): string {
+export function useActiveTab<T extends string>(tabs: TabConfig[], defaultTab: T): T {
   const searchParams = useSearchParams();
   const tab = searchParams.get("tab");
   const isValid = tab !== null && tabs.some((t) => t.id === tab);
-  return isValid ? tab : defaultTab;
+  return (isValid ? tab : defaultTab) as T;
 }
 
 export function useActiveSubTab(activeTab: string, tabs: TabConfig[]): string {
@@ -19,13 +17,4 @@ export function useActiveSubTab(activeTab: string, tabs: TabConfig[]): string {
   if (!tabConfig?.subTabs?.length) return "";
   const isValid = tabConfig.subTabs.some((s) => s.id === subTab);
   return isValid ? (subTab ?? tabConfig.subTabs[0].id) : tabConfig.subTabs[0].id;
-}
-
-// Case wrappers
-export function useCaseActiveTab(): CaseTabs {
-  return useActiveTab(CASE_TAB_CONFIG, CaseTabs.CASE) as CaseTabs;
-}
-
-export function useCaseActiveSubTab(tab: CaseTabs): string {
-  return useActiveSubTab(tab, CASE_TAB_CONFIG);
 }

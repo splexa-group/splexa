@@ -31,9 +31,9 @@ apps/web/src/
 │   ├── auth.ts                 # VerifyOtpResponse, SignupPayload
 │   ├── user.ts                 # AuthUser
 │   └── misc.ts                 # ApiErrorResponse, shared types
-├── lib/
-│   ├── utils.ts                # cn(), maskEmail()
-│   └── options.ts              # DESIGNATION_OPTIONS, PRACTICE_TYPE_OPTIONS (from shared enums)
+├── utils/
+│   ├── tailwind.ts              # cn()
+│   └── options.ts               # DESIGNATION_OPTIONS, PRACTICE_TYPE_OPTIONS (from shared enums)
 ├── components/
 │   ├── ui/                     # Primitive, stateless, zero business logic
 │   └── [feature]/              # Feature components, composed from ui/
@@ -76,6 +76,26 @@ Default to Server Components. Add `'use client'` only when needed: `useState`, `
 ### Route Protection
 Protected routes are guarded in `middleware.ts`. No auth checks inside page components.
 
+### Page-Level Layout — `PageLayout`
+
+Every `page.tsx` renders through `components/layout/page-layout.tsx`'s `PageLayout` component instead of hand-rolling its own horizontal gutter or max-width:
+- `maxWidth`: `"small"` (a single form section) | `"medium"` (detail/tab pages — case detail, settings) | `"large"` (list pages with a data table — cases, documents) | `"full"` (uncapped).
+- `padded` (default `true`): set `false` when the content already owns its own gutter (a `FiltersBar` + `DataTable` pair) — `PageLayout` then only contributes the max-width cap.
+- Calendar is the one exception — its own full-height, edge-to-edge chrome predates `PageLayout` and isn't wired through it.
+
+### `constants/` vs `utils/` vs colocated component styles
+
+`constants/` holds plain data only — string/number/object/array literals and enums, nothing that executes.
+
+`utils/` holds genuine helper/business-logic functions with no UI of their own — date/format conversions, class-merging (`tailwind.ts`'s `cn()`), option-list builders. The moment a file needs even one function alongside its data (like `options.ts`'s `formatEnumLabel`/`toOptions`/`withNone`), it belongs in `utils/`, not `constants/`.
+
+Presentation-only lookups — a `Record<SomeEnum, { class/icon/color }>` with no logic beyond the mapping — are not generic helpers, they're display data for one specific component. Those stay colocated with the component that uses them (e.g. `components/cases/hearing-details/hearing-status-styles.ts`, `components/cases/case-styles.ts`), not in `utils/`.
+
+### Nav Items & Tabs — Single Source of Truth
+
+- Sidebar/bottom-nav entries: add or change one entry in `components/layout/sidebar/nav-items.ts`'s `NAV_ITEMS` — both surfaces update from that one array.
+- Tabs: each feature owns its own `constants/[name]-tabs.ts` (a `TabConfig[]` plus whatever enum backs it) and calls the generic `useActiveTab`/`useActiveSubTab` from `hooks/use-active-tab.ts` directly — never add a feature-specific wrapper hook to that file, it must stay feature-agnostic.
+
 ---
 
 ## Component Architecture
@@ -84,27 +104,80 @@ Protected routes are guarded in `middleware.ts`. No auth checks inside page comp
 apps/web/src/components/
 ├── ui/                         # Primitive, stateless, zero business logic
 │   ├── button.tsx
-│   ├── input.tsx
-│   ├── badge.tsx
-│   ├── card.tsx
-│   ├── modal.tsx
-│   ├── toast.tsx
-│   ├── spinner.tsx
+│   ├── data-table.tsx
 │   ├── empty-state.tsx
-│   ├── avatar.tsx
-│   ├── countdown-badge.tsx
-│   └── skeleton.tsx
-├── cases/                      # Feature components
-├── hearings/
+│   ├── filters-bar.tsx
+│   ├── icon.tsx
+│   ├── logo.tsx
+│   ├── menu.tsx
+│   ├── section.tsx
+│   └── form/                   # Input primitives (Controller-wrapped for Radix)
+│       ├── checkbox.tsx
+│       ├── date-picker.tsx
+│       ├── input.tsx
+│       ├── multi-select.tsx
+│       ├── otp-input.tsx
+│       ├── search.tsx
+│       ├── select.tsx
+│       ├── textarea.tsx
+│       └── toggle.tsx
+├── auth/                       # Feature components
+│   ├── auth-layout.tsx
+│   ├── auth-panel.tsx
+│   ├── login-form/
+│   └── signup-form/
+├── calendar/
+│   ├── calendar-cell.tsx
+│   ├── calendar-day-panel.tsx
+│   ├── calendar-event-chip.tsx
+│   ├── calendar-grid.tsx
+│   ├── calendar-header.tsx
+│   └── calendar-view.tsx
+├── cases/
+│   ├── case-detail-tabs.tsx
+│   ├── case-detail-view.tsx
+│   ├── case-styles.ts
+│   ├── cases-table.tsx
+│   ├── cases-view.tsx
+│   ├── role-badge.tsx
+│   ├── case-details/          # judge-details, court-details, opposite-parties, case-description, case-details
+│   ├── client/                # client-details.tsx
+│   ├── documents/              # documents.tsx (case-scoped document tab)
+│   ├── hearing-details/        # hearings.tsx, hearing-card.tsx, hearing-status-styles.ts
+│   └── important-dates/        # important-dates.tsx
 ├── dashboard/
-├── auth/
+│   ├── attention-needed.tsx
+│   ├── dashboard-view.tsx
+│   ├── stat-card.tsx
+│   └── upcoming-hearings.tsx
+├── documents/
+│   ├── document-file-list.tsx
+│   ├── documents-view.tsx
+│   ├── folder-card.tsx
+│   └── folder-grid.tsx
+├── settings/
+│   ├── firm-details-section.tsx
+│   ├── my-details-section.tsx
+│   ├── profile-tab.tsx
+│   ├── settings-view.tsx
+│   └── subscription-tab.tsx
+├── modals/                     # Feature-owned modals, not tied to one view
+│   ├── add-hearing.tsx
+│   ├── add-important-date.tsx
+│   ├── create-case.tsx
+│   └── opposite-party.tsx
 ├── layout/                     # App shell
-│   ├── sidebar.tsx
-│   ├── top-nav.tsx
-│   └── bottom-nav.tsx
+│   ├── auth-rehydrator.tsx
+│   ├── bottom-nav.tsx
+│   ├── page-footer.tsx
+│   ├── page-layout.tsx
+│   ├── tabs-nav.tsx
+│   ├── loader/                 # app-loader.tsx, page-loading-context.tsx, page-skeleton.tsx
+│   ├── sidebar/                # index.tsx, nav-items.ts
+│   └── top/                    # top-bar.tsx, top-bar-context.tsx
 └── shared/                     # Cross-feature, non-primitive
-    ├── empty-state.tsx
-    └── error-boundary.tsx
+    ├── confirm-delete.tsx
+    └── modal.tsx
 ```
 
 ### Component Rules
@@ -606,17 +679,17 @@ process.env.DATABASE_URL
 process.env.JWT_SECRET
 ```
 
-Validate required public env vars at import time in `lib/env.ts`:
+Validate required public env vars at import time in `utils/env.ts`:
 
 ```ts
-// apps/web/src/lib/env.ts
+// apps/web/src/utils/env.ts
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 if (!API_URL) throw new Error('NEXT_PUBLIC_API_URL is not set');
 
 export const env = { API_URL } as const;
 ```
 
-Import from `@/lib/env` in client code — never access `process.env` directly in components.
+Import from `@/utils/env` in client code — never access `process.env` directly in components.
 
 ---
 

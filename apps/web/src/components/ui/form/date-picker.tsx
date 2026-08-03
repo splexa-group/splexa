@@ -1,13 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect, useId } from "react";
-import {
-  CalendarDays,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { CalendarDays, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { cn } from "@/utils/tailwind";
 
 const DAYS = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const MONTHS = [
@@ -112,10 +107,8 @@ export function DatePicker({
   const startDay = firstDayOfMonth(viewYear, viewMonth);
 
   const cells: { day: number; current: boolean }[] = [];
-  for (let i = startDay - 1; i >= 0; i--)
-    cells.push({ day: prevMonthDays - i, current: false });
-  for (let d = 1; d <= currentMonthDays; d++)
-    cells.push({ day: d, current: true });
+  for (let i = startDay - 1; i >= 0; i--) cells.push({ day: prevMonthDays - i, current: false });
+  for (let d = 1; d <= currentMonthDays; d++) cells.push({ day: d, current: true });
   while (cells.length % 7 !== 0)
     cells.push({
       day: cells.length - currentMonthDays - startDay + 1,
@@ -133,52 +126,57 @@ export function DatePicker({
   function isSelected(day: number) {
     if (!value) return false;
     const [sy, sm, sd] = value.split("-");
-    return (
-      parseInt(sy) === viewYear &&
-      parseInt(sm) - 1 === viewMonth &&
-      parseInt(sd) === day
-    );
+    return parseInt(sy) === viewYear && parseInt(sm) - 1 === viewMonth && parseInt(sd) === day;
   }
 
   function isToday(day: number) {
     return (
-      today.getFullYear() === viewYear &&
-      today.getMonth() === viewMonth &&
-      today.getDate() === day
+      today.getFullYear() === viewYear && today.getMonth() === viewMonth && today.getDate() === day
     );
   }
 
   const years = Array.from({ length: 30 }, (_, i) => viewYear - 10 + i);
 
+  function toggleOpen() {
+    if (disabled) return;
+    if (!open && value) {
+      setViewYear(parseInt(value.split("-")[0]));
+      setViewMonth(parseInt(value.split("-")[1]) - 1);
+    }
+    if (!open && wrapperRef.current) {
+      const rect = wrapperRef.current.getBoundingClientRect();
+      const POPUP_HEIGHT = 360;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      setDropUp(spaceBelow < POPUP_HEIGHT && spaceAbove > spaceBelow);
+    }
+    setOpen((p) => !p);
+  }
+
   return (
     <div ref={wrapperRef} className={cn("relative", className)}>
       {/* Trigger */}
       <div
-        onClick={() => {
-          if (disabled) return;
-          if (!open && value) {
-            setViewYear(parseInt(value.split("-")[0]));
-            setViewMonth(parseInt(value.split("-")[1]) - 1);
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-haspopup="true"
+        aria-expanded={open}
+        onClick={toggleOpen}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggleOpen();
           }
-          if (!open && wrapperRef.current) {
-            const rect = wrapperRef.current.getBoundingClientRect();
-            const POPUP_HEIGHT = 360;
-            const spaceBelow = window.innerHeight - rect.bottom;
-            const spaceAbove = rect.top;
-            setDropUp(spaceBelow < POPUP_HEIGHT && spaceAbove > spaceBelow);
-          }
-          setOpen((p) => !p);
         }}
         className={cn(
           "rounded border bg-card px-3.5 pt-4.5 pb-3.5 transition-colors",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           error
             ? "border-negative focus-within:ring-1 focus-within:ring-negative/30"
             : open
               ? "border-brand ring-1 ring-brand/30"
               : "border-line hover:border-brand/40",
-          disabled
-            ? "bg-subtle opacity-60 cursor-not-allowed"
-            : "cursor-pointer",
+          disabled ? "bg-subtle opacity-60 cursor-not-allowed" : "cursor-pointer",
         )}
       >
         <label
@@ -202,9 +200,7 @@ export function DatePicker({
       </div>
 
       {error && <p className="mt-1.5 text-xs text-negative">{error}</p>}
-      {!error && hint && (
-        <p className="mt-1.5 text-xs text-secondary">{hint}</p>
-      )}
+      {!error && hint && <p className="mt-1.5 text-xs text-secondary">{hint}</p>}
 
       {/* Calendar — absolute, 288px, flips up when space below is insufficient */}
       {open && (
@@ -243,20 +239,14 @@ export function DatePicker({
               >
                 {viewYear}
                 <ChevronDown
-                  className={cn(
-                    "size-3.5 transition-transform",
-                    showYearPicker && "rotate-180",
-                  )}
+                  className={cn("size-3.5 transition-transform", showYearPicker && "rotate-180")}
                 />
               </button>
             </div>
             {/* Day-of-week headers inside brand header */}
             <div className="grid grid-cols-7">
               {DAYS.map((d) => (
-                <div
-                  key={d}
-                  className="text-center text-xs text-white/90 py-0.5"
-                >
+                <div key={d} className="text-center text-xs text-white/90 py-0.5">
                   {d}
                 </div>
               ))}
@@ -275,9 +265,7 @@ export function DatePicker({
                   }}
                   className={cn(
                     "py-1.5 rounded text-sm font-medium transition-colors",
-                    y === viewYear
-                      ? "bg-brand text-white"
-                      : "hover:bg-subtle text-label",
+                    y === viewYear ? "bg-brand text-white" : "hover:bg-subtle text-label",
                   )}
                 >
                   {y}
@@ -299,10 +287,7 @@ export function DatePicker({
                       className={cn(
                         "h-9.5 w-full rounded text-sm transition-colors",
                         !cell.current && "text-placeholder/30 cursor-default",
-                        cell.current &&
-                          !sel &&
-                          !tod &&
-                          "font-medium text-label hover:bg-subtle",
+                        cell.current && !sel && !tod && "font-medium text-label hover:bg-subtle",
                         tod && !sel && "font-bold text-brand",
                         sel && "bg-brand text-white font-semibold",
                       )}

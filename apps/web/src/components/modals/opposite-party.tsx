@@ -3,8 +3,8 @@
 import { PartyRole } from "@splexa-group/shared/enums";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
-import { Modal } from "@/components/modals/modal";
-import { PARTY_ROLE_OPTIONS } from "@/lib/options";
+import { Modal } from "@/components/shared/modal";
+import { PARTY_ROLE_OPTIONS } from "@/utils/options";
 
 export interface PartyFormData {
   name: string;

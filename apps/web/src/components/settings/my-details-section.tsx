@@ -4,7 +4,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
 import { Section } from "@/components/ui/section";
-import { DESIGNATION_OPTIONS } from "@/lib/options";
+import { DESIGNATION_OPTIONS } from "@/utils/options";
 import type { SettingsFormValues } from "@/components/settings/profile-tab";
 
 interface Props {
@@ -53,12 +53,7 @@ export function MyDetailsSection({ email, role }: Props) {
           />
         )}
       />
-      <InputGroup
-        label="Email"
-        value={email}
-        disabled
-        readOnly
-      />
+      <InputGroup label="Email" value={email} disabled readOnly />
       <InputGroup
         label="Role"
         value={role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}

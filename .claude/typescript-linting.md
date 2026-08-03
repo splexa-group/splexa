@@ -296,7 +296,7 @@ Formatting is handled by Prettier. Do not debate formatting in code review — P
 // .prettierrc
 {
   "semi": true,
-  "singleQuote": true,
+  "singleQuote": false,
   "trailingComma": "all",
   "printWidth": 100,
   "tabWidth": 2,

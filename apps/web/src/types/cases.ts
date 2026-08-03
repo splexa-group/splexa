@@ -22,6 +22,7 @@ export interface CaseFilters {
   search?: string;
   status?: CaseStatus;
   caseType?: CaseType;
+  clientId?: string;
   page?: number;
   limit?: number;
 }

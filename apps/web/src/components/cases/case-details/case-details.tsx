@@ -11,7 +11,7 @@ import {
   CASE_TYPE_OPTIONS,
   PARTY_ROLE_OPTIONS,
   PRIORITY_OPTIONS,
-} from "@/lib/options";
+} from "@/utils/options";
 import type { UpdateCaseInput } from "@/types/cases";
 
 export function CaseDetailsSection() {
@@ -105,11 +105,7 @@ export function CaseDetailsSection() {
         name="filingDate"
         control={control}
         render={({ field }) => (
-          <DatePicker
-            label="Filing Date"
-            value={field.value ?? ""}
-            onChange={field.onChange}
-          />
+          <DatePicker label="Filing Date" value={field.value ?? ""} onChange={field.onChange} />
         )}
       />
     </Section>

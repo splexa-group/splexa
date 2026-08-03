@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import type { CalendarDisplayEvent } from "@/types/calendar";
 
 interface Props {
@@ -10,9 +10,7 @@ export function CalendarEventChip({ event }: Props) {
     <span
       className={cn(
         "calendar-chip",
-        event.kind === "hearing"
-          ? "calendar-chip--hearing"
-          : "calendar-chip--date",
+        event.kind === "hearing" ? "calendar-chip--hearing" : "calendar-chip--date",
       )}
       title={event.caseTitle}
     >

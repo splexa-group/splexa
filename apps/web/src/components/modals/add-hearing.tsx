@@ -2,15 +2,16 @@
 
 import { useEffect } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Modal } from "./modal";
+import { Modal } from "@/components/shared/modal";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
 import { TextareaGroup } from "@/components/ui/form/textarea";
 import { DatePicker } from "@/components/ui/form/date-picker";
-import { HEARING_PURPOSE_OPTIONS, HEARING_STATUS_OPTIONS } from "@/lib/options";
+import { TimePicker } from "@/components/ui/form/time-picker";
+import { HEARING_PURPOSE_OPTIONS, HEARING_STATUS_OPTIONS } from "@/utils/options";
 import type { Hearing, UpdateHearingInput } from "@/types/hearings";
 import { HearingStatus } from "@splexa-group/shared/enums";
-import { toISODatetime } from "@/lib/utils";
+import { toISODatetime } from "@/utils/iso-date";
 
 interface Props {
   open: boolean;
@@ -32,15 +33,8 @@ const defaultValues: UpdateHearingInput = {
   adjournmentReason: "",
 };
 
-export function AddHearingModal({
-  open,
-  hearing,
-  onClose,
-  onSave,
-  isPending,
-}: Props) {
-  const { register, control, handleSubmit, reset } =
-    useForm<UpdateHearingInput>({ defaultValues });
+export function AddHearingModal({ open, hearing, onClose, onSave, isPending }: Props) {
+  const { register, control, handleSubmit, reset } = useForm<UpdateHearingInput>({ defaultValues });
 
   const status = useWatch({ control, name: "status" });
 
@@ -95,10 +89,16 @@ export function AddHearingModal({
               />
             )}
           />
-          <InputGroup
-            label="Hearing Time"
-            type="time"
-            {...register("time")}
+          <Controller
+            name="time"
+            control={control}
+            render={({ field }) => (
+              <TimePicker
+                label="Hearing Time"
+                value={field.value ?? ""}
+                onChange={field.onChange}
+              />
+            )}
           />
           <Controller
             name="purpose"

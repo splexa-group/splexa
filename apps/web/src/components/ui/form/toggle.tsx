@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 
 export interface ToggleProps {
   label: string;
@@ -12,14 +12,7 @@ export interface ToggleProps {
   className?: string;
 }
 
-function Toggle({
-  label,
-  hint,
-  checked = false,
-  onChange,
-  disabled,
-  className,
-}: ToggleProps) {
+function Toggle({ label, hint, checked = false, onChange, disabled, className }: ToggleProps) {
   const id = React.useId();
 
   return (

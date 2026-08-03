@@ -9,3 +9,10 @@ export interface WithWarnings<T> {
   data: T;
   warnings?: string[];
 }
+
+export interface FormatIndianDateOptions {
+  includeWeekday?: boolean;
+  includeYear?: boolean;
+}
+
+export type RelativeDateLabel = "Overdue" | "Today" | "Tomorrow";

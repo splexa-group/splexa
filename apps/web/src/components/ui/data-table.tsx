@@ -2,7 +2,8 @@
 
 import { type ReactNode } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 
 export interface DataTableRow {
@@ -47,7 +48,7 @@ export function DataTable({
         {isEmpty ? (
           <EmptyState text={emptyStateText} action={emptyStateAction} />
         ) : (
-          <div className="bg-card border border-line rounded overflow-hidden min-w-max md:min-w-0">
+          <div className="bg-card border border-line rounded-lg overflow-hidden min-w-max md:min-w-0">
             {/* Header */}
             <div
               className="grid px-4 py-3 bg-subtle border-b border-line"
@@ -64,28 +65,25 @@ export function DataTable({
             </div>
 
             {rows.map((row) => (
-                <div
-                  key={row.key}
-                  role={row.onClick ? "button" : "row"}
-                  tabIndex={row.onClick ? 0 : undefined}
-                  onKeyDown={
-                    row.onClick
-                      ? (e) => e.key === "Enter" && row.onClick?.()
-                      : undefined
-                  }
-                  onClick={row.onClick}
-                  className={cn(
-                    "grid px-4 border-b border-line last:border-b-0 min-h-[54px] items-center",
-                    row.onClick && "cursor-pointer hover:bg-surface transition-colors",
-                    row.className,
-                  )}
-                  style={{ gridTemplateColumns: columnWidths }}
-                >
-                  {row.cells.map((cell, i) => (
-                    <div key={i}>{cell}</div>
-                  ))}
-                </div>
-              ))}
+              <div
+                key={row.key}
+                role={row.onClick ? "button" : "row"}
+                tabIndex={row.onClick ? 0 : undefined}
+                onKeyDown={row.onClick ? (e) => e.key === "Enter" && row.onClick?.() : undefined}
+                onClick={row.onClick}
+                className={cn(
+                  "grid px-4 border-b border-line last:border-b-0 min-h-[54px] items-center",
+                  row.onClick &&
+                    "cursor-pointer hover:bg-surface transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                  row.className,
+                )}
+                style={{ gridTemplateColumns: columnWidths }}
+              >
+                {row.cells.map((cell, i) => (
+                  <div key={i}>{cell}</div>
+                ))}
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -97,31 +95,30 @@ export function DataTable({
             Showing {from}–{to} of {totalRows}
           </p>
           <div className="flex items-center gap-1">
-            <button
-              type="button"
+            <Button
+              variant="secondarySoft"
+              size="icon"
               onClick={() => onPageChange?.(page - 1)}
               disabled={page <= 1}
-              className="p-1.5 rounded text-placeholder hover:text-secondary hover:bg-subtle disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Previous page"
             >
               <ArrowLeft className="size-4" />
-            </button>
+            </Button>
             <span className="text-xs text-secondary tabular-nums min-w-[48px] text-center">
               {page} / {totalPages}
             </span>
-            <button
-              type="button"
+            <Button
+              variant="secondarySoft"
+              size="icon"
               onClick={() => onPageChange?.(page + 1)}
               disabled={page >= totalPages}
-              className="p-1.5 rounded text-placeholder hover:text-secondary hover:bg-subtle disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Next page"
             >
               <ArrowRight className="size-4" />
-            </button>
+            </Button>
           </div>
         </div>
       )}
     </div>
   );
 }
-

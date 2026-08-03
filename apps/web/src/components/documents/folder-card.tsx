@@ -1,7 +1,7 @@
 "use client";
 
 import { FolderOpen } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import type { DocumentFolder } from "@/types/documents";
 
 interface Props {
@@ -16,7 +16,8 @@ export function FolderCard({ folder, onClick }: Props) {
       onClick={() => onClick(folder)}
       className={cn(
         "w-full text-left p-4 rounded-lg border border-line bg-card",
-        "hover:bg-surface transition-colors cursor-pointer",
+        "hover:bg-surface transition-colors cursor-pointer active:scale-[0.98]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         "flex flex-col gap-2",
       )}
     >

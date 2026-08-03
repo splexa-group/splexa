@@ -1,5 +1,7 @@
 # Splexa — Product Knowledge Document
+
 ### How we think about this product. Why every decision was made. Who we are building for.
+
 **This document is not a technical spec. It is the product brain.**  
 Read this before building anything. Read this when confused about what to build next.  
 Read this when someone asks "why does it work this way?"
@@ -161,6 +163,7 @@ When an advocate adds a hearing, they are in the middle of working on a case. Af
 ### Make Updating a Hearing Outcome Frictionless
 
 The outcome update should ask only:
+
 - What happened? (Completed / Adjourned / Cancelled)
 - Any notes? (optional textarea)
 - Next date? (date picker, appears only if adjourned)
@@ -188,15 +191,19 @@ The case timeline is not a log of system events. It is the story of the case tol
 ## Things That Will Kill This Product If We Get Them Wrong
 
 ### Reminder Failures
+
 If an advocate misses a hearing because our reminder did not send, the damage to trust is permanent. Every edge case — hearing added same day, email bounces, hearing date changed after reminder scheduled — must be handled.
 
 ### Slow Performance on Mobile
+
 An advocate on 2G in a court corridor with 8 seconds to load cases will close the app and use their notebook. After twice, they stop opening Splexa. Performance on slow connections is a Phase 1 survival concern.
 
 ### Data Loss
+
 If entered data disappears, that advocate is lost forever and they will tell people. Every save must be confirmed. Every delete is a soft delete.
 
 ### Confusing the First Time User
+
 Empty dashboard must clearly guide to one action: create your first case. Not a tutorial. Not a video. One clear prompt, one button.
 
 ---
@@ -214,10 +221,12 @@ If that habit exists, everything else follows. If it does not, no amount of feat
 Calm. Organised. Fast. Reliable. Plain and direct language — not clever, not casual, not corporate.
 
 ```
-"Case created"              not  "Your case has been successfully created!"
-"No hearings today"         not  "You're all clear for today 🎉"
-"Hearing reminder"          not  "Don't forget — court tomorrow!"
+"Case created successfully"  not  "Your case has been successfully created!"
+"No hearings today"          not  "You're all clear for today 🎉"
+"Hearing reminder"           not  "Don't forget — court tomorrow!"
 ```
+
+Action-confirmation toasts (create/update/delete) specifically use the `"{Entity} {verb} successfully"` shape — e.g. "Client added successfully", "Case updated successfully", "Document deleted successfully" — not the bare `"Case created"` this doc used to recommend, and not an exclamation mark or "Your ... has been ..." phrasing either. Every success toast in the app follows this exact pattern (see `hooks/use-*.ts`); match it for anything new.
 
 An advocate is a professional. Speak to them like one.
 

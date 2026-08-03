@@ -1,9 +1,9 @@
 "use client";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import { EmptyState } from "@/components/ui/empty-state";
 import { format } from "date-fns";
-import { getMonthGridDays } from "@/lib/calendar";
+import { getMonthGridDays } from "@/utils/calendar";
 import type { CalendarEventMap } from "@/types/calendar";
 import { CalendarCell } from "./calendar-cell";
 
@@ -35,10 +35,7 @@ export function CalendarGrid({
   if (isError) {
     return (
       <div className="flex-1 flex items-center justify-center p-8">
-        <EmptyState
-          text="Could not load calendar."
-          action={{ label: "Retry", onClick: onRetry }}
-        />
+        <EmptyState text="Could not load calendar." action={{ label: "Retry", onClick: onRetry }} />
       </div>
     );
   }

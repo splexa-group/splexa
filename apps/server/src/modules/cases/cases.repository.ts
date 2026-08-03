@@ -20,12 +20,13 @@ export const casesRepository = {
   },
 
   async list(orgId: string, query: ListCasesQuery) {
-    const { search, status, caseType, page, limit } = query;
+    const { search, status, caseType, clientId, page, limit } = query;
     const where: Prisma.CaseWhereInput = {
       orgId,
       deletedAt: null,
       ...(status ? { status } : {}),
       ...(caseType ? { caseType } : {}),
+      ...(clientId ? { clientId } : {}),
       ...(search
         ? {
             OR: [
@@ -66,11 +67,7 @@ export const casesRepository = {
     });
   },
 
-  async createClientAndLink(
-    caseId: string,
-    orgId: string,
-    clientData: CaseClientData,
-  ) {
+  async createClientAndLink(caseId: string, orgId: string, clientData: CaseClientData) {
     return prisma.$transaction(async (tx) => {
       const client = await tx.client.create({
         data: {
@@ -105,10 +102,7 @@ export const casesRepository = {
     });
   },
 
-  async softDeleteCascade(
-    id: string,
-    orgId: string,
-  ): Promise<{ count: number }> {
+  async softDeleteCascade(id: string, orgId: string): Promise<{ count: number }> {
     return prisma.$transaction(async (tx) => {
       const now = new Date();
 
@@ -137,11 +131,7 @@ export const casesRepository = {
     });
   },
 
-  async updateNextHearingDate(
-    caseId: string,
-    orgId: string,
-    tx: Prisma.TransactionClient,
-  ) {
+  async updateNextHearingDate(caseId: string, orgId: string, tx: Prisma.TransactionClient) {
     const now = new Date();
 
     // A hearing's upcoming date is `date` when SCHEDULED, or `nextDate` when ADJOURNED (its `date` is then stale) — check both.

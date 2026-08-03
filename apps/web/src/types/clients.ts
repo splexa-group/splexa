@@ -1,11 +1,14 @@
-import type {
-  ClientType,
-  PreferredLanguage,
-  RelationType,
-} from "@splexa-group/shared/enums";
+import type { ClientType, PreferredLanguage, RelationType } from "@splexa-group/shared/enums";
 import type { Client, PaginatedResult } from "@splexa-group/shared/models";
 
 export type { Client };
+
+export interface ClientFilters {
+  search?: string;
+  type?: ClientType;
+  page?: number;
+  limit?: number;
+}
 
 export interface CreateClientInput {
   fullName: string;

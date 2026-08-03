@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/form/input";
 import { MultiSelectGroup } from "@/components/ui/form/multi-select";
 import { useSignup } from "@/hooks/use-auth";
-import { PRACTICE_TYPE_OPTIONS } from "@/lib/options";
+import { PRACTICE_TYPE_OPTIONS } from "@/utils/options";
 import type { PersonalFormValues } from "./personal-step";
 
 export interface PracticeFormValues {
@@ -22,12 +22,7 @@ interface Props {
   onBack: (draft: Partial<PracticeFormValues>) => void;
 }
 
-export function SignupPracticeStep({
-  personalData,
-  defaultValues,
-  onSuccess,
-  onBack,
-}: Props) {
+export function SignupPracticeStep({ personalData, defaultValues, onSuccess, onBack }: Props) {
   const {
     register,
     control,
@@ -83,12 +78,7 @@ export function SignupPracticeStep({
         />
       </div>
 
-      <Button
-        type="submit"
-        className="w-full"
-        loading={isPending}
-        disabled={!isValid || isPending}
-      >
+      <Button type="submit" className="w-full" loading={isPending} disabled={!isValid || isPending}>
         Create Account
       </Button>
 

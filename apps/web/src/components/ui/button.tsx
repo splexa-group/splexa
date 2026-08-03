@@ -2,10 +2,10 @@ import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 
 const buttonVariants = cva(
-  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
+  "relative inline-flex items-center justify-center gap-2 whitespace-nowrap rounded text-sm font-medium transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50",
   {
     variants: {
       variant: {
@@ -21,20 +21,19 @@ const buttonVariants = cva(
         negativeSoft: "bg-negative-muted text-negative",
         amberSoft: "bg-amber-muted text-amber-dark",
         positiveSoft: "bg-positive-muted text-positive-dark",
+        secondarySoft: "bg-subtle text-secondary hover:bg-line hover:text-dark",
 
         primaryOutline: "border border-brand text-brand hover:bg-brand-soft",
-        negativeOutline:
-          "border border-negative text-negative hover:bg-negative-muted",
-        amberOutline:
-          "border border-amber text-amber-dark hover:bg-amber-muted",
-        positiveOutline:
-          "border border-positive text-positive-dark hover:bg-positive-muted",
+        negativeOutline: "border border-negative text-negative hover:bg-negative-muted",
+        amberOutline: "border border-amber text-amber-dark hover:bg-amber-muted",
+        positiveOutline: "border border-positive text-positive-dark hover:bg-positive-muted",
       },
       size: {
         default: "h-10 px-4",
         sm: "h-9 px-3 text-[12.5px]",
         lg: "h-10 px-5",
-        icon: "size-9",
+        icon: "size-11",
+        iconSm: "size-9",
       },
     },
     defaultVariants: {
@@ -45,25 +44,14 @@ const buttonVariants = cva(
 );
 
 interface ButtonProps
-  extends
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   loading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    {
-      className,
-      variant,
-      size,
-      asChild = false,
-      loading = false,
-      disabled,
-      children,
-      ...props
-    },
+    { className, variant, size, asChild = false, loading = false, disabled, children, ...props },
     ref,
   ) => {
     const Comp = asChild ? Slot : "button";
@@ -79,12 +67,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
       >
         {loading && <Loader2 className="absolute size-4 animate-spin" />}
-        <span
-          className={cn(
-            "inline-flex items-center gap-2",
-            loading && "opacity-0",
-          )}
-        >
+        <span className={cn("inline-flex items-center gap-2", loading && "opacity-0")}>
           {children}
         </span>
       </Comp>

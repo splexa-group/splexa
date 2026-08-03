@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
-import { DESIGNATION_OPTIONS } from "@/lib/options";
+import { DESIGNATION_OPTIONS } from "@/utils/options";
 
 export interface PersonalFormValues {
   email: string;
@@ -93,10 +93,7 @@ export function SignupPersonalStep({ defaultValues, onSuccess }: Props) {
       <div className="text-center">
         <p className="text-sm text-secondary">
           Already have an account?{" "}
-          <Link
-            href="/login"
-            className="text-brand hover:underline font-medium"
-          >
+          <Link href="/login" className="text-brand hover:underline font-medium">
             Sign in
           </Link>
         </p>

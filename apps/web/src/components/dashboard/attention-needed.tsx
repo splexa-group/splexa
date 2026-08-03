@@ -1,36 +1,39 @@
 "use client";
 
-import { differenceInCalendarDays } from "date-fns";
 import { useRouter } from "next/navigation";
 
-import { cn } from "@/lib/utils";
-import { formatDateLabel } from "@/lib/format-date-label";
+import { cn } from "@/utils/tailwind";
+import { formatDateLabel } from "@/utils/format-date-label";
+import {
+  deadlineUrgencyPillClass,
+  deadlineUrgencyTextClass,
+  getDeadlineUrgency,
+} from "@/utils/deadline-urgency";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ImportantDateType } from "@splexa-group/shared/enums";
 import type { HighPriorityCase, UpcomingDeadline } from "@/types/dashboard";
 
 interface Props {
-  deadlines:         UpcomingDeadline[] | undefined;
+  deadlines: UpcomingDeadline[] | undefined;
   highPriorityCases: HighPriorityCase[] | undefined;
 }
 
-function isUrgent(dateStr: string): boolean {
-  return differenceInCalendarDays(new Date(dateStr), new Date()) <= 7;
-}
-
 const DATE_TYPE_LABELS: Partial<Record<ImportantDateType, string>> = {
-  [ImportantDateType.LIMITATION]:          "Limitation",
-  [ImportantDateType.BAIL_EXPIRY]:         "Bail Expiry",
-  [ImportantDateType.STAY_EXPIRY]:         "Stay Expiry",
-  [ImportantDateType.APPEAL_DEADLINE]:     "Appeal Deadline",
+  [ImportantDateType.LIMITATION]: "Limitation",
+  [ImportantDateType.BAIL_EXPIRY]: "Bail Expiry",
+  [ImportantDateType.STAY_EXPIRY]: "Stay Expiry",
+  [ImportantDateType.APPEAL_DEADLINE]: "Appeal Deadline",
   [ImportantDateType.INJUNCTION_VALIDITY]: "Injunction",
 };
 
 export function AttentionNeeded({ deadlines, highPriorityCases }: Props) {
-  const router    = useRouter();
+  const router = useRouter();
   const isLoading = deadlines === undefined || highPriorityCases === undefined;
-  const isEmpty   = deadlines !== undefined && highPriorityCases !== undefined
-    && deadlines.length === 0 && highPriorityCases.length === 0;
+  const isEmpty =
+    deadlines !== undefined &&
+    highPriorityCases !== undefined &&
+    deadlines.length === 0 &&
+    highPriorityCases.length === 0;
 
   return (
     <div className="rounded-lg border border-line bg-card overflow-hidden">
@@ -56,7 +59,7 @@ export function AttentionNeeded({ deadlines, highPriorityCases }: Props) {
               </p>
               <ul>
                 {deadlines.map((d, i) => {
-                  const urgent = isUrgent(d.date);
+                  const { urgency } = getDeadlineUrgency(d.date);
                   return (
                     <li
                       key={d.id}
@@ -67,10 +70,9 @@ export function AttentionNeeded({ deadlines, highPriorityCases }: Props) {
                       )}
                     >
                       <div className="min-w-[76px] shrink-0">
-                        <span className={cn(
-                          "text-xs font-semibold",
-                          urgent ? "text-negative" : "text-secondary",
-                        )}>
+                        <span
+                          className={cn("text-sm font-semibold", deadlineUrgencyTextClass(urgency))}
+                        >
                           {formatDateLabel(d.date)}
                         </span>
                       </div>
@@ -82,12 +84,12 @@ export function AttentionNeeded({ deadlines, highPriorityCases }: Props) {
                         )}
                       </div>
 
-                      <span className={cn(
-                        "shrink-0 text-xs font-medium px-2 py-0.5 rounded-full",
-                        urgent
-                          ? "bg-negative-muted text-negative"
-                          : "bg-subtle text-secondary",
-                      )}>
+                      <span
+                        className={cn(
+                          "shrink-0 text-xs font-medium px-2 py-0.5 rounded-full",
+                          deadlineUrgencyPillClass(urgency),
+                        )}
+                      >
                         {DATE_TYPE_LABELS[d.dateType] ?? d.dateType}
                       </span>
                     </li>
@@ -114,7 +116,7 @@ export function AttentionNeeded({ deadlines, highPriorityCases }: Props) {
                   >
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-dark truncate">{c.title}</p>
-                      <p className="text-xs text-secondary mt-0.5 truncate">
+                      <p className="text-sm text-secondary mt-0.5 truncate">
                         {c.nextHearingDate
                           ? `Next hearing: ${formatDateLabel(c.nextHearingDate)}`
                           : "No hearing scheduled"}
@@ -122,7 +124,7 @@ export function AttentionNeeded({ deadlines, highPriorityCases }: Props) {
                       </p>
                     </div>
 
-                    <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-negative-muted text-negative">
+                    <span className="shrink-0 text-xs font-medium px-2 py-0.5 rounded-full bg-priority-high-muted text-priority-high">
                       High Priority
                     </span>
                   </li>

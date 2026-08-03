@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import { Trash2, Pencil, Scale } from "lucide-react";
 import { PartyRole } from "@splexa-group/shared/enums";
-import { CaseSubTabLabel } from "@/enums/case-tabs";
+import { CaseSubTabLabel } from "@/constants/case-tabs";
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
 import { RoleDotBadge } from "@/components/cases/role-badge";
@@ -81,15 +81,13 @@ export function OppositePartySection() {
           ) : undefined
         }
       >
-        <div className="rounded border border-line bg-card overflow-hidden">
+        <div className="rounded-lg border border-line bg-card overflow-hidden">
           {fields.map((field, index) => (
             <div
               key={field.id}
               className="grid grid-cols-[1fr_auto_1fr_auto] items-center gap-4 px-4 py-3 border-b border-line last:border-b-0"
             >
-              <span className="text-sm font-semibold text-dark truncate">
-                {field.name}
-              </span>
+              <span className="text-sm font-semibold text-dark truncate">{field.name}</span>
 
               <div>{field.role && <RoleDotBadge role={field.role} />}</div>
 
@@ -100,27 +98,27 @@ export function OppositePartySection() {
                     {field.advocateName}
                   </>
                 ) : (
-                  <span className="text-placeholder">—</span>
+                  <span className="text-placeholder">NA</span>
                 )}
               </span>
 
               <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
+                <Button
+                  variant="secondarySoft"
+                  size="icon"
                   onClick={() => openEdit(index)}
-                  className="p-2 rounded bg-subtle text-secondary hover:text-dark transition-colors"
                   aria-label="Edit"
                 >
-                  <Pencil className="size-4" />
-                </button>
-                <button
-                  type="button"
+                  <Pencil className="size-3.5" />
+                </Button>
+                <Button
+                  variant="negativeSoft"
+                  size="icon"
                   onClick={() => remove(index)}
-                  className="p-2 rounded bg-negative-muted text-negative hover:opacity-80 transition-opacity"
                   aria-label="Remove"
                 >
-                  <Trash2 className="size-4" />
-                </button>
+                  <Trash2 className="size-3.5" />
+                </Button>
               </div>
             </div>
           ))}

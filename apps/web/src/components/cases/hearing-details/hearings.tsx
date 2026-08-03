@@ -1,7 +1,7 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import { Hammer } from "lucide-react";
+import { Hammer, Plus } from "lucide-react";
 import {
   useHearings,
   useCreateHearing,
@@ -11,14 +11,15 @@ import {
 import { useCase } from "@/hooks/use-cases";
 import { HearingCard, NextHearingCard } from "./hearing-card";
 import { AddHearingModal } from "@/components/modals/add-hearing";
-import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
 import { Button } from "@/components/ui/button";
+import { DateBadge } from "@/components/ui/date-badge";
 import { Section } from "@/components/ui/section";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import { HearingStatus } from "@splexa-group/shared/enums";
 import type { Hearing, UpdateHearingInput } from "@/types/hearings";
-import { HEARING_TIMELINE_STATUS_ICON } from "./hearing-status";
+import { HEARING_TIMELINE_STATUS_ICON } from "./hearing-status-styles";
 
 interface Props {
   caseId: string;
@@ -39,9 +40,7 @@ export function HearingsDetails({ caseId }: Props) {
   today.setHours(0, 0, 0, 0);
 
   const upNext = [...hearings]
-    .filter(
-      (h) => new Date(h.date) >= today && h.status === HearingStatus.SCHEDULED,
-    )
+    .filter((h) => new Date(h.date) >= today && h.status === HearingStatus.SCHEDULED)
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
 
   const openCreate = () => {
@@ -100,34 +99,26 @@ export function HearingsDetails({ caseId }: Props) {
             courtName={caseData?.courtName}
             benchNumber={caseData?.benchNumber}
             onEdit={() => openEdit(upNext)}
-            onMarkHeard={() =>
-              void handleHearingStatus(upNext.id, HearingStatus.COMPLETED)
-            }
-            onMarkMissed={() =>
-              void handleHearingStatus(upNext.id, HearingStatus.CANCELLED)
-            }
+            onMarkHeard={() => void handleHearingStatus(upNext.id, HearingStatus.COMPLETED)}
+            onMarkMissed={() => void handleHearingStatus(upNext.id, HearingStatus.CANCELLED)}
             onAdjourn={() => openEdit(upNext)}
           />
         )}
 
         <Section
           title={isLoading ? "Hearings" : `Hearings (${hearings.length})`}
-          action={<Button onClick={openCreate}>Add Hearing</Button>}
+          action={
+            <Button size="sm" onClick={openCreate}>
+              <Plus className="size-3.5" />
+              Add Hearing
+            </Button>
+          }
           isEmpty={!isLoading && hearings.length === 0}
           emptyLabel="No hearings yet. Add your first hearing to start tracking court dates."
           onAdd={openCreate}
           addLabel="Add Hearing"
         >
           {hearings.map((hearing, index) => {
-            const hearingDate = new Date(hearing.date);
-            const day = hearingDate.toLocaleDateString("en-IN", {
-              day: "2-digit",
-            });
-            const month = hearingDate
-              .toLocaleDateString("en-IN", { month: "short" })
-              .toUpperCase();
-            const year = hearingDate.getFullYear();
-
             const iconCfg =
               upNext?.id === hearing.id
                 ? { Icon: Hammer, bg: "bg-brand", color: "text-white" }
@@ -141,28 +132,13 @@ export function HearingsDetails({ caseId }: Props) {
               <Fragment key={hearing.id}>
                 <div className="flex gap-4">
                   {/* Date: stretches full row height, content centered */}
-                  <div className="w-24 flex flex-col items-end justify-center text-right shrink-0 py-3">
-                    <span className="text-3xl font-black text-dark leading-none">
-                      {day}
-                    </span>
-                    <span className="text-[11px] font-bold text-label uppercase tracking-widest mt-1">
-                      {month}
-                    </span>
-                    <span className="text-xs font-medium text-secondary mt-0.5">
-                      {year}
-                    </span>
-                  </div>
+                  <DateBadge date={hearing.date} align="end" className="w-24 justify-center py-3" />
 
                   {/* Connector: top-line | icon | bottom-line
                       Each segment is flex-1 → icon sits exactly in vertical center.
                       First row top segment is transparent; last row bottom segment is transparent. */}
                   <div className="flex flex-col items-center self-stretch shrink-0">
-                    <div
-                      className={cn(
-                        "w-0.5 flex-1",
-                        index > 0 ? "bg-brand" : "",
-                      )}
-                    />
+                    <div className={cn("w-0.5 flex-1", index > 0 ? "bg-brand" : "")} />
                     <div
                       className={cn(
                         "size-9 rounded-full flex items-center justify-center shrink-0",
@@ -171,9 +147,7 @@ export function HearingsDetails({ caseId }: Props) {
                     >
                       <Icon className={cn("size-4", color)} />
                     </div>
-                    <div
-                      className={cn("w-0.5 flex-1", !isLast ? "bg-brand" : "")}
-                    />
+                    <div className={cn("w-0.5 flex-1", !isLast ? "bg-brand" : "")} />
                   </div>
 
                   <div className="flex-1 min-w-0 py-3">

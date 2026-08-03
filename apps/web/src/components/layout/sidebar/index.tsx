@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { LogOut, HelpCircle, CalendarPlus, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import { Icon } from "@/components/ui/icon";
 import { useAuthStore } from "@/store/auth-store";
 import { authApi } from "@/services/auth";
@@ -18,10 +18,7 @@ function NavLink({ href, icon, label, active }: NavItem & { active: boolean }) {
       <Icon
         icon={ChevronRight}
         size="sm"
-        className={cn(
-          "hidden lg:block ml-auto shrink-0",
-          active ? "text-white" : "text-white/30",
-        )}
+        className={cn("hidden lg:block ml-auto shrink-0", active ? "text-white" : "text-white/30")}
       />
     </Link>
   );
@@ -34,7 +31,9 @@ export function Sidebar() {
   const clearAuth = useAuthStore((s) => s.clearAuth);
 
   const displayName = user
-    ? ("org" in user ? user.org.name : `${user.firstName} ${user.lastName}`)
+    ? "org" in user
+      ? user.org.name
+      : `${user.firstName} ${user.lastName}`
     : "";
   const initial = displayName.charAt(0).toUpperCase();
 
@@ -82,27 +81,18 @@ export function Sidebar() {
       {/* Bottom actions */}
       <div className="flex items-center justify-between px-3 pb-4 pt-2">
         <div className="flex items-center gap-1">
-          <button
-            type="button"
-            title="Log out"
-            onClick={handleLogout}
-            className="p-2 rounded text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
-          >
+          <button type="button" title="Log out" onClick={handleLogout} className="sidebar-icon-btn">
             <Icon icon={LogOut} size="md" />
           </button>
           <button
             type="button"
             title="Support"
             onClick={() => window.open("mailto:support@splexa.in")}
-            className="p-2 rounded text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
+            className="sidebar-icon-btn"
           >
             <Icon icon={HelpCircle} size="md" />
           </button>
-          <button
-            type="button"
-            title="Book a demo"
-            className="p-2 rounded text-white hover:text-white/90 hover:bg-brand-soft/20 transition-colors"
-          >
+          <button type="button" title="Coming soon" disabled className="sidebar-icon-btn">
             <Icon icon={CalendarPlus} size="md" />
           </button>
         </div>

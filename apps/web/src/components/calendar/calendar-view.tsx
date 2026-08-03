@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { format } from "date-fns";
 import { useCalendarEvents } from "@/hooks/use-calendar";
-import { filterEventMap } from "@/lib/calendar";
+import { filterEventMap } from "@/utils/calendar";
 import { CalendarHeader } from "./calendar-header";
 import { CalendarGrid } from "./calendar-grid";
 import { CalendarDayPanel } from "./calendar-day-panel";
@@ -17,10 +17,7 @@ export function CalendarView() {
   const [selectedDateKey, setSelectedDateKey] = useState<string>(todayKey);
   const [search, setSearch] = useState("");
 
-  const { eventMap, isLoading, isError, refetch } = useCalendarEvents(
-    year,
-    month,
-  );
+  const { eventMap, isLoading, isError, refetch } = useCalendarEvents(year, month);
 
   const filteredMap = filterEventMap(eventMap, search);
   const panelEvents = filteredMap.get(selectedDateKey) ?? [];
@@ -71,7 +68,6 @@ export function CalendarView() {
         </div>
         <CalendarDayPanel dateKey={selectedDateKey} events={panelEvents} />
       </div>
-
     </div>
   );
 }

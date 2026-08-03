@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { PageLayout } from "@/components/layout/page-layout";
 import { Button } from "@/components/ui/button";
 
 const PLAN_FEATURES = [
@@ -10,7 +11,7 @@ const PLAN_FEATURES = [
 
 export function SubscriptionTab() {
   return (
-    <div className="px-4 md:px-6 py-6">
+    <PageLayout maxWidth="medium">
       <div className="max-w-sm border border-line rounded-lg bg-card p-6 space-y-5">
         <div>
           <p className="text-xs text-secondary uppercase tracking-wide mb-1">Current Plan</p>
@@ -26,16 +27,10 @@ export function SubscriptionTab() {
           ))}
         </ul>
 
-        <Button
-          variant="primary"
-          size="sm"
-          disabled
-          title="Coming soon"
-          className="w-full"
-        >
+        <Button variant="primary" size="sm" disabled title="Coming soon" className="w-full">
           Upgrade Plan
         </Button>
       </div>
-    </div>
+    </PageLayout>
   );
 }

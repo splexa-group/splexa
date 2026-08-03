@@ -35,9 +35,7 @@ export function LoginEmailStep({ onSuccess }: Props) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
         <h1 className="text-[26px] font-bold text-dark">Welcome back!</h1>
-        <p className="text-sm text-secondary mt-1">
-          Enter your email to continue.
-        </p>
+        <p className="text-sm text-secondary mt-1">Enter your email to continue.</p>
       </div>
 
       <InputGroup
@@ -53,22 +51,14 @@ export function LoginEmailStep({ onSuccess }: Props) {
         })}
       />
 
-      <Button
-        type="submit"
-        className="w-full"
-        loading={isPending}
-        disabled={isDisabled}
-      >
+      <Button type="submit" className="w-full" loading={isPending} disabled={isDisabled}>
         Continue
       </Button>
 
       <div className="text-center">
-        <p className="text-[13px] text-secondary">
+        <p className="text-sm text-secondary">
           Don&apos;t have an account?{" "}
-          <Link
-            href="/signup"
-            className="text-brand hover:underline font-medium"
-          >
+          <Link href="/signup" className="text-brand hover:underline font-medium">
             Sign up
           </Link>
         </p>

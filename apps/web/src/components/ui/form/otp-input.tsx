@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 
 const OTP_LENGTH = 6;
 
@@ -16,9 +16,7 @@ export function OtpInput({ value, onChange, hasError, disabled }: OtpInputProps)
   const containerRef = useRef<HTMLDivElement>(null);
 
   function getInputAt(index: number) {
-    return containerRef.current?.querySelectorAll("input")[index] as
-      | HTMLInputElement
-      | undefined;
+    return containerRef.current?.querySelectorAll("input")[index] as HTMLInputElement | undefined;
   }
 
   function handleChange(index: number, raw: string) {
@@ -46,10 +44,7 @@ export function OtpInput({ value, onChange, hasError, disabled }: OtpInputProps)
 
   function handlePaste(e: React.ClipboardEvent) {
     e.preventDefault();
-    const pasted = e.clipboardData
-      .getData("text")
-      .replace(/\D/g, "")
-      .slice(0, OTP_LENGTH);
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, OTP_LENGTH);
     onChange(pasted);
     getInputAt(Math.min(pasted.length, OTP_LENGTH - 1))?.focus();
   }
@@ -72,9 +67,7 @@ export function OtpInput({ value, onChange, hasError, disabled }: OtpInputProps)
             "w-14 h-13 text-center text-lg font-semibold rounded border bg-card transition-colors",
             "focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20",
             "disabled:bg-subtle disabled:cursor-not-allowed",
-            hasError
-              ? "border-negative ring-2 ring-negative/20"
-              : "border-line",
+            hasError ? "border-negative ring-2 ring-negative/20" : "border-line",
           )}
         />
       ))}

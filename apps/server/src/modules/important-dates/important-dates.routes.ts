@@ -1,5 +1,4 @@
 import { FastifyInstance } from "fastify";
-import fp from "fastify-plugin";
 
 import { importantDatesController } from "./important-dates.controller";
 import {
@@ -38,6 +37,4 @@ async function routes(router: FastifyInstance): Promise<void> {
   });
 }
 
-export const importantDatesRoutes = fp(routes, {
-  name: "important-dates-routes",
-});
+export const importantDatesRoutes = routes;

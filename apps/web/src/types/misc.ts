@@ -5,3 +5,5 @@ export interface ApiErrorResponse {
     code?: string;
   };
 }
+
+export type DeadlineUrgency = "overdue" | "soon" | null;

@@ -2,11 +2,11 @@
 
 import { useRouter } from "next/navigation";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { Modal } from "@/components/modals/modal";
+import { Modal } from "@/components/shared/modal";
 import { InputGroup } from "@/components/ui/form/input";
 import { SelectGroup } from "@/components/ui/form/select";
 import { useCreateCase } from "@/hooks/use-cases";
-import { CASE_TYPE_OPTIONS } from "@/lib/options";
+import { CASE_TYPE_OPTIONS } from "@/utils/options";
 import type { CaseType } from "@splexa-group/shared/enums";
 
 interface Props {
@@ -89,8 +89,8 @@ export function CreateCaseModal({ open, onClose }: Props) {
           )}
         />
         <p className="text-xs text-placeholder text-left pt-1">
-          You can add detailed case information, client details, hearing
-          records, and supporting documents after creating the case.
+          You can add detailed case information, client details, hearing records, and supporting
+          documents after creating the case.
         </p>
       </div>
     </Modal>

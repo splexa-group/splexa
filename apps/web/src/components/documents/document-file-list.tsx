@@ -1,18 +1,9 @@
 "use client";
 
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
-import {
-  Check,
-  Download,
-  File,
-  FileImage,
-  FileText,
-  Pencil,
-  Trash2,
-  X,
-} from "lucide-react";
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { Check, Download, File, FileImage, FileText, Pencil, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tailwind";
 import {
   useDocuments,
   useUploadDocument,
@@ -20,12 +11,16 @@ import {
   useRenameDocument,
 } from "@/hooks/use-documents";
 import { documentsApi } from "@/services/documents";
-import { ConfirmDeleteModal } from "@/components/modals/confirm-delete";
+import { ConfirmDeleteModal } from "@/components/shared/confirm-delete";
+import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Document } from "@/types/documents";
 
 interface Props {
   caseId: string;
+  onUploadStateChange?: (isUploading: boolean) => void;
+  /** False when an ancestor (e.g. Section) already owns the surrounding gutter. */
+  padded?: boolean;
 }
 
 export interface DocumentFileListHandle {
@@ -33,15 +28,9 @@ export interface DocumentFileListHandle {
 }
 
 function fileIcon(mimeType: string) {
-  if (mimeType === "application/pdf")
-    return <FileText className="size-5 text-negative shrink-0" />;
-  if (mimeType.startsWith("image/"))
-    return <FileImage className="size-5 text-brand shrink-0" />;
-  if (
-    mimeType.includes("word") ||
-    mimeType.includes("document") ||
-    mimeType.includes("text")
-  )
+  if (mimeType === "application/pdf") return <FileText className="size-5 text-negative shrink-0" />;
+  if (mimeType.startsWith("image/")) return <FileImage className="size-5 text-brand shrink-0" />;
+  if (mimeType.includes("word") || mimeType.includes("document") || mimeType.includes("text"))
     return <FileText className="size-5 text-positive shrink-0" />;
   return <File className="size-5 text-secondary shrink-0" />;
 }
@@ -52,8 +41,10 @@ function formatBytes(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-export const DocumentFileList = forwardRef<DocumentFileListHandle, Props>(
-function DocumentFileList({ caseId }, ref) {
+export const DocumentFileList = forwardRef<DocumentFileListHandle, Props>(function DocumentFileList(
+  { caseId, onUploadStateChange, padded = true },
+  ref,
+) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [toDelete, setToDelete] = useState<Document | null>(null);
   const [openingId, setOpeningId] = useState<string | null>(null);
@@ -68,6 +59,10 @@ function DocumentFileList({ caseId }, ref) {
   const upload = useUploadDocument(caseId);
   const deleteDoc = useDeleteDocument(caseId);
   const renameDoc = useRenameDocument(caseId);
+
+  useEffect(() => {
+    onUploadStateChange?.(upload.isPending);
+  }, [upload.isPending, onUploadStateChange]);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -125,7 +120,7 @@ function DocumentFileList({ caseId }, ref) {
         accept="*/*"
       />
 
-      <div className="space-y-4 px-4 md:px-6 py-6">
+      <div className={cn("space-y-4", padded && "px-4 md:px-6 py-6")}>
         {/* File list */}
         {!isLoading && documents.length === 0 ? (
           <EmptyState
@@ -134,7 +129,7 @@ function DocumentFileList({ caseId }, ref) {
             className="py-12"
           />
         ) : (
-          <div className="rounded border border-line bg-card overflow-hidden">
+          <div className="rounded-lg border border-line bg-card overflow-hidden">
             {documents.map((doc, i) => (
               <div
                 key={doc.id}
@@ -174,51 +169,51 @@ function DocumentFileList({ caseId }, ref) {
                 <div className="flex items-center gap-1.5 shrink-0">
                   {renamingId === doc.id ? (
                     <>
-                      <button
-                        type="button"
+                      <Button
+                        variant="positiveSoft"
+                        size="icon"
                         onClick={() => void commitRename(doc)}
                         disabled={renameDoc.isPending}
-                        className="p-1.5 rounded bg-positive-muted text-positive hover:opacity-80 transition-opacity disabled:opacity-50"
                         aria-label="Save rename"
                       >
                         <Check className="size-3.5" />
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button
+                        variant="secondarySoft"
+                        size="icon"
                         onClick={cancelRename}
-                        className="p-1.5 rounded bg-subtle text-secondary hover:text-dark transition-colors"
                         aria-label="Cancel rename"
                       >
                         <X className="size-3.5" />
-                      </button>
+                      </Button>
                     </>
                   ) : (
                     <>
-                      <button
-                        type="button"
+                      <Button
+                        variant="secondarySoft"
+                        size="icon"
                         onClick={() => startRename(doc)}
-                        className="p-1.5 rounded bg-subtle text-secondary hover:text-dark transition-colors"
                         aria-label="Rename"
                       >
                         <Pencil className="size-3.5" />
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button
+                        variant="secondarySoft"
+                        size="icon"
                         onClick={() => void handleOpen(doc)}
                         disabled={openingId === doc.id}
-                        className="p-1.5 rounded bg-subtle text-secondary hover:text-dark transition-colors disabled:opacity-50"
                         aria-label="Open"
                       >
                         <Download className="size-3.5" />
-                      </button>
-                      <button
-                        type="button"
+                      </Button>
+                      <Button
+                        variant="negativeSoft"
+                        size="icon"
                         onClick={() => setToDelete(doc)}
-                        className="p-1.5 rounded bg-negative-muted text-negative hover:opacity-80 transition-opacity"
                         aria-label="Delete"
                       >
                         <Trash2 className="size-3.5" />
-                      </button>
+                      </Button>
                     </>
                   )}
                 </div>

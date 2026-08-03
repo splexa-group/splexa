@@ -39,6 +39,11 @@ export const authController = {
     const refreshToken = req.cookies[REFRESH_TOKEN_COOKIE];
     const { accessToken } = await authService.refreshSession(refreshToken);
     setAccessTokenCookie(reply, accessToken);
+    // Re-set alongside the access token so a session whose marker cookie is
+    // missing or was cleared (e.g. pre-dates this cookie existing at all)
+    // self-heals on the next silent refresh, rather than staying locked out
+    // until the user re-authenticates from scratch.
+    setSessionActiveCookie(reply);
     return { message: "Token refreshed" };
   },
 

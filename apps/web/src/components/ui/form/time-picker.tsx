@@ -79,29 +79,42 @@ export function TimePicker({
     onChange?.(to24Hour(nextHour, nextMinute, nextPeriod));
   }
 
+  function toggleOpen() {
+    if (disabled) return;
+    if (!open && value) {
+      const p = from24Hour(value);
+      setHour12(p.hour12);
+      setMinute(p.minute);
+      setPeriod(p.period);
+    }
+    if (!open && wrapperRef.current) {
+      const rect = wrapperRef.current.getBoundingClientRect();
+      const POPUP_HEIGHT = 160;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      setDropUp(spaceBelow < POPUP_HEIGHT && spaceAbove > spaceBelow);
+    }
+    setOpen((p) => !p);
+  }
+
   return (
     <div ref={wrapperRef} className={cn("relative", className)}>
       {/* Trigger */}
       <div
-        onClick={() => {
-          if (disabled) return;
-          if (!open && value) {
-            const p = from24Hour(value);
-            setHour12(p.hour12);
-            setMinute(p.minute);
-            setPeriod(p.period);
+        role="button"
+        tabIndex={disabled ? -1 : 0}
+        aria-haspopup="true"
+        aria-expanded={open}
+        onClick={toggleOpen}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            toggleOpen();
           }
-          if (!open && wrapperRef.current) {
-            const rect = wrapperRef.current.getBoundingClientRect();
-            const POPUP_HEIGHT = 160;
-            const spaceBelow = window.innerHeight - rect.bottom;
-            const spaceAbove = rect.top;
-            setDropUp(spaceBelow < POPUP_HEIGHT && spaceAbove > spaceBelow);
-          }
-          setOpen((p) => !p);
         }}
         className={cn(
           "rounded border bg-card px-3.5 pt-4.5 pb-3.5 transition-colors",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
           error
             ? "border-negative focus-within:ring-1 focus-within:ring-negative/30"
             : open

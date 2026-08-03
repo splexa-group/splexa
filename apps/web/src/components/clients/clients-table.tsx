@@ -10,7 +10,7 @@ import { FiltersBar } from "@/components/ui/filters-bar";
 import { Search } from "@/components/ui/form/search";
 import { Select } from "@/components/ui/form/select";
 import { useClients } from "@/hooks/use-clients";
-import { ClientFilters } from "@/types/clients";
+import type { ClientFilters } from "@/types/clients";
 import { CLIENT_TYPE_OPTIONS } from "@/utils/options";
 
 const PAGE_SIZE = 30;

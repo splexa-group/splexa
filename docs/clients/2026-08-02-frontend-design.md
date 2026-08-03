@@ -1,4 +1,5 @@
 # Clients Module (Frontend) — Design Spec
+
 **Date:** 2026-08-02
 **Branch:** bhaskar/fix/frontend
 **Phase:** 1
@@ -15,16 +16,20 @@ One genuine backend gap: the Cases tab on the client detail page needs to list a
 
 No new nav item and no mobile bottom-tab slot — the directory is reached via a small "Clients" link on the Cases page. Mobile bottom-nav is already at 4 tabs (its practical ceiling), and product-context is explicit that clients are secondary to cases.
 
+> **Superseded (2026-08-03):** after shipping, this decision was revisited and reversed — Clients was promoted to a full `NAV_ITEMS` entry (sidebar + mobile bottom nav), matching Cases/Calendar/Documents. Mobile bottom-nav now shows 5 tabs. The Cases-page link described below was removed. See the Routing & Navigation section's note for the same update.
+
 ---
 
 ## Routing & Navigation
 
-| URL | Renders |
-|---|---|
-| `/clients` | Clients list (search + type filter + table) |
+| URL                   | Renders                                                         |
+| --------------------- | --------------------------------------------------------------- |
+| `/clients`            | Clients list (search + type filter + table)                     |
 | `/clients/[clientId]` | Client detail — `Info` tab (default) or `Cases` tab via `?tab=` |
 
 Entry point: a small link/button next to the "Add Case" action on the Cases page header (`CasesView`), not a `NAV_ITEMS` entry — `nav-items.ts` and `bottom-nav.tsx` are untouched.
+
+> **Superseded (2026-08-03):** `nav-items.ts` now has a `Clients` entry (between Cases and Calendar), which `bottom-nav.tsx` derives from automatically. The Cases-page link was removed in favor of this.
 
 Tab state on the detail page follows the exact `?tab=` mechanism used by Settings and Case Detail (`useActiveTab<ClientTabs>(CLIENT_TAB_CONFIG, ClientTabs.INFO)`). No sub-tabs.
 
@@ -32,20 +37,20 @@ Tab state on the detail page follows the exact `?tab=` mechanism used by Setting
 
 ## File Structure (Frontend only)
 
-| File | Purpose |
-|---|---|
-| `src/constants/client-tabs.ts` | `ClientTabs { INFO="info", CASES="cases" }` + `CLIENT_TAB_CONFIG: TabConfig[]` |
-| `src/types/clients.ts` | *(existing, extend)* add `ClientFilters`, full `Client` list/detail response shapes |
-| `src/services/clients.ts` | *(existing, extend)* add `list(filters)`, `getById(id)`, `delete(id)` |
-| `src/hooks/use-clients.ts` | *(existing, extend)* add `useClients(filters)`, `useClient(id)`, `useDeleteClient()`; keep existing `useClientSearch`, `useAddClientToCase`, `useUpdateClient` untouched |
-| `src/app/(protected)/clients/page.tsx` | Thin wrapper → `<ClientsView />` |
-| `src/app/(protected)/clients/[clientId]/page.tsx` | Thin wrapper → `<ClientDetailView clientId={clientId} />` |
-| `src/components/clients/clients-view.tsx` | Page shell — `PageLayout` + `usePageTitle` + `ClientsTable` + create modal |
-| `src/components/clients/clients-table.tsx` | `FiltersBar` (Search + type `Select`) + `DataTable`, mirrors `cases-table.tsx` structure/columns |
-| `src/components/clients/client-detail-view.tsx` | Tab switcher, form state, Save/Delete footer — mirrors `CaseDetailView` |
-| `src/components/clients/client-detail-tabs.tsx` | `TabsNav` wrapper — mirrors `CaseDetailTabs` |
-| `src/components/clients/client-cases-tab.tsx` | Renders `useCases({ clientId })` through the existing cases table/row rendering |
-| `src/components/modals/create-client.tsx` | `Modal` wrapping the existing `ClientDetails` form fragment, for standalone creation from the list page |
+| File                                              | Purpose                                                                                                                                                                  |
+| ------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/constants/client-tabs.ts`                    | `ClientTabs { INFO="info", CASES="cases" }` + `CLIENT_TAB_CONFIG: TabConfig[]`                                                                                           |
+| `src/types/clients.ts`                            | _(existing, extend)_ add `ClientFilters`, full `Client` list/detail response shapes                                                                                      |
+| `src/services/clients.ts`                         | _(existing, extend)_ add `list(filters)`, `getById(id)`, `delete(id)`                                                                                                    |
+| `src/hooks/use-clients.ts`                        | _(existing, extend)_ add `useClients(filters)`, `useClient(id)`, `useDeleteClient()`; keep existing `useClientSearch`, `useAddClientToCase`, `useUpdateClient` untouched |
+| `src/app/(protected)/clients/page.tsx`            | Thin wrapper → `<ClientsView />`                                                                                                                                         |
+| `src/app/(protected)/clients/[clientId]/page.tsx` | Thin wrapper → `<ClientDetailView clientId={clientId} />`                                                                                                                |
+| `src/components/clients/clients-view.tsx`         | Page shell — `PageLayout` + `usePageTitle` + `ClientsTable` + create modal                                                                                               |
+| `src/components/clients/clients-table.tsx`        | `FiltersBar` (Search + type `Select`) + `DataTable`, mirrors `cases-table.tsx` structure/columns                                                                         |
+| `src/components/clients/client-detail-view.tsx`   | Tab switcher, form state, Save/Delete footer — mirrors `CaseDetailView`                                                                                                  |
+| `src/components/clients/client-detail-tabs.tsx`   | `TabsNav` wrapper — mirrors `CaseDetailTabs`                                                                                                                             |
+| `src/components/clients/client-cases-tab.tsx`     | Renders `useCases({ clientId })` through the existing cases table/row rendering                                                                                          |
+| `src/components/modals/create-client.tsx`         | `Modal` wrapping the existing `ClientDetails` form fragment, for standalone creation from the list page                                                                  |
 
 `src/components/cases/client/client-details.tsx` (the existing form fragment) and its `CLIENT_TYPE_OPTIONS`/`RELATION_TYPE_OPTIONS` in `utils/options.ts` are reused as-is on the Info tab — no duplication.
 

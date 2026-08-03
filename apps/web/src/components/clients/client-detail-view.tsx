@@ -42,11 +42,15 @@ export function ClientDetailView({ clientId }: { clientId: string }) {
     const valid = await form.trigger();
     if (!valid) return;
 
-    await updateClient.mutateAsync({ id: clientId, data: form.getValues() });
+    // mutateAsync rejects on failure even though onError already shows a
+    // toast — swallow here so it doesn't also surface as an unhandled
+    // promise rejection (this handler is fired directly from onClick, not
+    // awaited by a caller that could catch it).
+    await updateClient.mutateAsync({ id: clientId, data: form.getValues() }).catch(() => {});
   };
 
   const handleDelete = async () => {
-    await deleteClient.mutateAsync(clientId);
+    await deleteClient.mutateAsync(clientId).catch(() => {});
   };
 
   return (

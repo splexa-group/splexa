@@ -15,7 +15,7 @@ import { Search } from "@/components/ui/form/search";
 import { Select } from "@/components/ui/form/select";
 import { Menu } from "@/components/ui/menu";
 import { useCases, useDeleteCase } from "@/hooks/use-cases";
-import { CaseFilters, CaseSummary } from "@/types/cases";
+import type { CaseFilters, CaseSummary } from "@/types/cases";
 import { getDeadlineUrgency } from "@/utils/deadline-urgency";
 import { formatHearingDate } from "@/utils/format-hearing-date";
 import { CASE_STATUS_OPTIONS, CASE_TYPE_OPTIONS, formatEnumLabel } from "@/utils/options";

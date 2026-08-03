@@ -12,13 +12,19 @@ const PROTECTED_PREFIXES = [
 const AUTH_ROUTE_PREFIXES = ["/login", "/signup"] as const;
 
 export function middleware(req: NextRequest) {
-  // access_token is short-lived (15 min) and only proves the last refresh
-  // succeeded, not that the session is still alive — session_active is a
+  // session_active is what routing decisions should key off — it's a
   // non-secret marker cookie set alongside the (narrowly path-scoped)
-  // refresh_token and shares its lifetime, so it's what routing decisions
-  // should key off. The real access_token expiry is handled transparently
-  // by the axios response interceptor on actual API calls.
-  const hasSession = req.cookies.has("session_active");
+  // refresh_token and shares its lifetime, unlike the short-lived (15 min)
+  // access_token, whose expiry is handled transparently by the axios
+  // response interceptor on actual API calls, not by this gate.
+  //
+  // access_token is also accepted here as a migration bridge: a session
+  // that predates session_active existing has access_token but not yet
+  // session_active, and would otherwise be forced to re-login on its very
+  // next navigation, before ever getting the chance to hit a 401 that
+  // triggers /auth/refresh (which now also (re-)sets session_active). This
+  // self-heals within at most one access_token lifetime.
+  const hasSession = req.cookies.has("session_active") || req.cookies.has("access_token");
   const { pathname } = req.nextUrl;
 
   const isProtected = PROTECTED_PREFIXES.some((p) => pathname.startsWith(p));

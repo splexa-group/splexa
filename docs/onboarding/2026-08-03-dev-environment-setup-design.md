@@ -97,9 +97,10 @@ already states these must be kept in sync when env vars change — this design j
 files that rule assumes exist.
 
 The team uses a shared dev/staging Supabase project rather than per-developer Supabase projects.
-Actual values for `DATABASE_URL`, `SUPABASE_*`, `RESEND_API_KEY`, and `INTERAKT_API_KEY` come from
-the team's 1Password shared vault — the README points there rather than telling a new hire to sign
-up for their own accounts.
+Actual values for `DATABASE_URL`, `SUPABASE_*`, `RESEND_API_KEY`, and `INTERAKT_API_KEY` are handed
+to the new hire directly by a teammate (no shared vault tool — 1Password/Bitwarden were considered
+but both need a paid plan for shared/org vaults) rather than the new hire signing up for their own
+accounts.
 
 ### 3. Root `README.md`
 
@@ -114,7 +115,8 @@ New file (none exists today) with a "New Developer Setup" section:
    cp apps/server/.env.example apps/server/.env
    cp apps/web/.env.local.example apps/web/.env.local
    ```
-5. Get shared dev credentials from the team's 1Password vault, fill into both `.env` files
+5. Get shared dev credentials directly from a teammate (Slack DM or in person — no vault tool),
+   fill into both `.env` files
 6. `pnpm --filter server db:generate` — generates the Prisma client against the shared dev DB
 7. `pnpm dev` — runs `apps/server` and `apps/web` together via Turborepo
 
@@ -134,16 +136,17 @@ enforced, and doesn't block anyone who skips it. Existing `.vscode/settings.json
 - Automating setup via a bootstrap script. Chosen: documented manual steps only, to match the
   project's small-team, YAGNI-driven approach (`developer-workflow.md`'s "Do I need this?" test).
   Revisit if onboarding friction shows up in practice.
-- Solving credential *rotation* or vault tooling — 1Password already exists and is out of scope to
-  change; this design only points to it.
+- Solving credential *rotation* or vault tooling — no shared vault tool is in place (1Password and
+  Bitwarden's org-vault tiers are both paid), and standing one up is out of scope here. Credentials
+  are handed over teammate-to-teammate for now; revisit if this becomes painful at team scale.
 
 ## Manual Step (Not Code)
 
-This design assumes a shared 1Password item (e.g. "Splexa Dev Env") containing the real values for
-every key in `apps/server/.env.example` and `apps/web/.env.local.example` already exists or is
-created as part of this work. Creating/populating that vault item is a manual action outside the
-codebase — it must be done explicitly (not silently skipped) before a new hire can actually
-complete setup, since the README will tell them to pull values from it.
+This design assumes that whoever onboards a new hire hands them the real values for every key in
+`apps/server/.env.example` and `apps/web/.env.local.example` directly (Slack DM, in person, or
+similar) — there is no vault tool automating this. That handoff is a manual action outside the
+codebase; it must happen explicitly (not be silently skipped) before a new hire can actually
+complete setup, since the README tells them to get these values "from a teammate."
 
 ## Branch
 

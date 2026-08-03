@@ -13,25 +13,48 @@ If the answer to either is "maybe not," fix it before moving on.
 
 ## Documentation Standard
 
-As of 2026-08-03, all specs and plans live in exactly two flat, chronological folders:
+As of 2026-08-03, every doc lives in one feature folder under `docs/`:
 
-- `docs/specs/YYYY-MM-DD-<topic>-design.md` — design specs, whether written ad hoc or via the
-  `superpowers:brainstorming` skill
-- `docs/plans/YYYY-MM-DD-<topic>.md` — implementation plans, whether written ad hoc or via the
-  `superpowers:writing-plans` skill
+```
+docs/
+├── auth/
+├── cases/
+├── clients/
+├── documents/
+├── hearings/
+├── calendar/
+├── dashboard/
+├── settings/
+├── frontend/       ← cross-cutting frontend architecture, not tied to one product feature
+└── overview.md     ← living cross-module reference (entity map, cascade rules), not date-prefixed
+```
 
-**No per-module subfolders** (no `docs/specs/cases/`, no `docs/specs/auth/`) and **no
-`docs/superpowers/` segment** — that path is an internal implementation detail of which skill
-produced the file, not something a future contributor should need to know to find it. Both the
-brainstorming and writing-plans skills explicitly document that "user preferences override the
-default location" — this is that override, recorded once here so it applies every time rather
-than needing to be repeated in every conversation.
+Inside a feature folder, every doc — design spec, implementation plan, requirements doc, future
+enhancement proposal, critical-bug writeup — uses `YYYY-MM-DD-<description>.md`. The date keeps
+the folder chronological; the description says what kind of doc it is (`design`,
+`frontend-design`, `plan`, `requirements`, `tasks`). No further nesting beyond the one feature
+folder.
 
-Before this standard, docs were scattered across three places (`docs/specs/[module]/design.md`,
-`docs/superpowers/specs/`, `docs/superpowers/plans/`) that accumulated as the project's workflow
-evolved. They were consolidated into the structure above on 2026-08-03, backdating each file's
-name to its real git history date rather than the consolidation date. If you ever need to write a
-spec or plan and are unsure where — it's one of these two folders, not a new one.
+**Why feature folders, not flat date-prefixed specs/plans folders:** an earlier pass at this
+standard (same day) tried `docs/specs/YYYY-MM-DD-....md` + `docs/plans/YYYY-MM-DD-....md` flat
+folders. That made project-wide chronology visible, but gave "everything about Cases" no single
+home — a future Cases enhancement or bug writeup would land in the same flat list as every other
+feature's docs with no way to browse just Cases. Feature folders fix that directly, at the cost of
+losing a single project-wide timeline (still recoverable via `git log --follow` on any file, or
+`ls docs/*/  | sort` across folders if needed).
+
+**No `docs/superpowers/` segment** — that path is an internal implementation detail of which
+skill produced the file, not something a future contributor should need to know to find it. Both
+the brainstorming and writing-plans skills explicitly document that "user preferences override the
+default location" — this is that override, recorded once here so it applies every time rather than
+needing to be repeated in every conversation. When invoking either skill, write to the relevant
+`docs/<feature>/` folder (or `docs/frontend/` for cross-cutting frontend work) instead of the
+skill's own default path.
+
+Before this standard, docs were scattered across `docs/specs/[module]/design.md`,
+`docs/superpowers/specs/`, and `docs/superpowers/plans/`, accumulated as the project's workflow
+evolved. Everything was consolidated into the structure above on 2026-08-03, backdating each
+file's name to its real git history date rather than the consolidation date.
 
 ---
 

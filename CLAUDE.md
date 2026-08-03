@@ -38,12 +38,11 @@ Activity/audit logging (`logActivity()`, `ActivityAction`) is Phase 2 scope — 
 
 ## Documentation Standard
 
-Every design spec and implementation plan lives in exactly one of two folders — never anywhere else, never in a per-module subfolder:
+Every doc — design spec, implementation plan, future enhancement proposal, critical-bug writeup — lives in one feature folder under `docs/<feature>/`, e.g. `docs/cases/`, `docs/auth/`, `docs/clients/`. Never a top-level `docs/specs/` or `docs/plans/`, never nested deeper than one level.
 
-- `docs/specs/YYYY-MM-DD-<topic>-design.md` — design specs
-- `docs/plans/YYYY-MM-DD-<topic>.md` — implementation plans
+Inside a feature folder, filenames are `YYYY-MM-DD-<description>.md` — date first so the folder stays chronological, description says what it is (`design`, `plan`, `requirements`, `frontend-design`, etc). Cross-cutting frontend architecture work that isn't tied to one product feature (layout, folder-structure refactors) goes in `docs/frontend/` instead of a feature folder.
 
-Flat, chronological, date-prefixed. This is a deliberate override of the `docs/superpowers/specs/` and `docs/superpowers/plans/` default paths the brainstorming/writing-plans skills otherwise use — write to `docs/specs/` and `docs/plans/` instead. See `developer-workflow.md` for the full rationale.
+This is a deliberate override of the `docs/superpowers/specs/` and `docs/superpowers/plans/` default paths the brainstorming/writing-plans skills otherwise use — always write to the relevant `docs/<feature>/` folder instead. See `developer-workflow.md` for the full rationale.
 
 ---
 

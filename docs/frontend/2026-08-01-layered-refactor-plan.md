@@ -12,7 +12,7 @@
 
 ## Background — Why This Plan Exists
 
-An earlier plan (`docs/plans/2026-08-01-frontend-feature-restructure.md`, spec at `docs/specs/2026-08-01-frontend-feature-restructure-design.md`) moved `hooks/`, `services/`, `types/`, and `components/[name]/` into `features/[name]/{hooks,services,types,components}` folders (Tasks 3–10, now reverted). After reviewing the result, feature-based was rejected in favor of keeping the original layered structure. The branch was reset to commit `02e61c2` (end of that plan's Task 2), which kept everything from Tasks 1–2 that was independent of the feature-vs-layered decision:
+An earlier plan (`docs/frontend/2026-08-01-feature-restructure-plan.md`, spec at `docs/frontend/2026-08-01-feature-restructure-design.md`) moved `hooks/`, `services/`, `types/`, and `components/[name]/` into `features/[name]/{hooks,services,types,components}` folders (Tasks 3–10, now reverted). After reviewing the result, feature-based was rejected in favor of keeping the original layered structure. The branch was reset to commit `02e61c2` (end of that plan's Task 2), which kept everything from Tasks 1–2 that was independent of the feature-vs-layered decision:
 - `apps/web/package.json` has a `typecheck` script (`tsc --noEmit`).
 - `components/layout/page-layout.tsx` exists (`PageLayout`, prop API below).
 - `lib/options.ts` was moved to `constants/options.ts` — **this plan undoes that specific move** (see Global Constraints), since the file mixes functions with data.

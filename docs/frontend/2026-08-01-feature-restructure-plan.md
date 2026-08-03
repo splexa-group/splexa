@@ -19,7 +19,7 @@
 - Comments in any new/edited code: minimal, only where something genuinely isn't obvious from the code itself — no restating what a line already says.
 - Every task must leave `pnpm --filter web typecheck` passing before its commit — this is the plan's substitute for automated tests, since no frontend test framework exists yet (out of scope to add one here).
 - `sed -i ''` (note the empty string argument) is required on this machine's BSD `sed` — every sed command below already includes it.
-- Full spec: `docs/specs/2026-08-01-frontend-feature-restructure-design.md` — read it once before starting; every task below implements a specific section of it.
+- Full spec: `docs/frontend/2026-08-01-feature-restructure-design.md` — read it once before starting; every task below implements a specific section of it.
 
 ---
 

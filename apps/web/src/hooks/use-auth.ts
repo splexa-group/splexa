@@ -7,16 +7,15 @@ import { useAuthStore } from "@/store/auth-store";
 import { maskEmail } from "@splexa-group/shared/utils";
 
 const MESSAGES = {
-  loginSuccess: "Welcome back!",
-  signupSuccess: "Welcome to Splexa!",
+  loginSuccess: "Logged in",
+  signupSuccess: "Account created",
 } as const;
 
 export function useRequestOtp() {
   return useMutation<void, Error, { email: string }>({
     mutationFn: ({ email }) => authApi.requestOtp(email),
     onSuccess: (_, { email }) => toast.info(`Code sent to ${maskEmail(email)}`),
-    onError: (err) =>
-      toast.error(err.message || "Failed to send code. Try again."),
+    onError: (err) => toast.error(err.message || "Failed to send code. Try again."),
   });
 }
 

@@ -137,6 +137,14 @@ enforced, and doesn't block anyone who skips it. Existing `.vscode/settings.json
 - Solving credential *rotation* or vault tooling — 1Password already exists and is out of scope to
   change; this design only points to it.
 
+## Manual Step (Not Code)
+
+This design assumes a shared 1Password item (e.g. "Splexa Dev Env") containing the real values for
+every key in `apps/server/.env.example` and `apps/web/.env.local.example` already exists or is
+created as part of this work. Creating/populating that vault item is a manual action outside the
+codebase — it must be done explicitly (not silently skipped) before a new hire can actually
+complete setup, since the README will tell them to pull values from it.
+
 ## Branch
 
 The current branch, `chore/docker-setup`, predates this design and contains no Docker work yet. It

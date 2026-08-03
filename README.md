@@ -37,7 +37,7 @@ pnpm workspaces + Turborepo.
    Get the real values for both files from a teammate directly (there's no shared credential vault
    for this project — ask whoever is onboarding you). Fill them into the two files you just copied.
 
-5. **Generate the Prisma client** (against the shared dev database):
+5. **Generate the Prisma client** (reads the schema only — no database connection required):
 
    ```bash
    pnpm --filter server db:generate

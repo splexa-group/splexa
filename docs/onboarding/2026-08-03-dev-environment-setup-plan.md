@@ -124,36 +124,39 @@ sed 's/=.*/=/' apps/server/.env
 
 This prints every key from the real `.env` with values stripped — use this output as the source of truth for which keys go in the example file (don't hand-type a list from memory, in case new keys have been added since this plan was written).
 
-- [ ] **Step 2: Create `apps/server/.env.example` with those keys and empty/placeholder values**
+- [ ] **Step 2: Create `apps/server/.env.example` with those keys — empty for secrets, real working values for non-secrets**
+
+Cross-check Step 1's key list against what `apps/server/src/config/env.ts` actually reads before finalizing this file — a real `.env` can carry leftover keys nothing reads anymore, and can miss optional keys (like the R2 storage credentials) that only matter under certain provider settings.
 
 ```
-LOG_LEVEL=
+LOG_LEVEL=debug
 NODE_ENV=development
-PORT=
+PORT=5001
 COOKIE_SECRET=
 JWT_ACCESS_SECRET=
-JWT_REFRESH_SECRET=
-JWT_ACCESS_EXPIRY=
-JWT_REFRESH_EXPIRY=
+JWT_ACCESS_EXPIRY=15m
 DATABASE_URL=
 DIRECT_URL=
-DB_PASSWORD=
 
 RESEND_API_KEY=
-EMAIL_PROVIDER=
+EMAIL_PROVIDER=resend
 EMAIL_FROM=
-REPLY_TO=
 
-STORAGE_PROVIDER=
+STORAGE_PROVIDER=supabase
+# R2 — optional, required only when STORAGE_PROVIDER=r2
+R2_ENDPOINT=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET=
 SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
 SUPABASE_STORAGE_BUCKET=
 
-WHATSAPP_PROVIDER=
+WHATSAPP_PROVIDER=interakt
 INTERAKT_API_KEY=
 ```
 
-If Step 1's output has keys not listed here (added after this plan was written), add them too — same blank-value pattern, keep the same grouping as the real file.
+If Step 1's output has keys not listed here, verify against `env.ts` whether they're still read before adding them — don't assume everything in a developer's local `.env` is still live.
 
 - [ ] **Step 3: Verify the file is tracked by git (not accidentally ignored)**
 
@@ -162,8 +165,8 @@ Expected: no output (exit code 1) — meaning the file is NOT ignored. If this p
 
 - [ ] **Step 4: Verify the file has no real secret values leaked into it**
 
-Run: `grep -vE '^[A-Z_]+=$|^$' apps/server/.env.example`
-Expected: no output — every line is either `KEY=` (empty) or blank, except `NODE_ENV=development` which is intentionally non-secret.
+Run: `grep -vE '^[A-Z_0-9]+=$|^$|^NODE_ENV=development$|^LOG_LEVEL=debug$|^PORT=5001$|^JWT_ACCESS_EXPIRY=15m$|^EMAIL_PROVIDER=resend$|^STORAGE_PROVIDER=supabase$|^WHATSAPP_PROVIDER=interakt$|^# R2 .*$' apps/server/.env.example`
+Expected: no output — every line is either `KEY=` (empty), blank, a `#` comment, or one of the intentional non-secret defaults listed above.
 
 - [ ] **Step 5: Commit**
 
@@ -188,14 +191,21 @@ git commit -m "docs(server): add .env.example"
 sed 's/=.*/=/' apps/web/.env.local
 ```
 
-- [ ] **Step 2: Create `apps/web/.env.local.example`**
+- [ ] **Step 2: Create `apps/web/.env.local.example` — with real default values, not blanks**
+
+Both keys are read via nullish coalescing in code (`apps/web/src/api/client.ts` and
+`apps/web/next.config.ts`, e.g. `process.env.NEXT_PUBLIC_API_URL ?? "/api/v1"`). An empty string
+is a *defined* value, so `??` will NOT fall through to the default — copying a blank-valued
+`.env.local.example` into `.env.local` would silently break local dev by overriding the working
+default with `""`. Use the same values the code's fallbacks already use:
 
 ```
-NEXT_PUBLIC_API_URL=
-API_ORIGIN=
+NEXT_PUBLIC_API_URL=/api/v1
+API_ORIGIN=http://127.0.0.1:5001
 ```
 
-(Add any additional keys Step 1 revealed, same blank-value pattern.)
+(Add any additional keys Step 1 revealed — check whether each one is read via `??` with a
+fallback before deciding whether it needs a real value here or can stay blank.)
 
 - [ ] **Step 3: Verify not ignored**
 
@@ -295,13 +305,20 @@ pnpm workspaces + Turborepo.
    Get the real values for both files from a teammate directly (there's no shared credential vault
    for this project — ask whoever is onboarding you). Fill them into the two files you just copied.
 
-5. **Generate the Prisma client** (against the shared dev database):
+5. **Generate the Prisma client** (reads the schema only — no database connection required):
 
    ```bash
    pnpm --filter server db:generate
    ```
 
-6. **Start both apps:**
+6. **Build the shared package** (`apps/server` and `apps/web` both import its compiled output, which
+   isn't checked into git):
+
+   ```bash
+   pnpm --filter @splexa-group/shared build
+   ```
+
+7. **Start both apps:**
 
    ```bash
    pnpm dev
@@ -368,16 +385,25 @@ Expected: `chore/dev-onboarding-setup`
 ```bash
 pnpm install
 pnpm --filter server db:generate
+pnpm --filter @splexa-group/shared build
 pnpm build
 ```
 
-Expected: all three succeed with no errors. (`pnpm dev` is not run here since it's a persistent process — spot-check it manually if you want full confidence.)
+Expected: all four succeed with no errors. (`pnpm dev` is not run here since it's a persistent process — spot-check it manually if you want full confidence.)
 
 - [ ] **Step 4: Confirm no secrets leaked into any committed example file**
 
+Both example files intentionally carry non-secret default values (see Tasks 3/4), so a plain
+"every line is blank" check would false-positive on those. List each file's non-blank lines and
+manually confirm each one is an expected default, not a real credential:
+
 ```bash
-git show HEAD:apps/server/.env.example | grep -vE '^[A-Z_]+=$|^$|^NODE_ENV=development$'
+git show HEAD:apps/server/.env.example | grep -vE '^[A-Z_0-9]+=$|^$|^#'
 git show HEAD:apps/web/.env.local.example | grep -vE '^[A-Z_]+=$|^$'
 ```
 
-Expected: no output from either command.
+Expected `apps/server/.env.example` output: exactly `NODE_ENV=development`, `LOG_LEVEL=debug`,
+`PORT=5001`, `JWT_ACCESS_EXPIRY=15m`, `EMAIL_PROVIDER=resend`, `STORAGE_PROVIDER=supabase`,
+`WHATSAPP_PROVIDER=interakt` — no other values. Expected `apps/web/.env.local.example` output:
+exactly `NEXT_PUBLIC_API_URL=/api/v1`, `API_ORIGIN=http://127.0.0.1:5001` — no other values.
+Anything else in either output is a leaked secret — stop and investigate.

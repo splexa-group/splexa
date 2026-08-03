@@ -59,37 +59,43 @@ runtime error later.
 
 ### 2. `.env.example` files
 
-**`apps/server/.env.example`** — every key present in `apps/server/.env` today, values emptied:
+**`apps/server/.env.example`** — every key actually read by `apps/server/src/config/env.ts`, secret
+values emptied, non-secret values given real working defaults, dead keys (present in one
+developer's local `.env` but read by no code) dropped:
 
 ```
-LOG_LEVEL=
+LOG_LEVEL=debug
 NODE_ENV=development
-PORT=
+PORT=5001
 COOKIE_SECRET=
 JWT_ACCESS_SECRET=
-JWT_REFRESH_SECRET=
-JWT_ACCESS_EXPIRY=
-JWT_REFRESH_EXPIRY=
+JWT_ACCESS_EXPIRY=15m
 DATABASE_URL=
 DIRECT_URL=
-DB_PASSWORD=
 RESEND_API_KEY=
-EMAIL_PROVIDER=
+EMAIL_PROVIDER=resend
 EMAIL_FROM=
-REPLY_TO=
-STORAGE_PROVIDER=
+STORAGE_PROVIDER=supabase
+# R2 — optional, required only when STORAGE_PROVIDER=r2
+R2_ENDPOINT=
+R2_ACCESS_KEY_ID=
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET=
 SUPABASE_URL=
 SUPABASE_SERVICE_ROLE_KEY=
 SUPABASE_STORAGE_BUCKET=
-WHATSAPP_PROVIDER=
+WHATSAPP_PROVIDER=interakt
 INTERAKT_API_KEY=
 ```
 
-**`apps/web/.env.local.example`** — mirrors `apps/web/.env.local`:
+**`apps/web/.env.local.example`** — mirrors `apps/web/.env.local`'s keys, with values matching the
+code's own fallback defaults (`apps/web/src/api/client.ts` and `apps/web/next.config.ts` both use
+`??` against these — an empty string is a defined value and would override the fallback, not fall
+through to it, so the example must ship the real default rather than a blank):
 
 ```
-NEXT_PUBLIC_API_URL=
-API_ORIGIN=
+NEXT_PUBLIC_API_URL=/api/v1
+API_ORIGIN=http://127.0.0.1:5001
 ```
 
 Both are committed (already un-ignored via `!.env.example` in `.gitignore`). `monorepo-rules.md`
@@ -117,8 +123,11 @@ New file (none exists today) with a "New Developer Setup" section:
    ```
 5. Get shared dev credentials directly from a teammate (Slack DM or in person — no vault tool),
    fill into both `.env` files
-6. `pnpm --filter server db:generate` — generates the Prisma client against the shared dev DB
-7. `pnpm dev` — runs `apps/server` and `apps/web` together via Turborepo
+6. `pnpm --filter server db:generate` — generates the Prisma client from the schema (reads the
+   schema only, no database connection required)
+7. `pnpm --filter @splexa-group/shared build` — builds the shared package's compiled output, which
+   `apps/server` and `apps/web` both import and which isn't checked into git
+8. `pnpm dev` — runs `apps/server` and `apps/web` together via Turborepo
 
 Also links to `CLAUDE.md` and `.claude/README.md` so a human new hire finds the same orientation
 docs an AI agent uses when working in this codebase.

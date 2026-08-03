@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- Node version pinned everywhere must be `20.20.2` (matches `.github/workflows/build.yml`).
+- Node version pinned everywhere must be `22.22.3` (matches `.github/workflows/build.yml`).
 - pnpm version pinned everywhere must be `10.33.2` (matches root `package.json`'s existing `packageManager` field — do not change that field).
 - No shared credential vault (1Password/Bitwarden both require a paid org plan the team doesn't have) — credentials are handed over teammate-to-teammate. Nothing in this plan should reference or assume a vault tool.
 - Docker is out of scope for every task in this plan.
@@ -60,10 +60,10 @@ Open `package.json` and add these two top-level fields (alongside the existing `
 
 ```json
 "engines": {
-  "node": "20.20.2"
+  "node": "22.22.3"
 },
 "volta": {
-  "node": "20.20.2",
+  "node": "22.22.3",
   "pnpm": "10.33.2"
 }
 ```
@@ -84,14 +84,14 @@ Run: `node -e "console.log(process.version)"` to see your current Node version, 
 pnpm install --dry-run
 ```
 
-- If your local Node version does **not** match `20.20.2`, expect pnpm to fail with an error mentioning `engines` / unsupported Node version.
-- If your local Node version **does** match `20.20.2` (e.g. because Volta is already active from a previous project), the install proceeds normally — that's also correct behavior, it just means you can't observe the trip-wire firing on this machine. In that case, confirm the fields are present with:
+- If your local Node version does **not** match `22.22.3`, expect pnpm to fail with an error mentioning `engines` / unsupported Node version.
+- If your local Node version **does** match `22.22.3` (e.g. because Volta is already active from a previous project), the install proceeds normally — that's also correct behavior, it just means you can't observe the trip-wire firing on this machine. In that case, confirm the fields are present with:
 
 ```bash
 node -e "console.log(require('./package.json').engines, require('./package.json').volta)"
 ```
 
-Expected: prints `{ node: '20.20.2' } { node: '20.20.2', pnpm: '10.33.2' }`
+Expected: prints `{ node: '22.22.3' } { node: '22.22.3', pnpm: '10.33.2' }`
 
 - [ ] **Step 4: Run the full install to make sure nothing else broke**
 
@@ -283,7 +283,7 @@ pnpm workspaces + Turborepo.
    ```
 
    If this fails with an error about Node engine versions, you're not running the pinned Node
-   version (`20.20.2`) — check that Volta installed correctly and is active (`volta list all`).
+   version (`22.22.3`) — check that Volta installed correctly and is active (`volta list all`).
 
 4. **Set up environment variables:**
 

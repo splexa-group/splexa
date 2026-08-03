@@ -5,7 +5,7 @@
 There's no documented, repeatable way for a new developer to get Splexa running locally with
 confidence that their environment matches everyone else's. Concretely, today:
 
-- Node's version isn't pinned anywhere locally. CI (`build.yml`) pins `20.20.2`, but nothing stops
+- Node's version isn't pinned anywhere locally. CI (`build.yml`) pins `22.22.3`, but nothing stops
   a local machine from running a different major version — and in practice one already is.
 - `pnpm` version is pinned (`packageManager` in root `package.json`), but nothing enforces it if a
   developer doesn't have Corepack/Volta set up.
@@ -40,7 +40,7 @@ Add to root `package.json`:
 
 ```json
 "volta": {
-  "node": "20.20.2",
+  "node": "22.22.3",
   "pnpm": "10.33.2"
 }
 ```
@@ -52,7 +52,7 @@ Add to root `package.json`:
   works identically on Mac, Windows, and Linux (unlike `nvm`, which has no first-class Windows
   support).
 
-**Safety net:** add `"engines": { "node": "20.20.2" }` to root `package.json` and a root `.npmrc`
+**Safety net:** add `"engines": { "node": "22.22.3" }` to root `package.json` and a root `.npmrc`
 with `engine-strict=true`. If someone installs dependencies without Volta active, on the wrong Node
 version, `pnpm install` fails immediately with a clear message instead of surfacing as a confusing
 runtime error later.

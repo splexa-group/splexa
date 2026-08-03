@@ -16,6 +16,14 @@ deferred until that feature is actively being built. The hosting choice below wa
 *without* assuming an always-on background scheduler; if reminders come back into scope, revisit
 whether the server platform still fits (see [Cron / Reminders](#cron--reminders-deferred) below).
 
+Messaging provider selection is also deferred, and for a stronger reason than just scheduling: the
+codebase already has a working WhatsApp integration built around **Interakt**
+(`apps/server/src/integrations/whatsapp/interakt-adapter.ts`, `whatsapp-interface.ts`, plus
+`WHATSAPP_PROVIDER`/`INTERAKT_API_KEY` in `env.ts` and `.env.example`) — an earlier pass at this doc
+proposed MSG91 without checking existing code first. No SMS integration exists yet. This plan does
+**not** set up any messaging provider account; that decision (keep Interakt vs. switch) belongs to
+whoever picks up reminders.
+
 ---
 
 ## Platform Choices
@@ -26,9 +34,9 @@ whether the server platform still fits (see [Cron / Reminders](#cron--reminders-
 | Server (`apps/server`, Fastify) | **Render** (free Web Service tier) | Genuinely free indefinitely (vs. Railway's one-time trial credit → ~$5/mo after). Free tier spins down after 15 min idle and cold-starts (~30-60s) on the next request — acceptable for a low-traffic feedback/testing environment with no background job depending on the server staying awake |
 | Database | **Supabase** (Postgres) | Already the project-wide decision (`README.md`) — not a new choice |
 | Documents | **Supabase Storage** | Already the project-wide decision (`developer-workflow.md`: "S3 (use Supabase Storage for Phase 1)") |
-| SMS + WhatsApp | **MSG91** | One account/API for both channels. Indian provider — handles India's mandatory DLT sender-ID/template registration (a TRAI requirement for SMS) as part of onboarding, rather than leaving it to us. WhatsApp doesn't require DLT (Meta business verification instead) and can go live before SMS/DLT clears |
 
-Total new platforms to set up: **Vercel, Render, MSG91** (Supabase already exists).
+Total new platforms to set up: **Vercel, Render** (Supabase already exists; messaging provider setup
+is deferred — see above).
 
 ---
 
@@ -87,8 +95,9 @@ Everything is driven from GitHub Actions — no reliance on Vercel's or Render's
 2. **Deploy web** — on push to `main`, after the build job succeeds: run `vercel deploy --prod`
    via the Vercel CLI, authenticated with `VERCEL_TOKEN` / `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID`
    (GitHub secrets).
-3. **Deploy server** — same trigger: run Prisma migrations
-   (`pnpm --filter server db:migrate deploy`) against the staging Supabase DB, then
+3. **Deploy server** — same trigger: run Prisma migrations against the staging Supabase DB using the
+   existing `pnpm --filter server db:migrate:staging` script (already in `apps/server/package.json`,
+   runs `prisma migrate deploy` with `ENV_FILE=.env`), then
    `curl -X POST $RENDER_DEPLOY_HOOK` (a secret URL from Render's dashboard) to trigger Render to
    pull and deploy the latest `main` commit.
 

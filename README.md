@@ -25,7 +25,7 @@ pnpm workspaces + Turborepo.
    ```
 
    If this fails with an error about Node engine versions, you're not running the pinned Node
-   version (`20.20.2`) — check that Volta installed correctly and is active (`volta list all`).
+   version (`22.22.3`) — check that Volta installed correctly and is active (`volta list all`).
 
 4. **Set up environment variables:**
 
@@ -43,7 +43,14 @@ pnpm workspaces + Turborepo.
    pnpm --filter server db:generate
    ```
 
-6. **Start both apps:**
+6. **Build the shared package** (`apps/server` and `apps/web` both import its compiled output, which
+   isn't checked into git):
+
+   ```bash
+   pnpm --filter @splexa-group/shared build
+   ```
+
+7. **Start both apps:**
 
    ```bash
    pnpm dev

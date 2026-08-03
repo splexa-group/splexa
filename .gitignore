@@ -10,6 +10,7 @@ html-report
 .env
 .env.*
 !.env.example
+!.env.local.example
 logs
 *.log
 npm-debug.log*

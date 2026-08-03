@@ -32,7 +32,7 @@ export function useUploadDocument(caseId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: documentKeys.list(caseId) });
       qc.invalidateQueries({ queryKey: documentKeys.folders() });
-      toast.success("Document uploaded");
+      toast.success("Document uploaded successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to upload document"),
   });
@@ -45,7 +45,7 @@ export function useRenameDocument(caseId: string) {
       documentsApi.rename(caseId, documentId, name),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: documentKeys.list(caseId) });
-      toast.success("Document renamed");
+      toast.success("Document renamed successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to rename document"),
   });
@@ -58,7 +58,7 @@ export function useDeleteDocument(caseId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: documentKeys.list(caseId) });
       qc.invalidateQueries({ queryKey: documentKeys.folders() });
-      toast.success("Document deleted");
+      toast.success("Document deleted successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to delete document"),
   });

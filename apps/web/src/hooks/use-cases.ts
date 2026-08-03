@@ -1,11 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { casesApi } from "@/services/cases";
-import type {
-  CaseFilters,
-  CreateCaseInput,
-  UpdateCaseInput,
-} from "@/types/cases";
+import type { CaseFilters, CreateCaseInput, UpdateCaseInput } from "@/types/cases";
 import { useRouter } from "next/navigation";
 
 export const caseKeys = {
@@ -35,10 +31,9 @@ export function useCreateCase() {
     mutationFn: (data: CreateCaseInput) => casesApi.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: caseKeys.all });
-      toast.success("Case created");
+      toast.success("Case created successfully");
     },
-    onError: (err: Error) =>
-      toast.error(err.message || "Failed to create case"),
+    onError: (err: Error) => toast.error(err.message || "Failed to create case"),
   });
 }
 
@@ -49,7 +44,7 @@ export function useUpdateCase(id: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: caseKeys.detail(id) });
       qc.invalidateQueries({ queryKey: caseKeys.all });
-      toast.success("Saved");
+      toast.success("Case updated successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to save"),
   });
@@ -62,10 +57,9 @@ export function useDeleteCase() {
     mutationFn: (id: string) => casesApi.delete(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: caseKeys.all });
-      toast.success("Case deleted");
+      toast.success("Case deleted successfully");
       router.push("/cases");
     },
-    onError: (err: Error) =>
-      toast.error(err.message || "Failed to delete case"),
+    onError: (err: Error) => toast.error(err.message || "Failed to delete case"),
   });
 }

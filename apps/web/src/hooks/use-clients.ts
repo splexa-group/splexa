@@ -42,7 +42,7 @@ export function useCreateClient() {
     mutationFn: (data: CreateClientInput) => clientsApi.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: clientKeys.all });
-      toast.success("Client created");
+      toast.success("Client created successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to create client"),
   });
@@ -54,7 +54,7 @@ export function useAddClientToCase(caseId: string) {
     mutationFn: (data: CreateClientInput) => casesApi.addClient(caseId, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: caseKeys.detail(caseId) });
-      toast.success("Client added");
+      toast.success("Client added successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to add client"),
   });
@@ -70,7 +70,7 @@ export function useUpdateClient() {
       if (caseId) {
         qc.invalidateQueries({ queryKey: ["cases", "detail", caseId] });
       }
-      toast.success("Saved");
+      toast.success("Client updated successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to save"),
   });
@@ -84,7 +84,7 @@ export function useDeleteClient() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: clientKeys.all });
       qc.invalidateQueries({ queryKey: caseKeys.all });
-      toast.success("Client deleted");
+      toast.success("Client deleted successfully");
       router.push("/clients");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to delete client"),

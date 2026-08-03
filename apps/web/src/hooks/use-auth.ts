@@ -7,8 +7,8 @@ import { useAuthStore } from "@/store/auth-store";
 import { maskEmail } from "@splexa-group/shared/utils";
 
 const MESSAGES = {
-  loginSuccess: "Logged in",
-  signupSuccess: "Account created",
+  loginSuccess: "Logged in successfully",
+  signupSuccess: "Account created successfully",
 } as const;
 
 export function useRequestOtp() {

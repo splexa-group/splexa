@@ -20,7 +20,7 @@ export function useCreateHearing(caseId: string) {
     mutationFn: (data: CreateHearingInput) => hearingsApi.create(caseId, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: caseKeys.detail(caseId) });
-      toast.success("Hearing added");
+      toast.success("Hearing added successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to add hearing"),
   });
@@ -33,7 +33,7 @@ export function useUpdateHearing(caseId: string) {
       hearingsApi.update(id, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: caseKeys.detail(caseId) });
-      toast.success("Hearing updated");
+      toast.success("Hearing updated successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to update hearing"),
   });
@@ -45,7 +45,7 @@ export function useDeleteHearing(caseId: string) {
     mutationFn: (id: string) => hearingsApi.delete(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: caseKeys.detail(caseId) });
-      toast.success("Hearing deleted");
+      toast.success("Hearing deleted successfully");
     },
     onError: (err: Error) => toast.error(err.message || "Failed to delete hearing"),
   });

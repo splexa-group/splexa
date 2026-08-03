@@ -36,6 +36,17 @@ Activity/audit logging (`logActivity()`, `ActivityAction`) is Phase 2 scope — 
 
 ---
 
+## Documentation Standard
+
+Every design spec and implementation plan lives in exactly one of two folders — never anywhere else, never in a per-module subfolder:
+
+- `docs/specs/YYYY-MM-DD-<topic>-design.md` — design specs
+- `docs/plans/YYYY-MM-DD-<topic>.md` — implementation plans
+
+Flat, chronological, date-prefixed. This is a deliberate override of the `docs/superpowers/specs/` and `docs/superpowers/plans/` default paths the brainstorming/writing-plans skills otherwise use — write to `docs/specs/` and `docs/plans/` instead. See `developer-workflow.md` for the full rationale.
+
+---
+
 ## Skill Files
 
 All rules, patterns, and decisions live in `.claude/`. The README routes you to the right file for your task.

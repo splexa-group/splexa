@@ -11,6 +11,30 @@ If the answer to either is "maybe not," fix it before moving on.
 
 ---
 
+## Documentation Standard
+
+As of 2026-08-03, all specs and plans live in exactly two flat, chronological folders:
+
+- `docs/specs/YYYY-MM-DD-<topic>-design.md` — design specs, whether written ad hoc or via the
+  `superpowers:brainstorming` skill
+- `docs/plans/YYYY-MM-DD-<topic>.md` — implementation plans, whether written ad hoc or via the
+  `superpowers:writing-plans` skill
+
+**No per-module subfolders** (no `docs/specs/cases/`, no `docs/specs/auth/`) and **no
+`docs/superpowers/` segment** — that path is an internal implementation detail of which skill
+produced the file, not something a future contributor should need to know to find it. Both the
+brainstorming and writing-plans skills explicitly document that "user preferences override the
+default location" — this is that override, recorded once here so it applies every time rather
+than needing to be repeated in every conversation.
+
+Before this standard, docs were scattered across three places (`docs/specs/[module]/design.md`,
+`docs/superpowers/specs/`, `docs/superpowers/plans/`) that accumulated as the project's workflow
+evolved. They were consolidated into the structure above on 2026-08-03, backdating each file's
+name to its real git history date rather than the consolidation date. If you ever need to write a
+spec or plan and are unsure where — it's one of these two folders, not a new one.
+
+---
+
 ## Git Branch Naming
 
 ```

@@ -5,7 +5,7 @@
 
 ---
 
-> **SUPERSEDED (2026-08-01):** after implementing this spec through Task 10, the feature-based `features/[name]/{hooks,services,types,components}` structure was reviewed and rejected in favor of layered (type-based) folders — `hooks/`, `services/`, `types/` flat at the top level, `components/[name]/` for per-feature UI. The branch was reset to the commit right after this plan's Task 2 (`PageLayout`, `constants/options.ts`, shared modals, nav-items cleanup — all independent of feature-vs-layered and kept). See `docs/superpowers/plans/2026-08-01-frontend-layered-refactor.md` for the remaining work applied to the layered structure. Everything below this notice describes the abandoned `features/` approach — kept for history, not a guide to follow.
+> **SUPERSEDED (2026-08-01):** after implementing this spec through Task 10, the feature-based `features/[name]/{hooks,services,types,components}` structure was reviewed and rejected in favor of layered (type-based) folders — `hooks/`, `services/`, `types/` flat at the top level, `components/[name]/` for per-feature UI. The branch was reset to the commit right after this plan's Task 2 (`PageLayout`, `constants/options.ts`, shared modals, nav-items cleanup — all independent of feature-vs-layered and kept). See `docs/plans/2026-08-01-frontend-layered-refactor.md` for the remaining work applied to the layered structure. Everything below this notice describes the abandoned `features/` approach — kept for history, not a guide to follow.
 
 ---
 

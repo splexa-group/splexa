@@ -2,7 +2,7 @@
 
 **Last updated:** 2026-05-17
 
-What was built, what changed from the original plan, and what is still pending. The original plan is at `docs/superpowers/plans/2026-05-16-frontend-auth.md`.
+What was built, what changed from the original plan, and what is still pending. The original plan is at `docs/plans/2026-05-16-frontend-auth.md`.
 
 ---
 

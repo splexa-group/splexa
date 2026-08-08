@@ -5,6 +5,7 @@ import {
   ClientType,
   CourtType,
   Designation,
+  FirmType,
   HearingPurpose,
   HearingStatus,
   ImportantDateType,
@@ -13,6 +14,7 @@ import {
   PreferredLanguage,
   Priority,
   RelationType,
+  States,
 } from "@splexa-group/shared/enums";
 
 export function formatEnumLabel(value: string): string {
@@ -36,6 +38,8 @@ export function withNone<T extends { value: string; label: string }>(
 }
 
 export const DESIGNATION_OPTIONS = toOptions(Designation);
+export const FIRM_TYPE_OPTIONS = toOptions(FirmType);
+export const STATE_OPTIONS = toOptions(States);
 export const PRACTICE_TYPE_OPTIONS = toOptions(PracticeType);
 export const CASE_TYPE_OPTIONS = toOptions(CaseType);
 export const CASE_STATUS_OPTIONS = toOptions(CaseStatus);

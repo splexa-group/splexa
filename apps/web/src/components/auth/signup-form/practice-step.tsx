@@ -5,14 +5,17 @@ import { useForm, Controller } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { InputGroup } from "@/components/ui/form/input";
 import { MultiSelectGroup } from "@/components/ui/form/multi-select";
+import { SelectGroup } from "@/components/ui/form/select";
 import { useSignup } from "@/hooks/use-auth";
-import { PRACTICE_TYPE_OPTIONS } from "@/utils/options";
+import { FIRM_TYPE_OPTIONS, PRACTICE_TYPE_OPTIONS, STATE_OPTIONS } from "@/utils/options";
 import type { PersonalFormValues } from "./personal-step";
 
 export interface PracticeFormValues {
   orgName: string;
   practiceTypes: string[];
+  firmType: string;
   city: string;
+  state: string;
 }
 
 interface Props {
@@ -70,12 +73,48 @@ export function SignupPracticeStep({ personalData, defaultValues, onSuccess, onB
           )}
         />
 
-        <InputGroup
-          label="City"
-          placeholder="e.g. Hyderabad"
-          disabled={isPending}
-          {...register("city", { required: true })}
+        <Controller
+          name="firmType"
+          control={control}
+          rules={{ required: true }}
+          render={({ field }) => (
+            <SelectGroup
+              label="Firm type"
+              options={FIRM_TYPE_OPTIONS}
+              placeholder="Select firm type..."
+              value={field.value ?? ""}
+              onChange={field.onChange}
+              disabled={isPending}
+              required
+            />
+          )}
         />
+
+        <div className="grid grid-cols-2 gap-3">
+          <InputGroup
+            label="City"
+            placeholder="e.g. Hyderabad"
+            disabled={isPending}
+            {...register("city", { required: true })}
+          />
+
+          <Controller
+            name="state"
+            control={control}
+            rules={{ required: true }}
+            render={({ field }) => (
+              <SelectGroup
+                label="State"
+                options={STATE_OPTIONS}
+                placeholder="Select state..."
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                disabled={isPending}
+                required
+              />
+            )}
+          />
+        </div>
       </div>
 
       <Button type="submit" className="w-full" loading={isPending} disabled={!isValid || isPending}>

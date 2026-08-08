@@ -12,6 +12,8 @@ export interface OrganizationData {
 export interface UpdateOrganizationInput {
   name:          string;
   city:          string;
+  state:         States;
+  firmType:      FirmType;
   practiceTypes: PracticeType[];
 }
 

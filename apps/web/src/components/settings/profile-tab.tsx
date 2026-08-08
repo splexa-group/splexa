@@ -1,7 +1,7 @@
 "use client";
 
 import { z } from "zod";
-import { Designation, PracticeType } from "@splexa-group/shared/enums";
+import { Designation, FirmType, PracticeType, States } from "@splexa-group/shared/enums";
 import { FormProvider, type UseFormReturn } from "react-hook-form";
 import { PageLayout } from "@/components/layout/page-layout";
 import { FirmDetailsSection } from "@/components/settings/firm-details-section";
@@ -14,6 +14,8 @@ export const settingsFormSchema = z.object({
   designation: z.nativeEnum(Designation),
   orgName: z.string().min(1, "Required").max(200),
   city: z.string().min(1, "Required").max(100),
+  state: z.nativeEnum(States),
+  firmType: z.nativeEnum(FirmType),
   practiceTypes: z.array(z.nativeEnum(PracticeType)).min(1, "Select at least one"),
 });
 

@@ -12,5 +12,7 @@ export interface SignupPayload {
   designation: string;
   orgName: string;
   practiceTypes: string[];
+  firmType: string;
   city: string;
+  state: string;
 }

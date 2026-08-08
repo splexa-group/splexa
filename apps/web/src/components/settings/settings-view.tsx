@@ -42,6 +42,8 @@ export function SettingsView() {
       designation: undefined,
       orgName: "",
       city: "",
+      state: undefined,
+      firmType: undefined,
       practiceTypes: [],
     },
   });
@@ -55,6 +57,8 @@ export function SettingsView() {
         designation: profile.designation,
         orgName: organization.name,
         city: organization.city,
+        state: organization.state,
+        firmType: organization.firmType,
         practiceTypes: organization.practiceTypes,
       });
     }
@@ -76,6 +80,8 @@ export function SettingsView() {
       const updatedOrg = await updateOrganization.mutateAsync({
         name: values.orgName,
         city: values.city,
+        state: values.state,
+        firmType: values.firmType,
         practiceTypes: values.practiceTypes,
       });
       const currentUser = useAuthStore.getState().user;

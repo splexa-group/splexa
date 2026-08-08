@@ -1,4 +1,4 @@
-import { Designation, PracticeType } from "@splexa-group/shared/enums";
+import { Designation, FirmType, PracticeType, States } from "@splexa-group/shared/enums";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Errors } from "@/utils/errors";
@@ -20,6 +20,8 @@ const mockOrg = {
   id: "org-1",
   name: "Sharma & Associates",
   city: "Hyderabad",
+  state: States.TELANGANA,
+  firmType: FirmType.FIRM,
   practiceTypes: [PracticeType.CRIMINAL, PracticeType.CIVIL],
 };
 
@@ -54,7 +56,13 @@ describe("organizationService.get", () => {
 describe("organizationService.update", () => {
   it("throws organizationNotFound when org does not exist", async () => {
     vi.mocked(organizationRepository.get).mockResolvedValue(null);
-    const body = { name: "New Firm Name", city: "Hyderabad", practiceTypes: [PracticeType.CRIMINAL] };
+    const body = {
+      name: "New Firm Name",
+      city: "Hyderabad",
+      state: States.TELANGANA,
+      firmType: FirmType.FIRM,
+      practiceTypes: [PracticeType.CRIMINAL],
+    };
     await expect(organizationService.update("bad-org", body)).rejects.toThrow(
       Errors.organizationNotFound(),
     );
@@ -65,7 +73,13 @@ describe("organizationService.update", () => {
     const updated = { ...mockOrg, name: "New Firm Name" };
     vi.mocked(organizationRepository.get).mockResolvedValue(mockOrg as never);
     vi.mocked(organizationRepository.update).mockResolvedValue(updated as never);
-    const body = { name: "New Firm Name", city: "Hyderabad", practiceTypes: [PracticeType.CRIMINAL] };
+    const body = {
+      name: "New Firm Name",
+      city: "Hyderabad",
+      state: States.TELANGANA,
+      firmType: FirmType.FIRM,
+      practiceTypes: [PracticeType.CRIMINAL],
+    };
     const result = await organizationService.update("org-1", body);
     expect(result).toEqual(updated);
     expect(organizationRepository.update).toHaveBeenCalledWith("org-1", body);
